@@ -1,103 +1,279 @@
-import Image from "next/image";
+import Link from "next/link";
+import { HeroBanner } from "@/components/layout/hero-banner";
+import { StatsBar } from "@/components/layout/stats-bar";
+import { CategoryCard } from "@/components/catalog/category-card";
+import { BrandPill } from "@/components/catalog/brand-pill";
+import { CarCard } from "@/components/catalog/car-card";
+import { ProductCard } from "@/components/product/product-card";
+import { ReviewCard } from "@/components/review/review-card";
+import { ImageMosaic } from "@/components/gallery/image-mosaic";
+import { BlogCard } from "@/components/blog/blog-card";
+import {
+  getActiveBanners,
+  getBestsellerProducts,
+  getBrandsWithProductCount,
+  getFeaturedProducts,
+  getGalleryImages,
+  getHighlightedCategories,
+  getLatestBlogPosts,
+  getLatestReviews,
+  getPopularCars,
+} from "@/lib/data";
 
-export default function Home() {
+const valueProps = [
+  {
+    title: "ارسال سریع و سراسری",
+    description: "تحویل اکسپرس در تهران و ارسال حداکثر ۴۸ ساعته به تمام استان‌ها",
+    icon: "🚚",
+  },
+  {
+    title: "تضمین اصالت کالا",
+    description: "تمام محصولات با گارانتی کتبی واردکننده رسمی تحویل می‌گردد",
+    icon: "🔒",
+  },
+  {
+    title: "مشاوره تخصصی رایگان",
+    description: "پیش از خرید، با کارشناس فنی ما تماس بگیرید و بهترین انتخاب را داشته باشید",
+    icon: "🛠️",
+  },
+];
+
+export default async function Home() {
+  const [
+    banners,
+    categories,
+    featuredProducts,
+    bestsellerProducts,
+    brands,
+    cars,
+    latestReviews,
+    galleryImages,
+    latestBlogPosts,
+  ] = await Promise.all([
+    getActiveBanners(),
+    getHighlightedCategories(),
+    getFeaturedProducts(6),
+    getBestsellerProducts(6),
+    getBrandsWithProductCount(),
+    getPopularCars(4),
+    getLatestReviews(6),
+    getGalleryImages(3),
+    getLatestBlogPosts(3),
+  ]);
+
+  const heroBanner = banners.find((banner) => banner.position === "homepage-hero") ?? banners[0];
+  const secondaryBanner = banners.find((banner) => banner.position === "homepage-secondary");
+
+  const stats = [
+    {
+      label: "محصولات فعال",
+      value: `${featuredProducts.length + bestsellerProducts.length}+`,
+      description: "برترین روغن‌های موتور از برندهای معتبر جهانی",
+    },
+    {
+      label: "برندهای همکار",
+      value: `${brands.length}`,
+      description: "شبکه تامین رسمی با ضمانت اصالت",
+    },
+    {
+      label: "خودروهای پشتیبانی شده",
+      value: `${cars.length * 5}+`,
+      description: "پوشش خودروهای اروپایی، آسیایی و داخلی",
+    },
+  ];
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="mx-auto flex max-w-6xl flex-col gap-16 px-6 py-12 sm:py-20">
+      {heroBanner ? <HeroBanner banner={heroBanner} /> : null}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <StatsBar stats={stats} />
+
+      <section className="grid gap-4 sm:grid-cols-3">
+        {valueProps.map((prop) => (
+          <div
+            key={prop.title}
+            className="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-white/70 transition hover:border-purple-400/60"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <span className="text-3xl">{prop.icon}</span>
+            <h2 className="mt-4 text-lg font-semibold text-white">{prop.title}</h2>
+            <p className="mt-2 leading-7">{prop.description}</p>
+          </div>
+        ))}
+      </section>
+
+      {!!galleryImages.length && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between text-white">
+            <h2 className="text-2xl font-semibold">لحظه‌هایی از پشت‌صحنه و بررسی‌ها</h2>
+            <Link href="/support" className="text-sm text-purple-200 hover:text-purple-100">
+              رزرو بازدید حضوری
+            </Link>
+          </div>
+          <ImageMosaic images={galleryImages} />
+        </section>
+      )}
+
+      <section className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-white">خرید بر اساس دسته‌بندی</h2>
+            <p className="mt-2 text-sm text-white/60">
+              بر اساس نوع موتور و استاندارد مورد نیاز خود، دسته‌بندی مناسب را انتخاب کنید.
+            </p>
+          </div>
+          <Link href="/categories" className="text-sm text-purple-200 hover:text-purple-100">
+            مشاهده همه
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {categories.map((category) => (
+            <CategoryCard key={category.id} category={category} />
+          ))}
+        </div>
+      </section>
+
+      {!!featuredProducts.length && (
+        <section className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold text-white">محصولات ویژه فنی</h2>
+              <p className="mt-2 text-sm text-white/60">
+                انتخاب متخصصان ZenLube برای خودروهایی که عملکرد بالا و دوام طولانی می‌خواهند.
+              </p>
+            </div>
+            <Link href="/products?sort=bestseller" className="text-sm text-purple-200 hover:text-purple-100">
+              مشاهده همه پیشنهادات
+            </Link>
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!!bestsellerProducts.length && (
+        <section className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold text-white">پرفروش‌ترین‌ها</h2>
+              <p className="mt-2 text-sm text-white/60">
+                محبوب‌ترین محصولات بین تعمیرگاه‌ها و مالکان خودروهای اسپرت و خانواده.
+              </p>
+            </div>
+            <Link href="/products?sort=bestseller" className="text-sm text-purple-200 hover:text-purple-100">
+              مشاهده لیست کامل
+            </Link>
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+            {bestsellerProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {secondaryBanner ? (
+        <div className="rounded-[32px] border border-purple-500/20 bg-purple-900/20 p-8 text-center text-white/80">
+          <h3 className="text-2xl font-semibold text-white">{secondaryBanner.title}</h3>
+          {secondaryBanner.subtitle && (
+            <p className="mt-3 text-sm leading-7 text-white/70">{secondaryBanner.subtitle}</p>
+          )}
+          {secondaryBanner.ctaLabel && secondaryBanner.ctaLink && (
+            <Link
+              href={secondaryBanner.ctaLink}
+              className="mt-6 inline-flex rounded-full bg-white px-6 py-2 text-sm font-semibold text-black hover:bg-white/90"
+            >
+              {secondaryBanner.ctaLabel}
+            </Link>
+          )}
+        </div>
+      ) : null}
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-white">برندهای همکار و نمایندگی‌ها</h2>
+        <p className="text-sm text-white/60">
+          همکاری با نمایندگان رسمی Mobil، Castrol، Total و سایر برندهای بین‌المللی با ضمانت اصالت کالا.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          {brands.map((brand) => (
+            <BrandPill key={brand.id} brand={brand} />
+          ))}
+        </div>
+      </section>
+
+      {!!latestReviews.length && (
+        <section className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-white">بازخورد مشتریان</h2>
+            <Link href="/products" className="text-sm text-purple-200 hover:text-purple-100">
+              مطالعه تمام نظرات
+            </Link>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            {latestReviews.map((review) => (
+              <ReviewCard key={review.id} review={review} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!!latestBlogPosts.length && (
+        <section className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-white">آخرین مقالات وبلاگ</h2>
+            <Link href="/blog" className="text-sm text-purple-200 hover:text-purple-100">
+              مشاهده همه مقالات
+            </Link>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {latestBlogPosts.map((post) => (
+              <BlogCard key={post.id} post={post} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-white">پیشنهاد اختصاصی برای خودرو شما</h2>
+            <p className="mt-2 text-sm text-white/60">
+              مشخصات فنی و استاندارد روغن هر خودرو را مشاهده کنید و محصول مناسب را بدون آزمون و خطا انتخاب کنید.
+            </p>
+          </div>
+          <Link href="/cars" className="text-sm text-purple-200 hover:text-purple-100">
+            مشاهده همه خودروها
+          </Link>
+        </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {cars.map((car) => (
+            <CarCard key={car.id} car={car} />
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/70">
+        <h2 className="text-2xl font-semibold text-white">نیاز به مشاوره تخصصی دارید؟</h2>
+        <p className="mt-3 leading-7">
+          تیم فنی ZenLube آماده است تا با بررسی دقیق مشخصات خودرو شما، بهترین روغن موتور، فیلتر و سرویس‌های دوره‌ای را پیشنهاد دهد.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-4">
+          <Link
+            href="tel:02112345678"
+            className="rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white hover:bg-purple-400"
+          >
+            ۰۲۱-۱۲۳۴۵۶۷۸
+          </Link>
+          <Link
+            href="/support"
+            className="rounded-full border border-white/20 px-6 py-2 text-sm text-white/80 hover:border-purple-300 hover:text-white"
+          >
+            ثبت درخواست پشتیبانی
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

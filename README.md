@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ZenLube – فروشگاه مینیمال روغن موتور
 
-## Getting Started
+ZenLube یک فروشگاه کامل برای فروش آنلاین روغن موتور است که با تِم بنفش/سفید/مشکی و طراحی مینیمال پیاده‌سازی شده. این پروژه بر پایه **Next.js 15 (App Router)** ساخته شده و شامل فرانت‌اند، بک‌اند، سیستم احراز هویت، مدیریت سبد خرید، لیست خودروها با مشخصات فنی و **پنل ادمین کامل** برای مدیریت محصولات، دسته‌بندی‌ها، برندها و نگاشت محصولات به خودروها است.
 
-First, run the development server:
+## قابلیت‌ها
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- 🎨 رابط کاربری مینیمال با تمرکز روی محصولات ویژه، دسته‌بندی‌ها و برندهای معتبر
+- 🛒 سبد خرید متصل به دیتابیس با امکان افزایش/کاهش تعداد و خالی کردن
+- 👤 صفحه حساب کاربری، نمایش سفارش‌ها و وضعیت ورود با NextAuth (استراتژی JWT)
+- 🚗 لیست خودروها همراه با مشخصات فنی و محصولات توصیه‌شده برای هر خودرو
+- 🛠️ پنل ادمین محافظت‌شده برای افزودن/ویرایش موجودی شامل:
+  - دسته‌بندی‌ها و برندها
+  - خودروها و مشخصات فنی آن‌ها
+  - محصولات جدید و نگاشت به خودروهای سازگار
+- 🗄️ اتصال به PostgreSQL با Prisma و اسکریپت Seed برای داده‌های نمونه (برندها، دسته‌بندی‌ها، خودروها، محصولات و کاربر ادمین)
+- 🌐 آماده استقرار روی Vercel همراه با Postgres (Vercel Postgres یا Neon، Supabase و...)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## تکنولوژی‌ها
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js 15 (App Router, Server/Client Components)
+- TypeScript + Tailwind CSS v4
+- Prisma ORM + PostgreSQL
+- NextAuth (Credentials Provider)
+- ESLint (Flat Config)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## راه‌اندازی محلی
 
-## Learn More
+1. پیش‌نیازها: Node.js 18+، PostgreSQL یا سرویس ابری معادل
+2. پکیج‌ها را نصب کنید:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. فایل `.env` را مطابق نمونه زیر تنظیم کنید:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```env
+   DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB?schema=public"
+   NEXTAUTH_SECRET="یک_رشته_تصادفی_طولانی"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
 
-## Deploy on Vercel
+4. دیتابیس را مهاجرت دهید و داده‌های اولیه را اعمال کنید:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npx prisma migrate dev --name init
+   npm run seed
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   > اسکریپت Seed یک ادمین نمونه با مشخصات زیر می‌سازد: `admin@zenlube.ir` / `Admin@123`
+
+5. سرور توسعه را اجرا کنید:
+
+   ```bash
+   npm run dev
+   ```
+
+   سپس به آدرس [http://localhost:3000](http://localhost:3000) مراجعه کنید.
+
+## استقرار روی Vercel
+
+1. ریپازیتوری را به GitHub/GitLab منتقل و در Vercel ایمپورت کنید.
+2. متغیرهای محیطی زیر را در Vercel تنظیم کنید:
+   - `DATABASE_URL`
+   - `NEXTAUTH_SECRET`
+   - `NEXTAUTH_URL` (مثلاً `https://your-domain.vercel.app`)
+3. قبل از اولین استقرار، روی محیط production دستور زیر را اجرا کنید (از طریق Vercel CLI یا pipeline):
+
+   ```bash
+   npx prisma migrate deploy
+   npm run seed
+   ```
+
+   برای جلوگیری از اجرای مجدد Seed روی production، پس از ایجاد داده‌های اولیه می‌توانید اسکریپت را حذف یا شرطی کنید.
+
+4. پس از استقرار، با کاربر ادمین وارد `/admin` شوید و محصولات/خودروهای جدید را مدیریت کنید.
+
+## ساختار مسیرهای مهم
+
+- `/` – صفحه اصلی با معرفی محصولات ویژه، دسته‌بندی‌ها، برندها و خودروهای محبوب
+- `/products` – لیست محصولات با فیلتر جستجو، برند، دسته‌بندی و خودرو
+- `/products/[slug]` – جزئیات محصول و خودروهای سازگار
+- `/cars` – لیست خودروها با مشخصات فنی و محصولات توصیه‌شده
+- `/cart` – سبد خرید کاربر (نیازمند ورود)
+- `/account` – صفحه حساب کاربری و سفارش‌ها (نیازمند ورود)
+- `/admin` – پنل ادمین (نیازمند نقش ADMIN)
+
+## نکات تکمیلی
+
+- استایل‌ها با Tailwind v4 و توکن‌های سفارشی برای رنگ‌ها (بنفش/سفید/مشکی) پیاده‌سازی شده‌اند.
+- برای افزودن نقش‌ها یا متدهای احراز هویت بیشتر، می‌توانید تنظیمات `src/lib/auth.config.ts` را گسترش دهید.
+- فایل‌های Seed در `prisma/seed.ts` قرار دارد؛ مطابق نیاز می‌توانید داده‌ها را تغییر دهید.
+- برای به‌روزرسانی اسکیمای دیتابیس، پس از ویرایش `prisma/schema.prisma` دستور `npx prisma generate` و سپس `npx prisma migrate dev` را اجرا کنید.
+
+موفق باشید و اگر نیاز به توسعه بیشتر داشتید (پرداخت آنلاین، سفارش‌گیری، گزارش‌گیری و ...)، ساختار پروژه آماده‌ی گسترش است. 🚀

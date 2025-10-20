@@ -1,0 +1,44 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { SignInForm } from "@/components/auth/sign-in-form";
+import { authOptions } from "@/lib/auth.config";
+
+type SignInPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function SignInPage({ searchParams }: SignInPageProps) {
+  const session = await getServerSession(authOptions);
+  const params = await searchParams;
+  const callbackUrl = typeof params?.callbackUrl === "string" ? params.callbackUrl : undefined;
+  const registered = params?.registered === "1";
+
+  if (session) {
+    redirect(callbackUrl ?? "/account");
+  }
+
+  const signUpLink = callbackUrl
+    ? `/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    : "/sign-up";
+
+  return (
+    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
+      <div className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-xl">
+        <h1 className="text-2xl font-semibold text-white">ورود به ZenLube</h1>
+        <p className="mt-2 text-sm text-white/60">برای مدیریت سبد خرید و دسترسی به پنل ادمین وارد شوید.</p>
+        {registered && (
+          <p className="mt-4 rounded-2xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-xs text-green-200">
+            حساب شما با موفقیت ایجاد شد. لطفاً با ایمیل و رمز عبور وارد شوید.
+          </p>
+        )}
+        <div className="mt-8">
+          <SignInForm callbackUrl={callbackUrl} registered={registered} />
+        </div>
+        <p className="mt-6 text-center text-xs text-white/60">
+          کاربر جدید هستید؟ <Link href={signUpLink} className="text-purple-200 hover:text-purple-100">ثبت‌نام کنید</Link>
+        </p>
+      </div>
+    </div>
+  );
+}

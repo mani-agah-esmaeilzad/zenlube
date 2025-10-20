@@ -47,6 +47,9 @@ export async function getBestsellerProducts(limit = 8) {
     include: {
       brand: true,
       category: true,
+      carMappings: {
+        include: { car: true },
+      },
     },
   });
 }
@@ -79,12 +82,8 @@ export async function getPopularCars(limit = 6) {
       productMappings: {
         include: {
           product: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
+            include: {
               brand: true,
-              averageRating: true,
             },
           },
         },

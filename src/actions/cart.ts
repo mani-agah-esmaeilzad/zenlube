@@ -1,17 +1,36 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
-import { authOptions } from "@/lib/auth.config";
 import { cartItemSchema } from "@/lib/validators";
+import { getAppSession } from "@/lib/session";
 
-async function requireSession() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
+type SessionWithUserId = {
+  user: {
+    id: string;
+    role?: string | null;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
+async function requireSession(): Promise<SessionWithUserId> {
+  const session = await getAppSession();
+  const userId = (session as { user?: { id?: string } } | null)?.user?.id;
+
+  if (!session || !userId) {
     throw new Error("برای مدیریت سبد خرید ابتدا وارد شوید.");
   }
-  return session;
+
+  const baseSession = session as { user?: Record<string, unknown> };
+
+  return {
+    ...session,
+    user: {
+      ...(baseSession.user ?? {}),
+      id: userId,
+    },
+  } as SessionWithUserId;
 }
 
 export async function addToCartAction(input: { productId: string; quantity?: number }) {

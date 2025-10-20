@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth";
 import { CartItemControls, ClearCartButton } from "@/components/cart/cart-item-controls";
-import { authOptions } from "@/lib/auth.config";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
+import { getAppSession } from "@/lib/session";
 
 export default async function CartPage() {
-  const session = await getServerSession(authOptions);
+  const rawSession = await getAppSession();
+  const userId = (rawSession as { user?: { id?: string } } | null)?.user?.id;
 
-  if (!session?.user?.id) {
+  if (!userId) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-24 text-center">
         <h1 className="text-3xl font-semibold text-white">سبد خرید</h1>
@@ -26,7 +26,7 @@ export default async function CartPage() {
   }
 
   const cart = await prisma.cart.findUnique({
-    where: { userId: session.user.id },
+    where: { userId },
     include: {
       items: {
         include: {

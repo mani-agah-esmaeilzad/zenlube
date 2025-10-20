@@ -1,16 +1,16 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
-import { authOptions } from "@/lib/auth.config";
+import { getAppSession } from "@/lib/session";
 
 export async function CartIndicator() {
-  const session = await getServerSession(authOptions);
+  const rawSession = await getAppSession();
+  const userId = (rawSession as { user?: { id?: string } } | null)?.user?.id;
 
   let totalItems = 0;
 
-  if (session?.user?.id) {
+  if (userId) {
     const cart = await prisma.cart.findUnique({
-      where: { userId: session.user.id },
+      where: { userId },
       select: {
         items: {
           select: { quantity: true },

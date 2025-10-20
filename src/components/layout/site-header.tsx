@@ -1,14 +1,16 @@
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth.config";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { CartIndicator } from "@/components/layout/cart-indicator";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { getAppSession } from "@/lib/session";
 
 export async function SiteHeader() {
-  const session = await getServerSession(authOptions);
-  const links = [
+  const rawSession = await getAppSession();
+  const sessionUser = (rawSession as { user?: { id?: string; role?: string | null } } | null)?.user;
+  const isAuthenticated = Boolean(sessionUser?.id);
+  type NavLink = { href: string; label: string; highlight?: boolean };
+  const links: NavLink[] = [
     { href: "/products", label: "محصولات" },
     { href: "/categories", label: "دسته‌بندی‌ها" },
     { href: "/brands", label: "برندها" },
@@ -17,7 +19,7 @@ export async function SiteHeader() {
     { href: "/account", label: "حساب کاربری" },
   ];
 
-  if (session?.user?.role === "ADMIN") {
+  if (sessionUser?.role === "ADMIN") {
     links.push({ href: "/admin", label: "پنل ادمین", highlight: true });
   }
 
@@ -65,9 +67,9 @@ export async function SiteHeader() {
           </button>
         </form>
         <div className="flex items-center gap-3">
-          <MobileNav links={links} isAuthenticated={Boolean(session)} />
+          <MobileNav links={links} isAuthenticated={isAuthenticated} />
           <CartIndicator />
-          {session ? <SignOutButton /> : <SignInButton />}
+          {isAuthenticated ? <SignOutButton /> : <SignInButton />}
         </div>
       </div>
     </header>

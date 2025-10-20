@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 import {
   createBrandAction,
   createCarAction,
@@ -7,14 +6,15 @@ import {
   createProductAction,
   deleteProductFormAction,
 } from "@/actions/admin";
-import { authOptions } from "@/lib/auth.config";
+import { getAppSession } from "@/lib/session";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 
 export default async function AdminPage() {
-  const session = await getServerSession(authOptions);
+  const rawSession = await getAppSession();
+  const role = (rawSession as { user?: { role?: string | null } } | null)?.user?.role;
 
-  if (session?.user?.role !== "ADMIN") {
+  if (role !== "ADMIN") {
     redirect("/sign-in?callbackUrl=/admin");
   }
 
@@ -52,7 +52,13 @@ export default async function AdminPage() {
       <section className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold text-white">افزودن دسته‌بندی</h2>
-          <form action={createCategoryAction} className="mt-6 space-y-4">
+          <form
+            action={async (formData) => {
+              "use server";
+              await createCategoryAction(formData);
+            }}
+            className="mt-6 space-y-4"
+          >
             <input name="name" placeholder="نام دسته‌بندی" className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
             <input name="slug" placeholder="اسلاگ (مثال: full-synthetic)" className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
             <textarea name="description" placeholder="توضیح کوتاه" className="h-24 w-full rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
@@ -63,7 +69,13 @@ export default async function AdminPage() {
         </div>
         <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold text-white">افزودن برند</h2>
-          <form action={createBrandAction} className="mt-6 space-y-4">
+          <form
+            action={async (formData) => {
+              "use server";
+              await createBrandAction(formData);
+            }}
+            className="mt-6 space-y-4"
+          >
             <input name="name" placeholder="نام برند" className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
             <input name="slug" placeholder="اسلاگ (مثال: mobil-1)" className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
             <input name="website" placeholder="وب‌سایت رسمی (اختیاری)" className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
@@ -77,7 +89,13 @@ export default async function AdminPage() {
 
       <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
         <h2 className="text-xl font-semibold text-white">ثبت خودرو</h2>
-        <form action={createCarAction} className="mt-6 grid gap-4 sm:grid-cols-2">
+        <form
+          action={async (formData) => {
+            "use server";
+            await createCarAction(formData);
+          }}
+          className="mt-6 grid gap-4 sm:grid-cols-2"
+        >
           <input name="slug" placeholder="اسلاگ خودرو (مثال: bmw-3-series-f30-320i)" className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
           <input name="manufacturer" placeholder="سازنده" className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
           <input name="model" placeholder="مدل" className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
@@ -100,7 +118,13 @@ export default async function AdminPage() {
         <p className="mt-2 text-xs text-white/60">
           پس از ثبت محصول، خودروهای سازگار را از لیست زیر انتخاب کنید تا در صفحه خودروها به عنوان پیشنهاد نمایش داده شود.
         </p>
-        <form action={createProductAction} className="mt-6 grid gap-4 sm:grid-cols-2">
+        <form
+          action={async (formData) => {
+            "use server";
+            await createProductAction(formData);
+          }}
+          className="mt-6 grid gap-4 sm:grid-cols-2"
+        >
           <input name="name" placeholder="نام محصول" className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
           <input name="slug" placeholder="اسلاگ" className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
           <input name="sku" placeholder="کد محصول" className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white" />
@@ -185,7 +209,13 @@ export default async function AdminPage() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <form action={deleteProductFormAction} className="inline">
+                    <form
+                      action={async (formData) => {
+                        "use server";
+                        await deleteProductFormAction(formData);
+                      }}
+                      className="inline"
+                    >
                       <input type="hidden" name="productId" value={product.id} />
                       <button type="submit" className="rounded-full border border-red-400/40 px-3 py-1 text-xs text-red-200 hover:border-red-300 hover:text-red-100">
                         حذف

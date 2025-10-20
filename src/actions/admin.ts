@@ -1,25 +1,25 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
-import { authOptions } from "@/lib/auth.config";
 import {
   brandSchema,
   carSchema,
   categorySchema,
   productUpsertSchema,
 } from "@/lib/validators";
+import { getAppSession } from "@/lib/session";
 
-function ensureAdmin(session: Awaited<ReturnType<typeof getServerSession>>) {
-  if (!session || session.user.role !== "ADMIN") {
+function ensureAdmin(session: unknown) {
+  const role = (session as { user?: { role?: string | null } } | null)?.user?.role;
+  if (role !== "ADMIN") {
     throw new Error("دسترسی شما مجاز نیست.");
   }
 }
 
 export async function createCategoryAction(formData: FormData) {
-  const session = await getServerSession(authOptions);
+  const session = await getAppSession();
   ensureAdmin(session);
 
   const raw = Object.fromEntries(formData) as Record<string, string>;
@@ -40,7 +40,7 @@ export async function createCategoryAction(formData: FormData) {
 }
 
 export async function createBrandAction(formData: FormData) {
-  const session = await getServerSession(authOptions);
+  const session = await getAppSession();
   ensureAdmin(session);
 
   const raw = Object.fromEntries(formData) as Record<string, string>;
@@ -61,7 +61,7 @@ export async function createBrandAction(formData: FormData) {
 }
 
 export async function createCarAction(formData: FormData) {
-  const session = await getServerSession(authOptions);
+  const session = await getAppSession();
   ensureAdmin(session);
 
   const raw = Object.fromEntries(formData) as Record<string, string>;
@@ -98,7 +98,7 @@ export async function createCarAction(formData: FormData) {
 }
 
 export async function createProductAction(formData: FormData) {
-  const session = await getServerSession(authOptions);
+  const session = await getAppSession();
   ensureAdmin(session);
 
   const rawEntries = Object.fromEntries(formData);
@@ -153,7 +153,7 @@ export async function createProductAction(formData: FormData) {
 }
 
 export async function deleteProductAction(productId: string) {
-  const session = await getServerSession(authOptions);
+  const session = await getAppSession();
   ensureAdmin(session);
 
   await prisma.product.delete({

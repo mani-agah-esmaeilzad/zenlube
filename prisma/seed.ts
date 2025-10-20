@@ -332,42 +332,39 @@ async function main() {
     data: reviewsData,
   });
 
-  await prisma.marketingBanner.upsert({
-    where: { position: "homepage-hero" },
-    update: {
-      title: "روغن موتور مناسب هر مسیر",
-      subtitle:
-        "ارسال سریع به سراسر کشور، مشاوره تخصصی رایگان و ضمانت اصالت کالا.",
-      ctaLabel: "مشاوره خرید اختصاصی",
-      ctaLink: "/support",
-      imageUrl:
-        "https://images.pexels.com/photos/1409999/pexels-photo-1409999.jpeg",
-      isActive: true,
-    },
-    create: {
-      title: "روغن موتور مناسب هر مسیر",
-      subtitle:
-        "ارسال سریع به سراسر کشور، مشاوره تخصصی رایگان و ضمانت اصالت کالا.",
-      ctaLabel: "مشاهده محصولات ویژه",
-      ctaLink: "/products?featured=true",
-      imageUrl:
-        "https://images.pexels.com/photos/1409999/pexels-photo-1409999.jpeg",
-      position: "homepage-hero",
+  await prisma.marketingBanner.deleteMany({
+    where: {
+      position: {
+        in: ["homepage-hero", "homepage-secondary"],
+      },
     },
   });
 
-  await prisma.marketingBanner.upsert({
-    where: { position: "homepage-secondary" },
-    update: {},
-    create: {
-      title: "بررسی روغن مناسب خودرو شما",
-      subtitle: "با وارد کردن مدل خودرو محصولات پیشنهادی دقیق دریافت کنید.",
-      ctaLabel: "ورود به لیست خودروها",
-      ctaLink: "/cars",
-      imageUrl:
-        "https://images.pexels.com/photos/4489722/pexels-photo-4489722.jpeg",
-      position: "homepage-secondary",
-    },
+  await prisma.marketingBanner.createMany({
+    data: [
+      {
+        title: "روغن موتور مناسب هر مسیر",
+        subtitle:
+          "ارسال سریع به سراسر کشور، مشاوره تخصصی رایگان و ضمانت اصالت کالا.",
+        ctaLabel: "مشاهده محصولات ویژه",
+        ctaLink: "/products?featured=true",
+        imageUrl:
+          "https://images.pexels.com/photos/1409999/pexels-photo-1409999.jpeg",
+        position: "homepage-hero",
+        isActive: true,
+      },
+      {
+        title: "بررسی روغن مناسب خودرو شما",
+        subtitle: "با وارد کردن مدل خودرو محصولات پیشنهادی دقیق دریافت کنید.",
+        ctaLabel: "ورود به لیست خودروها",
+        ctaLink: "/cars",
+        imageUrl:
+          "https://images.pexels.com/photos/4489722/pexels-photo-4489722.jpeg",
+        position: "homepage-secondary",
+        isActive: true,
+      },
+    ],
+    skipDuplicates: true,
   });
 
   const blogPosts = [

@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 import { SignInForm } from "@/components/auth/sign-in-form";
-import { authOptions } from "@/lib/auth.config";
+import { getAppSession } from "@/lib/session";
 
 type SignInPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
-  const session = await getServerSession(authOptions);
+  const session = await getAppSession();
   const params = await searchParams;
   const callbackUrl = typeof params?.callbackUrl === "string" ? params.callbackUrl : undefined;
   const registered = params?.registered === "1";

@@ -1,19 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth.config";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
+import { getAppSession } from "@/lib/session";
 
 export default async function AccountPage() {
-  const session = await getServerSession(authOptions);
+  const rawSession = await getAppSession();
+  const user = (rawSession as { user?: { id?: string; name?: string | null; email?: string | null } } | null)?.user;
 
-  if (!session?.user?.id) {
+  if (!user?.id) {
     redirect("/sign-in?callbackUrl=/account");
   }
 
   const orders = await prisma.order.findMany({
-    where: { userId: session.user.id },
+    where: { userId: user.id },
     orderBy: { createdAt: "desc" },
     include: {
       items: {
@@ -31,11 +31,11 @@ export default async function AccountPage() {
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           <div className="space-y-2">
             <span className="text-xs text-white/50">نام</span>
-            <p className="text-lg text-white">{session.user.name ?? "کاربر ZenLube"}</p>
+            <p className="text-lg text-white">{user.name ?? "کاربر ZenLube"}</p>
           </div>
           <div className="space-y-2">
             <span className="text-xs text-white/50">ایمیل</span>
-            <p className="text-lg text-white">{session.user.email}</p>
+            <p className="text-lg text-white">{user.email}</p>
           </div>
         </div>
       </section>

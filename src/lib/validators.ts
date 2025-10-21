@@ -1,45 +1,62 @@
 import { z } from "zod";
 
+function emptyToUndefined(value: unknown) {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed === "" ? undefined : trimmed;
+  }
+  return value;
+}
+
+const optionalString = z.preprocess(emptyToUndefined, z.string().optional());
+const optionalUrl = z.preprocess(emptyToUndefined, z.string().url().optional());
+
 export const categorySchema = z.object({
-  name: z.string().min(2, "نام دسته باید حداقل دو کاراکتر باشد."),
-  slug: z.string().min(2, "اسلاگ معتبر نیست.").regex(/^[a-z0-9-]+$/, "اسلاگ فقط می‌تواند شامل حروف کوچک، عدد و خط تیره باشد."),
-  description: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  name: z.string().trim().min(2, "نام دسته باید حداقل دو کاراکتر باشد."),
+  slug: z
+    .string()
+    .min(2, "اسلاگ معتبر نیست.")
+    .regex(/^[a-z0-9-]+$/, "اسلاگ فقط می‌تواند شامل حروف کوچک، عدد و خط تیره باشد."),
+  description: optionalString,
+  imageUrl: optionalUrl,
 });
 
 export const brandSchema = z.object({
-  name: z.string().min(2, "نام برند باید حداقل دو کاراکتر باشد."),
-  slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
-  description: z.string().optional(),
-  imageUrl: z.string().url().optional(),
-  website: z.string().url().optional(),
+  name: z.string().trim().min(2, "نام برند باید حداقل دو کاراکتر باشد."),
+  slug: z
+    .string()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
+  description: optionalString,
+  imageUrl: optionalUrl,
+  website: optionalUrl,
 });
 
 export const carSchema = z.object({
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
   manufacturer: z.string().min(2),
   model: z.string().min(1),
-  generation: z.string().optional(),
-  engineCode: z.string().optional(),
-  engineType: z.string().optional(),
+  generation: optionalString,
+  engineCode: optionalString,
+  engineType: optionalString,
   yearFrom: z.number().int().min(1950).max(2100).optional(),
   yearTo: z.number().int().min(1950).max(2100).optional(),
   oilCapacityLit: z.number().min(0).optional(),
-  viscosity: z.string().optional(),
-  specification: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  viscosity: optionalString,
+  specification: optionalString,
+  imageUrl: optionalUrl,
 });
 
 export const productUpsertSchema = z.object({
-  name: z.string().min(2),
+  name: z.string().trim().min(2),
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
-  sku: z.string().optional(),
-  description: z.string().optional(),
+  sku: optionalString,
+  description: optionalString,
   price: z.number().min(0),
   stock: z.number().int().min(0),
-  viscosity: z.string().optional(),
-  oilType: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  viscosity: optionalString,
+  oilType: optionalString,
+  imageUrl: optionalUrl,
   isFeatured: z.boolean().optional(),
   categoryId: z.string().cuid(),
   brandId: z.string().cuid(),

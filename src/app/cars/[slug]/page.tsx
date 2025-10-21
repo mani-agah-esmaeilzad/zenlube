@@ -8,11 +8,12 @@ import {
 } from "@/lib/data";
 
 type CarPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: CarPageProps) {
-  const car = await getCarBySlug(params.slug);
+  const { slug } = await params;
+  const car = await getCarBySlug(slug);
 
   if (!car) {
     return {
@@ -28,7 +29,8 @@ export async function generateMetadata({ params }: CarPageProps) {
 }
 
 export default async function CarDetailPage({ params }: CarPageProps) {
-  const car = await getCarBySlug(params.slug);
+  const { slug } = await params;
+  const car = await getCarBySlug(slug);
 
   if (!car) {
     notFound();

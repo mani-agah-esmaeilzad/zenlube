@@ -2,11 +2,12 @@ import { CarCard } from "@/components/catalog/car-card";
 import { getCarsWithProducts } from "@/lib/data";
 
 type CarsPageProps = {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function CarsPage({ searchParams }: CarsPageProps) {
-  const search = typeof searchParams.search === "string" ? searchParams.search : undefined;
+  const params = await searchParams;
+  const search = typeof params.search === "string" ? params.search : undefined;
 
   const cars = await getCarsWithProducts();
   const filteredCars = search

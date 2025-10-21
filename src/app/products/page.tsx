@@ -9,20 +9,21 @@ import {
 import type { ProductSort } from "@/lib/data";
 
 type ProductsPageProps = {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const search = typeof searchParams.search === "string" ? searchParams.search : undefined;
-  const category = typeof searchParams.category === "string" ? searchParams.category : undefined;
-  const brand = typeof searchParams.brand === "string" ? searchParams.brand : undefined;
-  const car = typeof searchParams.car === "string" ? searchParams.car : undefined;
+  const params = await searchParams;
+  const search = typeof params.search === "string" ? params.search : undefined;
+  const category = typeof params.category === "string" ? params.category : undefined;
+  const brand = typeof params.brand === "string" ? params.brand : undefined;
+  const car = typeof params.car === "string" ? params.car : undefined;
   const allowedSorts: ProductSort[] = ["latest", "price-asc", "price-desc", "rating", "bestseller"];
   const sort =
-    typeof searchParams.sort === "string" && allowedSorts.includes(searchParams.sort as ProductSort)
-      ? (searchParams.sort as ProductSort)
+    typeof params.sort === "string" && allowedSorts.includes(params.sort as ProductSort)
+      ? (params.sort as ProductSort)
       : "latest";
-  const page = Number(searchParams.page ?? "1") || 1;
+  const page = Number(params.page ?? "1") || 1;
 
   const [categories, brands, productsResult] = await Promise.all([
     getHighlightedCategories(),
@@ -155,11 +156,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <Link
                   href={{
                     pathname: "/products",
-                  query: {
-                    ...searchParams,
-                    page: String(page - 1),
-                  },
-                }}
+                    query: {
+                      ...params,
+                      page: String(page - 1),
+                    },
+                  }}
                   className="rounded-full border border-white/20 px-4 py-2 hover:border-purple-300 hover:text-white"
                 >
                   قبلی
@@ -172,11 +173,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <Link
                   href={{
                     pathname: "/products",
-                  query: {
-                    ...searchParams,
-                    page: String(page + 1),
-                  },
-                }}
+                    query: {
+                      ...params,
+                      page: String(page + 1),
+                    },
+                  }}
                   className="rounded-full border border-white/20 px-4 py-2 hover:border-purple-300 hover:text-white"
                 >
                   بعدی

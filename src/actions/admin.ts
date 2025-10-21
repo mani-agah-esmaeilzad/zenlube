@@ -36,6 +36,9 @@ export async function createCategoryAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
+  revalidatePath("/");
+  revalidatePath("/categories");
+  revalidatePath("/products");
   return { success: true };
 }
 
@@ -57,6 +60,9 @@ export async function createBrandAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
+  revalidatePath("/");
+  revalidatePath("/brands");
+  revalidatePath("/products");
   return { success: true };
 }
 

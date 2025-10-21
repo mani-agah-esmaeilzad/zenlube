@@ -10,6 +10,8 @@ import { getAppSession } from "@/lib/session";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 
+export const revalidate = 0;
+
 export default async function AdminPage() {
   const rawSession = await getAppSession();
   const role = (rawSession as { user?: { role?: string | null } } | null)?.user?.role;
@@ -66,6 +68,23 @@ export default async function AdminPage() {
               ذخیره دسته‌بندی
             </button>
           </form>
+          <div className="mt-8 space-y-3">
+            <h3 className="text-sm font-medium text-white/80">دسته‌بندی‌های موجود</h3>
+            {categories.length ? (
+              <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                {categories.map((category) => (
+                  <span
+                    key={category.id}
+                    className="rounded-full border border-white/15 px-3 py-1"
+                  >
+                    {category.name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-white/50">هنوز دسته‌بندی ثبت نشده است.</p>
+            )}
+          </div>
         </div>
         <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-xl font-semibold text-white">افزودن برند</h2>
@@ -84,6 +103,23 @@ export default async function AdminPage() {
               ذخیره برند
             </button>
           </form>
+          <div className="mt-8 space-y-3">
+            <h3 className="text-sm font-medium text-white/80">برندهای ثبت‌شده</h3>
+            {brands.length ? (
+              <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                {brands.map((brand) => (
+                  <span
+                    key={brand.id}
+                    className="rounded-full border border-white/15 px-3 py-1"
+                  >
+                    {brand.name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-white/50">هنوز برندی ثبت نشده است.</p>
+            )}
+          </div>
         </div>
       </section>
 

@@ -20,6 +20,8 @@ import {
   getPopularCars,
 } from "@/lib/data";
 
+export const revalidate = 0;
+
 const valueProps = [
   {
     title: "ارسال سریع و سراسری",

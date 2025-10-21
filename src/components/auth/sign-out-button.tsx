@@ -16,7 +16,7 @@ export function SignOutButton({ className }: SignOutButtonProps) {
       type="button"
       onClick={() => startTransition(() => signOut({ callbackUrl: "/" }))}
       className={cn(
-        "rounded-full border border-white/20 bg-transparent px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
+        "rounded-full border border-purple-400/40 bg-purple-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-purple-500/30 transition hover:border-purple-300 hover:bg-purple-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300",
         className,
       )}
       disabled={isPending}

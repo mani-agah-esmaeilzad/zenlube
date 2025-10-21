@@ -54,11 +54,11 @@ const roleLabels = {
   CUSTOMER: "مشتری",
 } as const;
 
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams?: { tab?: string };
-}) {
+type AdminPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
   const rawSession = await getAppSession();
   const role = (rawSession as { user?: { role?: string | null } } | null)?.user?.role;
 
@@ -69,10 +69,13 @@ export default async function AdminPage({
   const sessionUserId =
     (rawSession as { user?: { id?: string | null } } | null)?.user?.id ?? null;
 
-  const requestedTab = searchParams?.tab ?? "overview";
-  const activeTab = tabs.some((tab) => tab.id === requestedTab)
-    ? (requestedTab as TabKey)
-    : "overview";
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const requestedTabParam = resolvedSearchParams.tab;
+  const requestedTab = Array.isArray(requestedTabParam) ? requestedTabParam[0] : requestedTabParam;
+  const activeTab =
+    requestedTab && tabs.some((tab) => tab.id === requestedTab)
+      ? (requestedTab as TabKey)
+      : "overview";
 
   const now = new Date();
   const thirtyDaysAgo = new Date(now);

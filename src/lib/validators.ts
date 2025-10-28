@@ -66,18 +66,10 @@ export const maintenanceTaskSchema = z.object({
   title: z.string().trim().min(3, "عنوان باید حداقل ۳ کاراکتر باشد."),
   description: optionalString,
   intervalKm: optionalNumber.pipe(
-    z
-      .number({ invalid_type_error: "فاصله کیلومتری معتبر نیست." })
-      .int()
-      .positive()
-      .optional(),
+    z.number().int().positive().optional(),
   ),
   intervalMonths: optionalNumber.pipe(
-    z
-      .number({ invalid_type_error: "فاصله زمانی معتبر نیست." })
-      .int()
-      .positive()
-      .optional(),
+    z.number().int().positive().optional(),
   ),
   priority: optionalNumber
     .pipe(z.number().int().min(1).max(5).optional())
@@ -149,7 +141,7 @@ export const engagementEventSchema = z.object({
   entityType: z.enum(["car", "product", "page"]),
   entityId: z.string().min(1, "شناسه موجودیت نامعتبر است."),
   eventType: z.string().trim().min(2, "نوع رویداد معتبر نیست.").max(64),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export const cartItemSchema = z.object({

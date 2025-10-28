@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { engagementEventSchema } from "@/lib/validators";
 
@@ -13,12 +14,20 @@ export async function POST(request: Request) {
 
     const { entityType, entityId, eventType, metadata } = parsed.data;
 
+    const metadataValue:
+      | Prisma.NullableJsonNullValueInput
+      | Prisma.InputJsonValue
+      | undefined =
+        typeof metadata === "undefined"
+          ? Prisma.JsonNull
+          : (metadata as Prisma.InputJsonValue);
+
     await prisma.engagementEvent.create({
       data: {
         entityType,
         entityId,
         eventType,
-        metadata: metadata ?? {},
+        metadata: metadataValue,
       },
     });
 

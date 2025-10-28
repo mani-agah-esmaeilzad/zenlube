@@ -1,4 +1,3 @@
-import { format } from "date-fns-jalali";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CarCard } from "@/components/catalog/car-card";
@@ -57,6 +56,11 @@ export default async function CarDetailPage({ params }: CarPageProps) {
   const viscosityText = car.viscosity ?? "ثبت‌نشده";
   const specificationText = car.specification ?? "ثبت‌نشده";
   const numberFormatter = new Intl.NumberFormat("fa-IR");
+  const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
   const productCountText = recommendedProducts.length
     ? `${numberFormatter.format(recommendedProducts.length)} محصول`
     : "ثبت‌نشده";
@@ -363,7 +367,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
                 href={`/blog/${post.slug}`}
                 className="group flex flex-col gap-3 rounded-3xl border border-white/10 bg-black/30 p-5 transition hover:border-purple-400/40 hover:bg-black/40"
               >
-                <span className="text-xs text-white/50">{format(post.publishedAt, "yyyy/MM/dd")}</span>
+                <span className="text-xs text-white/50">{dateFormatter.format(post.publishedAt)}</span>
                 <h3 className="text-lg font-semibold text-white group-hover:text-purple-100">
                   {post.title}
                 </h3>

@@ -331,8 +331,12 @@ export async function getRelatedBlogPostsForCar(
     ? {
         OR: [
           { tags: { hasSome: terms.map((term) => term.toLowerCase()) } },
-          ...terms.map((term) => ({ title: { contains: term, mode: "insensitive" } })),
-          ...terms.map((term) => ({ excerpt: { contains: term, mode: "insensitive" } })),
+          ...terms.map((term) => ({
+            title: { contains: term, mode: Prisma.QueryMode.insensitive },
+          })),
+          ...terms.map((term) => ({
+            excerpt: { contains: term, mode: Prisma.QueryMode.insensitive },
+          })),
         ],
       }
     : undefined;

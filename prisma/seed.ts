@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient, Role } from "../src/generated/prisma";
+import type { QuestionStatus } from "../src/generated/prisma";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -409,20 +410,26 @@ async function main() {
     }),
   );
 
-  const productQuestionSeeds = [
+  const productQuestionSeeds: Array<{
+    productSlug: string;
+    authorName: string;
+    question: string;
+    answer: string | null;
+    status: QuestionStatus;
+  }> = [
     {
       productSlug: "mobil-1-esp-x3-0w40",
       authorName: "علی رستگار",
       question: "آیا این روغن برای موتور N20 BMW مناسب است؟",
       answer: "بله، دارای تاییدیه BMW LL-01 است و مطابق جدول دفترچه 320i پیشنهاد می‌شود.",
-      status: "ANSWERED" as Prisma.QuestionStatus,
+      status: "ANSWERED",
     },
     {
       productSlug: "castrol-edge-5w30-ll",
       authorName: "مهدی تهرانی",
       question: "آیا می‌توان برای سانتافه توربو از این روغن استفاده کرد؟",
       answer: null,
-      status: "PENDING" as Prisma.QuestionStatus,
+      status: "PENDING",
     },
   ];
 
@@ -454,20 +461,26 @@ async function main() {
     }),
   );
 
-  const carQuestionSeeds = [
+  const carQuestionSeeds: Array<{
+    carSlug: string;
+    authorName: string;
+    question: string;
+    answer: string | null;
+    status: QuestionStatus;
+  }> = [
     {
       carSlug: "bmw-3-series-f30-320i",
       authorName: "سپهر سامانی",
       question: "برای تعویض زودهنگام روغن در ترافیک تهران چه بازه‌ای پیشنهاد می‌کنید؟",
       answer: "در شرایط ترافیکی بهتر است هر ۷ تا ۸ هزار کیلومتر سرویس انجام شود.",
-      status: "ANSWERED" as Prisma.QuestionStatus,
+      status: "ANSWERED",
     },
     {
       carSlug: "toyota-corolla-e210",
       authorName: "زهرا موسوی",
       question: "آیا نیاز است گیربکس CVT را هر بار سرویس کامل کنیم؟",
       answer: null,
-      status: "PENDING" as Prisma.QuestionStatus,
+      status: "PENDING",
     },
   ];
 

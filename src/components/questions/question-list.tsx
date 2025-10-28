@@ -1,4 +1,3 @@
-import { format } from "date-fns-jalali";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +24,12 @@ const statusLabel: Record<QuestionItem["status"], string> = {
   ARCHIVED: "بایگانی شده",
 };
 
+const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
 export function QuestionList({ items, emptyMessage }: QuestionListProps) {
   const pending = items.filter((item) => item.status === "PENDING");
   const answered = items.filter((item) => item.status === "ANSWERED");
@@ -38,7 +43,7 @@ export function QuestionList({ items, emptyMessage }: QuestionListProps) {
   }
 
   const renderQuestion = (question: QuestionItem) => {
-    const createdAt = format(question.createdAt, "yyyy/MM/dd");
+    const createdAt = dateFormatter.format(question.createdAt);
     return (
       <article key={question.id} className="space-y-3 rounded-3xl border border-white/10 bg-black/30 p-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -74,7 +79,7 @@ export function QuestionList({ items, emptyMessage }: QuestionListProps) {
             {question.answer}
             {question.answeredAt ? (
               <p className="mt-2 text-[11px] text-white/40">
-                پاسخ در تاریخ {format(question.answeredAt, "yyyy/MM/dd")} ثبت شده است.
+                پاسخ در تاریخ {dateFormatter.format(question.answeredAt)} ثبت شده است.
               </p>
             ) : null}
           </div>

@@ -4,10 +4,14 @@ import {
   createBrandAction,
   createCarAction,
   createCategoryAction,
+  createMaintenanceTaskAction,
   createProductAction,
   deleteBrandFormAction,
+  deleteMaintenanceTaskFormAction,
   deleteCategoryFormAction,
   deleteProductFormAction,
+  answerQuestionAction,
+  archiveQuestionAction,
   updateUserRoleAction,
 } from "@/actions/admin";
 import { getAppSession } from "@/lib/session";
@@ -20,9 +24,12 @@ const tabs = [
   { id: "overview", label: "نمای کلی" },
   { id: "products", label: "محصولات" },
   { id: "cars", label: "خودروها" },
+  { id: "maintenance", label: "نگهداری" },
+  { id: "questions", label: "پرسش‌ها" },
   { id: "brands", label: "برندها" },
   { id: "categories", label: "دسته‌بندی‌ها" },
   { id: "users", label: "کاربران" },
+  { id: "reports", label: "گزارش‌ها" },
 ] as const;
 
 type TabKey = (typeof tabs)[number]["id"];
@@ -48,6 +55,12 @@ const orderStatusLabels: Record<string, string> = {
   SHIPPED: "ارسال‌شده",
   DELIVERED: "تحویل‌شده",
   CANCELLED: "لغوشده",
+};
+
+const questionStatusLabels: Record<string, string> = {
+  PENDING: "در انتظار پاسخ",
+  ANSWERED: "پاسخ داده شده",
+  ARCHIVED: "بایگانی شده",
 };
 
 const roleLabels = {
@@ -94,6 +107,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     totalReviews,
     ordersLast30,
     revenueLast30Aggregate,
+    maintenanceTasks,
+    productQuestions,
+    carQuestions,
+    engagementGroups,
   ] = await Promise.all([
     prisma.category.findMany({
       orderBy: { createdAt: "desc" },
@@ -163,6 +180,57 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           gte: thirtyDaysAgo,
         },
       },
+    }),
+    prisma.carMaintenanceTask.findMany({
+      include: {
+        car: {
+          select: {
+            id: true,
+            manufacturer: true,
+            model: true,
+            generation: true,
+            slug: true,
+          },
+        },
+      },
+      orderBy: [
+        { priority: "asc" },
+        { updatedAt: "desc" },
+      ],
+    }),
+    prisma.productQuestion.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            brand: {
+              select: { name: true },
+            },
+          },
+        },
+      },
+    }),
+    prisma.carQuestion.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        car: {
+          select: {
+            id: true,
+            manufacturer: true,
+            model: true,
+            slug: true,
+          },
+        },
+      },
+    }),
+    prisma.engagementEvent.groupBy({
+      by: ["entityType", "entityId", "eventType"],
+      _count: { _all: true },
+      orderBy: { _count: { entityId: "desc" } },
+      take: 30,
     }),
   ]);
 
@@ -261,6 +329,117 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   const brandAverageProducts = totalBrands > 0 ? totalProducts / totalBrands : 0;
   const categoryAverageProducts = totalCategories > 0 ? totalProducts / totalCategories : 0;
+
+  const maintenanceGroupsMap = maintenanceTasks.reduce(
+    (acc, task) => {
+      const key = task.car?.id ?? "unknown";
+      if (!acc.has(key)) {
+        acc.set(key, {
+          car: task.car ?? null,
+          tasks: [] as typeof maintenanceTasks,
+        });
+      }
+      acc.get(key)?.tasks.push(task);
+      return acc;
+    },
+    new Map<string, { car: (typeof maintenanceTasks)[number]["car"] | null; tasks: typeof maintenanceTasks }>(),
+  );
+
+  const maintenanceGroups = Array.from(maintenanceGroupsMap.values()).map((group) => ({
+    ...group,
+    tasks: [...group.tasks].sort((a, b) => {
+      if (a.priority !== b.priority) {
+        return a.priority - b.priority;
+      }
+      const aInterval = a.intervalKm ?? Number.MAX_SAFE_INTEGER;
+      const bInterval = b.intervalKm ?? Number.MAX_SAFE_INTEGER;
+      return aInterval - bInterval;
+    }),
+  }));
+
+  const productBySlug = new Map(products.map((product) => [product.slug, product] as const));
+
+  maintenanceGroups.sort((a, b) => {
+    const aLabel = `${a.car?.manufacturer ?? ""} ${a.car?.model ?? ""}`.trim();
+    const bLabel = `${b.car?.manufacturer ?? ""} ${b.car?.model ?? ""}`.trim();
+    return aLabel.localeCompare(bLabel);
+  });
+
+  const pendingProductQuestionsList = productQuestions.filter((question) => question.status === "PENDING");
+  const answeredProductQuestionsList = productQuestions.filter((question) => question.status === "ANSWERED");
+  const pendingCarQuestionsList = carQuestions.filter((question) => question.status === "PENDING");
+  const answeredCarQuestionsList = carQuestions.filter((question) => question.status === "ANSWERED");
+
+  const pendingProductQuestionsCount = pendingProductQuestionsList.length;
+  const pendingCarQuestionsCount = pendingCarQuestionsList.length;
+
+  const notebookViewEntries = engagementGroups.filter(
+    (item) => item.entityType === "car" && item.eventType === "notebook_view",
+  );
+
+  const comparisonEntries = engagementGroups.filter(
+    (item) => item.entityType === "product" && item.eventType === "comparison_add",
+  );
+
+  const totalNotebookViews = notebookViewEntries.reduce((sum, item) => sum + item._count._all, 0);
+  const totalComparisonAdds = comparisonEntries.reduce((sum, item) => sum + item._count._all, 0);
+  const totalEngagementEvents = engagementGroups.reduce((sum, item) => sum + item._count._all, 0);
+
+  const engagementByEventType = engagementGroups.reduce<Record<string, number>>((acc, item) => {
+    acc[item.eventType] = (acc[item.eventType] ?? 0) + item._count._all;
+    return acc;
+  }, {});
+
+  const topCarNotebookViews = notebookViewEntries
+    .map((entry) => {
+      const car = cars.find((c) => c.id === entry.entityId);
+      if (!car) {
+        return null;
+      }
+      return {
+        car,
+        count: entry._count._all,
+      };
+    })
+    .filter(Boolean)
+    .slice(0, 6) as Array<{ car: (typeof cars)[number]; count: number }>;
+
+  const topProductComparisons = comparisonEntries
+    .map((entry) => {
+      const product = products.find((p) => p.id === entry.entityId);
+      if (!product) {
+        return null;
+      }
+      return {
+        product,
+        count: entry._count._all,
+      };
+    })
+    .filter(Boolean)
+    .slice(0, 6) as Array<{ product: (typeof products)[number]; count: number }>;
+
+  const reportsSummaryCards = [
+    {
+      label: "برنامه‌های نگهداری",
+      value: numberFormatter.format(maintenanceTasks.length),
+      helper: `${numberFormatter.format(maintenanceGroups.length)} خودرو پوشش داده شده است`,
+    },
+    {
+      label: "پرسش‌های در انتظار",
+      value: numberFormatter.format(pendingProductQuestionsCount + pendingCarQuestionsCount),
+      helper: `محصول: ${numberFormatter.format(pendingProductQuestionsCount)} · خودرو: ${numberFormatter.format(pendingCarQuestionsCount)}`,
+    },
+    {
+      label: "بازدید دفترچه دیجیتال",
+      value: numberFormatter.format(totalNotebookViews),
+      helper: `${numberFormatter.format(topCarNotebookViews.length)} خودرو پرتوجه`,
+    },
+    {
+      label: "افزودن به مقایسه",
+      value: numberFormatter.format(totalComparisonAdds),
+      helper: `${numberFormatter.format(topProductComparisons.length)} محصول پرتکرار`,
+    },
+  ];
 
   const content = (() => {
     switch (activeTab) {
@@ -885,6 +1064,416 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </section>
           </div>
         );
+      case "maintenance":
+        return (
+          <div className="space-y-10">
+            <section className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                <h2 className="text-xl font-semibold text-white">افزودن برنامه نگهداری</h2>
+                <p className="mt-2 text-xs text-white/60">
+                  برنامه‌های سرویس دوره‌ای را بر اساس خودرو و بازه‌های زمانی/کیلومتر ثبت کنید. با ثبت
+                  دوباره همان عنوان برای یک خودرو، اطلاعات به‌روزرسانی می‌شود.
+                </p>
+                <form
+                  action={async (formData) => {
+                    "use server";
+                    await createMaintenanceTaskAction(formData);
+                  }}
+                  className="mt-6 grid gap-4"
+                >
+                  <div>
+                    <label className="text-xs text-white/60">انتخاب خودرو</label>
+                    <select
+                      name="carId"
+                      className="mt-2 w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    >
+                      {cars.map((car) => (
+                        <option key={car.id} value={car.id}>
+                          {car.manufacturer} {car.model} {car.generation ?? ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <input
+                    name="title"
+                    placeholder="عنوان برنامه (مثال: تعویض روغن ۱۰ هزار کیلومتر)"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <textarea
+                    name="description"
+                    placeholder="جزئیات انجام سرویس و نکات تکمیلی"
+                    className="h-24 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <input
+                      name="intervalKm"
+                      placeholder="فاصله کیلومتری (مثال: 10000)"
+                      className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    />
+                    <input
+                      name="intervalMonths"
+                      placeholder="فاصله زمانی (ماه)"
+                      className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    />
+                    <select
+                      name="priority"
+                      defaultValue="1"
+                      className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    >
+                      <option value="1">اولویت ۱ (حیاتی)</option>
+                      <option value="2">اولویت ۲</option>
+                      <option value="3">اولویت ۳</option>
+                      <option value="4">اولویت ۴</option>
+                      <option value="5">اولویت ۵</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-white/60">محصولات پیشنهادی (اسلاگ‌ها با ویرگول)</label>
+                    <input
+                      name="recommendedProductSlugs"
+                      placeholder="mobil-1-esp-x3-0w40, castrol-edge-5w30-ll"
+                      className="mt-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    />
+                    <p className="mt-2 text-[11px] text-white/40">
+                      برای اتصال مستقیم به محصولات، اسلاگ فروشگاهی را وارد کنید. در صورت خالی بودن این بخش،
+                      فقط توضیحات نمایش داده خواهد شد.
+                    </p>
+                  </div>
+                  <button
+                    type="submit"
+                    className="rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
+                  >
+                    ذخیره برنامه
+                  </button>
+                </form>
+              </div>
+
+              <div className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-6">
+                <h3 className="text-sm font-semibold text-white">نمای کلی نگهداری</h3>
+                <ul className="space-y-2 text-xs text-white/60">
+                  <li>
+                    تعداد کل برنامه‌ها: {numberFormatter.format(maintenanceTasks.length)} مورد
+                  </li>
+                  <li>
+                    خودروهای دارای برنامه فعال: {numberFormatter.format(maintenanceGroups.length)} دستگاه
+                  </li>
+                  <li>
+                    میانگین وظایف هر خودرو: {maintenanceGroups.length
+                      ? decimalFormatter.format(maintenanceTasks.length / maintenanceGroups.length)
+                      : "0"}
+                  </li>
+                </ul>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">
+                  <p className="font-semibold text-white">راهنمای به‌روزرسانی</p>
+                  <p className="mt-2 leading-6 text-white/60">
+                    برای ویرایش یک برنامه، همان عنوان را دوباره با اطلاعات جدید ارسال کنید. برای حذف، از
+                    لیست برنامه‌های فعال استفاده کنید.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-white">دفترچه نگهداری خودروها</h2>
+                <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60">
+                  {numberFormatter.format(maintenanceTasks.length)} برنامه ثبت‌شده
+                </span>
+              </div>
+              {maintenanceGroups.length ? (
+                <div className="grid gap-5 lg:grid-cols-2">
+                  {maintenanceGroups.map((group, index) => {
+                    const { car, tasks } = group;
+                    const groupKey = car?.id ?? `group-${index}`;
+
+                    return (
+                      <div
+                        key={groupKey}
+                        className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-6"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-lg font-semibold text-white">
+                              {car ? `${car.manufacturer} ${car.model}` : "خودرو نامشخص"}
+                            </p>
+                            {car?.slug ? (
+                              <Link
+                                href={`/cars/${car.slug}`}
+                                className="mt-1 inline-block text-xs text-purple-300 hover:text-purple-100"
+                              >
+                                مشاهده صفحه خودرو
+                              </Link>
+                            ) : null}
+                          </div>
+                          <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/60">
+                            {numberFormatter.format(tasks.length)} وظیفه
+                          </span>
+                        </div>
+                        <div className="space-y-3">
+                          {tasks.map((task) => {
+                            const recommendedProducts = task.recommendedProductSlugs ?? [];
+
+                            return (
+                              <div
+                                key={task.id}
+                                className="space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4"
+                              >
+                                <div className="flex items-start justify-between gap-4">
+                                  <div>
+                                    <p className="font-semibold text-white">{task.title}</p>
+                                    <p className="mt-1 text-xs leading-6 text-white/60">
+                                      {task.description ?? "جزئیاتی ثبت نشده است."}
+                                    </p>
+                                  </div>
+                                  <span className="rounded-full border border-purple-400/40 px-3 py-1 text-[11px] text-purple-100">
+                                    اولویت {task.priority}
+                                  </span>
+                                </div>
+                                <div className="flex flex-wrap gap-2 text-[11px] text-white/60">
+                                  <span className="rounded-full border border-white/15 px-3 py-1">
+                                    هر {task.intervalKm ? numberFormatter.format(task.intervalKm) + " کیلومتر" : "—"}
+                                  </span>
+                                  <span className="rounded-full border border-white/15 px-3 py-1">
+                                    هر {task.intervalMonths ? numberFormatter.format(task.intervalMonths) + " ماه" : "—"}
+                                  </span>
+                                </div>
+                                {recommendedProducts.length ? (
+                                  <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                                    {recommendedProducts.map((slug) => {
+                                      const prod = productBySlug.get(slug);
+                                      return prod ? (
+                                        <Link
+                                          key={slug}
+                                          href={`/products/${prod.slug}`}
+                                          className="inline-flex items-center gap-1 rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-100 transition hover:border-purple-300/60 hover:text-purple-50"
+                                        >
+                                          {prod.brand.name} · {prod.name}
+                                        </Link>
+                                      ) : (
+                                        <span
+                                          key={slug}
+                                          className="rounded-full border border-white/15 px-3 py-1 text-white/60"
+                                        >
+                                          {slug}
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
+                                ) : null}
+                                <form
+                                  action={async (formData) => {
+                                    "use server";
+                                    await deleteMaintenanceTaskFormAction(formData);
+                                  }}
+                                >
+                                  <input type="hidden" name="taskId" value={task.id} />
+                                  <button
+                                    type="submit"
+                                    className="rounded-full border border-red-400/30 px-3 py-1 text-[11px] text-red-200 transition hover:border-red-300 hover:text-red-100"
+                                  >
+                                    حذف برنامه
+                                  </button>
+                                </form>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-3xl border border-dashed border-white/15 bg-black/20 p-10 text-center text-sm text-white/50">
+                  هنوز برنامه نگهداری ثبت نشده است.
+                </div>
+              )}
+            </section>
+          </div>
+        );
+      case "questions":
+        return (
+          <div className="space-y-10">
+            <section className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-white">پرسش‌های محصولات</h2>
+                  <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60">
+                    {numberFormatter.format(pendingProductQuestionsCount)} در انتظار پاسخ
+                  </span>
+                </div>
+                <div className="mt-5 space-y-4">
+                  {[...pendingProductQuestionsList, ...answeredProductQuestionsList].map((question) => {
+                    const isAnswered = question.status === "ANSWERED";
+                    return (
+                      <div key={question.id} className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-5">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-sm font-semibold text-white">{question.question}</p>
+                            <p className="mt-2 text-[11px] text-white/50">
+                              {question.authorName} · {dateFormatter.format(question.createdAt)}
+                            </p>
+                            {question.product ? (
+                              <Link
+                                href={`/products/${question.product.slug}`}
+                                className="mt-1 inline-flex items-center gap-1 text-[11px] text-purple-300 hover:text-purple-100"
+                              >
+                                {question.product.brand.name} · {question.product.name}
+                              </Link>
+                            ) : null}
+                          </div>
+                          <span
+                            className={cn(
+                              "rounded-full border px-3 py-1 text-[11px]",
+                              isAnswered
+                                ? "border-emerald-400/40 text-emerald-200"
+                                : question.status === "ARCHIVED"
+                                ? "border-white/20 text-white/50"
+                                : "border-yellow-400/40 text-yellow-200",
+                            )}
+                          >
+                            {questionStatusLabels[question.status] ?? question.status}
+                          </span>
+                        </div>
+                        <form
+                          action={async (formData) => {
+                            "use server";
+                            await answerQuestionAction(formData);
+                          }}
+                          className="space-y-3"
+                        >
+                          <input type="hidden" name="questionId" value={question.id} />
+                          <input type="hidden" name="type" value="product" />
+                          <textarea
+                            name="answer"
+                            defaultValue={question.answer ?? ""}
+                            placeholder="پاسخ خود را بنویسید"
+                            className="h-24 w-full rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                          />
+                          <label className="flex items-center gap-2 text-[11px] text-white/60">
+                            <input
+                              name="markAnswered"
+                              type="checkbox"
+                              defaultChecked={isAnswered}
+                              className="h-4 w-4 rounded border border-white/20 bg-black/40"
+                            />
+                            علامت‌گذاری به عنوان پاسخ داده شده
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="submit"
+                              className="rounded-full bg-purple-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-purple-400"
+                            >
+                              ذخیره پاسخ
+                            </button>
+                            <button
+                              type="submit"
+                              formAction={async () => {
+                                "use server";
+                                await archiveQuestionAction(question.id, "product");
+                              }}
+                              className="rounded-full border border-white/20 px-3 py-1 text-[11px] text-white/60 transition hover:border-white/40 hover:text-white/80"
+                            >
+                              بایگانی
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-white">پرسش‌های خودرو</h2>
+                  <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60">
+                    {numberFormatter.format(pendingCarQuestionsCount)} در انتظار پاسخ
+                  </span>
+                </div>
+                <div className="mt-5 space-y-4">
+                  {[...pendingCarQuestionsList, ...answeredCarQuestionsList].map((question) => {
+                    const isAnswered = question.status === "ANSWERED";
+                    return (
+                      <div key={question.id} className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-5">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-sm font-semibold text-white">{question.question}</p>
+                            <p className="mt-2 text-[11px] text-white/50">
+                              {question.authorName} · {dateFormatter.format(question.createdAt)}
+                            </p>
+                            {question.car ? (
+                              <Link
+                                href={`/cars/${question.car.slug}`}
+                                className="mt-1 inline-flex items-center gap-1 text-[11px] text-purple-300 hover:text-purple-100"
+                              >
+                                {question.car.manufacturer} · {question.car.model}
+                              </Link>
+                            ) : null}
+                          </div>
+                          <span
+                            className={cn(
+                              "rounded-full border px-3 py-1 text-[11px]",
+                              isAnswered
+                                ? "border-emerald-400/40 text-emerald-200"
+                                : question.status === "ARCHIVED"
+                                ? "border-white/20 text-white/50"
+                                : "border-yellow-400/40 text-yellow-200",
+                            )}
+                          >
+                            {questionStatusLabels[question.status] ?? question.status}
+                          </span>
+                        </div>
+                        <form
+                          action={async (formData) => {
+                            "use server";
+                            await answerQuestionAction(formData);
+                          }}
+                          className="space-y-3"
+                        >
+                          <input type="hidden" name="questionId" value={question.id} />
+                          <input type="hidden" name="type" value="car" />
+                          <textarea
+                            name="answer"
+                            defaultValue={question.answer ?? ""}
+                            placeholder="پاسخ خود را بنویسید"
+                            className="h-24 w-full rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                          />
+                          <label className="flex items-center gap-2 text-[11px] text-white/60">
+                            <input
+                              name="markAnswered"
+                              type="checkbox"
+                              defaultChecked={isAnswered}
+                              className="h-4 w-4 rounded border border-white/20 bg-black/40"
+                            />
+                            علامت‌گذاری به عنوان پاسخ داده شده
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="submit"
+                              className="rounded-full bg-purple-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-purple-400"
+                            >
+                              ذخیره پاسخ
+                            </button>
+                            <button
+                              type="submit"
+                              formAction={async () => {
+                                "use server";
+                                await archiveQuestionAction(question.id, "car");
+                              }}
+                              className="rounded-full border border-white/20 px-3 py-1 text-[11px] text-white/60 transition hover:border-white/40 hover:text-white/80"
+                            >
+                              بایگانی
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          </div>
+        );
       case "brands":
         return (
           <div className="space-y-10">
@@ -1307,6 +1896,137 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   ) : null}
                 </tbody>
               </table>
+            </section>
+          </div>
+        );
+      case "reports":
+        return (
+          <div className="space-y-10">
+            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {reportsSummaryCards.map((card) => (
+                <div
+                  key={card.label}
+                  className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-sm shadow-black/20"
+                >
+                  <p className="text-xs text-white/50">{card.label}</p>
+                  <p className="mt-3 text-2xl font-semibold text-white">{card.value}</p>
+                  <p className="mt-2 text-[11px] text-white/50">{card.helper}</p>
+                </div>
+              ))}
+            </section>
+
+            <section className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-3xl border border-white/10 bg-black/30 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">پربازدیدترین دفترچه‌های خودرو</h3>
+                    <p className="mt-2 text-xs text-white/60">
+                      جمع کل بازدید صفحات دفترچه: {numberFormatter.format(totalNotebookViews)}
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/50">
+                    {numberFormatter.format(topCarNotebookViews.length)} خودرو
+                  </span>
+                </div>
+                {topCarNotebookViews.length ? (
+                  <ul className="mt-4 space-y-3">
+                    {topCarNotebookViews.map(({ car, count }) => (
+                      <li
+                        key={car.id}
+                        className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/70"
+                      >
+                        <div>
+                          <Link href={`/cars/${car.slug}`} className="font-medium text-white hover:text-purple-200">
+                            {car.manufacturer} {car.model}
+                          </Link>
+                          {car.generation && (
+                            <p className="text-[11px] text-white/40">{car.generation}</p>
+                          )}
+                        </div>
+                        <span className="rounded-full border border-purple-400/40 px-3 py-1 text-xs text-purple-100">
+                          {numberFormatter.format(count)} بازدید
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-6 text-center text-xs text-white/50">
+                    هنوز داده‌ای برای نمایش بازدیدها ثبت نشده است.
+                  </p>
+                )}
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-black/30 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">محصولات پرتکرار در مقایسه</h3>
+                    <p className="mt-2 text-xs text-white/60">
+                      مجموع دفعات افزودن به مقایسه: {numberFormatter.format(totalComparisonAdds)}
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/50">
+                    {numberFormatter.format(topProductComparisons.length)} محصول
+                  </span>
+                </div>
+                {topProductComparisons.length ? (
+                  <ul className="mt-4 space-y-3">
+                    {topProductComparisons.map(({ product, count }) => (
+                      <li
+                        key={product.id}
+                        className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/70"
+                      >
+                        <div>
+                          <Link
+                            href={`/products/${product.slug}`}
+                            className="font-medium text-white hover:text-purple-200"
+                          >
+                            {product.brand.name} · {product.name}
+                          </Link>
+                          <p className="text-[11px] text-white/40">
+                            {product.viscosity ?? "ویسکوزیته نامشخص"}
+                          </p>
+                        </div>
+                        <span className="rounded-full border border-purple-400/40 px-3 py-1 text-xs text-purple-100">
+                          {numberFormatter.format(count)} مرتبه
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-6 text-center text-xs text-white/50">
+                    هنوز کاربری محصولی را برای مقایسه اضافه نکرده است.
+                  </p>
+                )}
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">خلاصه تعاملات ثبت‌شده</h3>
+                <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/50">
+                  {numberFormatter.format(totalEngagementEvents)} رویداد
+                </span>
+              </div>
+              {totalEngagementEvents ? (
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {Object.entries(engagementByEventType).map(([eventType, count]) => (
+                    <div
+                      key={eventType}
+                      className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/70"
+                    >
+                      <p className="text-xs text-white/50">نوع رویداد</p>
+                      <p className="mt-1 font-semibold text-white">{eventType}</p>
+                      <p className="mt-2 text-[11px] text-white/60">
+                        {numberFormatter.format(count)} بار ثبت شده است.
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-6 text-center text-xs text-white/50">
+                  هنوز رویداد تعاملی در سیستم ثبت نشده است.
+                </p>
+              )}
             </section>
           </div>
         );

@@ -96,93 +96,95 @@ async function main() {
     ),
   );
 
+  const carSeeds = [
+    {
+      slug: "bmw-3-series-f30-320i",
+      manufacturer: "BMW",
+      model: "3 Series F30",
+      generation: "320i",
+      engineType: "بنزینی توربو",
+      engineCode: "N20B20",
+      yearFrom: 2012,
+      yearTo: 2018,
+      oilCapacityLit: new Prisma.Decimal(5.0),
+      viscosity: "5W-30",
+      specification: "BMW Longlife-01",
+      overviewDetails:
+        "نسل ششم سری ۳ با کد F30 ترکیبی از رانندگی اسپرت و راحتی روزمره است. نسخه 320i برای موتورهای توربوشارژ چهار سیلندر بهینه شده و نیازمند دقت در انتخاب روغن و نگهداری است.",
+      engineDetails:
+        "موتور N20B20 به حجم 2.0 لیتر و توربوشارژ Twin-Scroll مجهز است. ظرفیت روغن همراه فیلتر 5 لیتر بوده و ویسکوزیته پیشنهادی BMW Longlife-01 با SAE 5W-30 است. دوره تعویض پیشنهادی حداکثر ۱۰ هزار کیلومتر یا ۱۲ ماه است.",
+      gearboxDetails:
+        "گیربکس ZF 8HP اتوماتیک هشت دنده از روغن مخصوص ZF Lifeguard 8 بهره می‌برد. برای سرویس دوره‌ای هر ۶۰ هزار کیلومتر روغن و فیلتر داخلی گیربکس بررسی شود.",
+      maintenanceInfo:
+        "بازدید سیستم خنک‌کننده هر ۳۰ هزار کیلومتر، بررسی واشر درپوش سوپاپ و شیلنگ‌های توربو به‌صورت دوره‌ای توصیه می‌شود. برای رانندگی شهری استفاده از سوخت باکیفیت و گرم کردن اولیه موتور اهمیت دارد.",
+    },
+    {
+      slug: "toyota-corolla-e210",
+      manufacturer: "Toyota",
+      model: "Corolla",
+      generation: "E210",
+      engineType: "بنزینی تنفس طبیعی",
+      engineCode: "2ZR-FE",
+      yearFrom: 2019,
+      yearTo: 2024,
+      oilCapacityLit: new Prisma.Decimal(4.4),
+      viscosity: "0W-20",
+      specification: "API SP / ILSAC GF-6",
+      overviewDetails:
+        "کرولای نسل دوازدهم با اتکا به پلتفرم TNGA فضای اقتصادی و دوام بالایی ارائه می‌کند. دفترچه دیجیتال ZenLube اطلاعات حیاتی سرویس را برای استفاده در شهر و سفر فراهم کرده است.",
+      engineDetails:
+        "پیشرانه 2ZR-FE با سیستم Dual VVT-i ظرفیت روغن 4.4 لیتری دارد و استفاده از روغن 0W-20 با استاندارد API SP / ILSAC GF-6 توصیه شده است. فیلتر روغن در هر سرویس تعویض شود و فیلتر هوا هر ۲۰ هزار کیلومتر بررسی گردد.",
+      gearboxDetails:
+        "جعبه‌دنده CVT با کد K120 از سیال Toyota CVT FE استفاده می‌کند. بازدید سطح روغن هر ۴۰ هزار کیلومتر و تعویض کامل در بازه ۸۰-۱۰۰ هزار کیلومتر پیشنهادی است.",
+      maintenanceInfo:
+        "تنظیمات سیستم تعلیق و فرمان الکترونیکی هر ۳۰ هزار کیلومتر چک شود. شمع‌های ایریدیومی تا ۱۰۰ هزار کیلومتر عمر دارند اما در سوخت نامتقارن بهتر است زودتر بازدید شوند.",
+    },
+    {
+      slug: "hyundai-santa-fe-tm",
+      manufacturer: "Hyundai",
+      model: "Santa Fe",
+      generation: "TM",
+      engineType: "بنزینی توربو",
+      engineCode: "G4KH",
+      yearFrom: 2021,
+      yearTo: 2024,
+      oilCapacityLit: new Prisma.Decimal(6.0),
+      viscosity: "5W-30",
+      specification: "Hyundai-Kia MS-5425",
+      overviewDetails:
+        "سانتافه TM نسل چهارم به عنوان شاسی‌بلند خانوادگی، نیازمند نگهداری منظم برای سیستم توربو و انتقال قدرت چهار چرخ است. این دفترچه اطلاعات حیاتی را به صورت صفحه‌بندی ارائه می‌کند.",
+      engineDetails:
+        "پیشرانه 2.5 لیتری توربو G4KH با تزریق مستقیم نیازمند روغن 5W-30 مطابق استاندارد Hyundai-Kia MS-5425 است. حجم روغن 6 لیتر و زمان‌بندی سرویس پیشنهادی هر ۷ تا ۸ هزار کیلومتر در شرایط سخت است.",
+      gearboxDetails:
+        "گیربکس 8 سرعته اتوماتیک با مبدل گشتاور از سیال ATF SP-IV RR استفاده می‌کند. بررسی سطح هر ۳۰ هزار کیلومتر و تعویض کامل در ۷۵ هزار کیلومتر توصیه می‌شود.",
+      maintenanceInfo:
+        "سیستم خنک‌کننده و اینترکولر هر ۲۰ هزار کیلومتر تمیز شوند. فیلتر بنزین در باک قرار دارد اما بهتر است در سرویس‌های ۶۰ هزار کیلومتر چک شود. پس از مسیرهای طولانی اجازه دهید توربو قبل از خاموشی خنک شود.",
+    },
+    {
+      slug: "peugeot-208-puretech-130",
+      manufacturer: "Peugeot",
+      model: "208 GT Line",
+      generation: "PureTech 130",
+      engineType: "بنزینی توربو",
+      engineCode: "EB2ADTS",
+      yearFrom: 2020,
+      yearTo: 2024,
+      oilCapacityLit: new Prisma.Decimal(4.5),
+      viscosity: "0W-30",
+      specification: "PSA B71 2312",
+      overviewDetails:
+        "پژو 208 GT Line با موتور سه سیلندر توربو PureTech تمرکز بر وزن پایین و بهره‌وری بالا دارد. نگهداری دقیق روغن برای جلوگیری از رسوب توربو حیاتی است.",
+      engineDetails:
+        "حجم روغن موتور EB2ADTS برابر 4.5 لیتر است و روغن 0W-30 با تاییدیه PSA B71 2312 باید استفاده شود. شیرهای زمان‌بندی متغیر به روغن تمیز حساس هستند، بنابراین دوره سرویس ۷ هزار کیلومتر پیشنهاد می‌شود.",
+      gearboxDetails:
+        "گیربکس 8 سرعته اتوماتیک Aisin EAT8 از سیال AW-1 بهره می‌برد. سطح روغن هر ۳۰ هزار کیلومتر بررسی و تعویض کامل در ۹۰ هزار کیلومتر انجام شود.",
+      maintenanceInfo:
+        "مایع خنک‌کننده هر ۴ سال تعویض و سیستم ورودی هوا هر سرویس تمیز شود. برای حفظ شتاب مناسب، سیستم تزریق سوخت هر ۶۰ هزار کیلومتر با پاک‌کننده معتبر سرویس گردد.",
+    },
+  ];
+
   const cars = await prisma.$transaction(
-    [
-      {
-        slug: "bmw-3-series-f30-320i",
-        manufacturer: "BMW",
-        model: "3 Series F30",
-        generation: "320i",
-        engineType: "بنزینی توربو",
-        engineCode: "N20B20",
-        yearFrom: 2012,
-        yearTo: 2018,
-        oilCapacityLit: new Prisma.Decimal(5.0),
-        viscosity: "5W-30",
-        specification: "BMW Longlife-01",
-        overviewDetails:
-          "نسل ششم سری ۳ با کد F30 ترکیبی از رانندگی اسپرت و راحتی روزمره است. نسخه 320i برای موتورهای توربوشارژ چهار سیلندر بهینه شده و نیازمند دقت در انتخاب روغن و نگهداری است.",
-        engineDetails:
-          "موتور N20B20 به حجم 2.0 لیتر و توربوشارژ Twin-Scroll مجهز است. ظرفیت روغن همراه فیلتر 5 لیتر بوده و ویسکوزیته پیشنهادی BMW Longlife-01 با SAE 5W-30 است. دوره تعویض پیشنهادی حداکثر ۱۰ هزار کیلومتر یا ۱۲ ماه است.",
-        gearboxDetails:
-          "گیربکس ZF 8HP اتوماتیک هشت دنده از روغن مخصوص ZF Lifeguard 8 بهره می‌برد. برای سرویس دوره‌ای هر ۶۰ هزار کیلومتر روغن و فیلتر داخلی گیربکس بررسی شود.",
-        maintenanceInfo:
-          "بازدید سیستم خنک‌کننده هر ۳۰ هزار کیلومتر، بررسی واشر درپوش سوپاپ و شیلنگ‌های توربو به‌صورت دوره‌ای توصیه می‌شود. برای رانندگی شهری استفاده از سوخت باکیفیت و گرم کردن اولیه موتور اهمیت دارد.",
-      },
-      {
-        slug: "toyota-corolla-e210",
-        manufacturer: "Toyota",
-        model: "Corolla",
-        generation: "E210",
-        engineType: "بنزینی تنفس طبیعی",
-        engineCode: "2ZR-FE",
-        yearFrom: 2019,
-        yearTo: 2024,
-        oilCapacityLit: new Prisma.Decimal(4.4),
-        viscosity: "0W-20",
-        specification: "API SP / ILSAC GF-6",
-        overviewDetails:
-          "کرولای نسل دوازدهم با اتکا به پلتفرم TNGA فضای اقتصادی و دوام بالایی ارائه می‌کند. دفترچه دیجیتال ZenLube اطلاعات حیاتی سرویس را برای استفاده در شهر و سفر فراهم کرده است.",
-        engineDetails:
-          "پیشرانه 2ZR-FE با سیستم Dual VVT-i ظرفیت روغن 4.4 لیتری دارد و استفاده از روغن 0W-20 با استاندارد API SP / ILSAC GF-6 توصیه شده است. فیلتر روغن در هر سرویس تعویض شود و فیلتر هوا هر ۲۰ هزار کیلومتر بررسی گردد.",
-        gearboxDetails:
-          "جعبه‌دنده CVT با کد K120 از سیال Toyota CVT FE استفاده می‌کند. بازدید سطح روغن هر ۴۰ هزار کیلومتر و تعویض کامل در بازه ۸۰-۱۰۰ هزار کیلومتر پیشنهادی است.",
-        maintenanceInfo:
-          "تنظیمات سیستم تعلیق و فرمان الکترونیکی هر ۳۰ هزار کیلومتر چک شود. شمع‌های ایریدیومی تا ۱۰۰ هزار کیلومتر عمر دارند اما در سوخت نامتقارن بهتر است زودتر بازدید شوند.",
-      },
-      {
-        slug: "hyundai-santa-fe-tm",
-        manufacturer: "Hyundai",
-        model: "Santa Fe",
-        generation: "TM",
-        engineType: "بنزینی توربو",
-        engineCode: "G4KH",
-        yearFrom: 2021,
-        yearTo: 2024,
-        oilCapacityLit: new Prisma.Decimal(6.0),
-        viscosity: "5W-30",
-        specification: "Hyundai-Kia MS-5425",
-        overviewDetails:
-          "سانتافه TM نسل چهارم به عنوان شاسی‌بلند خانوادگی، نیازمند نگهداری منظم برای سیستم توربو و انتقال قدرت چهار چرخ است. این دفترچه اطلاعات حیاتی را به صورت صفحه‌بندی ارائه می‌کند.",
-        engineDetails:
-          "پیشرانه 2.5 لیتری توربو G4KH با تزریق مستقیم نیازمند روغن 5W-30 مطابق استاندارد Hyundai-Kia MS-5425 است. حجم روغن 6 لیتر و زمان‌بندی سرویس پیشنهادی هر ۷ تا ۸ هزار کیلومتر در شرایط سخت است.",
-        gearboxDetails:
-          "گیربکس 8 سرعته اتوماتیک با مبدل گشتاور از سیال ATF SP-IV RR استفاده می‌کند. بررسی سطح هر ۳۰ هزار کیلومتر و تعویض کامل در ۷۵ هزار کیلومتر توصیه می‌شود.",
-        maintenanceInfo:
-          "سیستم خنک‌کننده و اینترکولر هر ۲۰ هزار کیلومتر تمیز شوند. فیلتر بنزین در باک قرار دارد اما بهتر است در سرویس‌های ۶۰ هزار کیلومتر چک شود. پس از مسیرهای طولانی اجازه دهید توربو قبل از خاموشی خنک شود.",
-      },
-      {
-        slug: "peugeot-208-puretech-130",
-        manufacturer: "Peugeot",
-        model: "208 GT Line",
-        generation: "PureTech 130",
-        engineType: "بنزینی توربو",
-        engineCode: "EB2ADTS",
-        yearFrom: 2020,
-        yearTo: 2024,
-        oilCapacityLit: new Prisma.Decimal(4.5),
-        viscosity: "0W-30",
-        specification: "PSA B71 2312",
-        overviewDetails:
-          "پژو 208 GT Line با موتور سه سیلندر توربو PureTech تمرکز بر وزن پایین و بهره‌وری بالا دارد. نگهداری دقیق روغن برای جلوگیری از رسوب توربو حیاتی است.",
-        engineDetails:
-          "حجم روغن موتور EB2ADTS برابر 4.5 لیتر است و روغن 0W-30 با تاییدیه PSA B71 2312 باید استفاده شود. شیرهای زمان‌بندی متغیر به روغن تمیز حساس هستند، بنابراین دوره سرویس ۷ هزار کیلومتر پیشنهاد می‌شود.",
-        gearboxDetails:
-          "گیربکس 8 سرعته اتوماتیک Aisin EAT8 از سیال AW-1 بهره می‌برد. سطح روغن هر ۳۰ هزار کیلومتر بررسی و تعویض کامل در ۹۰ هزار کیلومتر انجام شود.",
-        maintenanceInfo:
-          "مایع خنک‌کننده هر ۴ سال تعویض و سیستم ورودی هوا هر سرویس تمیز شود. برای حفظ شتاب مناسب، سیستم تزریق سوخت هر ۶۰ هزار کیلومتر با پاک‌کننده معتبر سرویس گردد.",
-      },
-    ].map((car) =>
+    carSeeds.map((car) =>
       prisma.car.upsert({
         where: { slug: car.slug },
         update: {},
@@ -191,121 +193,123 @@ async function main() {
     ),
   );
 
+  const productSeeds = [
+    {
+      name: "Mobil 1 ESP X3 0W-40",
+      slug: "mobil-1-esp-x3-0w40",
+      sku: "M1-ESPX3-0W40",
+      description:
+        "فرمولیشن نسل جدید برای موتورهای بنزینی و دیزلی پیشرفته با استانداردهای Euro 6d.",
+      price: new Prisma.Decimal(2850000),
+      stock: 30,
+      viscosity: "0W-40",
+      oilType: "تمام سنتتیک",
+      imageUrl:
+        "https://images.pexels.com/photos/6646854/pexels-photo-6646854.jpeg",
+      categoryId: categories[0].id,
+      brandId: brands[0].id,
+      originCountry: "آمریکا",
+      approvals: "ACEA C3, API SP, BMW LL-01",
+      temperatureRange: "-40°C الی 240°C",
+      packagingSizeLit: new Prisma.Decimal(4.0),
+      warranty: "۲۰ هزار کیلومتر یا یک سال",
+      isBestseller: true,
+      tags: ["full-synthetic", "premium", "euro-6"],
+      technicalSpecs: {
+        baseOil: "Fully Synthetic",
+        sulfatedAsh: "0.8%",
+        hths: "3.6 mPa·s",
+      },
+      averageRating: new Prisma.Decimal(4.8),
+      reviewCount: 124,
+      videos: [
+        "https://www.youtube.com/watch?v=NdW_i4_a7co",
+      ],
+    },
+    {
+      name: "Castrol Edge 5W-30 LL",
+      slug: "castrol-edge-5w30-ll",
+      sku: "CAST-EDGE-5W30LL",
+      description:
+        "روغن تمام سنتتیک با تکنولوژی Fluid TITANIUM برای حفاظت عالی در دورهای بالا.",
+      price: new Prisma.Decimal(2350000),
+      stock: 42,
+      viscosity: "5W-30",
+      oilType: "تمام سنتتیک",
+      imageUrl:
+        "https://images.pexels.com/photos/1148385/pexels-photo-1148385.jpeg",
+      categoryId: categories[0].id,
+      brandId: brands[1].id,
+      originCountry: "انگلستان",
+      approvals: "VW 504 00 / 507 00, MB 229.31",
+      packagingSizeLit: new Prisma.Decimal(4.0),
+      warranty: "۱۵ هزار کیلومتر",
+      isBestseller: true,
+      tags: ["turbo", "european", "longlife"],
+      technicalSpecs: {
+        baseOil: "Synthetic blend",
+        viscosityIndex: 170,
+        flashPoint: "230°C",
+      },
+      averageRating: new Prisma.Decimal(4.6),
+      reviewCount: 98,
+    },
+    {
+      name: "Total Quartz Ineo Efficiency 0W-30",
+      slug: "total-quartz-ineo-efficiency-0w30",
+      sku: "TOTAL-INEO-0W30",
+      description:
+        "طراحی شده برای استانداردهای سخت‌گیرانه PSA و سیستم‌های کاهش آلایندگی.",
+      price: new Prisma.Decimal(2150000),
+      stock: 25,
+      viscosity: "0W-30",
+      oilType: "تمام سنتتیک",
+      imageUrl:
+        "https://images.pexels.com/photos/3736391/pexels-photo-3736391.jpeg",
+      categoryId: categories[0].id,
+      brandId: brands[2].id,
+      originCountry: "فرانسه",
+      approvals: "PSA B71 2312, ACEA C2",
+      packagingSizeLit: new Prisma.Decimal(5.0),
+      tags: ["psa", "eco", "low-saps"],
+      technicalSpecs: {
+        lowSaps: true,
+        fuelEconomyGain: "3.5%",
+        noackVolatility: "10 %",
+      },
+      averageRating: new Prisma.Decimal(4.4),
+      reviewCount: 54,
+    },
+    {
+      name: "Mobil Delvac 1 5W-40",
+      slug: "mobil-delvac-1-5w40",
+      sku: "MOBIL-DELVAC1-5W40",
+      description:
+        "حفاظت استثنایی برای موتورهای دیزلی سنگین در شرایط کاری دشوار.",
+      price: new Prisma.Decimal(2650000),
+      stock: 18,
+      viscosity: "5W-40",
+      oilType: "دیزل سنتتیک",
+      imageUrl:
+        "https://images.pexels.com/photos/2752881/pexels-photo-2752881.jpeg",
+      categoryId: categories[2].id,
+      brandId: brands[0].id,
+      originCountry: "آمریکا",
+      approvals: "API CK-4, ACEA E9",
+      packagingSizeLit: new Prisma.Decimal(5.0),
+      tags: ["heavy-duty", "diesel", "fleet"],
+      technicalSpecs: {
+        tbn: "10.8 mg KOH/g",
+        sootHandling: "Excellent",
+        shearStability: "High",
+      },
+      averageRating: new Prisma.Decimal(4.7),
+      reviewCount: 67,
+    },
+  ];
+
   const products = await prisma.$transaction(
-    [
-      {
-        name: "Mobil 1 ESP X3 0W-40",
-        slug: "mobil-1-esp-x3-0w40",
-        sku: "M1-ESPX3-0W40",
-        description:
-          "فرمولیشن نسل جدید برای موتورهای بنزینی و دیزلی پیشرفته با استانداردهای Euro 6d.",
-        price: new Prisma.Decimal(2850000),
-        stock: 30,
-        viscosity: "0W-40",
-        oilType: "تمام سنتتیک",
-        imageUrl:
-          "https://images.pexels.com/photos/6646854/pexels-photo-6646854.jpeg",
-        categoryId: categories[0].id,
-        brandId: brands[0].id,
-        originCountry: "آمریکا",
-        approvals: "ACEA C3, API SP, BMW LL-01",
-        temperatureRange: "-40°C الی 240°C",
-        packagingSizeLit: new Prisma.Decimal(4.0),
-        warranty: "۲۰ هزار کیلومتر یا یک سال",
-        isBestseller: true,
-        tags: ["full-synthetic", "premium", "euro-6"],
-        technicalSpecs: {
-          baseOil: "Fully Synthetic",
-          sulfatedAsh: "0.8%",
-          hths: "3.6 mPa·s",
-        },
-        averageRating: new Prisma.Decimal(4.8),
-        reviewCount: 124,
-        videos: [
-          "https://www.youtube.com/watch?v=NdW_i4_a7co",
-        ],
-      },
-      {
-        name: "Castrol Edge 5W-30 LL",
-        slug: "castrol-edge-5w30-ll",
-        sku: "CAST-EDGE-5W30LL",
-        description:
-          "روغن تمام سنتتیک با تکنولوژی Fluid TITANIUM برای حفاظت عالی در دورهای بالا.",
-        price: new Prisma.Decimal(2350000),
-        stock: 42,
-        viscosity: "5W-30",
-        oilType: "تمام سنتتیک",
-        imageUrl:
-          "https://images.pexels.com/photos/1148385/pexels-photo-1148385.jpeg",
-        categoryId: categories[0].id,
-        brandId: brands[1].id,
-        originCountry: "انگلستان",
-        approvals: "VW 504 00 / 507 00, MB 229.31",
-        packagingSizeLit: new Prisma.Decimal(4.0),
-        warranty: "۱۵ هزار کیلومتر",
-        isBestseller: true,
-        tags: ["turbo", "european", "longlife"],
-        technicalSpecs: {
-          baseOil: "Synthetic blend",
-          viscosityIndex: 170,
-          flashPoint: "230°C",
-        },
-        averageRating: new Prisma.Decimal(4.6),
-        reviewCount: 98,
-      },
-      {
-        name: "Total Quartz Ineo Efficiency 0W-30",
-        slug: "total-quartz-ineo-efficiency-0w30",
-        sku: "TOTAL-INEO-0W30",
-        description:
-          "طراحی شده برای استانداردهای سخت‌گیرانه PSA و سیستم‌های کاهش آلایندگی.",
-        price: new Prisma.Decimal(2150000),
-        stock: 25,
-        viscosity: "0W-30",
-        oilType: "تمام سنتتیک",
-        imageUrl:
-          "https://images.pexels.com/photos/3736391/pexels-photo-3736391.jpeg",
-        categoryId: categories[0].id,
-        brandId: brands[2].id,
-        originCountry: "فرانسه",
-        approvals: "PSA B71 2312, ACEA C2",
-        packagingSizeLit: new Prisma.Decimal(5.0),
-        tags: ["psa", "eco", "low-saps"],
-        technicalSpecs: {
-          lowSaps: true,
-          fuelEconomyGain: "3.5%",
-          noackVolatility: "10 %",
-        },
-        averageRating: new Prisma.Decimal(4.4),
-        reviewCount: 54,
-      },
-      {
-        name: "Mobil Delvac 1 5W-40",
-        slug: "mobil-delvac-1-5w40",
-        sku: "MOBIL-DELVAC1-5W40",
-        description:
-          "حفاظت استثنایی برای موتورهای دیزلی سنگین در شرایط کاری دشوار.",
-        price: new Prisma.Decimal(2650000),
-        stock: 18,
-        viscosity: "5W-40",
-        oilType: "دیزل سنتتیک",
-        imageUrl:
-          "https://images.pexels.com/photos/2752881/pexels-photo-2752881.jpeg",
-        categoryId: categories[2].id,
-        brandId: brands[0].id,
-        originCountry: "آمریکا",
-        approvals: "API CK-4, ACEA E9",
-        packagingSizeLit: new Prisma.Decimal(5.0),
-        tags: ["heavy-duty", "diesel", "fleet"],
-        technicalSpecs: {
-          tbn: "10.8 mg KOH/g",
-          sootHandling: "Excellent",
-          shearStability: "High",
-        },
-        averageRating: new Prisma.Decimal(4.7),
-        reviewCount: 67,
-      },
-    ].map((product) =>
+    productSeeds.map((product) =>
       prisma.product.upsert({
         where: { slug: product.slug },
         update: {},
@@ -313,6 +317,210 @@ async function main() {
       }),
     ),
   );
+
+  const carIdBySlug = Object.fromEntries(cars.map((car) => [car.slug, car.id]));
+  const productIdBySlug = Object.fromEntries(products.map((product) => [product.slug, product.id]));
+
+  const maintenanceTaskSeeds = [
+    {
+      carSlug: "bmw-3-series-f30-320i",
+      title: "تعویض روغن موتور و فیلتر",
+      description: "استفاده از روغن تایید شده BMW LL-01 و تعویض کامل فیلتر روغن به همراه چک سطح خنک‌کننده.",
+      intervalKm: 10000,
+      intervalMonths: 12,
+      priority: 1,
+      recommendedProductSlugs: ["mobil-1-esp-x3-0w40"],
+    },
+    {
+      carSlug: "bmw-3-series-f30-320i",
+      title: "سرویس گیربکس ZF",
+      description: "بازدید از نشتی، تعویض فیلتر داخلی و شارژ مجدد روغن ZF Lifeguard8.",
+      intervalKm: 60000,
+      intervalMonths: 36,
+      priority: 2,
+      recommendedProductSlugs: [],
+    },
+    {
+      carSlug: "toyota-corolla-e210",
+      title: "سرویس دوره‌ای ۱۰ هزار کیلومتر",
+      description: "تعویض روغن 0W-20، بررسی شمع‌ها و بازدید فیلتر کابین.",
+      intervalKm: 10000,
+      intervalMonths: 12,
+      priority: 1,
+      recommendedProductSlugs: ["mobil-1-esp-x3-0w40"],
+    },
+    {
+      carSlug: "toyota-corolla-e210",
+      title: "بازدید گیربکس CVT",
+      description: "کنترل سطح سیال Toyota CVT FE و بررسی وضعیت تسمه و خنک‌کننده.",
+      intervalKm: 40000,
+      intervalMonths: 24,
+      priority: 2,
+      recommendedProductSlugs: [],
+    },
+    {
+      carSlug: "hyundai-santa-fe-tm",
+      title: "بازدید توربو و اینترکولر",
+      description: "پاک‌سازی مسیر ورودی هوا و بررسی نشتی روغن توربین، همراه با تعویض فیلتر هوا.",
+      intervalKm: 20000,
+      intervalMonths: 12,
+      priority: 2,
+      recommendedProductSlugs: ["castrol-edge-5w30-ll"],
+    },
+    {
+      carSlug: "peugeot-208-puretech-130",
+      title: "سرویس PSA PureTech",
+      description: "تعویض روغن 0W-30 تاییدیه PSA و بررسی سیستم تزریق سوخت.",
+      intervalKm: 7000,
+      intervalMonths: 9,
+      priority: 1,
+      recommendedProductSlugs: ["total-quartz-ineo-efficiency-0w30"],
+    },
+  ];
+
+  await Promise.all(
+    maintenanceTaskSeeds.map(async (task) => {
+      const carId = carIdBySlug[task.carSlug];
+      if (!carId) return;
+      await prisma.carMaintenanceTask.upsert({
+        where: {
+          carId_title: {
+            carId,
+            title: task.title,
+          },
+        },
+        update: {
+          description: task.description,
+          intervalKm: task.intervalKm ?? null,
+          intervalMonths: task.intervalMonths ?? null,
+          priority: task.priority,
+          recommendedProductSlugs: task.recommendedProductSlugs,
+        },
+        create: {
+          carId,
+          title: task.title,
+          description: task.description,
+          intervalKm: task.intervalKm ?? null,
+          intervalMonths: task.intervalMonths ?? null,
+          priority: task.priority,
+          recommendedProductSlugs: task.recommendedProductSlugs,
+        },
+      });
+    }),
+  );
+
+  const productQuestionSeeds = [
+    {
+      productSlug: "mobil-1-esp-x3-0w40",
+      authorName: "علی رستگار",
+      question: "آیا این روغن برای موتور N20 BMW مناسب است؟",
+      answer: "بله، دارای تاییدیه BMW LL-01 است و مطابق جدول دفترچه 320i پیشنهاد می‌شود.",
+      status: "ANSWERED" as Prisma.QuestionStatus,
+    },
+    {
+      productSlug: "castrol-edge-5w30-ll",
+      authorName: "مهدی تهرانی",
+      question: "آیا می‌توان برای سانتافه توربو از این روغن استفاده کرد؟",
+      answer: null,
+      status: "PENDING" as Prisma.QuestionStatus,
+    },
+  ];
+
+  await Promise.all(
+    productQuestionSeeds.map(async (item) => {
+      const productId = productIdBySlug[item.productSlug];
+      if (!productId) return;
+      await prisma.productQuestion.upsert({
+        where: {
+          productId_question: {
+            productId,
+            question: item.question,
+          },
+        },
+        update: {
+          answer: item.answer,
+          status: item.status,
+          answeredAt: item.answer ? new Date() : null,
+        },
+        create: {
+          productId,
+          authorName: item.authorName,
+          question: item.question,
+          answer: item.answer,
+          status: item.status,
+          answeredAt: item.answer ? new Date() : null,
+        },
+      });
+    }),
+  );
+
+  const carQuestionSeeds = [
+    {
+      carSlug: "bmw-3-series-f30-320i",
+      authorName: "سپهر سامانی",
+      question: "برای تعویض زودهنگام روغن در ترافیک تهران چه بازه‌ای پیشنهاد می‌کنید؟",
+      answer: "در شرایط ترافیکی بهتر است هر ۷ تا ۸ هزار کیلومتر سرویس انجام شود.",
+      status: "ANSWERED" as Prisma.QuestionStatus,
+    },
+    {
+      carSlug: "toyota-corolla-e210",
+      authorName: "زهرا موسوی",
+      question: "آیا نیاز است گیربکس CVT را هر بار سرویس کامل کنیم؟",
+      answer: null,
+      status: "PENDING" as Prisma.QuestionStatus,
+    },
+  ];
+
+  await Promise.all(
+    carQuestionSeeds.map(async (item) => {
+      const carId = carIdBySlug[item.carSlug];
+      if (!carId) return;
+      await prisma.carQuestion.upsert({
+        where: {
+          carId_question: {
+            carId,
+            question: item.question,
+          },
+        },
+        update: {
+          answer: item.answer,
+          status: item.status,
+          answeredAt: item.answer ? new Date() : null,
+        },
+        create: {
+          carId,
+          authorName: item.authorName,
+          question: item.question,
+          answer: item.answer,
+          status: item.status,
+          answeredAt: item.answer ? new Date() : null,
+        },
+      });
+    }),
+  );
+
+  await prisma.engagementEvent.createMany({
+    data: [
+      {
+        entityType: "car",
+        entityId: carIdBySlug["bmw-3-series-f30-320i"] ?? "",
+        eventType: "notebook_view",
+        metadata: { source: "seed" },
+      },
+      {
+        entityType: "car",
+        entityId: carIdBySlug["toyota-corolla-e210"] ?? "",
+        eventType: "notebook_view",
+        metadata: { source: "seed" },
+      },
+      {
+        entityType: "product",
+        entityId: productIdBySlug["mobil-1-esp-x3-0w40"] ?? "",
+        eventType: "comparison_add",
+        metadata: { source: "seed" },
+      },
+    ].filter((event) => event.entityId),
+  });
 
   const productCarRelations: Array<[string, string]> = [
     [products[0].id, cars[0].id],

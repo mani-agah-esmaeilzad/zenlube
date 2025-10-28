@@ -39,6 +39,12 @@ enum ShippingMethod {
   PICKUP
 }
 
+enum QuestionStatus {
+  PENDING
+  ANSWERED
+  ARCHIVED
+}
+
 model User {
   id             String    @id @default(cuid())
   name           String?
@@ -145,6 +151,7 @@ model Product {
   cartItems       CartItem[]
   orderItems      OrderItem[]
   reviews         ProductReview[]
+  questions       ProductQuestion[]
 }
 
 model Car {
@@ -168,6 +175,8 @@ model Car {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   productMappings ProductCar[]
+  maintenanceTasks CarMaintenanceTask[]
+  questions        CarQuestion[]
 }
 
 model ProductCar {
@@ -181,6 +190,64 @@ model ProductCar {
   car     Car     @relation(fields: [carId], references: [id], onDelete: Cascade)
 
   @@unique([productId, carId])
+}
+
+model CarMaintenanceTask {
+  id                     String   @id @default(cuid())
+  carId                  String
+  title                  String
+  description            String?
+  intervalKm             Int?
+  intervalMonths         Int?
+  priority               Int      @default(1)
+  recommendedProductSlugs String[] @default([])
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  car                    Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+  @@unique([carId, title])
+}
+
+model ProductQuestion {
+  id         String         @id @default(cuid())
+  productId  String
+  authorName String
+  question   String
+  answer     String?
+  status     QuestionStatus @default(PENDING)
+  createdAt  DateTime       @default(now())
+  answeredAt DateTime?
+  product    Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, status])
+  @@unique([productId, question])
+}
+
+model CarQuestion {
+  id         String         @id @default(cuid())
+  carId      String
+  authorName String
+  question   String
+  answer     String?
+  status     QuestionStatus @default(PENDING)
+  createdAt  DateTime       @default(now())
+  answeredAt DateTime?
+  car        Car            @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId, status])
+  @@unique([carId, question])
+}
+
+model EngagementEvent {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  eventType  String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId, eventType, createdAt])
 }
 
 model Cart {

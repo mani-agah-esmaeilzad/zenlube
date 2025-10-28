@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
+import { QuestionForm } from "@/components/forms/question-form";
+import { QuestionList } from "@/components/questions/question-list";
+import { EngagementTracker } from "@/components/analytics/engagement-tracker";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 
@@ -40,6 +43,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
           car: true,
         },
       },
+      questions: {
+        where: {
+          status: {
+            not: "ARCHIVED",
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 
@@ -58,8 +69,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
   });
 
+  const questionItems = (product.questions ?? []).map((question) => ({
+    id: question.id,
+    authorName: question.authorName,
+    question: question.question,
+    answer: question.answer,
+    status: question.status,
+    createdAt: question.createdAt,
+    answeredAt: question.answeredAt,
+  }));
+
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
+      <EngagementTracker
+        entityType="product"
+        entityId={product.id}
+        eventType="product_view"
+        metadata={{ slug: product.slug }}
+      />
       <div className="grid gap-10 rounded-[40px] border border-white/10 bg-white/5 p-8 lg:grid-cols-[2fr_3fr]">
         <div className="relative aspect-square overflow-hidden rounded-3xl border border-white/10 bg-black/20">
           {product.imageUrl ? (
@@ -117,6 +144,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
           </div>
           <AddToCartButton productId={product.id} className="max-w-xs" />
+          <Link
+            href="/products/compare"
+            className="text-xs text-purple-200 transition hover:text-purple-100"
+          >
+            مقایسه با سایر محصولات →
+          </Link>
           {product.carMappings.length > 0 && (
             <div className="space-y-3 rounded-3xl border border-purple-500/30 bg-purple-950/30 p-6">
               <h2 className="text-lg font-semibold text-purple-100">
@@ -157,6 +190,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </section>
       )}
+
+      <section className="mt-12 grid gap-6 lg:grid-cols-[1.05fr,0.95fr]">
+        <QuestionForm
+          type="product"
+          slug={product.slug}
+          title={`پرسش درباره ${product.brand.name} ${product.name}`}
+        />
+        <QuestionList
+          items={questionItems}
+          emptyMessage="هنوز پرسشی برای این محصول ثبت نشده است. تجربه خود را در قالب پرسش مطرح کنید."
+        />
+      </section>
     </div>
   );
 }

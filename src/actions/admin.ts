@@ -7,7 +7,9 @@ import {
   brandSchema,
   carSchema,
   categorySchema,
+  maintenanceTaskSchema,
   productUpsertSchema,
+  answerQuestionSchema,
 } from "@/lib/validators";
 import { getAppSession } from "@/lib/session";
 
@@ -263,6 +265,163 @@ export async function deleteCategoryFormAction(formData: FormData) {
     return { success: false, message: "شناسه دسته‌بندی نامعتبر است." };
   }
   return deleteCategoryAction(categoryId);
+}
+
+export async function createMaintenanceTaskAction(formData: FormData): Promise<ActionResult> {
+  const session = await getAppSession();
+  ensureAdmin(session);
+
+  const raw = Object.fromEntries(formData);
+  const parsed = maintenanceTaskSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    return { success: false, errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const { carId, title, description, intervalKm, intervalMonths, priority, recommendedProductSlugs } =
+    parsed.data;
+
+  await prisma.carMaintenanceTask.upsert({
+    where: {
+      carId_title: {
+        carId,
+        title,
+      },
+    },
+    update: {
+      description,
+      intervalKm: intervalKm ?? null,
+      intervalMonths: intervalMonths ?? null,
+      priority,
+      recommendedProductSlugs,
+    },
+    create: {
+      carId,
+      title,
+      description,
+      intervalKm: intervalKm ?? null,
+      intervalMonths: intervalMonths ?? null,
+      priority,
+      recommendedProductSlugs,
+    },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/cars");
+
+  return { success: true };
+}
+
+export async function deleteMaintenanceTaskAction(taskId: string): Promise<ActionResult> {
+  const session = await getAppSession();
+  ensureAdmin(session);
+
+  await prisma.carMaintenanceTask.delete({
+    where: { id: taskId },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/cars");
+
+  return { success: true };
+}
+
+export async function deleteMaintenanceTaskFormAction(formData: FormData) {
+  const taskId = formData.get("taskId");
+  if (!taskId || typeof taskId !== "string") {
+    return { success: false, message: "شناسه سرویس نامعتبر است." };
+  }
+  return deleteMaintenanceTaskAction(taskId);
+}
+
+export async function answerQuestionAction(formData: FormData): Promise<ActionResult> {
+  const session = await getAppSession();
+  ensureAdmin(session);
+
+  const raw = Object.fromEntries(formData);
+  const parsed = answerQuestionSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    return { success: false, errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const { questionId, answer, type, markAnswered } = parsed.data;
+  const status = markAnswered ? "ANSWERED" : "PENDING";
+  const answeredAt = markAnswered ? new Date() : null;
+
+  if (type === "product") {
+    const question = await prisma.productQuestion.update({
+      where: { id: questionId },
+      data: {
+        answer,
+        status,
+        answeredAt,
+      },
+      include: {
+        product: { select: { slug: true } },
+      },
+    });
+
+    revalidatePath("/admin");
+    if (question.product?.slug) {
+      revalidatePath(`/products/${question.product.slug}`);
+    }
+    return { success: true };
+  }
+
+  const question = await prisma.carQuestion.update({
+    where: { id: questionId },
+    data: {
+      answer,
+      status,
+      answeredAt,
+    },
+    include: {
+      car: { select: { slug: true } },
+    },
+  });
+
+  revalidatePath("/admin");
+  if (question.car?.slug) {
+    revalidatePath(`/cars/${question.car.slug}`);
+  }
+  return { success: true };
+}
+
+export async function archiveQuestionAction(questionId: string, type: "product" | "car") {
+  const session = await getAppSession();
+  ensureAdmin(session);
+
+  if (type === "product") {
+    const question = await prisma.productQuestion.update({
+      where: { id: questionId },
+      data: {
+        status: "ARCHIVED",
+      },
+      include: { product: { select: { slug: true } } },
+    });
+
+    revalidatePath("/admin");
+    if (question.product?.slug) {
+      revalidatePath(`/products/${question.product.slug}`);
+    }
+    return { success: true };
+  }
+
+  const question = await prisma.carQuestion.update({
+    where: { id: questionId },
+    data: {
+      status: "ARCHIVED",
+    },
+    include: { car: { select: { slug: true } } },
+  });
+
+  revalidatePath("/admin");
+  if (question.car?.slug) {
+    revalidatePath(`/cars/${question.car.slug}`);
+  }
+
+  return { success: true };
 }
 
 export async function updateUserRoleAction(formData: FormData): Promise<ActionResult> {

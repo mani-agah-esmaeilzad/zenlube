@@ -12,6 +12,7 @@ export async function SiteHeader() {
   type NavLink = { href: string; label: string; highlight?: boolean };
   const links: NavLink[] = [
     { href: "/products", label: "محصولات" },
+    { href: "/products/compare", label: "مقایسه روغن‌ها" },
     { href: "/categories", label: "دسته‌بندی‌ها" },
     { href: "/brands", label: "برندها" },
     { href: "/blog", label: "وبلاگ" },

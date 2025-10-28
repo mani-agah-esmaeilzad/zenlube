@@ -10,6 +10,16 @@ function emptyToUndefined(value: unknown) {
 
 const optionalString = z.preprocess(emptyToUndefined, z.string().optional());
 const optionalUrl = z.preprocess(emptyToUndefined, z.string().url().optional());
+const optionalNumber = z.preprocess((value) => {
+  if (value === "" || value === null) {
+    return undefined;
+  }
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? value : parsed;
+  }
+  return value;
+}, z.number().optional());
 
 export const categorySchema = z.object({
   name: z.string().trim().min(2, "نام دسته باید حداقل دو کاراکتر باشد."),
@@ -51,6 +61,45 @@ export const carSchema = z.object({
   maintenanceInfo: optionalString,
 });
 
+export const maintenanceTaskSchema = z.object({
+  carId: z.string().cuid(),
+  title: z.string().trim().min(3, "عنوان باید حداقل ۳ کاراکتر باشد."),
+  description: optionalString,
+  intervalKm: optionalNumber.pipe(
+    z
+      .number({ invalid_type_error: "فاصله کیلومتری معتبر نیست." })
+      .int()
+      .positive()
+      .optional(),
+  ),
+  intervalMonths: optionalNumber.pipe(
+    z
+      .number({ invalid_type_error: "فاصله زمانی معتبر نیست." })
+      .int()
+      .positive()
+      .optional(),
+  ),
+  priority: optionalNumber
+    .pipe(z.number().int().min(1).max(5).optional())
+    .transform((value) => value ?? 1),
+  recommendedProductSlugs: z
+    .preprocess((value) => {
+      if (typeof value === "string") {
+        return value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+      if (Array.isArray(value)) {
+        return value
+          .map((item) => (typeof item === "string" ? item.trim() : ""))
+          .filter(Boolean);
+      }
+      return [];
+    }, z.array(z.string()).optional())
+    .transform((value) => value ?? []),
+});
+
 export const productUpsertSchema = z.object({
   name: z.string().trim().min(2),
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
@@ -65,6 +114,42 @@ export const productUpsertSchema = z.object({
   categoryId: z.string().cuid(),
   brandId: z.string().cuid(),
   carIds: z.array(z.string().cuid()).optional(),
+});
+
+export const answerQuestionSchema = z.object({
+  questionId: z.string().cuid(),
+  answer: z
+    .string()
+    .trim()
+    .min(5, "پاسخ باید حداقل ۵ کاراکتر باشد.")
+    .max(1200, "پاسخ نمی‌تواند بیش از ۱۲۰۰ کاراکتر باشد."),
+  type: z.enum(["product", "car"]),
+  markAnswered: z.preprocess(
+    (value) => value === "on" || value === true || value === "true",
+    z.boolean(),
+  ),
+});
+
+export const publicQuestionPayloadSchema = z.object({
+  type: z.enum(["product", "car"]),
+  slug: z.string().min(2, "شناسه هدف معتبر نیست."),
+  authorName: z
+    .string()
+    .trim()
+    .min(2, "نام باید حداقل دو کاراکتر باشد.")
+    .max(60, "نام نمی‌تواند بیش از ۶۰ کاراکتر باشد."),
+  question: z
+    .string()
+    .trim()
+    .min(5, "سوال باید حداقل ۵ کاراکتر باشد.")
+    .max(800, "سوال نمی‌تواند بیش از ۸۰۰ کاراکتر باشد."),
+});
+
+export const engagementEventSchema = z.object({
+  entityType: z.enum(["car", "product", "page"]),
+  entityId: z.string().min(1, "شناسه موجودیت نامعتبر است."),
+  eventType: z.string().trim().min(2, "نوع رویداد معتبر نیست.").max(64),
+  metadata: z.record(z.any()).optional(),
 });
 
 export const cartItemSchema = z.object({

@@ -1,10 +1,17 @@
+import { format } from "date-fns-jalali";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CarCard } from "@/components/catalog/car-card";
 import { CarNotebook } from "@/components/catalog/car-notebook";
+import { MaintenanceTimeline } from "@/components/catalog/maintenance-timeline";
+import { QuestionForm } from "@/components/forms/question-form";
+import { QuestionList } from "@/components/questions/question-list";
+import { EngagementTracker } from "@/components/analytics/engagement-tracker";
 import { ProductCard } from "@/components/product/product-card";
+import { formatPrice } from "@/lib/utils";
 import {
   getCarBySlug,
+  getRelatedBlogPostsForCar,
   getSiblingCars,
 } from "@/lib/data";
 
@@ -39,6 +46,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
 
   const recommendedProducts = car.productMappings.map((mapping) => mapping.product);
   const siblings = await getSiblingCars(car.manufacturer, car.slug, 4);
+  const relatedPosts = await getRelatedBlogPostsForCar(car.manufacturer, car.model, 3);
   const baseTitle = `${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""}`;
   const yearsRange =
     car.yearFrom || car.yearTo
@@ -52,6 +60,49 @@ export default async function CarDetailPage({ params }: CarPageProps) {
   const productCountText = recommendedProducts.length
     ? `${numberFormatter.format(recommendedProducts.length)} محصول`
     : "ثبت‌نشده";
+
+  const productLookup = new Map(
+    car.productMappings.map(({ product }) => [product.slug, product] as const),
+  );
+
+  const maintenanceTimelineTasks = (car.maintenanceTasks ?? []).map((task) => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    intervalKm: task.intervalKm ?? null,
+    intervalMonths: task.intervalMonths ?? null,
+    priority: task.priority,
+    recommendedProducts: (task.recommendedProductSlugs ?? []).map((slug) => {
+      const product = productLookup.get(slug);
+      return {
+        slug,
+        name: product?.name ?? slug,
+        brandName: product?.brand.name,
+        price: product ? Number(product.price) : undefined,
+      };
+    }),
+  }));
+
+  const questionItems = (car.questions ?? []).map((question) => ({
+    id: question.id,
+    authorName: question.authorName,
+    question: question.question,
+    answer: question.answer,
+    status: question.status,
+    createdAt: question.createdAt,
+    answeredAt: question.answeredAt,
+  }));
+
+  const autoSuggestedProduct = recommendedProducts
+    .slice()
+    .sort((a, b) => {
+      const ratingA = a.averageRating ? Number(a.averageRating) : 0;
+      const ratingB = b.averageRating ? Number(b.averageRating) : 0;
+      if (ratingA !== ratingB) {
+        return ratingB - ratingA;
+      }
+      return (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
+    })[0];
 
   const overviewText =
     car.overviewDetails?.trim() ||
@@ -155,6 +206,12 @@ export default async function CarDetailPage({ params }: CarPageProps) {
 
   return (
     <div className="mx-auto max-w-6xl space-y-12 px-6 py-12 text-white">
+      <EngagementTracker
+        entityType="car"
+        entityId={car.id}
+        eventType="notebook_view"
+        metadata={{ slug: car.slug }}
+      />
       <section className="grid gap-8 xl:grid-cols-[1.45fr,0.85fr]">
         <CarNotebook cover={notebookCover} pages={notebookPages} />
         <div className="space-y-6">
@@ -208,6 +265,44 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           />
         </div>
       </section>
+      <MaintenanceTimeline carName={baseTitle} tasks={maintenanceTimelineTasks} />
+
+      {autoSuggestedProduct ? (
+        <section className="rounded-3xl border border-purple-400/20 bg-purple-950/30 p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-purple-400/40 bg-purple-500/20 px-3 py-1 text-[11px] text-purple-100">
+                پیشنهاد خودکار ZenLube
+              </span>
+              <h2 className="mt-3 text-2xl font-semibold text-white">
+                {autoSuggestedProduct.brand.name} · {autoSuggestedProduct.name}
+              </h2>
+              <p className="mt-2 text-sm text-white/70">
+                بر اساس دفترچه نگهداری و بازخورد کاربران، این روغن بیشترین سازگاری را با {baseTitle} دارد.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/60">
+                {autoSuggestedProduct.viscosity ? (
+                  <span className="rounded-full border border-white/15 px-3 py-1">
+                    ویسکوزیته {autoSuggestedProduct.viscosity}
+                  </span>
+                ) : null}
+                <span className="rounded-full border border-white/15 px-3 py-1">
+                  {autoSuggestedProduct.approvals ?? "استاندارد نامشخص"}
+                </span>
+                <span className="rounded-full border border-white/15 px-3 py-1 text-white">
+                  {formatPrice(autoSuggestedProduct.price)}
+                </span>
+              </div>
+            </div>
+            <Link
+              href={`/products/${autoSuggestedProduct.slug}`}
+              className="inline-flex items-center justify-center rounded-full bg-white/10 px-5 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+            >
+              مشاهده محصول و خرید
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       <section className="space-y-6">
         <div className="flex items-center justify-between">
@@ -240,6 +335,45 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           </div>
         )}
       </section>
+
+      <section className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr]">
+        <QuestionForm
+          type="car"
+          slug={car.slug}
+          title={`سوالات شما درباره ${car.manufacturer} ${car.model}`}
+        />
+        <QuestionList
+          items={questionItems}
+          emptyMessage="هنوز سوالی برای این خودرو ثبت نشده است. اولین پرسش را شما ثبت کنید."
+        />
+      </section>
+
+      {relatedPosts.length ? (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold">مطالب مرتبط با نگهداری {baseTitle}</h2>
+            <Link href="/blog" className="text-sm text-purple-200 hover:text-purple-100">
+              مشاهده همه مقالات
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedPosts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="group flex flex-col gap-3 rounded-3xl border border-white/10 bg-black/30 p-5 transition hover:border-purple-400/40 hover:bg-black/40"
+              >
+                <span className="text-xs text-white/50">{format(post.publishedAt, "yyyy/MM/dd")}</span>
+                <h3 className="text-lg font-semibold text-white group-hover:text-purple-100">
+                  {post.title}
+                </h3>
+                <p className="text-sm leading-6 text-white/60">{post.excerpt}</p>
+                <span className="text-xs text-purple-300">مطالعه مقاله →</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {!!siblings.length && (
         <section className="space-y-6">

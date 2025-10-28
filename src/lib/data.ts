@@ -219,6 +219,14 @@ export async function getProductBySlug(slug: string) {
       reviews: {
         orderBy: { createdAt: "desc" },
       },
+      questions: {
+        where: {
+          status: {
+            not: "ARCHIVED",
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 }
@@ -261,6 +269,12 @@ export async function getCarsWithProducts() {
           },
         },
       },
+      maintenanceTasks: {
+        orderBy: [
+          { priority: "asc" },
+          { updatedAt: "desc" },
+        ],
+      },
     },
     orderBy: [
       { manufacturer: "asc" },
@@ -272,6 +286,59 @@ export async function getCarsWithProducts() {
 
 export async function getLatestBlogPosts(limit = 6) {
   return prisma.blogPost.findMany({
+    orderBy: { publishedAt: "desc" },
+    take: limit,
+  });
+}
+
+export async function getAllProductsLite() {
+  return prisma.product.findMany({
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      viscosity: true,
+      oilType: true,
+      approvals: true,
+      averageRating: true,
+      reviewCount: true,
+      price: true,
+      tags: true,
+      brand: {
+        select: { name: true },
+      },
+      category: {
+        select: { name: true },
+      },
+    },
+    orderBy: [
+      { brand: { name: "asc" } },
+      { name: "asc" },
+    ],
+  });
+}
+
+export async function getRelatedBlogPostsForCar(
+  manufacturer: string,
+  model?: string | null,
+  limit = 3,
+) {
+  const terms = [manufacturer, model]
+    .filter((term): term is string => typeof term === "string" && term.trim().length > 0)
+    .map((term) => term.trim());
+
+  const where = terms.length
+    ? {
+        OR: [
+          { tags: { hasSome: terms.map((term) => term.toLowerCase()) } },
+          ...terms.map((term) => ({ title: { contains: term, mode: "insensitive" } })),
+          ...terms.map((term) => ({ excerpt: { contains: term, mode: "insensitive" } })),
+        ],
+      }
+    : undefined;
+
+  return prisma.blogPost.findMany({
+    where,
     orderBy: { publishedAt: "desc" },
     take: limit,
   });
@@ -313,6 +380,20 @@ export async function getCarBySlug(slug: string) {
             },
           },
         },
+      },
+      maintenanceTasks: {
+        orderBy: [
+          { priority: "asc" },
+          { updatedAt: "desc" },
+        ],
+      },
+      questions: {
+        where: {
+          status: {
+            not: "ARCHIVED",
+          },
+        },
+        orderBy: { createdAt: "desc" },
       },
     },
   });

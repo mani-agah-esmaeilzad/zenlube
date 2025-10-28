@@ -45,6 +45,10 @@ export const carSchema = z.object({
   viscosity: optionalString,
   specification: optionalString,
   imageUrl: optionalUrl,
+  overviewDetails: optionalString,
+  engineDetails: optionalString,
+  gearboxDetails: optionalString,
+  maintenanceInfo: optionalString,
 });
 
 export const productUpsertSchema = z.object({

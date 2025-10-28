@@ -20,9 +20,10 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
   return (
     <div className="mx-auto max-w-6xl px-6 py-12 space-y-12">
       <header className="space-y-4">
-        <h1 className="text-3xl font-semibold text-white">لیست خودروها و مشخصات فنی</h1>
+        <h1 className="text-3xl font-semibold text-white">دفترچه‌های دیجیتال خودرو</h1>
         <p className="text-sm leading-7 text-white/70">
-          برای هر خودرو استاندارد روغن، ویسکوزیته پیشنهادی و محصولات مناسب را مشاهده کنید. در هنگام اضافه کردن محصول جدید، خودروهای سازگار انتخاب می‌شوند تا پیشنهاد هوشمند ارائه شود.
+          برای هر خودرو دفترچه‌ای تعاملی شامل صفحه موتور، صفحه گیربکس و نکات نگهداری تهیه شده است.
+          می‌توانید استاندارد روغن، ویسکوزیته پیشنهادی و محصولات سازگار را در چند صفحه مطالعه کنید.
         </p>
         <form className="flex flex-wrap gap-3" method="get">
           <input

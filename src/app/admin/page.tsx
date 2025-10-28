@@ -19,6 +19,7 @@ export const revalidate = 0;
 const tabs = [
   { id: "overview", label: "نمای کلی" },
   { id: "products", label: "محصولات" },
+  { id: "cars", label: "خودروها" },
   { id: "brands", label: "برندها" },
   { id: "categories", label: "دسته‌بندی‌ها" },
   { id: "users", label: "کاربران" },
@@ -111,6 +112,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         { manufacturer: "asc" },
         { model: "asc" },
       ],
+      include: {
+        _count: { select: { productMappings: true } },
+      },
     }),
     prisma.product.findMany({
       orderBy: { updatedAt: "desc" },
@@ -607,79 +611,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               </form>
             </section>
 
-            <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-xl font-semibold text-white">ثبت خودرو جدید</h2>
-              <form
-                action={async (formData) => {
-                  "use server";
-                  await createCarAction(formData);
-                }}
-                className="mt-6 grid gap-4 sm:grid-cols-2"
-              >
-                <input
-                  name="slug"
-                  placeholder="اسلاگ خودرو (مثال: bmw-3-series-f30-320i)"
-                  className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="manufacturer"
-                  placeholder="سازنده"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="model"
-                  placeholder="مدل"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="generation"
-                  placeholder="تریم / نسل"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="engineType"
-                  placeholder="نوع موتور"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="engineCode"
-                  placeholder="کد موتور"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="viscosity"
-                  placeholder="ویسکوزیته پیشنهادی"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="oilCapacityLit"
-                  placeholder="ظرفیت روغن (لیتر)"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="yearFrom"
-                  placeholder="سال شروع تولید"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <input
-                  name="yearTo"
-                  placeholder="سال پایان تولید"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <textarea
-                  name="specification"
-                  placeholder="استاندارد یا توضیح تکمیلی"
-                  className="sm:col-span-2 h-24 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
-                />
-                <button
-                  type="submit"
-                  className="sm:col-span-2 rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
-                >
-                  ذخیره خودرو
-                </button>
-              </form>
-            </section>
-
             {lowStockCount ? (
               <section className="rounded-3xl border border-yellow-500/30 bg-yellow-500/10 p-6">
                 <h3 className="text-sm font-semibold text-white">محصولات کم‌موجودی</h3>
@@ -764,6 +695,192 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </section>
+          </div>
+        );
+      case "cars":
+        return (
+          <div className="space-y-10">
+            <section className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                <h2 className="text-xl font-semibold text-white">ثبت یا ویرایش خودرو</h2>
+                <p className="mt-2 text-xs text-white/60">
+                  خودرو جدید را با دیتاشیت کامل ثبت کنید. برای ویرایش، فرم را با همان اسلاگ ارسال
+                  کنید تا اطلاعات دفترچه‌ای به‌روزرسانی شود.
+                </p>
+                <form
+                  action={async (formData) => {
+                    "use server";
+                    await createCarAction(formData);
+                  }}
+                  className="mt-6 grid gap-4 sm:grid-cols-2"
+                >
+                  <input
+                    name="slug"
+                    placeholder="اسلاگ خودرو (مثال: bmw-320i-f30)"
+                    className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="manufacturer"
+                    placeholder="سازنده"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="model"
+                    placeholder="مدل"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="generation"
+                    placeholder="نسل / تیپ (اختیاری)"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="imageUrl"
+                    placeholder="آدرس تصویر یا جلد دفترچه (اختیاری)"
+                    className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="engineType"
+                    placeholder="نوع موتور"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="engineCode"
+                    placeholder="کد موتور (اختیاری)"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="viscosity"
+                    placeholder="ویسکوزیته پیشنهادی (SAE)"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="oilCapacityLit"
+                    placeholder="ظرفیت روغن موتور (لیتر)"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="specification"
+                    placeholder="استاندارد سازنده (مثال: VW 504.00)"
+                    className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="yearFrom"
+                    placeholder="سال شروع تولید"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <input
+                    name="yearTo"
+                    placeholder="سال پایان تولید"
+                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <textarea
+                    name="overviewDetails"
+                    placeholder="صفحه مقدمه دفترچه: معرفی کلی خودرو"
+                    className="sm:col-span-2 h-28 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <textarea
+                    name="engineDetails"
+                    placeholder="صفحه موتور: ساختار فنی، ظرفیت، روغن و توصیه‌های سرویس"
+                    className="sm:col-span-2 h-32 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <textarea
+                    name="gearboxDetails"
+                    placeholder="صفحه گیربکس: نوع جعبه‌دنده، روغن مناسب، ظرفیت و دوره‌های سرویس"
+                    className="sm:col-span-2 h-32 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <textarea
+                    name="maintenanceInfo"
+                    placeholder="صفحه نگهداری: برنامه بازدیدها، سیالات مصرفی و نکات تخصصی"
+                    className="sm:col-span-2 h-32 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  />
+                  <button
+                    type="submit"
+                    className="sm:col-span-2 rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
+                  >
+                    ذخیره خودرو
+                  </button>
+                </form>
+              </div>
+
+              <div className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">خودروهای ثبت‌شده</h2>
+                    <p className="mt-1 text-xs text-white/60">
+                      {numberFormatter.format(totalCars)} خودرو در پایگاه داده موجود است.
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60">
+                    مرتب‌سازی بر اساس سازنده
+                  </span>
+                </div>
+                <div className="overflow-hidden rounded-3xl border border-white/10">
+                  {cars.length ? (
+                    <table className="min-w-full divide-y divide-white/10 text-sm text-white/70">
+                      <thead className="bg-black/40 text-xs uppercase text-white/50">
+                        <tr>
+                          <th className="px-4 py-3 text-right">نام</th>
+                          <th className="px-4 py-3 text-right">سال‌ها</th>
+                          <th className="px-4 py-3 text-right">موتور</th>
+                          <th className="px-4 py-3 text-right">ویسکوزیته</th>
+                          <th className="px-4 py-3 text-right">محصولات مرتبط</th>
+                          <th className="px-4 py-3 text-right">آخرین به‌روزرسانی</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/10 bg-black/20">
+                        {cars.map((car) => (
+                          <tr key={car.id}>
+                            <td className="px-4 py-3">
+                              <div className="flex flex-col">
+                                <Link
+                                  href={`/cars/${car.slug}`}
+                                  className="text-white hover:text-purple-200"
+                                >
+                                  {car.manufacturer} {car.model}
+                                </Link>
+                                {car.generation && (
+                                  <span className="text-xs text-white/40">{car.generation}</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-xs">
+                              {car.yearFrom ?? "نامشخص"} — {car.yearTo ?? "نامشخص"}
+                            </td>
+                            <td className="px-4 py-3 text-xs">
+                              {car.engineType ?? "نامشخص"}
+                              {car.engineCode ? (
+                                <span className="ml-2 inline-block rounded-full border border-white/15 px-2 py-0.5 text-[11px] text-white/60">
+                                  {car.engineCode}
+                                </span>
+                              ) : null}
+                            </td>
+                            <td className="px-4 py-3 text-xs">
+                              {car.viscosity ?? "—"}
+                              {car.oilCapacityLit ? (
+                                <span className="ml-2 inline-block rounded-full border border-purple-400/40 px-2 py-0.5 text-[11px] text-purple-100">
+                                  {car.oilCapacityLit.toString()} لیتر
+                                </span>
+                              ) : null}
+                            </td>
+                            <td className="px-4 py-3 text-xs">
+                              {numberFormatter.format(car._count?.productMappings ?? 0)}
+                            </td>
+                            <td className="px-4 py-3 text-xs text-white/50">
+                              {dateFormatter.format(car.updatedAt)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p className="px-6 py-10 text-sm text-white/60">
+                      هنوز خودرویی ثبت نشده است. اولین خودرو را با فرم کنار ثبت کنید.
+                    </p>
+                  )}
+                </div>
               </div>
             </section>
           </div>

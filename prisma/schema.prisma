@@ -161,6 +161,10 @@ model Car {
   viscosity       String?
   specification   String?
   imageUrl        String?
+  overviewDetails String?       @db.Text
+  engineDetails   String?       @db.Text
+  gearboxDetails  String?       @db.Text
+  maintenanceInfo String?       @db.Text
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   productMappings ProductCar[]

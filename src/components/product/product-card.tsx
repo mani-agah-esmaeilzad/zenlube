@@ -10,10 +10,10 @@ type ProductCardProps = {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <article className="group flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-lg shadow-purple-950/30 backdrop-blur transition hover:-translate-y-2 hover:border-purple-400/60">
-      <div className="relative h-56 w-full overflow-hidden bg-gradient-to-br from-purple-950/80 via-purple-900/40 to-black">
+    <article className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-500/10 transition hover:-translate-y-2 hover:shadow-xl">
+      <div className="relative h-56 w-full overflow-hidden bg-slate-100">
         {product.isBestseller && (
-          <span className="absolute left-4 top-4 z-10 rounded-full bg-purple-500/90 px-3 py-1 text-xs font-semibold text-white shadow-lg shadow-purple-900/40">
+          <span className="absolute left-4 top-4 z-10 rounded-full bg-sky-500 px-3 py-1 text-xs font-semibold text-white shadow-lg shadow-sky-300/40">
             پرفروش
           </span>
         )}
@@ -26,17 +26,16 @@ export function ProductCard({ product }: ProductCardProps) {
             sizes="(max-width: 768px) 100vw, 33vw"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-white/30">
+          <div className="flex h-full w-full items-center justify-center text-slate-400">
             بدون تصویر
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-        <div className="absolute bottom-4 right-4 flex flex-wrap items-center gap-2 text-xs font-medium text-white/90">
-          <span className="rounded-full bg-white/10 px-3 py-1">
+        <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-center gap-2 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent px-5 pb-4 pt-10 text-xs font-medium text-white">
+          <span className="rounded-full bg-white/20 px-3 py-1">
             {product.brand.name}
           </span>
           {product.viscosity && (
-            <span className="rounded-full bg-purple-500/40 px-3 py-1 backdrop-blur">
+            <span className="rounded-full bg-sky-500/70 px-3 py-1 backdrop-blur">
               {product.viscosity}
             </span>
           )}
@@ -44,47 +43,47 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="flex flex-1 flex-col gap-6 p-6 sm:p-8">
         <div className="space-y-3">
-          <Link href={`/products/${product.slug}`} className="block text-lg font-semibold text-white transition hover:text-purple-200">
+          <Link href={`/products/${product.slug}`} className="block text-lg font-semibold text-slate-900 transition hover:text-sky-600">
             {product.name}
           </Link>
-          <p className="text-sm leading-6 text-white/70 line-clamp-3">
+          <p className="text-sm leading-6 text-slate-600 line-clamp-3">
             {product.description}
           </p>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-purple-100">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
             {product.averageRating && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/20 px-3 py-1 font-semibold">
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 font-semibold text-amber-600">
                 ⭐ {Number(product.averageRating).toFixed(1)}
-                <span className="text-white/60">
+                <span className="text-amber-600/70">
                   ({product.reviewCount})
                 </span>
               </span>
             )}
             {product.packagingSizeLit && (
-              <span className="rounded-full border border-white/10 px-3 py-1 text-white/70">
+              <span className="rounded-full border border-slate-200 px-3 py-1 text-slate-500">
                 بسته‌بندی {Number(product.packagingSizeLit).toFixed(1)} لیتر
               </span>
             )}
             {product.originCountry && (
-              <span className="rounded-full border border-white/10 px-3 py-1 text-white/70">
+              <span className="rounded-full border border-slate-200 px-3 py-1 text-slate-500">
                 ساخت {product.originCountry}
               </span>
             )}
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 text-xs text-white/60">
-          <span className="rounded-full border border-white/10 px-3 py-1">
+        <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+          <span className="rounded-full border border-slate-200 px-3 py-1">
             {product.category.name}
           </span>
           {product.oilType && (
-            <span className="rounded-full border border-white/10 px-3 py-1">
+            <span className="rounded-full border border-slate-200 px-3 py-1">
               {product.oilType}
             </span>
           )}
         </div>
         {!!product.tags?.length && (
-          <div className="flex flex-wrap gap-2 text-[11px] text-white/50">
+          <div className="flex flex-wrap gap-2 text-[11px] text-slate-500">
             {product.tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="rounded-full border border-white/10 px-2 py-1">
+              <span key={tag} className="rounded-full border border-slate-200 px-2 py-1">
                 #{tag}
               </span>
             ))}
@@ -92,24 +91,24 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
         <div className="mt-auto space-y-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-xs text-white/50">قیمت</span>
-            <span className="text-xl font-bold text-purple-200">
+            <span className="text-xs text-slate-400">قیمت</span>
+            <span className="text-xl font-bold text-sky-600">
               {formatPrice(product.price)}
             </span>
           </div>
           {product.carMappings.length > 0 && (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">
-              <p className="mb-2 font-semibold text-white">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
+              <p className="mb-2 font-semibold text-slate-800">
                 پیشنهاد شده برای:
               </p>
               <ul className="flex flex-wrap gap-2">
                 {product.carMappings.slice(0, 3).map(({ car }) => (
-                  <li key={car.id} className="rounded-full bg-white/10 px-3 py-1">
+                  <li key={car.id} className="rounded-full bg-white px-3 py-1 text-slate-600 shadow-sm">
                     {car.manufacturer} {car.model}
                   </li>
                 ))}
                 {product.carMappings.length > 3 && (
-                  <li className="rounded-full bg-white/10 px-3 py-1">
+                  <li className="rounded-full bg-white px-3 py-1 text-slate-500">
                     +{product.carMappings.length - 3}
                   </li>
                 )}

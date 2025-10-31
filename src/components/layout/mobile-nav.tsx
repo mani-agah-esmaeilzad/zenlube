@@ -30,7 +30,7 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
       <button
         type="button"
         aria-label="باز کردن منوی موبایل"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 transition hover:border-purple-300 hover:text-white"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-slate-900"
         onClick={() => setOpen((prev) => !prev)}
       >
         <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24" aria-hidden="true">
@@ -38,12 +38,12 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
         </svg>
       </button>
       {open && (
-        <div className="absolute left-6 right-6 top-20 z-40 rounded-3xl border border-white/10 bg-[#0f0e1f]/95 p-6 backdrop-blur-lg shadow-2xl">
-          <nav className="flex flex-col gap-4 text-sm text-white/80">
+        <div className="absolute left-6 right-6 top-20 z-40 rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-500/10">
+          <nav className="flex flex-col gap-4 text-sm text-slate-700">
             <button
               type="button"
               onClick={() => setCategoriesOpen((prev) => !prev)}
-              className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 transition hover:border-purple-300 hover:text-white"
+              className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 transition hover:border-sky-200 hover:text-slate-900"
             >
               <span>دسته‌بندی‌ها</span>
               <svg
@@ -58,13 +58,13 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
               </svg>
             </button>
             {categoriesOpen && (
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-3 py-3">
-                <ul className="flex flex-col gap-2 text-xs text-white/70">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3">
+                <ul className="flex flex-col gap-2 text-xs text-slate-600">
                   {categories.map((category) => (
                     <li key={category.id}>
                       <Link
                         href={`/categories/${category.slug}`}
-                        className="block rounded-xl px-3 py-2 transition hover:bg-purple-500/20 hover:text-white"
+                        className="block rounded-xl px-3 py-2 transition hover:bg-white hover:text-slate-900"
                         onClick={() => {
                           setOpen(false);
                           setCategoriesOpen(false);
@@ -75,10 +75,10 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
                     </li>
                   ))}
                 </ul>
-                <div className="mt-3 border-t border-white/10 pt-3 text-[11px]">
+                <div className="mt-3 border-t border-slate-200 pt-3 text-[11px] text-slate-500">
                   <Link
                     href="/categories"
-                    className="transition hover:text-purple-200"
+                    className="transition hover:text-slate-900"
                     onClick={() => {
                       setOpen(false);
                       setCategoriesOpen(false);
@@ -93,8 +93,8 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-2xl border border-white/10 px-4 py-3 transition hover:border-purple-300 hover:text-white ${
-                  link.highlight ? "border-purple-400/40 bg-purple-900/30 text-purple-100" : ""
+                className={`rounded-2xl border border-slate-200 px-4 py-3 transition hover:border-sky-200 hover:text-slate-900 ${
+                  link.highlight ? "border-sky-200 bg-sky-50 text-sky-700" : ""
                 }`}
                 onClick={() => setOpen(false)}
               >
@@ -107,7 +107,7 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-full border border-white/15 px-4 py-2 text-xs text-white/60 hover:border-purple-300 hover:text-white"
+              className="rounded-full border border-slate-200 px-4 py-2 text-xs text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
             >
               بستن
             </button>

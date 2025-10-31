@@ -15,29 +15,29 @@ type ReviewCardProps = {
 
 export function ReviewCard({ review }: ReviewCardProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
+    <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-base font-semibold text-white">
+          <span className="text-base font-semibold text-slate-900">
             {review.customerName}
           </span>
-          <span className="text-xs text-white/40">
+          <span className="text-xs text-slate-400">
             {new Intl.DateTimeFormat("fa-IR", {
               dateStyle: "medium",
             }).format(new Date(review.createdAt))}
           </span>
         </div>
-        <span className="rounded-full bg-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-100">
+        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-600">
           ⭐ {review.rating}/5
         </span>
       </div>
       {review.comment && (
-        <p className="leading-7 text-white/80">“{review.comment}”</p>
+        <p className="leading-7 text-slate-600">“{review.comment}”</p>
       )}
       {review.product && (
         <Link
           href={`/products/${review.product.slug}`}
-          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/30 px-3 py-2 text-xs text-white/70 transition hover:border-purple-300 hover:text-white"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600 transition hover:border-sky-200 hover:text-slate-900"
         >
           {review.product.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -48,7 +48,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
               loading="lazy"
             />
           ) : (
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/50">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-400 shadow">
               محصول
             </span>
           )}

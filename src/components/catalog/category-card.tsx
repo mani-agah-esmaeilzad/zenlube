@@ -9,18 +9,18 @@ export function CategoryCard({ category }: CategoryCardProps) {
   return (
     <Link
       href={`/products?category=${category.slug}`}
-      className="group flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 transition hover:-translate-y-1 hover:border-purple-400/60"
+      className="group flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-500/15"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">{category.name}</h3>
-        <span className="rounded-full bg-purple-500/20 px-3 py-1 text-xs text-purple-100">
+        <h3 className="text-lg font-semibold text-slate-900">{category.name}</h3>
+        <span className="rounded-full bg-sky-100 px-3 py-1 text-xs text-sky-700">
           {category._count.products} محصول
         </span>
       </div>
       {category.description && (
-        <p className="text-sm leading-6 text-white/60 line-clamp-3">{category.description}</p>
+        <p className="text-sm leading-6 text-slate-600 line-clamp-3">{category.description}</p>
       )}
-      <span className="text-xs font-medium text-purple-200">
+      <span className="text-xs font-medium text-sky-600">
         مشاهده محصولات →
       </span>
     </Link>

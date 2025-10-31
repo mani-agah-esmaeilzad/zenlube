@@ -18,14 +18,14 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-xl">
-        <h1 className="text-2xl font-semibold text-white">ساخت حساب ZenLube</h1>
-        <p className="mt-2 text-sm text-white/60">با ثبت‌نام، سبد خرید، سفارش‌ها و پیشنهادهای اختصاصی خودروی خود را مدیریت کنید.</p>
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-500/10">
+        <h1 className="text-2xl font-semibold text-slate-900">ساخت حساب ZenLube</h1>
+        <p className="mt-2 text-sm text-slate-600">با ثبت‌نام، سبد خرید، سفارش‌ها و پیشنهادهای اختصاصی خودروی خود را مدیریت کنید.</p>
         <div className="mt-8">
           <SignUpForm callbackUrl={callbackUrl} />
         </div>
-        <p className="mt-6 text-center text-xs text-white/60">
-          قبلاً حساب دارید؟ <Link href={callbackUrl ? `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/sign-in"} className="text-purple-200 hover:text-purple-100">وارد شوید</Link>
+        <p className="mt-6 text-center text-xs text-slate-500">
+          قبلاً حساب دارید؟ <Link href={callbackUrl ? `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/sign-in"} className="text-sky-600 hover:text-sky-700">وارد شوید</Link>
         </p>
       </div>
     </div>

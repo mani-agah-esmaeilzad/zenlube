@@ -375,7 +375,7 @@ export async function getLatestBlogPosts(limit = 6) {
 }
 
 export async function getAllProductsLite() {
-  return prisma.product.findMany({
+  const products = await prisma.product.findMany({
     select: {
       id: true,
       name: true,
@@ -399,6 +399,12 @@ export async function getAllProductsLite() {
       { name: "asc" },
     ],
   });
+
+  return products.map((product) => ({
+    ...product,
+    averageRating: product.averageRating != null ? Number(product.averageRating) : null,
+    price: Number(product.price),
+  }));
 }
 
 export async function getRelatedBlogPostsForCar(

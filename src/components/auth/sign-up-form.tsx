@@ -20,7 +20,7 @@ function SubmitButton() {
   return (
     <button
       type="submit"
-      className="w-full rounded-full bg-purple-500 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-400 disabled:opacity-60"
+      className="w-full rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:opacity-60"
       disabled={pending}
     >
       {pending ? "در حال ثبت‌نام..." : "ایجاد حساب"}
@@ -48,7 +48,7 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
   return (
     <form action={formAction} className="space-y-5">
       <div className="space-y-2">
-        <label htmlFor="name" className="text-xs font-semibold text-white/70">
+        <label htmlFor="name" className="text-xs font-semibold text-slate-600">
           نام و نام خانوادگی
         </label>
         <input
@@ -56,17 +56,17 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           name="name"
           required
           minLength={2}
-          className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none transition focus:border-purple-400"
+          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
         />
         {fieldErrors.name?.map((error) => (
-          <p key={error} className="text-xs text-red-300">
+          <p key={error} className="text-xs text-red-500">
             {error}
           </p>
         ))}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="email" className="text-xs font-semibold text-white/70">
+        <label htmlFor="email" className="text-xs font-semibold text-slate-600">
           ایمیل
         </label>
         <input
@@ -74,17 +74,17 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           name="email"
           type="email"
           required
-          className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none transition focus:border-purple-400"
+          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
         />
         {fieldErrors.email?.map((error) => (
-          <p key={error} className="text-xs text-red-300">
+          <p key={error} className="text-xs text-red-500">
             {error}
           </p>
         ))}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="password" className="text-xs font-semibold text-white/70">
+        <label htmlFor="password" className="text-xs font-semibold text-slate-600">
           رمز عبور
         </label>
         <input
@@ -93,17 +93,17 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none transition focus:border-purple-400"
+          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
         />
         {fieldErrors.password?.map((error) => (
-          <p key={error} className="text-xs text-red-300">
+          <p key={error} className="text-xs text-red-500">
             {error}
           </p>
         ))}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="confirmPassword" className="text-xs font-semibold text-white/70">
+        <label htmlFor="confirmPassword" className="text-xs font-semibold text-slate-600">
           تکرار رمز عبور
         </label>
         <input
@@ -112,17 +112,17 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none transition focus:border-purple-400"
+          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
         />
         {fieldErrors.confirmPassword?.map((error) => (
-          <p key={error} className="text-xs text-red-300">
+          <p key={error} className="text-xs text-red-500">
             {error}
           </p>
         ))}
       </div>
 
       {state?.message && !state.success && (
-        <p className="text-xs text-red-300">{state.message}</p>
+        <p className="text-xs text-red-500">{state.message}</p>
       )}
 
       <SubmitButton />

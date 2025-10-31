@@ -21,8 +21,8 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
   return (
     <div className="mx-auto max-w-6xl px-6 py-12 space-y-12">
       <header className="space-y-4">
-        <h1 className="text-3xl font-semibold text-white">دفترچه‌های دیجیتال خودرو</h1>
-        <p className="text-sm leading-7 text-white/70">
+        <h1 className="text-3xl font-semibold text-slate-900">دفترچه‌های دیجیتال خودرو</h1>
+        <p className="text-sm leading-7 text-slate-600">
           برای هر خودرو دفترچه‌ای تعاملی شامل صفحه موتور، صفحه گیربکس و نکات نگهداری تهیه شده است.
           می‌توانید استاندارد روغن، ویسکوزیته پیشنهادی و محصولات سازگار را در چند صفحه مطالعه کنید.
         </p>
@@ -32,11 +32,11 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
             name="search"
             defaultValue={search}
             placeholder="جستجو بر اساس نام خودرو، موتور یا کد موتور"
-            className="flex-1 min-w-[220px] rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm text-white outline-none transition focus:border-purple-400"
+            className="flex-1 min-w-[220px] rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300"
           />
           <button
             type="submit"
-            className="rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white hover:bg-purple-400"
+            className="rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-sky-600"
           >
             جستجو
           </button>
@@ -51,7 +51,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
           </div>
         ))}
         {filteredCars.length === 0 && (
-          <div className="rounded-3xl border border-white/10 bg-black/30 p-10 text-center text-white/60">
+          <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
             خودرویی با این مشخصات یافت نشد.
           </div>
         )}

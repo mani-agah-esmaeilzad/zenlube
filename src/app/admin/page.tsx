@@ -450,25 +450,25 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               {overviewCards.map((card) => (
                 <div
                   key={card.label}
-                  className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-sm shadow-black/20"
+                  className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-500/10"
                 >
-                  <p className="text-sm text-white/60">{card.label}</p>
-                  <p className="mt-3 text-2xl font-semibold text-white">{card.value}</p>
-                  <p className="mt-1 text-xs text-white/50">{card.helper}</p>
+                  <p className="text-sm text-slate-500">{card.label}</p>
+                  <p className="mt-3 text-2xl font-semibold text-slate-900">{card.value}</p>
+                  <p className="mt-1 text-xs text-slate-400">{card.helper}</p>
                 </div>
               ))}
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-lg font-semibold text-white">وضعیت سفارش‌ها</h2>
+              <h2 className="text-lg font-semibold text-slate-900">وضعیت سفارش‌ها</h2>
               <div className="flex flex-wrap gap-3">
                 {orderStatusChips.map((chip) => (
                   <span
                     key={chip.key}
-                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-white/70"
+                    className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
                   >
                     <span>{chip.label}</span>
-                    <span className="rounded-full bg-purple-500/20 px-2 py-1 text-white">
+                    <span className="rounded-full bg-sky-500/20 px-2 py-1 text-slate-900">
                       {numberFormatter.format(chip.value)}
                     </span>
                   </span>
@@ -477,18 +477,18 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </section>
 
             <section className="grid gap-6 xl:grid-cols-3">
-              <div className="xl:col-span-2 overflow-hidden rounded-3xl border border-white/10 bg-black/30">
-                <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-                  <h2 className="text-lg font-semibold text-white">آخرین سفارش‌ها</h2>
-                  <span className="text-xs text-white/50">
+              <div className="xl:col-span-2 overflow-hidden rounded-3xl border border-slate-200 bg-slate-50">
+                <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                  <h2 className="text-lg font-semibold text-slate-900">آخرین سفارش‌ها</h2>
+                  <span className="text-xs text-slate-400">
                     {totalOrders
                       ? `${numberFormatter.format(totalOrders)} سفارش در مجموع`
                       : "هنوز سفارشی ثبت نشده"}
                   </span>
                 </div>
                 {recentOrders.length ? (
-                  <table className="min-w-full divide-y divide-white/10 text-sm text-white/70">
-                    <thead className="bg-black/40 text-xs uppercase text-white/50">
+                  <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+                    <thead className="bg-slate-100 text-xs uppercase text-slate-400">
                       <tr>
                         <th className="px-4 py-3 text-right">مشتری</th>
                         <th className="px-4 py-3 text-right">ایمیل</th>
@@ -497,20 +497,20 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         <th className="px-4 py-3 text-right">تاریخ</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/10 bg-black/20">
+                    <tbody className="divide-y divide-slate-200 bg-slate-50">
                       {recentOrders.map((order) => (
                         <tr key={order.id}>
-                          <td className="px-4 py-3 text-white">{order.fullName}</td>
-                          <td className="px-4 py-3 text-xs text-white/60">
+                          <td className="px-4 py-3 text-slate-900">{order.fullName}</td>
+                          <td className="px-4 py-3 text-xs text-slate-500">
                             {order.user?.email ?? order.email}
                           </td>
-                          <td className="px-4 py-3 text-white">{formatPrice(order.total)}</td>
+                          <td className="px-4 py-3 text-slate-900">{formatPrice(order.total)}</td>
                           <td className="px-4 py-3">
-                            <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/70">
+                            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600">
                               {orderStatusLabels[order.status] ?? order.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-xs text-white/50">
+                          <td className="px-4 py-3 text-xs text-slate-400">
                             {dateTimeFormatter.format(order.createdAt)}
                           </td>
                         </tr>
@@ -518,82 +518,82 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     </tbody>
                   </table>
                 ) : (
-                  <p className="px-6 py-10 text-sm text-white/60">هنوز سفارشی ثبت نشده است.</p>
+                  <p className="px-6 py-10 text-sm text-slate-500">هنوز سفارشی ثبت نشده است.</p>
                 )}
               </div>
 
               <div className="space-y-6">
-                <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/30">
-                  <div className="border-b border-white/10 px-5 py-4">
-                    <h2 className="text-sm font-semibold text-white">برندهای دارای بیشترین محصول</h2>
+                <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50">
+                  <div className="border-b border-slate-200 px-5 py-4">
+                    <h2 className="text-sm font-semibold text-slate-900">برندهای دارای بیشترین محصول</h2>
                   </div>
                   {bestSellingBrands.length ? (
-                    <ul className="divide-y divide-white/10">
+                    <ul className="divide-y divide-slate-200">
                       {bestSellingBrands.map((brand) => (
                         <li
                           key={brand.id}
-                          className="flex items-center justify-between px-5 py-3 text-sm text-white/80"
+                          className="flex items-center justify-between px-5 py-3 text-sm text-slate-700"
                         >
                           <div>
-                            <p className="text-white">{brand.name}</p>
-                            <p className="text-xs text-white/40">{brand.slug}</p>
+                            <p className="text-slate-900">{brand.name}</p>
+                            <p className="text-xs text-slate-400">{brand.slug}</p>
                           </div>
-                          <span className="rounded-full bg-purple-500/20 px-3 py-1 text-xs text-purple-100">
+                          <span className="rounded-full bg-sky-500/20 px-3 py-1 text-xs text-sky-600">
                             {numberFormatter.format(brand._count.products)} محصول
                           </span>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="px-5 py-8 text-xs text-white/50">هنوز برندی ثبت نشده است.</p>
+                    <p className="px-5 py-8 text-xs text-slate-400">هنوز برندی ثبت نشده است.</p>
                   )}
                 </div>
 
-                <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/30">
-                  <div className="border-b border-white/10 px-5 py-4">
-                    <h2 className="text-sm font-semibold text-white">دسته‌بندی‌های پرترافیک</h2>
+                <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50">
+                  <div className="border-b border-slate-200 px-5 py-4">
+                    <h2 className="text-sm font-semibold text-slate-900">دسته‌بندی‌های پرترافیک</h2>
                   </div>
                   {busiestCategories.length ? (
-                    <ul className="divide-y divide-white/10">
+                    <ul className="divide-y divide-slate-200">
                       {busiestCategories.map((category) => (
                         <li
                           key={category.id}
-                          className="flex items-center justify-between px-5 py-3 text-sm text-white/80"
+                          className="flex items-center justify-between px-5 py-3 text-sm text-slate-700"
                         >
                           <div>
-                            <p className="text-white">{category.name}</p>
-                            <p className="text-xs text-white/40">{category.slug}</p>
+                            <p className="text-slate-900">{category.name}</p>
+                            <p className="text-xs text-slate-400">{category.slug}</p>
                           </div>
-                          <span className="rounded-full bg-purple-500/20 px-3 py-1 text-xs text-purple-100">
+                          <span className="rounded-full bg-sky-500/20 px-3 py-1 text-xs text-sky-600">
                             {numberFormatter.format(category._count.products)} محصول
                           </span>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="px-5 py-8 text-xs text-white/50">هنوز دسته‌بندی ثبت نشده است.</p>
+                    <p className="px-5 py-8 text-xs text-slate-400">هنوز دسته‌بندی ثبت نشده است.</p>
                   )}
                 </div>
               </div>
             </section>
 
             <section className="grid gap-6 xl:grid-cols-3">
-              <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/30">
-                <div className="border-b border-white/10 px-5 py-4">
-                  <h2 className="text-sm font-semibold text-white">آخرین کاربران ثبت‌نام‌شده</h2>
+              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50">
+                <div className="border-b border-slate-200 px-5 py-4">
+                  <h2 className="text-sm font-semibold text-slate-900">آخرین کاربران ثبت‌نام‌شده</h2>
                 </div>
                 {recentUsers.length ? (
-                  <ul className="divide-y divide-white/10">
+                  <ul className="divide-y divide-slate-200">
                     {recentUsers.map((user) => (
                       <li
                         key={user.id}
-                        className="flex items-center justify-between px-5 py-3 text-sm text-white/80"
+                        className="flex items-center justify-between px-5 py-3 text-sm text-slate-700"
                       >
                         <div>
-                          <p className="text-white">{user.name ?? user.email}</p>
-                          <p className="text-xs text-white/40">{user.email}</p>
+                          <p className="text-slate-900">{user.name ?? user.email}</p>
+                          <p className="text-xs text-slate-400">{user.email}</p>
                         </div>
-                        <div className="text-left text-xs text-white/50">
+                        <div className="text-left text-xs text-slate-400">
                           <p>{roleLabels[user.role]}</p>
                           <p>{dateFormatter.format(user.createdAt)}</p>
                         </div>
@@ -601,28 +601,28 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     ))}
                   </ul>
                 ) : (
-                  <p className="px-5 py-8 text-xs text-white/50">هنوز کاربری ثبت نشده است.</p>
+                  <p className="px-5 py-8 text-xs text-slate-400">هنوز کاربری ثبت نشده است.</p>
                 )}
               </div>
 
-              <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/30">
-                <div className="border-b border-white/10 px-5 py-4">
-                  <h2 className="text-sm font-semibold text-white">محصولات تازه به‌روزرسانی‌شده</h2>
+              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50">
+                <div className="border-b border-slate-200 px-5 py-4">
+                  <h2 className="text-sm font-semibold text-slate-900">محصولات تازه به‌روزرسانی‌شده</h2>
                 </div>
                 {latestProducts.length ? (
-                  <ul className="divide-y divide-white/10">
+                  <ul className="divide-y divide-slate-200">
                     {latestProducts.map((product) => (
                       <li
                         key={product.id}
-                        className="flex items-center justify-between px-5 py-3 text-sm text-white/80"
+                        className="flex items-center justify-between px-5 py-3 text-sm text-slate-700"
                       >
                         <div>
-                          <p className="text-white">{product.name}</p>
-                          <p className="text-xs text-white/40">
+                          <p className="text-slate-900">{product.name}</p>
+                          <p className="text-xs text-slate-400">
                             {product.brand.name} · {product.category.name}
                           </p>
                         </div>
-                        <div className="text-left text-xs text-white/50">
+                        <div className="text-left text-xs text-slate-400">
                           <p>{formatPrice(product.price)}</p>
                           <p>{numberFormatter.format(product.stock)} عدد موجودی</p>
                         </div>
@@ -630,26 +630,26 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     ))}
                   </ul>
                 ) : (
-                  <p className="px-5 py-8 text-xs text-white/50">هنوز محصولی ثبت نشده است.</p>
+                  <p className="px-5 py-8 text-xs text-slate-400">هنوز محصولی ثبت نشده است.</p>
                 )}
               </div>
 
-              <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/30">
-                <div className="border-b border-white/10 px-5 py-4">
-                  <h2 className="text-sm font-semibold text-white">
+              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50">
+                <div className="border-b border-slate-200 px-5 py-4">
+                  <h2 className="text-sm font-semibold text-slate-900">
                     محصولات در آستانه اتمام موجودی
                   </h2>
                 </div>
                 {lowStockPreview.length ? (
-                  <ul className="divide-y divide-white/10">
+                  <ul className="divide-y divide-slate-200">
                     {lowStockPreview.map((product) => (
                       <li
                         key={product.id}
-                        className="flex items-center justify-between px-5 py-3 text-sm text-white/80"
+                        className="flex items-center justify-between px-5 py-3 text-sm text-slate-700"
                       >
                         <div>
-                          <p className="text-white">{product.name}</p>
-                          <p className="text-xs text-white/40">{product.brand.name}</p>
+                          <p className="text-slate-900">{product.name}</p>
+                          <p className="text-xs text-slate-400">{product.brand.name}</p>
                         </div>
                         <span className="rounded-full bg-red-500/20 px-3 py-1 text-xs text-red-200">
                           {numberFormatter.format(product.stock)} عدد
@@ -658,7 +658,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     ))}
                   </ul>
                 ) : (
-                  <p className="px-5 py-8 text-xs text-white/50">
+                  <p className="px-5 py-8 text-xs text-slate-400">
                     هیچ محصولی در آستانه اتمام موجودی نیست.
                   </p>
                 )}
@@ -669,9 +669,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       case "products":
         return (
           <div className="space-y-10">
-            <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-xl font-semibold text-white">افزودن محصول جدید</h2>
-              <p className="mt-2 text-xs text-white/60">
+            <section className="rounded-3xl border border-slate-200 bg-white p-6">
+              <h2 className="text-xl font-semibold text-slate-900">افزودن محصول جدید</h2>
+              <p className="mt-2 text-xs text-slate-500">
                 پس از ثبت محصول، خودروهای سازگار را انتخاب کنید تا در صفحه خودروها و پیشنهادها
                 نمایش داده شود.
               </p>
@@ -685,48 +685,48 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 <input
                   name="name"
                   placeholder="نام محصول"
-                  className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="sm:col-span-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <input
                   name="slug"
                   placeholder="اسلاگ (مثال: mobil-1-5w30)"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <input
                   name="sku"
                   placeholder="کد محصول / SKU"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <input
                   name="price"
                   placeholder="قیمت (ریال)"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <input
                   name="stock"
                   placeholder="موجودی"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <input
                   name="viscosity"
                   placeholder="ویسکوزیته"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <input
                   name="oilType"
                   placeholder="نوع روغن (مثال: تمام سنتتیک)"
-                  className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <input
                   name="imageUrl"
                   placeholder="آدرس تصویر محصول"
-                  className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="sm:col-span-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <div>
-                  <label className="text-xs text-white/60">دسته‌بندی</label>
+                  <label className="text-xs text-slate-500">دسته‌بندی</label>
                   <select
                     name="categoryId"
-                    className="mt-2 w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="mt-2 w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   >
                     {categories.map((category) => (
                       <option key={category.id} value={category.id}>
@@ -736,10 +736,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-white/60">برند</label>
+                  <label className="text-xs text-slate-500">برند</label>
                   <select
                     name="brandId"
-                    className="mt-2 w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="mt-2 w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   >
                     {brands.map((brand) => (
                       <option key={brand.id} value={brand.id}>
@@ -749,11 +749,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </select>
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="text-xs text-white/60">خودروهای سازگار</label>
+                  <label className="text-xs text-slate-500">خودروهای سازگار</label>
                   <select
                     name="carIds"
                     multiple
-                    className="mt-2 h-40 w-full rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="mt-2 h-40 w-full rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   >
                     {cars.map((car) => (
                       <option key={car.id} value={car.id}>
@@ -761,7 +761,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-2 text-[11px] text-white/40">
+                  <p className="mt-2 text-[11px] text-slate-400">
                     با نگه داشتن کلیدهای Ctrl یا Cmd می‌توانید چند خودرو را همزمان انتخاب کنید.
                   </p>
                 </div>
@@ -770,20 +770,20 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     id="isFeatured"
                     name="isFeatured"
                     type="checkbox"
-                    className="h-5 w-5 rounded border border-white/15 bg-black/40"
+                    className="h-5 w-5 rounded border border-slate-200 bg-slate-100"
                   />
-                  <label htmlFor="isFeatured" className="text-xs text-white/60">
+                  <label htmlFor="isFeatured" className="text-xs text-slate-500">
                     نمایش در محصولات ویژه
                   </label>
                 </div>
                 <textarea
                   name="description"
                   placeholder="توضیحات محصول"
-                  className="sm:col-span-2 h-28 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                  className="sm:col-span-2 h-28 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                 />
                 <button
                   type="submit"
-                  className="sm:col-span-2 rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
+                  className="sm:col-span-2 rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-slate-900 transition hover:bg-sky-600"
                 >
                   ذخیره محصول
                 </button>
@@ -792,8 +792,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
             {lowStockCount ? (
               <section className="rounded-3xl border border-yellow-500/30 bg-yellow-500/10 p-6">
-                <h3 className="text-sm font-semibold text-white">محصولات کم‌موجودی</h3>
-                <p className="mt-1 text-xs text-white/70">
+                <h3 className="text-sm font-semibold text-slate-900">محصولات کم‌موجودی</h3>
+                <p className="mt-1 text-xs text-slate-600">
                   {numberFormatter.format(lowStockCount)} محصول کمتر از ۱۰ عدد موجودی دارند.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -811,15 +811,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
             <section className="space-y-4">
               <div>
-                <h2 className="text-xl font-semibold text-white">مدیریت محصولات</h2>
-                <p className="mt-2 text-xs text-white/60">
+                <h2 className="text-xl font-semibold text-slate-900">مدیریت محصولات</h2>
+                <p className="mt-2 text-xs text-slate-500">
                   برای حذف محصول از جدول زیر استفاده کنید. برای ویرایش، محصول را دوباره با اسلاگ
                   مشابه ثبت کنید تا به‌روزرسانی انجام شود.
                 </p>
               </div>
-              <div className="overflow-hidden rounded-3xl border border-white/10">
-                <table className="min-w-full divide-y divide-white/10 text-sm text-white/70">
-                  <thead className="bg-black/40 text-xs uppercase text-white/50">
+              <div className="overflow-hidden rounded-3xl border border-slate-200">
+                <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+                  <thead className="bg-slate-100 text-xs uppercase text-slate-400">
                     <tr>
                       <th className="px-4 py-3 text-right">نام</th>
                       <th className="px-4 py-3 text-right">برند</th>
@@ -830,10 +830,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       <th className="px-4 py-3 text-right">اقدامات</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10 bg-black/20">
+                  <tbody className="divide-y divide-slate-200 bg-slate-50">
                     {products.map((product) => (
                       <tr key={product.id}>
-                        <td className="px-4 py-3 text-white">{product.name}</td>
+                        <td className="px-4 py-3 text-slate-900">{product.name}</td>
                         <td className="px-4 py-3">{product.brand.name}</td>
                         <td className="px-4 py-3">{product.category.name}</td>
                         <td className="px-4 py-3">{formatPrice(product.price)}</td>
@@ -844,14 +844,14 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                               {product.carMappings.map(({ car }) => (
                                 <span
                                   key={car.id}
-                                  className="rounded-full border border-white/15 px-2 py-1"
+                                  className="rounded-full border border-slate-200 px-2 py-1"
                                 >
                                   {car.manufacturer} {car.model}
                                 </span>
                               ))}
                             </div>
                           ) : (
-                            <span className="text-white/40">ثبت‌نشده</span>
+                            <span className="text-slate-400">ثبت‌نشده</span>
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -882,9 +882,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         return (
           <div className="space-y-10">
             <section className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-                <h2 className="text-xl font-semibold text-white">ثبت یا ویرایش خودرو</h2>
-                <p className="mt-2 text-xs text-white/60">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                <h2 className="text-xl font-semibold text-slate-900">ثبت یا ویرایش خودرو</h2>
+                <p className="mt-2 text-xs text-slate-500">
                   خودرو جدید را با دیتاشیت کامل ثبت کنید. برای ویرایش، فرم را با همان اسلاگ ارسال
                   کنید تا اطلاعات دفترچه‌ای به‌روزرسانی شود.
                 </p>
@@ -898,108 +898,108 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <input
                     name="slug"
                     placeholder="اسلاگ خودرو (مثال: bmw-320i-f30)"
-                    className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="sm:col-span-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="manufacturer"
                     placeholder="سازنده"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="model"
                     placeholder="مدل"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="generation"
                     placeholder="نسل / تیپ (اختیاری)"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="imageUrl"
                     placeholder="آدرس تصویر یا جلد دفترچه (اختیاری)"
-                    className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="sm:col-span-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="engineType"
                     placeholder="نوع موتور"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="engineCode"
                     placeholder="کد موتور (اختیاری)"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="viscosity"
                     placeholder="ویسکوزیته پیشنهادی (SAE)"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="oilCapacityLit"
                     placeholder="ظرفیت روغن موتور (لیتر)"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="specification"
                     placeholder="استاندارد سازنده (مثال: VW 504.00)"
-                    className="sm:col-span-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="sm:col-span-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="yearFrom"
                     placeholder="سال شروع تولید"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="yearTo"
                     placeholder="سال پایان تولید"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <textarea
                     name="overviewDetails"
                     placeholder="صفحه مقدمه دفترچه: معرفی کلی خودرو"
-                    className="sm:col-span-2 h-28 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="sm:col-span-2 h-28 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <textarea
                     name="engineDetails"
                     placeholder="صفحه موتور: ساختار فنی، ظرفیت، روغن و توصیه‌های سرویس"
-                    className="sm:col-span-2 h-32 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="sm:col-span-2 h-32 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <textarea
                     name="gearboxDetails"
                     placeholder="صفحه گیربکس: نوع جعبه‌دنده، روغن مناسب، ظرفیت و دوره‌های سرویس"
-                    className="sm:col-span-2 h-32 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="sm:col-span-2 h-32 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <textarea
                     name="maintenanceInfo"
                     placeholder="صفحه نگهداری: برنامه بازدیدها، سیالات مصرفی و نکات تخصصی"
-                    className="sm:col-span-2 h-32 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="sm:col-span-2 h-32 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <button
                     type="submit"
-                    className="sm:col-span-2 rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
+                    className="sm:col-span-2 rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-slate-900 transition hover:bg-sky-600"
                   >
                     ذخیره خودرو
                   </button>
                 </form>
               </div>
 
-              <div className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-6">
+              <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-white">خودروهای ثبت‌شده</h2>
-                    <p className="mt-1 text-xs text-white/60">
+                    <h2 className="text-lg font-semibold text-slate-900">خودروهای ثبت‌شده</h2>
+                    <p className="mt-1 text-xs text-slate-500">
                       {numberFormatter.format(totalCars)} خودرو در پایگاه داده موجود است.
                     </p>
                   </div>
-                  <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60">
+                  <span className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500">
                     مرتب‌سازی بر اساس سازنده
                   </span>
                 </div>
-                <div className="overflow-hidden rounded-3xl border border-white/10">
+                <div className="overflow-hidden rounded-3xl border border-slate-200">
                   {cars.length ? (
-                    <table className="min-w-full divide-y divide-white/10 text-sm text-white/70">
-                      <thead className="bg-black/40 text-xs uppercase text-white/50">
+                    <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+                      <thead className="bg-slate-100 text-xs uppercase text-slate-400">
                         <tr>
                           <th className="px-4 py-3 text-right">نام</th>
                           <th className="px-4 py-3 text-right">سال‌ها</th>
@@ -1009,19 +1009,19 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                           <th className="px-4 py-3 text-right">آخرین به‌روزرسانی</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/10 bg-black/20">
+                      <tbody className="divide-y divide-slate-200 bg-slate-50">
                         {cars.map((car) => (
                           <tr key={car.id}>
                             <td className="px-4 py-3">
                               <div className="flex flex-col">
                                 <Link
                                   href={`/cars/${car.slug}`}
-                                  className="text-white hover:text-purple-200"
+                                  className="text-slate-900 hover:text-sky-600"
                                 >
                                   {car.manufacturer} {car.model}
                                 </Link>
                                 {car.generation && (
-                                  <span className="text-xs text-white/40">{car.generation}</span>
+                                  <span className="text-xs text-slate-400">{car.generation}</span>
                                 )}
                               </div>
                             </td>
@@ -1031,7 +1031,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             <td className="px-4 py-3 text-xs">
                               {car.engineType ?? "نامشخص"}
                               {car.engineCode ? (
-                                <span className="ml-2 inline-block rounded-full border border-white/15 px-2 py-0.5 text-[11px] text-white/60">
+                                <span className="ml-2 inline-block rounded-full border border-slate-200 px-2 py-0.5 text-[11px] text-slate-500">
                                   {car.engineCode}
                                 </span>
                               ) : null}
@@ -1039,7 +1039,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             <td className="px-4 py-3 text-xs">
                               {car.viscosity ?? "—"}
                               {car.oilCapacityLit ? (
-                                <span className="ml-2 inline-block rounded-full border border-purple-400/40 px-2 py-0.5 text-[11px] text-purple-100">
+                                <span className="ml-2 inline-block rounded-full border border-sky-200 px-2 py-0.5 text-[11px] text-sky-600">
                                   {car.oilCapacityLit.toString()} لیتر
                                 </span>
                               ) : null}
@@ -1047,7 +1047,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             <td className="px-4 py-3 text-xs">
                               {numberFormatter.format(car._count?.productMappings ?? 0)}
                             </td>
-                            <td className="px-4 py-3 text-xs text-white/50">
+                            <td className="px-4 py-3 text-xs text-slate-400">
                               {dateFormatter.format(car.updatedAt)}
                             </td>
                           </tr>
@@ -1055,7 +1055,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       </tbody>
                     </table>
                   ) : (
-                    <p className="px-6 py-10 text-sm text-white/60">
+                    <p className="px-6 py-10 text-sm text-slate-500">
                       هنوز خودرویی ثبت نشده است. اولین خودرو را با فرم کنار ثبت کنید.
                     </p>
                   )}
@@ -1068,9 +1068,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         return (
           <div className="space-y-10">
             <section className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-                <h2 className="text-xl font-semibold text-white">افزودن برنامه نگهداری</h2>
-                <p className="mt-2 text-xs text-white/60">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                <h2 className="text-xl font-semibold text-slate-900">افزودن برنامه نگهداری</h2>
+                <p className="mt-2 text-xs text-slate-500">
                   برنامه‌های سرویس دوره‌ای را بر اساس خودرو و بازه‌های زمانی/کیلومتر ثبت کنید. با ثبت
                   دوباره همان عنوان برای یک خودرو، اطلاعات به‌روزرسانی می‌شود.
                 </p>
@@ -1082,10 +1082,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   className="mt-6 grid gap-4"
                 >
                   <div>
-                    <label className="text-xs text-white/60">انتخاب خودرو</label>
+                    <label className="text-xs text-slate-500">انتخاب خودرو</label>
                     <select
                       name="carId"
-                      className="mt-2 w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                      className="mt-2 w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                     >
                       {cars.map((car) => (
                         <option key={car.id} value={car.id}>
@@ -1097,28 +1097,28 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <input
                     name="title"
                     placeholder="عنوان برنامه (مثال: تعویض روغن ۱۰ هزار کیلومتر)"
-                    className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <textarea
                     name="description"
                     placeholder="جزئیات انجام سرویس و نکات تکمیلی"
-                    className="h-24 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="h-24 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <div className="grid gap-4 sm:grid-cols-3">
                     <input
                       name="intervalKm"
                       placeholder="فاصله کیلومتری (مثال: 10000)"
-                      className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                      className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                     />
                     <input
                       name="intervalMonths"
                       placeholder="فاصله زمانی (ماه)"
-                      className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                      className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                     />
                     <select
                       name="priority"
                       defaultValue="1"
-                      className="rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                      className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                     >
                       <option value="1">اولویت ۱ (حیاتی)</option>
                       <option value="2">اولویت ۲</option>
@@ -1128,29 +1128,29 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-white/60">محصولات پیشنهادی (اسلاگ‌ها با ویرگول)</label>
+                    <label className="text-xs text-slate-500">محصولات پیشنهادی (اسلاگ‌ها با ویرگول)</label>
                     <input
                       name="recommendedProductSlugs"
                       placeholder="mobil-1-esp-x3-0w40, castrol-edge-5w30-ll"
-                      className="mt-2 rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                      className="mt-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                     />
-                    <p className="mt-2 text-[11px] text-white/40">
+                    <p className="mt-2 text-[11px] text-slate-400">
                       برای اتصال مستقیم به محصولات، اسلاگ فروشگاهی را وارد کنید. در صورت خالی بودن این بخش،
                       فقط توضیحات نمایش داده خواهد شد.
                     </p>
                   </div>
                   <button
                     type="submit"
-                    className="rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
+                    className="rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-slate-900 transition hover:bg-sky-600"
                   >
                     ذخیره برنامه
                   </button>
                 </form>
               </div>
 
-              <div className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-6">
-                <h3 className="text-sm font-semibold text-white">نمای کلی نگهداری</h3>
-                <ul className="space-y-2 text-xs text-white/60">
+              <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                <h3 className="text-sm font-semibold text-slate-900">نمای کلی نگهداری</h3>
+                <ul className="space-y-2 text-xs text-slate-500">
                   <li>
                     تعداد کل برنامه‌ها: {numberFormatter.format(maintenanceTasks.length)} مورد
                   </li>
@@ -1163,9 +1163,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       : "0"}
                   </li>
                 </ul>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">
-                  <p className="font-semibold text-white">راهنمای به‌روزرسانی</p>
-                  <p className="mt-2 leading-6 text-white/60">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-600">
+                  <p className="font-semibold text-slate-900">راهنمای به‌روزرسانی</p>
+                  <p className="mt-2 leading-6 text-slate-500">
                     برای ویرایش یک برنامه، همان عنوان را دوباره با اطلاعات جدید ارسال کنید. برای حذف، از
                     لیست برنامه‌های فعال استفاده کنید.
                   </p>
@@ -1175,8 +1175,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
             <section className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-white">دفترچه نگهداری خودروها</h2>
-                <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60">
+                <h2 className="text-xl font-semibold text-slate-900">دفترچه نگهداری خودروها</h2>
+                <span className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500">
                   {numberFormatter.format(maintenanceTasks.length)} برنامه ثبت‌شده
                 </span>
               </div>
@@ -1189,23 +1189,23 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     return (
                       <div
                         key={groupKey}
-                        className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-6"
+                        className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-6"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-lg font-semibold text-white">
+                            <p className="text-lg font-semibold text-slate-900">
                               {car ? `${car.manufacturer} ${car.model}` : "خودرو نامشخص"}
                             </p>
                             {car?.slug ? (
                               <Link
                                 href={`/cars/${car.slug}`}
-                                className="mt-1 inline-block text-xs text-purple-300 hover:text-purple-100"
+                                className="mt-1 inline-block text-xs text-purple-300 hover:text-sky-600"
                               >
                                 مشاهده صفحه خودرو
                               </Link>
                             ) : null}
                           </div>
-                          <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/60">
+                          <span className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-500">
                             {numberFormatter.format(tasks.length)} وظیفه
                           </span>
                         </div>
@@ -1216,43 +1216,43 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             return (
                               <div
                                 key={task.id}
-                                className="space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4"
+                                className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"
                               >
                                 <div className="flex items-start justify-between gap-4">
                                   <div>
-                                    <p className="font-semibold text-white">{task.title}</p>
-                                    <p className="mt-1 text-xs leading-6 text-white/60">
+                                    <p className="font-semibold text-slate-900">{task.title}</p>
+                                    <p className="mt-1 text-xs leading-6 text-slate-500">
                                       {task.description ?? "جزئیاتی ثبت نشده است."}
                                     </p>
                                   </div>
-                                  <span className="rounded-full border border-purple-400/40 px-3 py-1 text-[11px] text-purple-100">
+                                  <span className="rounded-full border border-sky-200 px-3 py-1 text-[11px] text-sky-600">
                                     اولویت {task.priority}
                                   </span>
                                 </div>
-                                <div className="flex flex-wrap gap-2 text-[11px] text-white/60">
-                                  <span className="rounded-full border border-white/15 px-3 py-1">
+                                <div className="flex flex-wrap gap-2 text-[11px] text-slate-500">
+                                  <span className="rounded-full border border-slate-200 px-3 py-1">
                                     هر {task.intervalKm ? numberFormatter.format(task.intervalKm) + " کیلومتر" : "—"}
                                   </span>
-                                  <span className="rounded-full border border-white/15 px-3 py-1">
+                                  <span className="rounded-full border border-slate-200 px-3 py-1">
                                     هر {task.intervalMonths ? numberFormatter.format(task.intervalMonths) + " ماه" : "—"}
                                   </span>
                                 </div>
                                 {recommendedProducts.length ? (
-                                  <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                                  <div className="flex flex-wrap gap-2 text-xs text-slate-600">
                                     {recommendedProducts.map((slug) => {
                                       const prod = productBySlug.get(slug);
                                       return prod ? (
                                         <Link
                                           key={slug}
                                           href={`/products/${prod.slug}`}
-                                          className="inline-flex items-center gap-1 rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-purple-100 transition hover:border-purple-300/60 hover:text-purple-50"
+                                          className="inline-flex items-center gap-1 rounded-full border border-purple-400/30 bg-sky-500/10 px-3 py-1 text-sky-600 transition hover:border-sky-200/60 hover:text-purple-50"
                                         >
                                           {prod.brand.name} · {prod.name}
                                         </Link>
                                       ) : (
                                         <span
                                           key={slug}
-                                          className="rounded-full border border-white/15 px-3 py-1 text-white/60"
+                                          className="rounded-full border border-slate-200 px-3 py-1 text-slate-500"
                                         >
                                           {slug}
                                         </span>
@@ -1283,7 +1283,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   })}
                 </div>
               ) : (
-                <div className="rounded-3xl border border-dashed border-white/15 bg-black/20 p-10 text-center text-sm text-white/50">
+                <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center text-sm text-slate-400">
                   هنوز برنامه نگهداری ثبت نشده است.
                 </div>
               )}
@@ -1294,10 +1294,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         return (
           <div className="space-y-10">
             <section className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-white">پرسش‌های محصولات</h2>
-                  <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60">
+                  <h2 className="text-xl font-semibold text-slate-900">پرسش‌های محصولات</h2>
+                  <span className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500">
                     {numberFormatter.format(pendingProductQuestionsCount)} در انتظار پاسخ
                   </span>
                 </div>
@@ -1305,17 +1305,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   {[...pendingProductQuestionsList, ...answeredProductQuestionsList].map((question) => {
                     const isAnswered = question.status === "ANSWERED";
                     return (
-                      <div key={question.id} className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-5">
+                      <div key={question.id} className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-sm font-semibold text-white">{question.question}</p>
-                            <p className="mt-2 text-[11px] text-white/50">
+                            <p className="text-sm font-semibold text-slate-900">{question.question}</p>
+                            <p className="mt-2 text-[11px] text-slate-400">
                               {question.authorName} · {dateFormatter.format(question.createdAt)}
                             </p>
                             {question.product ? (
                               <Link
                                 href={`/products/${question.product.slug}`}
-                                className="mt-1 inline-flex items-center gap-1 text-[11px] text-purple-300 hover:text-purple-100"
+                                className="mt-1 inline-flex items-center gap-1 text-[11px] text-purple-300 hover:text-sky-600"
                               >
                                 {question.product.brand.name} · {question.product.name}
                               </Link>
@@ -1327,7 +1327,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                               isAnswered
                                 ? "border-emerald-400/40 text-emerald-200"
                                 : question.status === "ARCHIVED"
-                                ? "border-white/20 text-white/50"
+                                ? "border-slate-200 text-slate-400"
                                 : "border-yellow-400/40 text-yellow-200",
                             )}
                           >
@@ -1347,21 +1347,21 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             name="answer"
                             defaultValue={question.answer ?? ""}
                             placeholder="پاسخ خود را بنویسید"
-                            className="h-24 w-full rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                            className="h-24 w-full rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                           />
-                          <label className="flex items-center gap-2 text-[11px] text-white/60">
+                          <label className="flex items-center gap-2 text-[11px] text-slate-500">
                             <input
                               name="markAnswered"
                               type="checkbox"
                               defaultChecked={isAnswered}
-                              className="h-4 w-4 rounded border border-white/20 bg-black/40"
+                              className="h-4 w-4 rounded border border-slate-200 bg-slate-100"
                             />
                             علامت‌گذاری به عنوان پاسخ داده شده
                           </label>
                           <div className="flex items-center gap-3">
                             <button
                               type="submit"
-                              className="rounded-full bg-purple-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-purple-400"
+                              className="rounded-full bg-sky-500 px-4 py-2 text-xs font-semibold text-slate-900 transition hover:bg-sky-600"
                             >
                               ذخیره پاسخ
                             </button>
@@ -1371,7 +1371,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                 "use server";
                                 await archiveQuestionAction(question.id, "product");
                               }}
-                              className="rounded-full border border-white/20 px-3 py-1 text-[11px] text-white/60 transition hover:border-white/40 hover:text-white/80"
+                              className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-500 transition hover:border-white/40 hover:text-slate-700"
                             >
                               بایگانی
                             </button>
@@ -1383,10 +1383,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-white">پرسش‌های خودرو</h2>
-                  <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60">
+                  <h2 className="text-xl font-semibold text-slate-900">پرسش‌های خودرو</h2>
+                  <span className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500">
                     {numberFormatter.format(pendingCarQuestionsCount)} در انتظار پاسخ
                   </span>
                 </div>
@@ -1394,17 +1394,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   {[...pendingCarQuestionsList, ...answeredCarQuestionsList].map((question) => {
                     const isAnswered = question.status === "ANSWERED";
                     return (
-                      <div key={question.id} className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-5">
+                      <div key={question.id} className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-sm font-semibold text-white">{question.question}</p>
-                            <p className="mt-2 text-[11px] text-white/50">
+                            <p className="text-sm font-semibold text-slate-900">{question.question}</p>
+                            <p className="mt-2 text-[11px] text-slate-400">
                               {question.authorName} · {dateFormatter.format(question.createdAt)}
                             </p>
                             {question.car ? (
                               <Link
                                 href={`/cars/${question.car.slug}`}
-                                className="mt-1 inline-flex items-center gap-1 text-[11px] text-purple-300 hover:text-purple-100"
+                                className="mt-1 inline-flex items-center gap-1 text-[11px] text-purple-300 hover:text-sky-600"
                               >
                                 {question.car.manufacturer} · {question.car.model}
                               </Link>
@@ -1416,7 +1416,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                               isAnswered
                                 ? "border-emerald-400/40 text-emerald-200"
                                 : question.status === "ARCHIVED"
-                                ? "border-white/20 text-white/50"
+                                ? "border-slate-200 text-slate-400"
                                 : "border-yellow-400/40 text-yellow-200",
                             )}
                           >
@@ -1436,21 +1436,21 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             name="answer"
                             defaultValue={question.answer ?? ""}
                             placeholder="پاسخ خود را بنویسید"
-                            className="h-24 w-full rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                            className="h-24 w-full rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                           />
-                          <label className="flex items-center gap-2 text-[11px] text-white/60">
+                          <label className="flex items-center gap-2 text-[11px] text-slate-500">
                             <input
                               name="markAnswered"
                               type="checkbox"
                               defaultChecked={isAnswered}
-                              className="h-4 w-4 rounded border border-white/20 bg-black/40"
+                              className="h-4 w-4 rounded border border-slate-200 bg-slate-100"
                             />
                             علامت‌گذاری به عنوان پاسخ داده شده
                           </label>
                           <div className="flex items-center gap-3">
                             <button
                               type="submit"
-                              className="rounded-full bg-purple-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-purple-400"
+                              className="rounded-full bg-sky-500 px-4 py-2 text-xs font-semibold text-slate-900 transition hover:bg-sky-600"
                             >
                               ذخیره پاسخ
                             </button>
@@ -1460,7 +1460,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                 "use server";
                                 await archiveQuestionAction(question.id, "car");
                               }}
-                              className="rounded-full border border-white/20 px-3 py-1 text-[11px] text-white/60 transition hover:border-white/40 hover:text-white/80"
+                              className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-500 transition hover:border-white/40 hover:text-slate-700"
                             >
                               بایگانی
                             </button>
@@ -1478,9 +1478,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         return (
           <div className="space-y-10">
             <section className="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-                <h2 className="text-xl font-semibold text-white">افزودن برند</h2>
-                <p className="mt-2 text-xs text-white/60">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                <h2 className="text-xl font-semibold text-slate-900">افزودن برند</h2>
+                <p className="mt-2 text-xs text-slate-500">
                   برند جدید را با اطلاعات کامل ثبت کنید تا در فرم‌های محصول و صفحات فروشگاهی
                   در دسترس باشد.
                 </p>
@@ -1494,73 +1494,73 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <input
                     name="name"
                     placeholder="نام برند"
-                    className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="slug"
                     placeholder="اسلاگ (مثال: mobil-1)"
-                    className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="imageUrl"
                     placeholder="آدرس لوگو یا تصویر برند (اختیاری)"
-                    className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="website"
                     placeholder="وب‌سایت رسمی (اختیاری)"
-                    className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <textarea
                     name="description"
                     placeholder="توضیح کوتاه درباره برند"
-                    className="h-24 w-full rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="h-24 w-full rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <button
                     type="submit"
-                    className="rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
+                    className="rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-slate-900 transition hover:bg-sky-600"
                   >
                     ذخیره برند
                   </button>
                 </form>
               </div>
-              <div className="rounded-3xl border border-white/10 bg-black/30 p-6">
-                <h3 className="text-sm font-semibold text-white">گزارش برندها</h3>
-                <ul className="mt-4 space-y-3 text-xs text-white/60">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                <h3 className="text-sm font-semibold text-slate-900">گزارش برندها</h3>
+                <ul className="mt-4 space-y-3 text-xs text-slate-500">
                   <li>
                     مجموع برندهای ثبت‌شده:{" "}
-                    <span className="text-white">{numberFormatter.format(totalBrands)}</span>
+                    <span className="text-slate-900">{numberFormatter.format(totalBrands)}</span>
                   </li>
                   <li>
                     میانگین محصول برای هر برند:{" "}
-                    <span className="text-white">
+                    <span className="text-slate-900">
                       {decimalFormatter.format(brandAverageProducts)}
                     </span>
                   </li>
                   <li>
                     پربارترین برند:{" "}
                     {bestSellingBrands[0] ? (
-                      <span className="text-white">
+                      <span className="text-slate-900">
                         {bestSellingBrands[0].name} (
                         {numberFormatter.format(bestSellingBrands[0]._count.products)} محصول)
                       </span>
                     ) : (
-                      <span className="text-white">—</span>
+                      <span className="text-slate-900">—</span>
                     )}
                   </li>
                   <li>
                     مجموع نظرات محصولات:{" "}
-                    <span className="text-white">{numberFormatter.format(totalReviews)}</span>
+                    <span className="text-slate-900">{numberFormatter.format(totalReviews)}</span>
                   </li>
                 </ul>
               </div>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold text-white">لیست برندها</h2>
-              <div className="overflow-hidden rounded-3xl border border-white/10">
-                <table className="min-w-full divide-y divide-white/10 text-sm text-white/70">
-                  <thead className="bg-black/40 text-xs uppercase text-white/50">
+              <h2 className="text-xl font-semibold text-slate-900">لیست برندها</h2>
+              <div className="overflow-hidden rounded-3xl border border-slate-200">
+                <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+                  <thead className="bg-slate-100 text-xs uppercase text-slate-400">
                     <tr>
                       <th className="px-4 py-3 text-right">نام</th>
                       <th className="px-4 py-3 text-right">اسلاگ</th>
@@ -1570,17 +1570,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       <th className="px-4 py-3 text-right">اقدامات</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10 bg-black/20">
+                  <tbody className="divide-y divide-slate-200 bg-slate-50">
                     {brands.map((brand) => {
                       const canDelete = brand._count.products === 0;
                       return (
                         <tr key={brand.id}>
-                          <td className="px-4 py-3 text-white">{brand.name}</td>
-                          <td className="px-4 py-3 text-xs text-white/60">{brand.slug}</td>
+                          <td className="px-4 py-3 text-slate-900">{brand.name}</td>
+                          <td className="px-4 py-3 text-xs text-slate-500">{brand.slug}</td>
                           <td className="px-4 py-3">
                             {numberFormatter.format(brand._count.products)}
                           </td>
-                          <td className="px-4 py-3 text-xs text-white/50">
+                          <td className="px-4 py-3 text-xs text-slate-400">
                             {dateFormatter.format(brand.createdAt)}
                           </td>
                           <td className="px-4 py-3 text-xs">
@@ -1589,12 +1589,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                 href={brand.website}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-purple-200 hover:text-purple-100"
+                                className="text-sky-600 hover:text-sky-600"
                               >
                                 مشاهده
                               </a>
                             ) : (
-                              <span className="text-white/40">—</span>
+                              <span className="text-slate-400">—</span>
                             )}
                           </td>
                           <td className="px-4 py-3">
@@ -1618,7 +1618,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                   "rounded-full border px-3 py-1 text-xs transition",
                                   canDelete
                                     ? "border-red-400/40 text-red-200 hover:border-red-300 hover:text-red-100"
-                                    : "cursor-not-allowed border-white/10 text-white/30",
+                                    : "cursor-not-allowed border-slate-200 text-slate-300",
                                 )}
                               >
                                 حذف
@@ -1630,7 +1630,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     })}
                     {!brands.length ? (
                       <tr>
-                        <td colSpan={6} className="px-4 py-6 text-center text-xs text-white/50">
+                        <td colSpan={6} className="px-4 py-6 text-center text-xs text-slate-400">
                           هنوز برندی ثبت نشده است.
                         </td>
                       </tr>
@@ -1645,9 +1645,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         return (
           <div className="space-y-10">
             <section className="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-                <h2 className="text-xl font-semibold text-white">افزودن دسته‌بندی</h2>
-                <p className="mt-2 text-xs text-white/60">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                <h2 className="text-xl font-semibold text-slate-900">افزودن دسته‌بندی</h2>
+                <p className="mt-2 text-xs text-slate-500">
                   برای نمایش دقیق‌تر محصولات، دسته‌بندی‌های تخصصی تعریف کنید.
                 </p>
                 <form
@@ -1660,68 +1660,68 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <input
                     name="name"
                     placeholder="نام دسته‌بندی"
-                    className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="slug"
                     placeholder="اسلاگ (مثال: full-synthetic)"
-                    className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <input
                     name="imageUrl"
                     placeholder="آدرس تصویر شاخص (اختیاری)"
-                    className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <textarea
                     name="description"
                     placeholder="توضیح کوتاه"
-                    className="h-24 w-full rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white"
+                    className="h-24 w-full rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
                   />
                   <button
                     type="submit"
-                    className="rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
+                    className="rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-slate-900 transition hover:bg-sky-600"
                   >
                     ذخیره دسته‌بندی
                   </button>
                 </form>
               </div>
-              <div className="rounded-3xl border border-white/10 bg-black/30 p-6">
-                <h3 className="text-sm font-semibold text-white">گزارش دسته‌بندی‌ها</h3>
-                <ul className="mt-4 space-y-3 text-xs text-white/60">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                <h3 className="text-sm font-semibold text-slate-900">گزارش دسته‌بندی‌ها</h3>
+                <ul className="mt-4 space-y-3 text-xs text-slate-500">
                   <li>
                     مجموع دسته‌بندی‌ها:{" "}
-                    <span className="text-white">{numberFormatter.format(totalCategories)}</span>
+                    <span className="text-slate-900">{numberFormatter.format(totalCategories)}</span>
                   </li>
                   <li>
                     میانگین محصول برای هر دسته:{" "}
-                    <span className="text-white">
+                    <span className="text-slate-900">
                       {decimalFormatter.format(categoryAverageProducts)}
                     </span>
                   </li>
                   <li>
                     پرترافیک‌ترین دسته:{" "}
                     {busiestCategories[0] ? (
-                      <span className="text-white">
+                      <span className="text-slate-900">
                         {busiestCategories[0].name} (
                         {numberFormatter.format(busiestCategories[0]._count.products)} محصول)
                       </span>
                     ) : (
-                      <span className="text-white">—</span>
+                      <span className="text-slate-900">—</span>
                     )}
                   </li>
                   <li>
                     محصولات کم‌موجودی:{" "}
-                    <span className="text-white">{numberFormatter.format(lowStockCount)}</span>
+                    <span className="text-slate-900">{numberFormatter.format(lowStockCount)}</span>
                   </li>
                 </ul>
               </div>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold text-white">لیست دسته‌بندی‌ها</h2>
-              <div className="overflow-hidden rounded-3xl border border-white/10">
-                <table className="min-w-full divide-y divide-white/10 text-sm text-white/70">
-                  <thead className="bg-black/40 text-xs uppercase text-white/50">
+              <h2 className="text-xl font-semibold text-slate-900">لیست دسته‌بندی‌ها</h2>
+              <div className="overflow-hidden rounded-3xl border border-slate-200">
+                <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+                  <thead className="bg-slate-100 text-xs uppercase text-slate-400">
                     <tr>
                       <th className="px-4 py-3 text-right">نام</th>
                       <th className="px-4 py-3 text-right">اسلاگ</th>
@@ -1730,17 +1730,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       <th className="px-4 py-3 text-right">اقدامات</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10 bg-black/20">
+                  <tbody className="divide-y divide-slate-200 bg-slate-50">
                     {categories.map((category) => {
                       const canDelete = category._count.products === 0;
                       return (
                         <tr key={category.id}>
-                          <td className="px-4 py-3 text-white">{category.name}</td>
-                          <td className="px-4 py-3 text-xs text-white/60">{category.slug}</td>
+                          <td className="px-4 py-3 text-slate-900">{category.name}</td>
+                          <td className="px-4 py-3 text-xs text-slate-500">{category.slug}</td>
                           <td className="px-4 py-3">
                             {numberFormatter.format(category._count.products)}
                           </td>
-                          <td className="px-4 py-3 text-xs text-white/50">
+                          <td className="px-4 py-3 text-xs text-slate-400">
                             {dateFormatter.format(category.createdAt)}
                           </td>
                           <td className="px-4 py-3">
@@ -1764,7 +1764,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                   "rounded-full border px-3 py-1 text-xs transition",
                                   canDelete
                                     ? "border-red-400/40 text-red-200 hover:border-red-300 hover:text-red-100"
-                                    : "cursor-not-allowed border-white/10 text-white/30",
+                                    : "cursor-not-allowed border-slate-200 text-slate-300",
                                 )}
                               >
                                 حذف
@@ -1776,7 +1776,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     })}
                     {!categories.length ? (
                       <tr>
-                        <td colSpan={5} className="px-4 py-6 text-center text-xs text-white/50">
+                        <td colSpan={5} className="px-4 py-6 text-center text-xs text-slate-400">
                           هنوز دسته‌بندی ثبت نشده است.
                         </td>
                       </tr>
@@ -1790,30 +1790,30 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       case "users":
         return (
           <div className="space-y-10">
-            <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-xl font-semibold text-white">مدیریت کاربران</h2>
-              <p className="mt-2 text-xs text-white/60">
+            <section className="rounded-3xl border border-slate-200 bg-white p-6">
+              <h2 className="text-xl font-semibold text-slate-900">مدیریت کاربران</h2>
+              <p className="mt-2 text-xs text-slate-500">
                 نقش کاربران را کنترل کنید و تصویر دقیقی از رشد کاربران فعال داشته باشید.
               </p>
-              <div className="mt-4 flex flex-wrap gap-3 text-xs text-white/60">
-                <span className="rounded-full border border-white/15 px-4 py-2">
+              <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
+                <span className="rounded-full border border-slate-200 px-4 py-2">
                   {numberFormatter.format(users.length)} کاربر ثبت‌شده
                 </span>
-                <span className="rounded-full border border-white/15 px-4 py-2">
+                <span className="rounded-full border border-slate-200 px-4 py-2">
                   {numberFormatter.format(totalAdmins)} مدیر فعال
                 </span>
-                <span className="rounded-full border border-white/15 px-4 py-2">
+                <span className="rounded-full border border-slate-200 px-4 py-2">
                   {numberFormatter.format(totalCustomers)} مشتری فعال
                 </span>
-                <span className="rounded-full border border-white/15 px-4 py-2">
+                <span className="rounded-full border border-slate-200 px-4 py-2">
                   {numberFormatter.format(newCustomers30)} ثبت‌نام جدید (۳۰ روز اخیر)
                 </span>
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-3xl border border-white/10">
-              <table className="min-w-full divide-y divide-white/10 text-sm text-white/70">
-                <thead className="bg-black/40 text-xs uppercase text-white/50">
+            <section className="overflow-hidden rounded-3xl border border-slate-200">
+              <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+                <thead className="bg-slate-100 text-xs uppercase text-slate-400">
                   <tr>
                     <th className="px-4 py-3 text-right">نام</th>
                     <th className="px-4 py-3 text-right">ایمیل</th>
@@ -1823,29 +1823,29 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <th className="px-4 py-3 text-right">اقدامات</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/10 bg-black/20">
+                <tbody className="divide-y divide-slate-200 bg-slate-50">
                   {users.map((user) => {
                     const isSelf = sessionUserId === user.id;
                     return (
                       <tr key={user.id}>
-                        <td className="px-4 py-3 text-white">
+                        <td className="px-4 py-3 text-slate-900">
                           <div className="flex items-center gap-2">
                             <span>{user.name ?? "بدون نام"}</span>
                             {isSelf ? (
-                              <span className="rounded-full border border-white/20 px-2 py-1 text-[10px] text-white/60">
+                              <span className="rounded-full border border-slate-200 px-2 py-1 text-[10px] text-slate-500">
                                 شما
                               </span>
                             ) : null}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-xs text-white/60">{user.email}</td>
-                        <td className="px-4 py-3 text-xs text-white/60">
+                        <td className="px-4 py-3 text-xs text-slate-500">{user.email}</td>
+                        <td className="px-4 py-3 text-xs text-slate-500">
                           {roleLabels[user.role]}
                         </td>
                         <td className="px-4 py-3">
                           {numberFormatter.format(user._count.orders)}
                         </td>
-                        <td className="px-4 py-3 text-xs text-white/50">
+                        <td className="px-4 py-3 text-xs text-slate-400">
                           {dateFormatter.format(user.createdAt)}
                         </td>
                         <td className="px-4 py-3">
@@ -1862,7 +1862,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                               defaultValue={user.role}
                               disabled={isSelf}
                               className={cn(
-                                "rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs text-white/80",
+                                "rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs text-slate-700",
                                 isSelf && "cursor-not-allowed opacity-50",
                               )}
                             >
@@ -1876,8 +1876,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                               className={cn(
                                 "rounded-full border px-3 py-1 text-xs transition",
                                 isSelf
-                                  ? "cursor-not-allowed border-white/10 text-white/30"
-                                  : "border-purple-400/40 text-purple-100 hover:border-purple-300 hover:text-white",
+                                  ? "cursor-not-allowed border-slate-200 text-slate-300"
+                                  : "border-sky-200 text-sky-600 hover:border-sky-200 hover:text-slate-900",
                               )}
                             >
                               به‌روزرسانی
@@ -1889,7 +1889,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   })}
                   {!users.length ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-6 text-center text-xs text-white/50">
+                      <td colSpan={6} className="px-4 py-6 text-center text-xs text-slate-400">
                         هنوز کاربری ثبت نشده است.
                       </td>
                     </tr>
@@ -1906,25 +1906,25 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               {reportsSummaryCards.map((card) => (
                 <div
                   key={card.label}
-                  className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-sm shadow-black/20"
+                  className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-500/10"
                 >
-                  <p className="text-xs text-white/50">{card.label}</p>
-                  <p className="mt-3 text-2xl font-semibold text-white">{card.value}</p>
-                  <p className="mt-2 text-[11px] text-white/50">{card.helper}</p>
+                  <p className="text-xs text-slate-400">{card.label}</p>
+                  <p className="mt-3 text-2xl font-semibold text-slate-900">{card.value}</p>
+                  <p className="mt-2 text-[11px] text-slate-400">{card.helper}</p>
                 </div>
               ))}
             </section>
 
             <section className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-3xl border border-white/10 bg-black/30 p-6">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-white">پربازدیدترین دفترچه‌های خودرو</h3>
-                    <p className="mt-2 text-xs text-white/60">
+                    <h3 className="text-lg font-semibold text-slate-900">پربازدیدترین دفترچه‌های خودرو</h3>
+                    <p className="mt-2 text-xs text-slate-500">
                       جمع کل بازدید صفحات دفترچه: {numberFormatter.format(totalNotebookViews)}
                     </p>
                   </div>
-                  <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/50">
+                  <span className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-400">
                     {numberFormatter.format(topCarNotebookViews.length)} خودرو
                   </span>
                 </div>
@@ -1933,38 +1933,38 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     {topCarNotebookViews.map(({ car, count }) => (
                       <li
                         key={car.id}
-                        className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/70"
+                        className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
                       >
                         <div>
-                          <Link href={`/cars/${car.slug}`} className="font-medium text-white hover:text-purple-200">
+                          <Link href={`/cars/${car.slug}`} className="font-medium text-slate-900 hover:text-sky-600">
                             {car.manufacturer} {car.model}
                           </Link>
                           {car.generation && (
-                            <p className="text-[11px] text-white/40">{car.generation}</p>
+                            <p className="text-[11px] text-slate-400">{car.generation}</p>
                           )}
                         </div>
-                        <span className="rounded-full border border-purple-400/40 px-3 py-1 text-xs text-purple-100">
+                        <span className="rounded-full border border-sky-200 px-3 py-1 text-xs text-sky-600">
                           {numberFormatter.format(count)} بازدید
                         </span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-6 text-center text-xs text-white/50">
+                  <p className="mt-6 text-center text-xs text-slate-400">
                     هنوز داده‌ای برای نمایش بازدیدها ثبت نشده است.
                   </p>
                 )}
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-black/30 p-6">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-white">محصولات پرتکرار در مقایسه</h3>
-                    <p className="mt-2 text-xs text-white/60">
+                    <h3 className="text-lg font-semibold text-slate-900">محصولات پرتکرار در مقایسه</h3>
+                    <p className="mt-2 text-xs text-slate-500">
                       مجموع دفعات افزودن به مقایسه: {numberFormatter.format(totalComparisonAdds)}
                     </p>
                   </div>
-                  <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/50">
+                  <span className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-400">
                     {numberFormatter.format(topProductComparisons.length)} محصول
                   </span>
                 </div>
@@ -1973,37 +1973,37 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     {topProductComparisons.map(({ product, count }) => (
                       <li
                         key={product.id}
-                        className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/70"
+                        className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
                       >
                         <div>
                           <Link
                             href={`/products/${product.slug}`}
-                            className="font-medium text-white hover:text-purple-200"
+                            className="font-medium text-slate-900 hover:text-sky-600"
                           >
                             {product.brand.name} · {product.name}
                           </Link>
-                          <p className="text-[11px] text-white/40">
+                          <p className="text-[11px] text-slate-400">
                             {product.viscosity ?? "ویسکوزیته نامشخص"}
                           </p>
                         </div>
-                        <span className="rounded-full border border-purple-400/40 px-3 py-1 text-xs text-purple-100">
+                        <span className="rounded-full border border-sky-200 px-3 py-1 text-xs text-sky-600">
                           {numberFormatter.format(count)} مرتبه
                         </span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-6 text-center text-xs text-white/50">
+                  <p className="mt-6 text-center text-xs text-slate-400">
                     هنوز کاربری محصولی را برای مقایسه اضافه نکرده است.
                   </p>
                 )}
               </div>
             </section>
 
-            <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
+            <section className="rounded-3xl border border-slate-200 bg-white p-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">خلاصه تعاملات ثبت‌شده</h3>
-                <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/50">
+                <h3 className="text-lg font-semibold text-slate-900">خلاصه تعاملات ثبت‌شده</h3>
+                <span className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-400">
                   {numberFormatter.format(totalEngagementEvents)} رویداد
                 </span>
               </div>
@@ -2012,18 +2012,18 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   {Object.entries(engagementByEventType).map(([eventType, count]) => (
                     <div
                       key={eventType}
-                      className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/70"
+                      className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600"
                     >
-                      <p className="text-xs text-white/50">نوع رویداد</p>
-                      <p className="mt-1 font-semibold text-white">{eventType}</p>
-                      <p className="mt-2 text-[11px] text-white/60">
+                      <p className="text-xs text-slate-400">نوع رویداد</p>
+                      <p className="mt-1 font-semibold text-slate-900">{eventType}</p>
+                      <p className="mt-2 text-[11px] text-slate-500">
                         {numberFormatter.format(count)} بار ثبت شده است.
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="mt-6 text-center text-xs text-white/50">
+                <p className="mt-6 text-center text-xs text-slate-400">
                   هنوز رویداد تعاملی در سیستم ثبت نشده است.
                 </p>
               )}
@@ -2038,34 +2038,34 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-6 py-12">
       <header className="space-y-4">
-        <h1 className="text-3xl font-semibold text-white">پنل مدیریت ZenLube</h1>
-        <p className="text-sm leading-7 text-white/70">
+        <h1 className="text-3xl font-semibold text-slate-900">پنل مدیریت ZenLube</h1>
+        <p className="text-sm leading-7 text-slate-600">
           تغییرات موجودی، برندها، دسته‌بندی‌ها و کاربران را در یک نگاه مدیریت کنید. تمام
           به‌روزرسانی‌ها بلافاصله در وب‌سایت اعمال می‌شود.
         </p>
-        <div className="flex flex-wrap gap-3 text-xs text-white/60">
-          <span className="rounded-full border border-white/15 px-4 py-2">
+        <div className="flex flex-wrap gap-3 text-xs text-slate-500">
+          <span className="rounded-full border border-slate-200 px-4 py-2">
             {numberFormatter.format(totalProducts)} محصول فعال
           </span>
-          <span className="rounded-full border border-white/15 px-4 py-2">
+          <span className="rounded-full border border-slate-200 px-4 py-2">
             {numberFormatter.format(totalBrands)} برند
           </span>
-          <span className="rounded-full border border-white/15 px-4 py-2">
+          <span className="rounded-full border border-slate-200 px-4 py-2">
             {numberFormatter.format(totalCategories)} دسته‌بندی
           </span>
-          <span className="rounded-full border border-white/15 px-4 py-2">
+          <span className="rounded-full border border-slate-200 px-4 py-2">
             {numberFormatter.format(totalCars)} خودرو ثبت‌شده
           </span>
-          <span className="rounded-full border border-white/15 px-4 py-2">
+          <span className="rounded-full border border-slate-200 px-4 py-2">
             {numberFormatter.format(totalOrders)} سفارش
           </span>
-          <span className="rounded-full border border-white/15 px-4 py-2">
+          <span className="rounded-full border border-slate-200 px-4 py-2">
             {formatPrice(totalRevenue)} درآمد ثبت‌شده
           </span>
         </div>
       </header>
 
-      <nav className="flex flex-wrap gap-2 rounded-3xl border border-white/10 bg-black/30 p-2">
+      <nav className="flex flex-wrap gap-2 rounded-3xl border border-slate-200 bg-slate-50 p-2">
         {tabs.map((tab) => {
           const isActive = tab.id === activeTab;
           const href = tab.id === "overview" ? "/admin" : `/admin?tab=${tab.id}`;
@@ -2076,8 +2076,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               className={cn(
                 "rounded-full px-4 py-2 text-sm transition",
                 isActive
-                  ? "bg-purple-500 text-white shadow-lg shadow-purple-500/30"
-                  : "text-white/70 hover:bg-white/10 hover:text-white",
+                  ? "bg-sky-500 text-white shadow-lg shadow-sky-200/60"
+                  : "text-slate-600 hover:bg-white hover:text-slate-900",
               )}
             >
               {tab.label}

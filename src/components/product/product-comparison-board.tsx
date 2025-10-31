@@ -10,9 +10,9 @@ type ComparisonProduct = {
   viscosity: string | null;
   oilType: string | null;
   approvals: string | null;
-  averageRating: unknown;
+  averageRating: number | null;
   reviewCount: number;
-  price: unknown;
+  price: number;
   tags: string[];
   brand: { name: string };
   category: { name: string };
@@ -26,12 +26,33 @@ const highlightRows = [
   { key: "viscosity", label: "ویسکوزیته" },
   { key: "approvals", label: "استاندارد سازنده" },
   { key: "price", label: "قیمت" },
-];
+] as const;
+
+const highlightTokens: Record<
+  (typeof highlightRows)[number]["key"],
+  { background: string; button: string }
+> = {
+  viscosity: {
+    background: "bg-sky-50",
+    button:
+      "bg-sky-500 text-white shadow-lg shadow-sky-300/40 hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
+  },
+  approvals: {
+    background: "bg-emerald-50",
+    button:
+      "bg-emerald-500 text-white shadow-lg shadow-emerald-300/40 hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-200",
+  },
+  price: {
+    background: "bg-amber-50",
+    button:
+      "bg-amber-500 text-white shadow-lg shadow-amber-300/40 hover:bg-amber-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200",
+  },
+};
 
 export function ProductComparisonBoard({ products }: ProductComparisonBoardProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
-  const [highlight, setHighlight] = useState<string>("viscosity");
+  const [highlight, setHighlight] = useState<(typeof highlightRows)[number]["key"]>("viscosity");
   const [pendingSelection, setPendingSelection] = useState("");
 
   const filteredProducts = useMemo(() => {
@@ -76,29 +97,23 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
     setSelectedIds((ids) => ids.filter((item) => item !== id));
   };
 
-  const formatNumeric = (value: unknown) => {
+  const formatNumeric = (value: number | null | string) => {
     if (value == null) {
       return "—";
     }
     if (typeof value === "number") {
       return new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 1 }).format(value);
     }
-    if (typeof value === "string") {
-      return value;
-    }
-    if (typeof value === "object" && value !== null && "toString" in value) {
-      return value.toString();
-    }
-    return String(value);
+    return value;
   };
 
   return (
-    <div className="space-y-6 rounded-[40px] border border-white/10 bg-white/5 p-6">
+    <div className="space-y-6 rounded-[40px] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-500/10">
       <header className="space-y-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 text-slate-700 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-white">مقایسه تخصصی روغن موتور</h1>
-            <p className="mt-2 text-sm leading-7 text-white/70">
+            <h1 className="text-2xl font-semibold text-slate-900">مقایسه تخصصی روغن موتور</h1>
+            <p className="mt-2 text-sm leading-7 text-slate-600">
               حداکثر سه محصول را انتخاب کنید تا مشخصات فنی، استانداردها و قیمت آن‌ها را در کنار هم
               بررسی کنید. برای برجسته‌سازی معیارها، یکی از گزینه‌های ویسکوزیته، استاندارد یا قیمت را
               انتخاب کنید.
@@ -112,8 +127,8 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
                 onClick={() => setHighlight(item.key)}
                 className={
                   highlight === item.key
-                    ? "rounded-full bg-purple-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-purple-500/30"
-                    : "rounded-full border border-white/10 px-4 py-2 text-xs text-white/70 hover:border-white/20 hover:text-white"
+                    ? `rounded-full px-4 py-2 text-xs font-semibold transition ${highlightTokens[item.key].button}`
+                    : "rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-sky-200 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200"
                 }
               >
                 {item.label}
@@ -126,13 +141,13 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="جستجو بر اساس برند، نام یا ویسکوزیته"
-            className="rounded-full border border-white/15 bg-black/30 px-4 py-2 text-sm text-white outline-none focus:border-purple-400"
+            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200"
           />
           <div className="flex items-center gap-2">
             <select
               value={pendingSelection}
               onChange={(event) => setPendingSelection(event.target.value)}
-              className="flex-1 rounded-full border border-white/15 bg-black/30 px-4 py-2 text-sm text-white outline-none focus:border-purple-400"
+              className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200"
             >
               <option value="">انتخاب محصول برای مقایسه</option>
               {filteredProducts.map((product) => (
@@ -144,20 +159,20 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             <button
               type="button"
               onClick={handleAddProduct}
-              className="rounded-full bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-400"
+              className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-sky-300/40 transition hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200"
             >
               افزودن
             </button>
           </div>
         </div>
         {selectedProducts.length ? (
-          <div className="flex flex-wrap items-center gap-2 text-xs text-white/60">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
             {selectedProducts.map((product) => (
               <button
                 key={product.id}
                 type="button"
                 onClick={() => handleRemove(product.id)}
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/30 px-4 py-2 text-white/80 hover:border-red-400/40 hover:text-red-200"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-700 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
               >
                 {product.brand.name} · {product.name}
                 <span className="text-[10px]">×</span>
@@ -165,7 +180,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             ))}
           </div>
         ) : (
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-slate-500">
             هنوز محصولی انتخاب نشده است. ابتدا از لیست بالا محصول را اضافه کنید.
           </p>
         )}
@@ -173,15 +188,15 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
 
       {selectedProducts.length ? (
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/10 text-sm text-white/80">
-            <thead className="text-xs uppercase text-white/50">
+          <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+            <thead className="text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-4 py-3 text-right">پارامتر</th>
                 {selectedProducts.map((product) => (
                   <th key={product.id} className="px-4 py-3 text-right">
                     <Link
                       href={`/products/${product.slug}`}
-                      className="text-white hover:text-purple-200"
+                      className="text-sky-600 hover:text-sky-700"
                     >
                       {product.brand.name} · {product.name}
                     </Link>
@@ -189,7 +204,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/10">
+            <tbody className="divide-y divide-slate-200">
               {[
                 {
                   key: "viscosity",
@@ -209,18 +224,19 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
                 {
                   key: "price",
                   label: "قیمت",
-                  render: (product: ComparisonProduct) => formatNumeric(product.price),
+                  render: (product: ComparisonProduct) =>
+                    new Intl.NumberFormat("fa-IR").format(product.price),
                 },
                 {
                   key: "averageRating",
                   label: "میانگین امتیاز",
-                  render: (product: ComparisonProduct) =>
-                    product.averageRating != null ? formatNumeric(product.averageRating) : "—",
+                  render: (product: ComparisonProduct) => formatNumeric(product.averageRating),
                 },
                 {
                   key: "reviewCount",
                   label: "تعداد بازخورد",
-                  render: (product: ComparisonProduct) => formatNumeric(product.reviewCount),
+                  render: (product: ComparisonProduct) =>
+                    new Intl.NumberFormat("fa-IR").format(product.reviewCount),
                 },
                 {
                   key: "category",
@@ -236,13 +252,9 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
               ].map((row) => (
                 <tr
                   key={row.key}
-                  className={
-                    row.key === highlight
-                      ? "bg-purple-500/10"
-                      : "bg-transparent"
-                  }
+                  className={row.key === highlight ? highlightTokens[row.key].background : "bg-transparent"}
                 >
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-white/60">
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500">
                     {row.label}
                   </th>
                   {selectedProducts.map((product) => (
@@ -256,7 +268,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
           </table>
         </div>
       ) : (
-        <div className="rounded-3xl border border-dashed border-white/15 bg-black/20 p-10 text-center text-sm text-white/50">
+        <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center text-sm text-slate-500">
           ابتدا محصولی را انتخاب کنید تا جدول مقایسه نمایش داده شود.
         </div>
       )}

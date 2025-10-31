@@ -49,7 +49,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <label htmlFor="email" className="text-xs font-semibold text-white/70">
+        <label htmlFor="email" className="text-xs font-semibold text-slate-600">
           ایمیل
         </label>
         <input
@@ -57,29 +57,29 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
           name="email"
           type="email"
           placeholder="you@example.com"
-          className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none transition focus:border-purple-400"
+          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="password" className="text-xs font-semibold text-white/70">
+        <label htmlFor="password" className="text-xs font-semibold text-slate-600">
           رمز عبور
         </label>
         <input
           id="password"
           name="password"
           type="password"
-          className="w-full rounded-full border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none transition focus:border-purple-400"
+          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
         />
       </div>
       {error && <p className="text-xs text-red-300">{error}</p>}
       <button
         type="submit"
-        className="w-full rounded-full bg-purple-500 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-400 disabled:opacity-60"
+        className="w-full rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:opacity-60"
         disabled={isPending}
       >
         {isPending ? "در حال ورود..." : "ورود"}
       </button>
-      <p className="text-center text-xs text-white/50">
+      <p className="text-center text-xs text-slate-500">
         ادمین نمونه: admin@zenlube.ir | Admin@123
       </p>
     </form>

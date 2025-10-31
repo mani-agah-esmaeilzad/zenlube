@@ -25,27 +25,27 @@ export async function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/40 backdrop-blur">
-      <div className="border-b border-white/10 bg-black/50">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 text-xs text-white/60">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div className="border-b border-slate-200 bg-slate-50/80">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 text-xs text-slate-600">
           <span>ارسال رایگان سفارش‌های بالای ۳ میلیون تومان • مشاوره تخصصی: ۰۲۱-۱۲۳۴۵۶۷۸</span>
-          <Link href="/support" className="text-purple-200 hover:text-purple-100">
+          <Link href="/support" className="text-sky-700 transition hover:text-sky-900">
             پشتیبانی آنلاین
           </Link>
         </div>
       </div>
-      <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4 text-slate-700">
         <div className="flex items-center gap-8">
-          <Link href="/" className="text-2xl font-semibold text-white">
+          <Link href="/" className="text-2xl font-semibold text-slate-900">
             ZenLube
           </Link>
-          <nav className="hidden items-center gap-6 text-sm text-white/80 lg:flex">
+          <nav className="hidden items-center gap-6 text-sm lg:flex">
             <CategoryDropdown categories={categories} />
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition hover:text-white ${link.highlight ? "font-semibold text-purple-300 hover:text-purple-200" : ""}`}
+                className={`text-slate-600 transition hover:text-slate-900 ${link.highlight ? "font-semibold text-sky-700 hover:text-sky-900" : ""}`}
               >
                 {link.label}
               </Link>

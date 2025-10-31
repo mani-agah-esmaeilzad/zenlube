@@ -50,14 +50,14 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-black/40 p-3 text-sm text-white/80 shadow-inner shadow-black/30"
+      className="flex w-full flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 text-sm text-slate-600 shadow-sm"
     >
-      <label className="flex flex-1 min-w-[150px] flex-col gap-1 text-xs text-white/50">
+      <label className="flex flex-1 min-w-[150px] flex-col gap-1 text-xs text-slate-500">
         برند خودرو
         <select
           value={selectedBrand}
           onChange={(event) => handleBrandChange(event.target.value)}
-          className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-sm text-white outline-none transition focus:border-purple-300"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300"
         >
           <option value="">انتخاب برند</option>
           {hierarchy.map((brand) => (
@@ -68,12 +68,12 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
         </select>
       </label>
 
-      <label className="flex flex-1 min-w-[150px] flex-col gap-1 text-xs text-white/50">
+      <label className="flex flex-1 min-w-[150px] flex-col gap-1 text-xs text-slate-500">
         مدل
         <select
           value={selectedModel}
           onChange={(event) => handleModelChange(event.target.value)}
-          className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-sm text-white outline-none transition focus:border-purple-300 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 disabled:cursor-not-allowed disabled:opacity-40"
           disabled={!selectedBrand}
         >
           <option value="">انتخاب مدل</option>
@@ -85,12 +85,12 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
         </select>
       </label>
 
-      <label className="flex flex-1 min-w-[180px] flex-col gap-1 text-xs text-white/50">
+      <label className="flex flex-1 min-w-[180px] flex-col gap-1 text-xs text-slate-500">
         تیپ / نسل
         <select
           value={selectedCarSlug}
           onChange={(event) => setSelectedCarSlug(event.target.value)}
-          className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-sm text-white outline-none transition focus:border-purple-300 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 disabled:cursor-not-allowed disabled:opacity-40"
           disabled={!selectedModel}
         >
           <option value="">انتخاب نسخه</option>
@@ -105,7 +105,7 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
       <button
         type="submit"
         disabled={!selectedCarSlug}
-        className="w-full min-w-[140px] rounded-xl bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-400 disabled:cursor-not-allowed disabled:bg-purple-500/40 disabled:text-white/50 md:w-auto"
+        className="w-full min-w-[140px] rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:bg-sky-400/60 disabled:text-white/70 md:w-auto"
       >
         مشاهده دفترچه
       </button>

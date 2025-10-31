@@ -94,20 +94,20 @@ export default async function Home() {
         {valueProps.map((prop) => (
           <div
             key={prop.title}
-            className="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-white/70 transition hover:border-purple-400/60"
+            className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-500/15"
           >
             <span className="text-3xl">{prop.icon}</span>
-            <h2 className="mt-4 text-lg font-semibold text-white">{prop.title}</h2>
-            <p className="mt-2 leading-7">{prop.description}</p>
+            <h2 className="mt-4 text-lg font-semibold text-slate-900">{prop.title}</h2>
+            <p className="mt-2 leading-7 text-slate-600">{prop.description}</p>
           </div>
         ))}
       </section>
 
       {!!galleryImages.length && (
         <section className="space-y-4">
-          <div className="flex items-center justify-between text-white">
+          <div className="flex items-center justify-between text-slate-900">
             <h2 className="text-2xl font-semibold">لحظه‌هایی از پشت‌صحنه و بررسی‌ها</h2>
-            <Link href="/support" className="text-sm text-purple-200 hover:text-purple-100">
+            <Link href="/support" className="text-sm text-sky-600 hover:text-sky-700">
               رزرو بازدید حضوری
             </Link>
           </div>
@@ -118,12 +118,12 @@ export default async function Home() {
       <section className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-white">خرید بر اساس دسته‌بندی</h2>
-            <p className="mt-2 text-sm text-white/60">
+            <h2 className="text-2xl font-semibold text-slate-900">خرید بر اساس دسته‌بندی</h2>
+            <p className="mt-2 text-sm text-slate-500">
               بر اساس نوع موتور و استاندارد مورد نیاز خود، دسته‌بندی مناسب را انتخاب کنید.
             </p>
           </div>
-          <Link href="/categories" className="text-sm text-purple-200 hover:text-purple-100">
+          <Link href="/categories" className="text-sm text-sky-600 hover:text-sky-700">
             مشاهده همه
           </Link>
         </div>
@@ -138,12 +138,12 @@ export default async function Home() {
         <section className="space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-white">محصولات ویژه فنی</h2>
-              <p className="mt-2 text-sm text-white/60">
+              <h2 className="text-2xl font-semibold text-slate-900">محصولات ویژه فنی</h2>
+              <p className="mt-2 text-sm text-slate-500">
                 انتخاب متخصصان ZenLube برای خودروهایی که عملکرد بالا و دوام طولانی می‌خواهند.
               </p>
             </div>
-            <Link href="/products?sort=bestseller" className="text-sm text-purple-200 hover:text-purple-100">
+            <Link href="/products?sort=bestseller" className="text-sm text-sky-600 hover:text-sky-700">
               مشاهده همه پیشنهادات
             </Link>
           </div>
@@ -159,12 +159,12 @@ export default async function Home() {
         <section className="space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-white">پرفروش‌ترین‌ها</h2>
-              <p className="mt-2 text-sm text-white/60">
+              <h2 className="text-2xl font-semibold text-slate-900">پرفروش‌ترین‌ها</h2>
+              <p className="mt-2 text-sm text-slate-500">
                 محبوب‌ترین محصولات بین تعمیرگاه‌ها و مالکان خودروهای اسپرت و خانواده.
               </p>
             </div>
-            <Link href="/products?sort=bestseller" className="text-sm text-purple-200 hover:text-purple-100">
+            <Link href="/products?sort=bestseller" className="text-sm text-sky-600 hover:text-sky-700">
               مشاهده لیست کامل
             </Link>
           </div>
@@ -177,15 +177,15 @@ export default async function Home() {
       )}
 
       {secondaryBanner ? (
-        <div className="rounded-[32px] border border-purple-500/20 bg-purple-900/20 p-8 text-center text-white/80">
-          <h3 className="text-2xl font-semibold text-white">{secondaryBanner.title}</h3>
+        <div className="rounded-[32px] border border-slate-200 bg-white p-8 text-center text-slate-600 shadow-sm">
+          <h3 className="text-2xl font-semibold text-slate-900">{secondaryBanner.title}</h3>
           {secondaryBanner.subtitle && (
-            <p className="mt-3 text-sm leading-7 text-white/70">{secondaryBanner.subtitle}</p>
+            <p className="mt-3 text-sm leading-7 text-slate-500">{secondaryBanner.subtitle}</p>
           )}
           {secondaryBanner.ctaLabel && secondaryBanner.ctaLink && (
             <Link
               href={secondaryBanner.ctaLink}
-              className="mt-6 inline-flex rounded-full bg-white px-6 py-2 text-sm font-semibold text-black hover:bg-white/90"
+              className="mt-6 inline-flex rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-600"
             >
               {secondaryBanner.ctaLabel}
             </Link>
@@ -194,8 +194,8 @@ export default async function Home() {
       ) : null}
 
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold text-white">برندهای همکار و نمایندگی‌ها</h2>
-        <p className="text-sm text-white/60">
+        <h2 className="text-2xl font-semibold text-slate-900">برندهای همکار و نمایندگی‌ها</h2>
+        <p className="text-sm text-slate-500">
           همکاری با نمایندگان رسمی Mobil، Castrol، Total و سایر برندهای بین‌المللی با ضمانت اصالت کالا.
         </p>
         <div className="flex flex-wrap gap-4">
@@ -208,8 +208,8 @@ export default async function Home() {
       {!!latestReviews.length && (
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-white">بازخورد مشتریان</h2>
-            <Link href="/products" className="text-sm text-purple-200 hover:text-purple-100">
+            <h2 className="text-2xl font-semibold text-slate-900">بازخورد مشتریان</h2>
+            <Link href="/products" className="text-sm text-sky-600 hover:text-sky-700">
               مطالعه تمام نظرات
             </Link>
           </div>
@@ -224,8 +224,8 @@ export default async function Home() {
       {!!latestBlogPosts.length && (
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-white">آخرین مقالات وبلاگ</h2>
-            <Link href="/blog" className="text-sm text-purple-200 hover:text-purple-100">
+            <h2 className="text-2xl font-semibold text-slate-900">آخرین مقالات وبلاگ</h2>
+            <Link href="/blog" className="text-sm text-sky-600 hover:text-sky-700">
               مشاهده همه مقالات
             </Link>
           </div>
@@ -240,12 +240,12 @@ export default async function Home() {
       <section className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-white">پیشنهاد اختصاصی برای خودرو شما</h2>
-            <p className="mt-2 text-sm text-white/60">
+            <h2 className="text-2xl font-semibold text-slate-900">پیشنهاد اختصاصی برای خودرو شما</h2>
+            <p className="mt-2 text-sm text-slate-500">
               مشخصات فنی و استاندارد روغن هر خودرو را مشاهده کنید و محصول مناسب را بدون آزمون و خطا انتخاب کنید.
             </p>
           </div>
-          <Link href="/cars" className="text-sm text-purple-200 hover:text-purple-100">
+          <Link href="/cars" className="text-sm text-sky-600 hover:text-sky-700">
             مشاهده همه خودروها
           </Link>
         </div>
@@ -256,21 +256,21 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/70">
-        <h2 className="text-2xl font-semibold text-white">نیاز به مشاوره تخصصی دارید؟</h2>
-        <p className="mt-3 leading-7">
+      <section className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600 shadow-md shadow-slate-500/15">
+        <h2 className="text-2xl font-semibold text-slate-900">نیاز به مشاوره تخصصی دارید؟</h2>
+        <p className="mt-3 leading-7 text-slate-600">
           تیم فنی ZenLube آماده است تا با بررسی دقیق مشخصات خودرو شما، بهترین روغن موتور، فیلتر و سرویس‌های دوره‌ای را پیشنهاد دهد.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           <Link
             href="tel:02112345678"
-            className="rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white hover:bg-purple-400"
+            className="rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-600"
           >
             ۰۲۱-۱۲۳۴۵۶۷۸
           </Link>
           <Link
             href="/support"
-            className="rounded-full border border-white/20 px-6 py-2 text-sm text-white/80 hover:border-purple-300 hover:text-white"
+            className="rounded-full border border-slate-200 px-6 py-2 text-sm text-slate-600 transition hover:border-sky-200 hover:text-sky-700"
           >
             ثبت درخواست پشتیبانی
           </Link>

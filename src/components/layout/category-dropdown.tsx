@@ -36,8 +36,10 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
       <button
         type="button"
         className={clsx(
-          "inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1.5 text-sm transition focus:outline-none",
-          open ? "bg-purple-500/30 text-white" : "bg-purple-500/20 text-purple-100 hover:bg-purple-500/30 hover:text-white",
+          "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
+          open
+            ? "border-sky-200 bg-white text-slate-900 shadow-sm"
+            : "border-slate-200 bg-white text-slate-700 hover:border-sky-200 hover:text-slate-900",
         )}
         onClick={() => setOpen((prev) => !prev)}
         onKeyDown={(event) => {
@@ -56,18 +58,18 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
 
       <div
         className={clsx(
-          "absolute right-0 top-full z-40 mt-2 w-64 rounded-3xl border border-white/10 bg-[#121131] p-4 shadow-2xl transition",
+          "absolute right-0 top-full z-40 mt-2 w-64 rounded-3xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-500/10 transition",
           open ? "visible translate-y-0 opacity-100 pointer-events-auto" : "invisible -translate-y-1 opacity-0 pointer-events-none",
         )}
         role="menu"
         tabIndex={-1}
       >
-        <ul className="flex flex-col gap-2 text-sm text-white/75">
+        <ul className="flex flex-col gap-2 text-sm text-slate-700">
           {categories.map((category) => (
             <li key={category.id}>
               <Link
                 href={`/categories/${category.slug}`}
-                className="block rounded-2xl px-3 py-2 transition hover:bg-purple-500/20 hover:text-white"
+                className="block rounded-2xl px-3 py-2 transition hover:bg-sky-50 hover:text-slate-900"
                 onClick={() => setOpen(false)}
                 role="menuitem"
               >
@@ -76,8 +78,8 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
             </li>
           ))}
         </ul>
-        <div className="mt-3 border-t border-white/10 pt-3 text-xs text-white/40">
-          <Link href="/categories" className="transition hover:text-purple-200" onClick={() => setOpen(false)}>
+        <div className="mt-3 border-t border-slate-100 pt-3 text-xs text-slate-500">
+          <Link href="/categories" className="transition hover:text-slate-900" onClick={() => setOpen(false)}>
             مشاهده همه دسته‌بندی‌ها
           </Link>
         </div>

@@ -25,13 +25,12 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body
-        className={`${vazirmatn.variable} bg-[#08070C] text-white antialiased`}
+        className={`${vazirmatn.variable} bg-white text-slate-700 antialiased`}
       >
-        <div className="relative min-h-screen overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(141,99,255,0.12),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(26,26,31,0.95),_rgba(8,7,12,0.95))]" />
-          <div className="relative flex min-h-screen flex-col">
+        <div className="min-h-screen bg-white">
+          <div className="flex min-h-screen flex-col">
             <SiteHeader />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 bg-white">{children}</main>
             <SiteFooter />
           </div>
         </div>

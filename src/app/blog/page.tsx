@@ -13,19 +13,19 @@ export default async function BlogPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12 space-y-10">
-      <header className="space-y-4 text-white">
-        <h1 className="text-4xl font-semibold">وبلاگ تخصصی ZenLube</h1>
-        <p className="text-sm leading-7 text-white/70">
+      <header className="space-y-4 text-slate-700">
+        <h1 className="text-4xl font-semibold text-slate-900">وبلاگ تخصصی ZenLube</h1>
+        <p className="text-sm leading-7 text-slate-600">
           مجموعه‌ای از تجربیات فنی، راهنمای خرید، مقایسه محصولات و نکات نگهداری برای موتور خودرو. تیم تحریریه ما به صورت مستمر محتوا را بر اساس استانداردهای روز به‌روزرسانی می‌کند.
         </p>
       </header>
 
       <section className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-white/60">
+        <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
           <span>مجموع {posts.length} مقاله تخصصی منتشر شده است.</span>
           <Link
             href="/support"
-            className="rounded-full border border-white/20 px-4 py-2 text-xs text-white/70 transition hover:border-purple-300 hover:text-white"
+            className="rounded-full border border-slate-200 px-4 py-2 text-xs text-slate-600 transition hover:border-sky-200 hover:text-sky-700"
           >
             درخواست موضوع پیشنهادی
           </Link>

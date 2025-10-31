@@ -29,7 +29,7 @@ export function AddToCartButton({ productId, className }: AddToCartButtonProps) 
           })
         }
         className={cn(
-          "w-full rounded-full bg-purple-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/30 transition hover:bg-purple-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-200 disabled:cursor-not-allowed disabled:opacity-60",
+          "w-full rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-300/40 transition hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200 disabled:cursor-not-allowed disabled:opacity-60",
           className,
         )}
         disabled={isPending}
@@ -37,7 +37,7 @@ export function AddToCartButton({ productId, className }: AddToCartButtonProps) 
         {isPending ? "در حال افزودن..." : "افزودن به سبد"}
       </button>
       {feedback && (
-        <span className="text-center text-xs text-purple-200/80">{feedback}</span>
+        <span className="text-center text-xs text-sky-600/80">{feedback}</span>
       )}
     </div>
   );

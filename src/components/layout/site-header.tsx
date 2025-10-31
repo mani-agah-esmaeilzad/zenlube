@@ -2,18 +2,18 @@ import Link from "next/link";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { CartIndicator } from "@/components/layout/cart-indicator";
+import { CategoryDropdown } from "@/components/layout/category-dropdown";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { getAllCategoriesLite } from "@/lib/data";
 import { getAppSession } from "@/lib/session";
 
 export async function SiteHeader() {
-  const rawSession = await getAppSession();
+  const [rawSession, categories] = await Promise.all([getAppSession(), getAllCategoriesLite()]);
   const sessionUser = (rawSession as { user?: { id?: string; role?: string | null } } | null)?.user;
   const isAuthenticated = Boolean(sessionUser?.id);
   type NavLink = { href: string; label: string; highlight?: boolean };
   const links: NavLink[] = [
-    { href: "/products", label: "محصولات" },
     { href: "/products/compare", label: "مقایسه روغن‌ها" },
-    { href: "/categories", label: "دسته‌بندی‌ها" },
     { href: "/brands", label: "برندها" },
     { href: "/blog", label: "وبلاگ" },
     { href: "/cars", label: "لیست ماشین‌ها" },
@@ -40,6 +40,7 @@ export async function SiteHeader() {
             ZenLube
           </Link>
           <nav className="hidden items-center gap-6 text-sm text-white/80 lg:flex">
+            <CategoryDropdown categories={categories} />
             {links.map((link) => (
               <Link
                 key={link.href}
@@ -51,24 +52,8 @@ export async function SiteHeader() {
             ))}
           </nav>
         </div>
-        <form
-          action="/products"
-          className="hidden flex-1 items-center gap-2 rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm text-white/70 shadow-inner shadow-black/30 focus-within:border-purple-300 focus-within:text-white md:flex"
-        >
-          <input
-            name="search"
-            placeholder="جستجوی محصول، برند یا استاندارد..."
-            className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/40"
-          />
-          <button
-            type="submit"
-            className="rounded-full bg-purple-500 px-4 py-1 text-xs font-semibold text-white hover:bg-purple-400"
-          >
-            جستجو
-          </button>
-        </form>
         <div className="flex items-center gap-3">
-          <MobileNav links={links} isAuthenticated={isAuthenticated} />
+          <MobileNav links={links} isAuthenticated={isAuthenticated} categories={categories} />
           <CartIndicator />
           {isAuthenticated ? <SignOutButton /> : <SignInButton />}
         </div>

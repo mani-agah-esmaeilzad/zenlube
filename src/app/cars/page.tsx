@@ -1,5 +1,6 @@
 import { CarCard } from "@/components/catalog/car-card";
-import { getCarsWithProducts } from "@/lib/data";
+import { CarSearchSelector } from "@/components/layout/car-search-selector";
+import { getCarHierarchy, getCarsWithProducts } from "@/lib/data";
 
 type CarsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -9,7 +10,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
   const params = await searchParams;
   const search = typeof params.search === "string" ? params.search : undefined;
 
-  const cars = await getCarsWithProducts();
+  const [cars, carHierarchy] = await Promise.all([getCarsWithProducts(), getCarHierarchy()]);
   const filteredCars = search
     ? cars.filter((car) => {
         const haystack = `${car.manufacturer} ${car.model} ${car.generation ?? ""} ${car.engineCode ?? ""}`.toLowerCase();
@@ -40,6 +41,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
             جستجو
           </button>
         </form>
+        <CarSearchSelector hierarchy={carHierarchy} />
       </header>
 
       <div className="grid gap-6 lg:grid-cols-2">

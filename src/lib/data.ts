@@ -65,6 +65,17 @@ export async function getHighlightedCategories() {
   });
 }
 
+export async function getAllCategoriesLite() {
+  return prisma.category.findMany({
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+    },
+    orderBy: { name: "asc" },
+  });
+}
+
 export async function getBrandsWithProductCount() {
   return prisma.brand.findMany({
     include: {
@@ -282,6 +293,78 @@ export async function getCarsWithProducts() {
       { generation: "asc" },
     ],
   });
+}
+
+export type CarHierarchy = {
+  brand: string;
+  models: {
+    model: string;
+    options: {
+      slug: string;
+      label: string;
+    }[];
+  }[];
+};
+
+export async function getCarHierarchy(): Promise<CarHierarchy[]> {
+  const cars = await prisma.car.findMany({
+    select: {
+      slug: true,
+      manufacturer: true,
+      model: true,
+      generation: true,
+      engineCode: true,
+      yearFrom: true,
+      yearTo: true,
+    },
+    orderBy: [
+      { manufacturer: "asc" },
+      { model: "asc" },
+      { generation: "asc" },
+      { engineCode: "asc" },
+      { yearFrom: "asc" },
+      { yearTo: "asc" },
+    ],
+  });
+
+  const brandMap = new Map<string, Map<string, { slug: string; label: string }[]>>();
+
+  cars.forEach((car) => {
+    if (!brandMap.has(car.manufacturer)) {
+      brandMap.set(car.manufacturer, new Map());
+    }
+    const modelMap = brandMap.get(car.manufacturer)!;
+    if (!modelMap.has(car.model)) {
+      modelMap.set(car.model, []);
+    }
+
+    const details = [
+      car.generation?.trim() || null,
+      car.engineCode ? `کد موتور ${car.engineCode}` : null,
+      car.yearFrom || car.yearTo ? `سال ${car.yearFrom ?? "?"} تا ${car.yearTo ?? "?"}` : null,
+    ]
+      .filter(Boolean)
+      .join(" • ");
+
+    modelMap.get(car.model)!.push({
+      slug: car.slug,
+      label: details.length > 0 ? details : "تمامی نسخه‌ها",
+    });
+  });
+
+  const collator = new Intl.Collator("fa", { sensitivity: "base" });
+
+  return Array.from(brandMap.entries())
+    .map(([brand, modelMap]) => ({
+      brand,
+      models: Array.from(modelMap.entries())
+        .map(([model, options]) => ({
+          model,
+          options: options.sort((a, b) => collator.compare(a.label, b.label)),
+        }))
+        .sort((a, b) => collator.compare(a.model, b.model)),
+    }))
+    .sort((a, b) => collator.compare(a.brand, b.brand));
 }
 
 export async function getLatestBlogPosts(limit = 6) {

@@ -21,25 +21,38 @@ const optionalNumber = z.preprocess((value) => {
   return value;
 }, z.number().optional());
 
-export const categorySchema = z.object({
+const slugSchema = z
+  .string()
+  .min(2, "اسلاگ معتبر نیست.")
+  .regex(/^[a-z0-9-]+$/, "اسلاگ فقط می‌تواند شامل حروف کوچک، عدد و خط تیره باشد.");
+
+const categoryFields = {
   name: z.string().trim().min(2, "نام دسته باید حداقل دو کاراکتر باشد."),
-  slug: z
-    .string()
-    .min(2, "اسلاگ معتبر نیست.")
-    .regex(/^[a-z0-9-]+$/, "اسلاگ فقط می‌تواند شامل حروف کوچک، عدد و خط تیره باشد."),
+  slug: slugSchema,
   description: optionalString,
   imageUrl: optionalUrl,
+};
+
+export const categorySchema = z.object(categoryFields);
+
+export const categoryUpdateSchema = z.object({
+  id: z.string().cuid(),
+  ...categoryFields,
 });
 
-export const brandSchema = z.object({
+const brandFields = {
   name: z.string().trim().min(2, "نام برند باید حداقل دو کاراکتر باشد."),
-  slug: z
-    .string()
-    .min(2)
-    .regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
+  slug: slugSchema,
   description: optionalString,
   imageUrl: optionalUrl,
   website: optionalUrl,
+};
+
+export const brandSchema = z.object(brandFields);
+
+export const brandUpdateSchema = z.object({
+  id: z.string().cuid(),
+  ...brandFields,
 });
 
 export const carSchema = z.object({
@@ -92,9 +105,9 @@ export const maintenanceTaskSchema = z.object({
     .transform((value) => value ?? []),
 });
 
-export const productUpsertSchema = z.object({
+const productFields = {
   name: z.string().trim().min(2),
-  slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
+  slug: slugSchema,
   sku: optionalString,
   description: optionalString,
   price: z.number().min(0),
@@ -106,6 +119,13 @@ export const productUpsertSchema = z.object({
   categoryId: z.string().cuid(),
   brandId: z.string().cuid(),
   carIds: z.array(z.string().cuid()).optional(),
+};
+
+export const productCreateSchema = z.object(productFields);
+
+export const productUpdateSchema = z.object({
+  id: z.string().cuid(),
+  ...productFields,
 });
 
 export const answerQuestionSchema = z.object({

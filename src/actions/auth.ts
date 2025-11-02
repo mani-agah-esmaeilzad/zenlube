@@ -21,6 +21,7 @@ export async function registerUserAction(
     email: raw.email,
     password: raw.password,
     confirmPassword: raw.confirmPassword,
+    phone: raw.phone,
   });
 
   if (!parsed.success) {
@@ -31,7 +32,7 @@ export async function registerUserAction(
     };
   }
 
-  const { name, email, password } = parsed.data;
+  const { name, email, password, phone } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
 
@@ -50,6 +51,7 @@ export async function registerUserAction(
       name,
       email,
       password: hashedPassword,
+      phone: phone ?? undefined,
     },
   });
 

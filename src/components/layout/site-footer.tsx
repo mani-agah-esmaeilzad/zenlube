@@ -22,7 +22,17 @@ export function SiteFooter() {
             پشتیبانی
           </Link>
         </div>
-        <p className="text-xs text-slate-400">© {new Date().getFullYear()} ZenLube - همه حقوق محفوظ است.</p>
+        <div className="flex flex-col items-end gap-2 text-xs text-slate-400">
+          <Link
+            href="#"
+            className="flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-sky-200"
+            aria-label="نماد اعتماد الکترونیکی"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/enamad-placeholder.svg" alt="محل قرارگیری نماد اعتماد" className="h-16 w-16 object-contain" />
+          </Link>
+          <p>© {new Date().getFullYear()} ZenLube - همه حقوق محفوظ است.</p>
+        </div>
       </div>
     </footer>
   );

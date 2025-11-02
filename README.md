@@ -38,6 +38,12 @@ ZenLube یک فروشگاه کامل برای فروش آنلاین روغن م�
    DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB?schema=public"
    NEXTAUTH_SECRET="یک_رشته_تصادفی_طولانی"
    NEXTAUTH_URL="http://localhost:3000"
+   ZARINPAL_MERCHANT_ID="کد مرچنت زرین‌پال"
+   ZARINPAL_CALLBACK_URL="http://localhost:3000/api/payments/zarinpal/callback"
+   MELIPAYAMAK_USERNAME="نام کاربری ملی پیامک"
+   MELIPAYAMAK_PASSWORD="رمز عبور ملی پیامک"
+   MELIPAYAMAK_ORIGINATOR="شماره ارسال‌کننده"
+   NEXT_PUBLIC_APP_URL="http://localhost:3000"
    ```
 
 4. دیتابیس را مهاجرت دهید و داده‌های اولیه را اعمال کنید:
@@ -64,6 +70,12 @@ ZenLube یک فروشگاه کامل برای فروش آنلاین روغن م�
    - `DATABASE_URL`
    - `NEXTAUTH_SECRET`
    - `NEXTAUTH_URL` (مثلاً `https://your-domain.vercel.app`)
+   - `NEXT_PUBLIC_APP_URL` (دامنه عمومی برای callback پرداخت)
+   - `ZARINPAL_MERCHANT_ID`
+   - `ZARINPAL_CALLBACK_URL`
+   - `MELIPAYAMAK_USERNAME`
+   - `MELIPAYAMAK_PASSWORD`
+   - `MELIPAYAMAK_ORIGINATOR`
 3. قبل از اولین استقرار، روی محیط production دستور زیر را اجرا کنید (از طریق Vercel CLI یا pipeline):
 
    ```bash

@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
+import { ProfileForm } from "@/components/account/profile-form";
+import { AddressForm } from "@/components/account/address-form";
 
 export default async function AccountPage() {
   const rawSession = await getAppSession();
@@ -12,30 +15,52 @@ export default async function AccountPage() {
     redirect("/sign-in?callbackUrl=/account");
   }
 
-  const orders = await prisma.order.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    include: {
-      items: {
-        include: {
-          product: true,
+  const [dbUser, orders] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        addresses: {
+          where: { isDefault: true },
+          take: 1,
         },
       },
-    },
-  });
+    }),
+    prisma.order.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  const defaultAddress = dbUser?.addresses?.[0] ?? null;
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12 space-y-12">
       <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-3xl font-semibold text-slate-900">حساب کاربری</h1>
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <div className="space-y-2">
-            <span className="text-xs text-slate-500">نام</span>
-            <p className="text-lg text-slate-900">{user.name ?? "کاربر ZenLube"}</p>
+        <h1 className="text-3xl font-semibold text-slate-900">پروفایل شما</h1>
+        <p className="mt-2 text-xs text-slate-500">اطلاعات تماس خود را بروزرسانی کنید تا فرایند ارسال سریع‌تر انجام شود.</p>
+        <div className="mt-6 grid gap-8 lg:grid-cols-2">
+          <div>
+            <h2 className="text-sm font-semibold text-slate-700">اطلاعات ورود</h2>
+            <ProfileForm name={dbUser?.name} email={dbUser?.email} phone={dbUser?.phone} />
           </div>
-          <div className="space-y-2">
-            <span className="text-xs text-slate-500">ایمیل</span>
-            <p className="text-lg text-slate-900">{user.email}</p>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-700">آدرس پیش‌فرض ارسال</h2>
+            <AddressForm
+              fullName={defaultAddress?.fullName ?? dbUser?.name}
+              phone={defaultAddress?.phone ?? dbUser?.phone}
+              address1={defaultAddress?.address1}
+              address2={defaultAddress?.address2}
+              city={defaultAddress?.city}
+              province={defaultAddress?.province}
+              postalCode={defaultAddress?.postalCode}
+            />
           </div>
         </div>
       </section>

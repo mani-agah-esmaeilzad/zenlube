@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { validateIranPhone } from "@/lib/phone";
+
 function emptyToUndefined(value: unknown) {
   if (typeof value === "string") {
     const trimmed = value.trim();
@@ -21,25 +23,44 @@ const optionalNumber = z.preprocess((value) => {
   return value;
 }, z.number().optional());
 
-export const categorySchema = z.object({
+const slugSchema = z
+  .string()
+  .min(2, "اسلاگ معتبر نیست.")
+  .regex(/^[a-z0-9-]+$/, "اسلاگ فقط می‌تواند شامل حروف کوچک، عدد و خط تیره باشد.");
+
+const phoneSchema = z
+  .string()
+  .trim()
+  .min(10, "شماره موبایل معتبر نیست.")
+  .refine((value) => validateIranPhone(value), "شماره موبایل معتبر نیست.");
+
+const categoryFields = {
   name: z.string().trim().min(2, "نام دسته باید حداقل دو کاراکتر باشد."),
-  slug: z
-    .string()
-    .min(2, "اسلاگ معتبر نیست.")
-    .regex(/^[a-z0-9-]+$/, "اسلاگ فقط می‌تواند شامل حروف کوچک، عدد و خط تیره باشد."),
+  slug: slugSchema,
   description: optionalString,
   imageUrl: optionalUrl,
+};
+
+export const categorySchema = z.object(categoryFields);
+
+export const categoryUpdateSchema = z.object({
+  id: z.string().cuid(),
+  ...categoryFields,
 });
 
-export const brandSchema = z.object({
+const brandFields = {
   name: z.string().trim().min(2, "نام برند باید حداقل دو کاراکتر باشد."),
-  slug: z
-    .string()
-    .min(2)
-    .regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
+  slug: slugSchema,
   description: optionalString,
   imageUrl: optionalUrl,
   website: optionalUrl,
+};
+
+export const brandSchema = z.object(brandFields);
+
+export const brandUpdateSchema = z.object({
+  id: z.string().cuid(),
+  ...brandFields,
 });
 
 export const carSchema = z.object({
@@ -92,9 +113,9 @@ export const maintenanceTaskSchema = z.object({
     .transform((value) => value ?? []),
 });
 
-export const productUpsertSchema = z.object({
+const productFields = {
   name: z.string().trim().min(2),
-  slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
+  slug: slugSchema,
   sku: optionalString,
   description: optionalString,
   price: z.number().min(0),
@@ -106,6 +127,13 @@ export const productUpsertSchema = z.object({
   categoryId: z.string().cuid(),
   brandId: z.string().cuid(),
   carIds: z.array(z.string().cuid()).optional(),
+};
+
+export const productCreateSchema = z.object(productFields);
+
+export const productUpdateSchema = z.object({
+  id: z.string().cuid(),
+  ...productFields,
 });
 
 export const answerQuestionSchema = z.object({
@@ -155,8 +183,40 @@ export const registerUserSchema = z
     email: z.string().email("ایمیل معتبر نیست."),
     password: z.string().min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد."),
     confirmPassword: z.string().min(8, "تکرار رمز عبور باید حداقل ۸ کاراکتر باشد."),
+    phone: optionalString.pipe(
+      z
+        .string()
+        .optional()
+        .refine((value) => !value || validateIranPhone(value), "شماره موبایل معتبر نیست."),
+    ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "رمز عبور و تکرار آن یکسان نیست.",
     path: ["confirmPassword"],
   });
+
+export const checkoutOrderSchema = z.object({
+  fullName: z.string().trim().min(3, "نام را به‌درستی وارد کنید."),
+  email: z.string().email("ایمیل معتبر نیست."),
+  phone: phoneSchema,
+  address1: z.string().trim().min(5, "آدرس باید حداقل ۵ کاراکتر باشد."),
+  address2: optionalString,
+  city: z.string().trim().min(2, "شهر را وارد کنید."),
+  province: z.string().trim().min(2, "استان را وارد کنید."),
+  postalCode: z
+    .string()
+    .trim()
+    .min(5, "کد پستی معتبر نیست.")
+    .max(20, "کد پستی معتبر نیست."),
+  shippingMethod: z.enum(["STANDARD", "EXPRESS", "PICKUP"]),
+  notes: optionalString,
+  otpCode: z
+    .string()
+    .trim()
+    .min(4, "کد تایید را وارد کنید.")
+    .max(6, "کد تایید باید ۴ تا ۶ رقم باشد."),
+  saveAddress: z.preprocess(
+    (value) => value === "on" || value === "true" || value === true,
+    z.boolean().optional(),
+  ).transform((value) => value ?? false),
+});

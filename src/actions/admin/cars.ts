@@ -6,9 +6,7 @@ import { ensureAdminAction } from "@/lib/auth";
 import { carSchema } from "@/lib/validators";
 import { upsertCar } from "@/services/admin/mutations";
 
-import type { ActionResult } from "./types";
-
-export async function createCarAction(formData: FormData): Promise<ActionResult> {
+export async function createCarAction(formData: FormData): Promise<void> {
   await ensureAdminAction();
 
   const raw = Object.fromEntries(formData) as Record<string, string>;
@@ -20,13 +18,16 @@ export async function createCarAction(formData: FormData): Promise<ActionResult>
   });
 
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    const flattened = parsed.error.flatten().fieldErrors;
+    const firstError =
+      Object.values(flattened)
+        .flat()
+        .find((message) => Boolean(message)) ?? "اطلاعات خودرو نامعتبر است.";
+    throw new Error(firstError);
   }
 
   await upsertCar(parsed.data);
 
   revalidatePath("/admin");
   revalidatePath("/cars");
-
-  return { success: true };
 }

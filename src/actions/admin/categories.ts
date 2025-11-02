@@ -73,10 +73,13 @@ export async function deleteCategoryAction(categoryId: string): Promise<ActionRe
   return { success: true };
 }
 
-export async function deleteCategoryFormAction(formData: FormData): Promise<ActionResult> {
+export async function deleteCategoryFormAction(formData: FormData): Promise<void> {
   const categoryId = formData.get("categoryId");
   if (!categoryId || typeof categoryId !== "string") {
-    return { success: false, message: "شناسه دسته‌بندی نامعتبر است." };
+    throw new Error("شناسه دسته‌بندی نامعتبر است.");
   }
-  return deleteCategoryAction(categoryId);
+  const result = await deleteCategoryAction(categoryId);
+  if (!result.success) {
+    throw new Error(result.message ?? "حذف دسته‌بندی با خطا مواجه شد.");
+  }
 }

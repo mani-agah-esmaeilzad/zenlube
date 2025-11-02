@@ -69,10 +69,13 @@ export async function deleteBrandAction(brandId: string): Promise<ActionResult> 
   return { success: true };
 }
 
-export async function deleteBrandFormAction(formData: FormData): Promise<ActionResult> {
+export async function deleteBrandFormAction(formData: FormData): Promise<void> {
   const brandId = formData.get("brandId");
   if (!brandId || typeof brandId !== "string") {
-    return { success: false, message: "شناسه برند نامعتبر است." };
+    throw new Error("شناسه برند نامعتبر است.");
   }
-  return deleteBrandAction(brandId);
+  const result = await deleteBrandAction(brandId);
+  if (!result.success) {
+    throw new Error(result.message ?? "حذف برند با خطا مواجه شد.");
+  }
 }

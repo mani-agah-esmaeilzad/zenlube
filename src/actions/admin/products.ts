@@ -61,10 +61,13 @@ export async function deleteProductAction(productId: string): Promise<ActionResu
   return { success: true };
 }
 
-export async function deleteProductFormAction(formData: FormData): Promise<ActionResult> {
+export async function deleteProductFormAction(formData: FormData): Promise<void> {
   const productId = formData.get("productId");
   if (!productId || typeof productId !== "string") {
-    return { success: false, message: "شناسه محصول نامعتبر است." };
+    throw new Error("شناسه محصول نامعتبر است.");
   }
-  return deleteProductAction(productId);
+  const result = await deleteProductAction(productId);
+  if (!result.success) {
+    throw new Error("حذف محصول با خطا مواجه شد.");
+  }
 }

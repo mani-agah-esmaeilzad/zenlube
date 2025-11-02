@@ -44,20 +44,24 @@ const tabs = [
 
 type TabKey = (typeof tabs)[number]["id"];
 
+type AdminSearchParams = Record<string, string | string[] | undefined>;
+
 type AdminPageProps = {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams: Promise<AdminSearchParams>;
 };
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const { userId } = await requireAdminUser();
 
-  const requestedTabParam = searchParams?.tab;
+  const params = await searchParams;
+
+  const requestedTabParam = params.tab;
   const requestedTab = Array.isArray(requestedTabParam) ? requestedTabParam[0] : requestedTabParam;
   const activeTab: TabKey = tabs.some((tab) => tab.id === requestedTab)
     ? (requestedTab as TabKey)
     : "overview";
 
-  const content = await renderActiveTab(activeTab, userId, searchParams);
+  const content = await renderActiveTab(activeTab, userId, params);
 
   return (
     <div className="space-y-10">
@@ -97,7 +101,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 async function renderActiveTab(
   activeTab: TabKey,
   sessionUserId: string | null,
-  searchParams: AdminPageProps["searchParams"],
+  searchParams: AdminSearchParams,
 ) {
   switch (activeTab) {
     case "overview": {

@@ -44,7 +44,7 @@ export function ProductCreateForm(props: Omit<ProductFormBaseProps, "submitLabel
 }
 
 export function ProductEditForm(
-  props: ProductFormBaseProps & {
+  props: Omit<ProductFormBaseProps, "submitLabel"> & {
     product: ProductsTabData["products"][number];
   },
 ) {

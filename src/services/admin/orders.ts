@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma";
 
 import { mapOrderDetail } from "./mappers";
 import type { OrdersTabData } from "./types";
@@ -16,19 +17,18 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
     perPage: rawPerPage > 0 ? rawPerPage : DEFAULT_PER_PAGE,
   } as OrdersTabData["filters"];
 
-  const where = {
-    ...(filters.status !== "all" ? { status: filters.status } : {}),
-    ...(filters.query
-      ? {
-          OR: [
-            { id: { contains: filters.query, mode: "insensitive" } },
-            { fullName: { contains: filters.query, mode: "insensitive" } },
-            { email: { contains: filters.query, mode: "insensitive" } },
-            { phone: { contains: filters.query, mode: "insensitive" } },
-          ],
-        }
-      : {}),
-  } as const;
+  const where: Prisma.OrderWhereInput = {};
+  if (filters.status !== "all") {
+    where.status = filters.status;
+  }
+  if (filters.query) {
+    where.OR = [
+      { id: { contains: filters.query, mode: "insensitive" } },
+      { fullName: { contains: filters.query, mode: "insensitive" } },
+      { email: { contains: filters.query, mode: "insensitive" } },
+      { phone: { contains: filters.query, mode: "insensitive" } },
+    ];
+  }
 
   const skip = (filters.page - 1) * filters.perPage;
 

@@ -20,13 +20,18 @@ const trackingSchema = z.object({
     .max(60, "کد پیگیری حداکثر ۶۰ کاراکتر است."),
 });
 
-export async function updateOrderStatusAction(formData: FormData) {
+export async function updateOrderStatusAction(formData: FormData): Promise<void> {
   await ensureAdminAction();
   const raw = Object.fromEntries(formData);
   const parsed = statusSchema.safeParse(raw);
 
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors } as const;
+    const flattened = parsed.error.flatten().fieldErrors;
+    const firstError =
+      Object.values(flattened)
+        .flat()
+        .find((message) => Boolean(message)) ?? "به‌روزرسانی وضعیت سفارش نامعتبر است.";
+    throw new Error(firstError);
   }
 
   await prisma.order.update({
@@ -35,16 +40,20 @@ export async function updateOrderStatusAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
-  return { success: true } as const;
 }
 
-export async function updateOrderTrackingAction(formData: FormData) {
+export async function updateOrderTrackingAction(formData: FormData): Promise<void> {
   await ensureAdminAction();
   const raw = Object.fromEntries(formData);
   const parsed = trackingSchema.safeParse(raw);
 
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors } as const;
+    const flattened = parsed.error.flatten().fieldErrors;
+    const firstError =
+      Object.values(flattened)
+        .flat()
+        .find((message) => Boolean(message)) ?? "کد پیگیری نامعتبر است.";
+    throw new Error(firstError);
   }
 
   await prisma.order.update({
@@ -53,5 +62,4 @@ export async function updateOrderTrackingAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
-  return { success: true } as const;
 }

@@ -108,7 +108,7 @@ export function mapProduct(product: Prisma.ProductGetPayload<{
         slug: mapping.car.slug,
       },
     })),
-    averageRating: product.averageRating,
+    averageRating: product.averageRating != null ? toNumber(product.averageRating) : null,
     reviewCount: product.reviewCount,
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
@@ -272,7 +272,12 @@ export function mapCarQuestion(question: Prisma.CarQuestionGetPayload<{
   };
 }
 
-export function mapEngagementGroup(group: Prisma.EngagementEventGroupByOutputType): EngagementGroup {
+type EngagementGroupInput = Pick<
+  Prisma.EngagementEventGroupByOutputType,
+  "entityType" | "entityId" | "eventType"
+> & { _count: { _all: number } };
+
+export function mapEngagementGroup(group: EngagementGroupInput): EngagementGroup {
   return {
     entityType: group.entityType,
     entityId: group.entityId,

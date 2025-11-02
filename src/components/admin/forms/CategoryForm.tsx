@@ -5,6 +5,7 @@ import { useActionState, useEffect, useMemo, useRef } from "react";
 import { createCategoryAction, updateCategoryAction } from "@/actions/admin";
 import type { ActionResult } from "@/actions/admin/types";
 import type { CategoriesTabData } from "@/services/admin/types";
+import { MediaUploadField } from "@/components/admin/media-upload-field";
 
 type FormState = { status: "idle" } | { status: "submitted"; result: ActionResult };
 
@@ -107,17 +108,16 @@ function CategoryFields({ submitLabel, state, disabled, defaultValues }: Categor
         />
         {renderErrors("slug")}
       </label>
-      <label className="flex flex-col gap-1 text-xs text-slate-500">
-        تصویر دسته (اختیاری)
-        <input
+      <div>
+        <MediaUploadField
           name="imageUrl"
-          defaultValue={defaultValues.imageUrl ?? ""}
-          placeholder="https://..."
+          label="تصویر دسته (اختیاری)"
+          defaultValue={defaultValues.imageUrl}
+          description="آپلود تصویر برای نمایش در کارت‌های دسته‌بندی."
           disabled={disabled}
-          className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
         />
         {renderErrors("imageUrl")}
-      </label>
+      </div>
       <label className="flex flex-col gap-1 text-xs text-slate-500">
         توضیحات کوتاه
         <textarea

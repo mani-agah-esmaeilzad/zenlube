@@ -8,6 +8,7 @@ import type {
   AdminProductQuestion,
   AdminCarQuestion,
   AdminOrder,
+  AdminOrderDetail,
   AdminUser,
   EngagementGroup,
 } from "./types";
@@ -124,6 +125,40 @@ export function mapOrder(order: Prisma.OrderGetPayload<{
     status: order.status,
     total: toNumber(order.total),
     createdAt: order.createdAt,
+  };
+}
+
+export function mapOrderDetail(order: Prisma.OrderGetPayload<{
+  include: {
+    user: { select: { email: true } };
+    items: { include: { product: { select: { name: true } } } };
+  };
+}>): AdminOrderDetail {
+  return {
+    id: order.id,
+    fullName: order.fullName,
+    email: order.user?.email ?? order.email,
+    status: order.status,
+    total: toNumber(order.total),
+    createdAt: order.createdAt,
+    paymentMethod: order.paymentMethod,
+    paymentGateway: order.paymentGateway,
+    paymentRefId: order.paymentRefId,
+    shippingMethod: order.shippingMethod,
+    shippingTrackingCode: order.shippingTrackingCode,
+    phone: order.phone,
+    city: order.city,
+    province: order.province,
+    address1: order.address1,
+    address2: order.address2,
+    postalCode: order.postalCode,
+    notes: order.notes,
+    items: order.items.map((item) => ({
+      id: item.id,
+      name: item.product.name,
+      quantity: item.quantity,
+      price: toNumber(item.price),
+    })),
   };
 }
 

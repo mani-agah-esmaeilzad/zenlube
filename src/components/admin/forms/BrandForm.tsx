@@ -5,6 +5,7 @@ import { useActionState, useEffect, useMemo, useRef } from "react";
 import { createBrandAction, updateBrandAction } from "@/actions/admin";
 import type { ActionResult } from "@/actions/admin/types";
 import type { BrandsTabData } from "@/services/admin/types";
+import { MediaUploadField } from "@/components/admin/media-upload-field";
 
 type FormState = { status: "idle" } | { status: "submitted"; result: ActionResult };
 
@@ -108,17 +109,16 @@ function BrandFields({ submitLabel, state, disabled, defaultValues }: BrandField
         />
         {renderErrors("slug")}
       </label>
-      <label className="flex flex-col gap-1 text-xs text-slate-500">
-        تصویر برند
-        <input
+      <div>
+        <MediaUploadField
           name="imageUrl"
-          defaultValue={defaultValues.imageUrl ?? ""}
-          placeholder="https://..."
+          label="تصویر برند"
+          defaultValue={defaultValues.imageUrl}
+          description="یک تصویر ۱:۱ با پس‌زمینه شفاف یا سفید آپلود کنید یا آدرس مستقیم وارد نمایید."
           disabled={disabled}
-          className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
         />
         {renderErrors("imageUrl")}
-      </label>
+      </div>
       <label className="flex flex-col gap-1 text-xs text-slate-500">
         وب‌سایت رسمی
         <input

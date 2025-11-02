@@ -33,6 +33,10 @@ enum PaymentMethod {
   BANK_TRANSFER
 }
 
+enum PaymentGateway {
+  ZARINPAL
+}
+
 enum ShippingMethod {
   STANDARD
   EXPRESS
@@ -49,6 +53,7 @@ model User {
   id             String    @id @default(cuid())
   name           String?
   email          String    @unique
+  phone          String?   @unique
   emailVerified  DateTime?
   password       String?
   role           Role      @default(CUSTOMER)
@@ -59,6 +64,7 @@ model User {
   sessions       Session[]
   cart           Cart?
   orders         Order[]
+  addresses      UserAddress[]
 }
 
 model Account {
@@ -288,9 +294,15 @@ model Order {
   postalCode String
   country   String
   paymentMethod PaymentMethod @default(COD)
+  paymentGateway PaymentGateway @default(ZARINPAL)
   shippingMethod ShippingMethod @default(STANDARD)
   shippingCost Decimal      @db.Decimal(10, 2) @default(0)
   notes     String?
+  paymentAuthority String?
+  paymentRefId String?
+  paidAt    DateTime?
+  shippingTrackingCode String?
+  deliveredAt DateTime?
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -356,4 +368,38 @@ model GalleryImage {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model UserAddress {
+  id         String   @id @default(cuid())
+  userId     String
+  label      String   @default("آدرس اصلی")
+  fullName   String
+  phone      String
+  address1   String
+  address2   String?
+  city       String
+  province   String
+  postalCode String
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isDefault])
+  @@unique([userId, isDefault])
+}
+
+model OtpRequest {
+  id         String   @id @default(cuid())
+  phone      String
+  purpose    String   @default("checkout")
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([phone, purpose])
+  @@index([expiresAt])
 }

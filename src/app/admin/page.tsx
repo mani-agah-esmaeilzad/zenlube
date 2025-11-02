@@ -14,12 +14,15 @@ import {
   getReportsTabData,
   getUsersTabData,
 } from "@/services/admin/overview";
+import { getOrdersTabData } from "@/services/admin/orders";
 import { BrandsTab } from "@/components/admin/tabs/BrandsTab";
 import { CarsTab } from "@/components/admin/tabs/CarsTab";
 import { CategoriesTab } from "@/components/admin/tabs/CategoriesTab";
 import { MaintenanceTab } from "@/components/admin/tabs/MaintenanceTab";
 import { OverviewTab } from "@/components/admin/tabs/OverviewTab";
 import { ProductsTab } from "@/components/admin/tabs/ProductsTab";
+import { OrdersTab } from "@/components/admin/tabs/OrdersTab";
+import type { OrdersTabData } from "@/services/admin/types";
 import { QuestionsTab } from "@/components/admin/tabs/QuestionsTab";
 import { ReportsTab } from "@/components/admin/tabs/ReportsTab";
 import { UsersTab } from "@/components/admin/tabs/UsersTab";
@@ -29,6 +32,7 @@ export const revalidate = 0;
 const tabs = [
   { id: "overview", label: "نمای کلی" },
   { id: "products", label: "محصولات" },
+  { id: "orders", label: "سفارش‌ها" },
   { id: "cars", label: "خودروها" },
   { id: "maintenance", label: "نگهداری" },
   { id: "questions", label: "پرسش‌ها" },
@@ -110,6 +114,20 @@ async function renderActiveTab(
         stockStatus: typeof searchParams?.stockStatus === "string" ? searchParams.stockStatus : null,
       });
       return <ProductsTab data={data} />;
+    }
+    case "orders": {
+      const statusParam = typeof searchParams?.status === "string" ? searchParams.status : undefined;
+      const normalizedStatus = statusParam &&
+        ["all", "PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"].includes(statusParam)
+          ? (statusParam as OrdersTabData["filters"]["status"])
+          : undefined;
+      const data = await getOrdersTabData({
+        page: typeof searchParams?.page === "string" ? Number(searchParams.page) : undefined,
+        perPage: typeof searchParams?.perPage === "string" ? Number(searchParams.perPage) : undefined,
+        status: normalizedStatus,
+        query: typeof searchParams?.query === "string" ? searchParams.query : null,
+      });
+      return <OrdersTab data={data} />;
     }
     case "cars": {
       const data = await getCarsTabData();

@@ -6,6 +6,7 @@ import { createProductAction, updateProductAction } from "@/actions/admin";
 import type { ActionResult } from "@/actions/admin/types";
 import type { ProductsTabData } from "@/services/admin/types";
 import { faNumberFormatter } from "@/lib/formatters";
+import { MediaUploadField } from "@/components/admin/media-upload-field";
 
 type FormState = { status: "idle" } | { status: "submitted"; result: ActionResult };
 
@@ -212,17 +213,16 @@ function ProductFormFields({
           />
           {renderErrors("oilType")}
         </label>
-        <label className="flex flex-col gap-1 text-xs text-slate-500 sm:col-span-2">
-          آدرس تصویر محصول
-          <input
+        <div className="sm:col-span-2">
+          <MediaUploadField
             name="imageUrl"
-            defaultValue={defaultValues.imageUrl ?? ""}
-            placeholder="https://..."
+            label="آدرس تصویر محصول"
+            defaultValue={defaultValues.imageUrl}
+            description="از دکمه آپلود برای انتخاب تصویر یا وارد کردن آدرس مستقیم استفاده کنید."
             disabled={disabled}
-            className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
           />
           {renderErrors("imageUrl")}
-        </label>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

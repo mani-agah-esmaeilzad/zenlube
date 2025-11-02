@@ -90,6 +90,29 @@ export type AdminOrder = {
   createdAt: Date;
 };
 
+export type AdminOrderItem = {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+};
+
+export type AdminOrderDetail = AdminOrder & {
+  paymentMethod: string;
+  paymentGateway?: string | null;
+  paymentRefId?: string | null;
+  shippingMethod: string;
+  shippingTrackingCode?: string | null;
+  phone: string;
+  city: string;
+  province: string;
+  address1: string;
+  address2?: string | null;
+  postalCode: string;
+  notes?: string | null;
+  items: AdminOrderItem[];
+};
+
 export type AdminUser = {
   id: string;
   name?: string | null;
@@ -197,6 +220,21 @@ export type ProductsTabData = {
     threshold: number;
     preview: Array<Pick<AdminProduct, "id" | "name" | "stock" | "slug">>;
   };
+};
+
+export type OrdersTabFilters = {
+  status: "all" | "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  query?: string | null;
+  page: number;
+  perPage: number;
+};
+
+export type OrdersTabData = {
+  orders: AdminOrderDetail[];
+  filters: OrdersTabFilters;
+  pagination: Pagination;
+  statusCounts: Record<string, number>;
+  revenueLast30: number;
 };
 
 export type CarsTabData = {

@@ -93,13 +93,12 @@ export default async function CartPage() {
                 <span>محاسبه در مرحله بعد</span>
               </div>
             </div>
-            <button
-              type="button"
-              className="mt-6 w-full rounded-full bg-purple-500 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-400 disabled:opacity-60"
-              disabled={!cart.items.length}
+            <Link
+              href="/cart/checkout"
+              className="mt-6 inline-flex w-full justify-center rounded-full bg-purple-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-purple-400"
             >
               ادامه فرآیند خرید
-            </button>
+            </Link>
             <p className="mt-4 text-xs text-white/50">
               تایید نهایی سفارش بعد از ورود اطلاعات ارسال و پرداخت انجام می‌شود.
             </p>

@@ -84,6 +84,24 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
       </div>
 
       <div className="space-y-2">
+        <label htmlFor="phone" className="text-xs font-semibold text-slate-600">
+          شماره موبایل (اختیاری)
+        </label>
+        <input
+          id="phone"
+          name="phone"
+          type="tel"
+          placeholder="09xxxxxxxxx"
+          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
+        />
+        {fieldErrors.phone?.map((error) => (
+          <p key={error} className="text-xs text-red-500">
+            {error}
+          </p>
+        ))}
+      </div>
+
+      <div className="space-y-2">
         <label htmlFor="password" className="text-xs font-semibold text-slate-600">
           رمز عبور
         </label>

@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import prisma from "@/lib/prisma";
@@ -9,6 +10,9 @@ import { requestZarinpalPayment } from "@/lib/payments/zarinpal";
 import { normalizeIranPhone } from "@/lib/phone";
 import { verifyOtpCode, createOtpRequest } from "@/services/otp";
 import { sendMelipayamakOtp } from "@/lib/sms/melipayamak";
+import { config } from "@/lib/config";
+import { logger } from "@/lib/logger";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 export type CheckoutState = {
   success: boolean;
@@ -27,9 +31,22 @@ async function requireUserId() {
 }
 
 export async function sendCheckoutOtpAction(phone: string) {
+  const requestHeaders = headers();
+  const forwardedFor = requestHeaders.get("x-forwarded-for") ?? requestHeaders.get("x-real-ip");
+  const clientIp = forwardedFor?.split(",")[0]?.trim() ?? "unknown";
   const normalizedPhone = normalizeIranPhone(phone);
   if (!/^\+989\d{9}$/.test(normalizedPhone)) {
     throw new Error("شماره موبایل معتبر نیست.");
+  }
+  const phoneKey = `otp:${normalizedPhone}`;
+  const ipKey = `otp-ip:${clientIp}`;
+  const [{ success: phoneOk }, { success: ipOk }] = await Promise.all([
+    consumeRateLimit(phoneKey, config.OTP_RATE_LIMIT_WINDOW, config.OTP_RATE_LIMIT_MAX),
+    consumeRateLimit(ipKey, config.OTP_RATE_LIMIT_WINDOW, config.OTP_RATE_LIMIT_MAX * 2),
+  ]);
+
+  if (!phoneOk || !ipOk) {
+    throw new Error("تعداد درخواست‌های مجاز برای دریافت کد تایید به حد مجاز رسیده است. لطفاً بعداً تلاش کنید.");
   }
   const { code, expiresAt } = await createOtpRequest(normalizedPhone, "checkout");
   await sendMelipayamakOtp({ phone: normalizedPhone, code, expiresAt });
@@ -167,7 +184,8 @@ export async function createCheckoutOrderAction(
 
     revalidatePath("/cart");
 
-    const callbackUrl = `${process.env.ZARINPAL_CALLBACK_URL ?? `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api/payments/zarinpal/callback`}?orderId=${order.id}`;
+    const callbackBase = config.ZARINPAL_CALLBACK_URL ?? `${config.NEXT_PUBLIC_APP_URL}/api/payments/zarinpal/callback`;
+    const callbackUrl = `${callbackBase}?orderId=${order.id}`;
 
     const payment = await requestZarinpalPayment({
       amount: order.total,
@@ -188,6 +206,9 @@ export async function createCheckoutOrderAction(
       redirectUrl: payment.paymentUrl,
     };
   } catch (error) {
+    logger.error("Checkout order failed", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
     return {
       success: false,
       message: error instanceof Error ? error.message : "ثبت سفارش با خطا مواجه شد.",

@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && npm run lint && npm run test && NEXTAUTH_SECRET=test-secret DATABASE_URL=postgres://user:pass@localhost:5432/zenlube NEXT_PUBLIC_APP_URL=https://example.com ZARINPAL_MERCHANT_ID=test-merchant MELIPAYAMAK_USERNAME=test MELIPAYAMAK_PASSWORD=test MELIPAYAMAK_FROM=5000 next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test tests/*.test.ts",
+    "test": "NODE_ENV=test NEXTAUTH_SECRET=test-secret DATABASE_URL=postgres://user:pass@localhost:5432/zenlube NEXT_PUBLIC_APP_URL=https://example.com ZARINPAL_MERCHANT_ID=test-merchant MELIPAYAMAK_USERNAME=test MELIPAYAMAK_PASSWORD=test MELIPAYAMAK_FROM=5000 tsx --test tests/*.test.ts",
     "test:watch": "tsx --watch --test tests/*.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",

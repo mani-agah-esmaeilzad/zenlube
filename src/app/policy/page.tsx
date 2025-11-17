@@ -1,7 +1,7 @@
 export default function PolicyPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-16 space-y-4 text-white/70">
-      <h1 className="text-3xl font-semibold text-white">سیاست حریم خصوصی ZenLube</h1>
+      <h1 className="text-3xl font-semibold text-white">سیاست حریم خصوصی Oilbar</h1>
       <p>
         داده‌های کاربران صرفا برای پردازش سفارش و پیشنهاد محصولات نگهداری می‌شود. اطلاعات حساس مانند رمز عبور با الگوریتم‌های امن رمزنگاری ذخیره می‌شود و هیچ‌گاه در اختیار اشخاص ثالث قرار نمی‌گیرد.
       </p>

@@ -9,21 +9,21 @@ async function main() {
   const customerPassword = await bcrypt.hash("Customer@123", 10);
 
   await prisma.user.upsert({
-    where: { email: "admin@zenlube.ir" },
+    where: { email: "admin@oilbar.ir" },
     update: {},
     create: {
-      email: "admin@zenlube.ir",
-      name: "مدیر زِن‌لوب",
+      email: "admin@oilbar.ir",
+      name: "مدیر اویل‌بار",
       password: adminPassword,
       role: Role.ADMIN,
     },
   });
 
   await prisma.user.upsert({
-    where: { email: "customer@zenlube.ir" },
+    where: { email: "customer@oilbar.ir" },
     update: {},
     create: {
-      email: "customer@zenlube.ir",
+      email: "customer@oilbar.ir",
       name: "مشتری نمونه",
       password: customerPassword,
       role: Role.CUSTOMER,
@@ -132,7 +132,7 @@ async function main() {
       viscosity: "0W-20",
       specification: "API SP / ILSAC GF-6",
       overviewDetails:
-        "کرولای نسل دوازدهم با اتکا به پلتفرم TNGA فضای اقتصادی و دوام بالایی ارائه می‌کند. دفترچه دیجیتال ZenLube اطلاعات حیاتی سرویس را برای استفاده در شهر و سفر فراهم کرده است.",
+        "کرولای نسل دوازدهم با اتکا به پلتفرم TNGA فضای اقتصادی و دوام بالایی ارائه می‌کند. دفترچه دیجیتال Oilbar اطلاعات حیاتی سرویس را برای استفاده در شهر و سفر فراهم کرده است.",
       engineDetails:
         "پیشرانه 2ZR-FE با سیستم Dual VVT-i ظرفیت روغن 4.4 لیتری دارد و استفاده از روغن 0W-20 با استاندارد API SP / ILSAC GF-6 توصیه شده است. فیلتر روغن در هر سرویس تعویض شود و فیلتر هوا هر ۲۰ هزار کیلومتر بررسی گردد.",
       gearboxDetails:

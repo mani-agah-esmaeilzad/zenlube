@@ -19,7 +19,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-500/10">
-        <h1 className="text-2xl font-semibold text-slate-900">ساخت حساب ZenLube</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">ساخت حساب Oilbar</h1>
         <p className="mt-2 text-sm text-slate-600">با ثبت‌نام، سبد خرید، سفارش‌ها و پیشنهادهای اختصاصی خودروی خود را مدیریت کنید.</p>
         <div className="mt-8">
           <SignUpForm callbackUrl={callbackUrl} />

@@ -75,7 +75,7 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
       <div className="flex flex-col gap-4">
         <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-purple-900/30 via-black/70 to-purple-950/40 p-5 text-center text-white/80">
           <div className="absolute -right-6 top-0 h-full w-16 rounded-full bg-purple-500/10 blur-3xl" />
-          <p className="text-xs uppercase tracking-[0.35em] text-purple-200/60">ZenLube</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-purple-200/60">Oilbar</p>
           <h3 className="mt-3 text-2xl font-semibold text-white">{cover.title}</h3>
           {cover.subtitle && (
             <p className="mt-2 text-xs leading-6 text-white/60">{cover.subtitle}</p>

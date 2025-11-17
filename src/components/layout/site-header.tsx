@@ -37,7 +37,7 @@ export async function SiteHeader() {
       <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4 text-slate-700">
         <div className="flex items-center gap-8">
           <Link href="/" className="text-2xl font-semibold text-slate-900">
-            ZenLube
+            Oilbar
           </Link>
           <nav className="hidden items-center gap-6 text-sm lg:flex">
             <CategoryDropdown categories={categories} />

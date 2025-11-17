@@ -80,7 +80,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
         {isPending ? "در حال ورود..." : "ورود"}
       </button>
       <p className="text-center text-xs text-slate-500">
-        ادمین نمونه: admin@zenlube.ir | Admin@123
+        ادمین نمونه: admin@oilbar.ir | Admin@123
       </p>
     </form>
   );

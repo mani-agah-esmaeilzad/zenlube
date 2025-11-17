@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: CarPageProps) {
   }
 
   return {
-    title: `${car.manufacturer} ${car.model} | روغن مناسب خودرو در ZenLube`,
+    title: `${car.manufacturer} ${car.model} | روغن مناسب خودرو در Oilbar`,
     description:
       `مشخصات کامل ${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""} به همراه روغن موتورهای پیشنهادی و استانداردهای مورد نیاز.`,
   };
@@ -138,7 +138,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
     [
       "اطلاعات مربوط به روغن و سرویس گیربکس هنوز تکمیل نشده است.",
       "از طریق پنل ادمین بخش گیربکس را با ظرفیت روغن، نوع سیال و دوره‌های سرویس به‌روزرسانی کنید.",
-      "تیم فنی ZenLube در صورت نیاز راهنمایی کامل ارائه خواهد داد.",
+      "تیم فنی Oilbar در صورت نیاز راهنمایی کامل ارائه خواهد داد.",
     ].join("\n");
 
   const maintenanceText =
@@ -146,7 +146,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
     [
       "برنامه نگهداری پیشنهادی شامل تعویض روغن موتور هر ۸ تا ۱۰ هزار کیلومتر یا نهایتاً هر ۱۲ ماه است.",
       "فیلتر روغن و فیلتر هوا را در هر بار سرویس بررسی و در صورت نیاز تعویض کنید.",
-      "برای تنظیم برنامه سرویس متناسب با شرایط رانندگی، با پشتیبانی ZenLube تماس بگیرید.",
+      "برای تنظیم برنامه سرویس متناسب با شرایط رانندگی، با پشتیبانی Oilbar تماس بگیرید.",
     ].join("\n");
 
   const notebookCover = {
@@ -202,7 +202,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
       description: maintenanceText,
       highlights: [
         { label: "محصولات تأییدشده", value: productCountText },
-        { label: "پشتیبانی", value: "پشتیبانی ZenLube" },
+        { label: "پشتیبانی", value: "پشتیبانی Oilbar" },
       ],
       tag: "نگهداری",
     },
@@ -276,7 +276,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border border-purple-400/40 bg-purple-500/20 px-3 py-1 text-[11px] text-purple-100">
-                پیشنهاد خودکار ZenLube
+                پیشنهاد خودکار Oilbar
               </span>
               <h2 className="mt-3 text-2xl font-semibold text-white">
                 {autoSuggestedProduct.brand.name} · {autoSuggestedProduct.name}
@@ -315,7 +315,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
               روغن‌های تأیید شده برای {car.manufacturer} {car.model}
             </h2>
             <p className="mt-2 text-sm text-white/60">
-              این فهرست براساس دفترچه فنی ZenLube تکمیل شده است و محصولات کاملاً سازگار با این
+              این فهرست براساس دفترچه فنی Oilbar تکمیل شده است و محصولات کاملاً سازگار با این
               خودرو را نمایش می‌دهد. برای مقایسه بیشتر، می‌توانید از فیلتر خودرو در فروشگاه نیز
               استفاده کنید.
             </p>

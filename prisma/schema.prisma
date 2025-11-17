@@ -352,7 +352,7 @@ model BlogPost {
   content     String   @db.Text
   coverImage  String?
   tags        String[] @default([])
-  authorName  String   @default("تیم تحریریه ZenLube")
+  authorName  String   @default("تیم تحریریه Oilbar")
   readMinutes Int      @default(5)
   publishedAt DateTime @default(now())
   createdAt   DateTime @default(now())

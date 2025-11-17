@@ -140,7 +140,7 @@ export default async function Home() {
             <div>
               <h2 className="text-2xl font-semibold text-slate-900">محصولات ویژه فنی</h2>
               <p className="mt-2 text-sm text-slate-500">
-                انتخاب متخصصان ZenLube برای خودروهایی که عملکرد بالا و دوام طولانی می‌خواهند.
+                انتخاب متخصصان Oilbar برای خودروهایی که عملکرد بالا و دوام طولانی می‌خواهند.
               </p>
             </div>
             <Link href="/products?sort=bestseller" className="text-sm text-sky-600 hover:text-sky-700">
@@ -259,7 +259,7 @@ export default async function Home() {
       <section className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600 shadow-md shadow-slate-500/15">
         <h2 className="text-2xl font-semibold text-slate-900">نیاز به مشاوره تخصصی دارید؟</h2>
         <p className="mt-3 leading-7 text-slate-600">
-          تیم فنی ZenLube آماده است تا با بررسی دقیق مشخصات خودرو شما، بهترین روغن موتور، فیلتر و سرویس‌های دوره‌ای را پیشنهاد دهد.
+          تیم فنی Oilbar آماده است تا با بررسی دقیق مشخصات خودرو شما، بهترین روغن موتور، فیلتر و سرویس‌های دوره‌ای را پیشنهاد دهد.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           <Link

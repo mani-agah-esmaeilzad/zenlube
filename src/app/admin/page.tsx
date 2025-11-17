@@ -67,7 +67,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     <div className="space-y-10">
       <header className="space-y-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">پیشخوان مدیریتی زن‌لوب</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">پیشخوان مدیریتی اویل‌بار</h1>
           <p className="text-sm text-slate-500">
             در این بخش می‌توانید محصولات، برندها، خودروها و فعالیت‌های کاربران را مدیریت کنید.
           </p>

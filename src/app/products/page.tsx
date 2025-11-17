@@ -36,7 +36,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <div className="mx-auto max-w-6xl px-6 py-12">
       <header className="flex flex-col gap-4 text-slate-700">
-        <h1 className="text-3xl font-semibold text-slate-900">فروشگاه روغن موتور ZenLube</h1>
+        <h1 className="text-3xl font-semibold text-slate-900">فروشگاه روغن موتور Oilbar</h1>
         <p className="text-sm leading-7 text-slate-600">
           بر اساس برند، دسته‌بندی یا خودرو فیلتر کنید و بهترین روغن موتور را پیدا کنید. تمامی قیمت‌ها به‌روز و موجودی کالاها از طریق پنل مدیریت کنترل می‌شود.
         </p>
@@ -199,8 +199,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <h3 className="text-base font-semibold text-slate-900">چطور محصول مناسب را انتخاب کنم؟</h3>
             <ol className="mt-4 space-y-2 list-decimal list-inside">
               <li>دسته‌بندی را بر اساس نوع موتور (بنزینی، دیزلی، سنتتیک) انتخاب کنید.</li>
-              <li>برند مورد اعتماد خود یا پیشنهاد ZenLube را فیلتر کنید.</li>
-              <li>اگر خودرو در لیست ZenLube است، اسلاگ آن را وارد کنید تا محصولات پیشنهادی نمایش داده شوند.</li>
+              <li>برند مورد اعتماد خود یا پیشنهاد Oilbar را فیلتر کنید.</li>
+              <li>اگر خودرو در لیست Oilbar است، اسلاگ آن را وارد کنید تا محصولات پیشنهادی نمایش داده شوند.</li>
             </ol>
           </div>
         </aside>

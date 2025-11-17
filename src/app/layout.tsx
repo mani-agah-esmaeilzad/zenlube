@@ -11,10 +11,10 @@ const vazirmatn = Vazirmatn({
 });
 
 export const metadata: Metadata = {
-  title: "ZenLube | فروشگاه تخصصی روغن موتور",
+  title: "Oilbar | فروشگاه تخصصی روغن موتور",
   description:
-    "ZenLube فروشگاهی مینیمال و مدرن برای خرید روغن موتور، با دسته‌بندی هوشمند، معرفی برندها، پیشنهاد محصولات متناسب با خودرو و پنل مدیریت کامل.",
-  metadataBase: new URL("https://zenlube.ir"),
+    "Oilbar فروشگاهی مینیمال و مدرن برای خرید روغن موتور، با دسته‌بندی هوشمند، معرفی برندها، پیشنهاد محصولات متناسب با خودرو و پنل مدیریت کامل.",
+  metadataBase: new URL("https://oilbar.ir"),
 };
 
 export default function RootLayout({

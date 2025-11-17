@@ -3,7 +3,7 @@ import { BlogCard } from "@/components/blog/blog-card";
 import { getAllBlogPosts } from "@/lib/data";
 
 export const metadata = {
-  title: "وبلاگ ZenLube | راهنمای تخصصی روغن موتور",
+  title: "وبلاگ Oilbar | راهنمای تخصصی روغن موتور",
   description:
     "جدیدترین مقالات آموزشی و تخصصی درباره انتخاب، نگهداری و مقایسه روغن موتور برای خودروهای مدرن.",
 };
@@ -14,7 +14,7 @@ export default async function BlogPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-12 space-y-10">
       <header className="space-y-4 text-slate-700">
-        <h1 className="text-4xl font-semibold text-slate-900">وبلاگ تخصصی ZenLube</h1>
+        <h1 className="text-4xl font-semibold text-slate-900">وبلاگ تخصصی Oilbar</h1>
         <p className="text-sm leading-7 text-slate-600">
           مجموعه‌ای از تجربیات فنی، راهنمای خرید، مقایسه محصولات و نکات نگهداری برای موتور خودرو. تیم تحریریه ما به صورت مستمر محتوا را بر اساس استانداردهای روز به‌روزرسانی می‌کند.
         </p>

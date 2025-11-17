@@ -7,7 +7,7 @@ CREATE TABLE "BlogPost" (
     "content" TEXT NOT NULL,
     "coverImage" TEXT,
     "tags" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "authorName" TEXT NOT NULL DEFAULT 'تیم تحریریه ZenLube',
+    "authorName" TEXT NOT NULL DEFAULT 'تیم تحریریه Oilbar',
     "readMinutes" INTEGER NOT NULL DEFAULT 5,
     "publishedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

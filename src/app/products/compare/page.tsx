@@ -3,7 +3,7 @@ import { ProductComparisonBoard } from "@/components/product/product-comparison-
 import { getAllProductsLite } from "@/lib/data";
 
 export const metadata = {
-  title: "مقایسه تخصصی روغن موتور | ZenLube",
+  title: "مقایسه تخصصی روغن موتور | Oilbar",
 };
 
 export default async function ProductComparisonPage() {

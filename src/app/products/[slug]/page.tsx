@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ProductPageProps) {
   }
 
   return {
-    title: `${product.name} | ZenLube`,
+    title: `${product.name} | Oilbar`,
     description: product.description ?? undefined,
   };
 }

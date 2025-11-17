@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   }
 
   return {
-    title: `${post.title} | وبلاگ ZenLube`,
+    title: `${post.title} | وبلاگ Oilbar`,
     description: post.excerpt,
   };
 }

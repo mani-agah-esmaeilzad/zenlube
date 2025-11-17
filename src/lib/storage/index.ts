@@ -86,7 +86,7 @@ async function saveToS3({ buffer, contentType, originalName }: SaveFileArgs): Pr
       "x-amz-content-sha256": payloadHash,
       Authorization: authorization,
     },
-    body: buffer,
+    body: new Uint8Array(buffer),
   });
 
   if (!response.ok) {

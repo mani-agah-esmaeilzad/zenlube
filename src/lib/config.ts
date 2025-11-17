@@ -15,7 +15,7 @@ const EnvSchema = z
       })
       .optional(),
     DATABASE_POOL_MAX: z.coerce.number().int().positive().max(1000).optional(),
-    NEXTAUTH_SECRET: z.string({ required_error: "NEXTAUTH_SECRET الزامی است." }),
+    NEXTAUTH_SECRET: z.string({ error: "NEXTAUTH_SECRET الزامی است." }),
     NEXTAUTH_URL: z
       .string()
       .url({ message: "NEXTAUTH_URL باید مقدار معتبر باشد." })
@@ -23,7 +23,7 @@ const EnvSchema = z
     NEXT_PUBLIC_APP_URL: z
       .string()
       .url({ message: "NEXT_PUBLIC_APP_URL باید مقدار معتبر باشد." }),
-    ZARINPAL_MERCHANT_ID: z.string({ required_error: "شناسه پذیرنده زرین‌پال الزامی است." }),
+    ZARINPAL_MERCHANT_ID: z.string({ error: "شناسه پذیرنده زرین‌پال الزامی است." }),
     ZARINPAL_BASE_URL: z
       .string()
       .url({ message: "ZARINPAL_BASE_URL باید آدرس معتبر باشد." })
@@ -36,9 +36,9 @@ const EnvSchema = z
       .string()
       .url({ message: "ZARINPAL_CALLBACK_URL باید آدرس معتبر باشد." })
       .optional(),
-    MELIPAYAMAK_USERNAME: z.string({ required_error: "نام کاربری سرویس پیامک الزامی است." }),
-    MELIPAYAMAK_PASSWORD: z.string({ required_error: "رمز سرویس پیامک الزامی است." }),
-    MELIPAYAMAK_FROM: z.string({ required_error: "شماره فرستنده پیامک الزامی است." }),
+    MELIPAYAMAK_USERNAME: z.string({ error: "نام کاربری سرویس پیامک الزامی است." }),
+    MELIPAYAMAK_PASSWORD: z.string({ error: "رمز سرویس پیامک الزامی است." }),
+    MELIPAYAMAK_FROM: z.string({ error: "شماره فرستنده پیامک الزامی است." }),
     STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
     STORAGE_BUCKET: z.string().optional(),
     AWS_ACCESS_KEY_ID: z.string().optional(),

@@ -31,7 +31,7 @@ async function requireUserId() {
 }
 
 export async function sendCheckoutOtpAction(phone: string) {
-  const requestHeaders = headers();
+  const requestHeaders = await headers();
   const forwardedFor = requestHeaders.get("x-forwarded-for") ?? requestHeaders.get("x-real-ip");
   const clientIp = forwardedFor?.split(",")[0]?.trim() ?? "unknown";
   const normalizedPhone = normalizeIranPhone(phone);

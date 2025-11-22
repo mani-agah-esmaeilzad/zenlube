@@ -23,16 +23,25 @@ export function SiteFooter() {
           </Link>
         </div>
         <div className="flex flex-col items-end gap-2 text-xs text-slate-400">
-          <Link
-            href="#"
+          <a
+            href="https://trustseal.enamad.ir/?id=676134&Code=CIEFXVKystVwcAFxMw9PAkoXuIW996ra"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-sky-200"
             aria-label="نماد اعتماد الکترونیکی"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/enamad-placeholder.svg" alt="محل قرارگیری نماد اعتماد" className="h-16 w-16 object-contain" />
-          </Link>
+            <img
+              referrerPolicy="origin"
+              src="/logo.png"
+              alt=""
+              className="h-16 w-16 object-contain"
+            />
+          </a>
+
           <p>© {new Date().getFullYear()} Oilbar - همه حقوق محفوظ است.</p>
         </div>
+
       </div>
     </footer>
   );

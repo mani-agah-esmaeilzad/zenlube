@@ -9,7 +9,7 @@ import { getAppSession } from "@/lib/session";
 import { requestZarinpalPayment } from "@/lib/payments/zarinpal";
 import { normalizeIranPhone } from "@/lib/phone";
 import { verifyOtpCode, createOtpRequest } from "@/services/otp";
-import { sendMelipayamakOtp } from "@/lib/sms/melipayamak";
+import { sendSmsIrOtp } from "@/lib/sms/smsir";
 import { config } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import { consumeRateLimit } from "@/lib/rate-limit";
@@ -49,7 +49,7 @@ export async function sendCheckoutOtpAction(phone: string) {
     throw new Error("تعداد درخواست‌های مجاز برای دریافت کد تایید به حد مجاز رسیده است. لطفاً بعداً تلاش کنید.");
   }
   const { code, expiresAt } = await createOtpRequest(normalizedPhone, "checkout");
-  await sendMelipayamakOtp({ phone: normalizedPhone, code, expiresAt });
+  await sendSmsIrOtp({ phone: normalizedPhone, code, expiresAt });
   return { success: true } as const;
 }
 

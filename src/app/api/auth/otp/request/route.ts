@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { normalizeIranPhone } from "@/lib/phone";
 import { createOtpRequest } from "@/services/otp";
-import { sendMelipayamakOtp } from "@/lib/sms/melipayamak";
+import { sendSmsIrOtp } from "@/lib/sms/smsir";
 
 export const runtime = "nodejs";
 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     }
 
     const { code, expiresAt } = await createOtpRequest(normalizedPhone, parsed.data.purpose);
-    await sendMelipayamakOtp({ phone: normalizedPhone, code, expiresAt });
+    await sendSmsIrOtp({ phone: normalizedPhone, code, expiresAt });
 
     return NextResponse.json({ success: true });
   } catch (error) {

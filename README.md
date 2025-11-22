@@ -40,9 +40,12 @@ Oilbar یک فروشگاه کامل برای فروش آنلاین روغن مو
    NEXTAUTH_URL="http://localhost:3000"
    ZARINPAL_MERCHANT_ID="کد مرچنت زرین‌پال"
    ZARINPAL_CALLBACK_URL="http://localhost:3000/api/payments/zarinpal/callback"
-   MELIPAYAMAK_USERNAME="نام کاربری ملی پیامک"
-   MELIPAYAMAK_PASSWORD="رمز عبور ملی پیامک"
-   MELIPAYAMAK_FROM="شماره ارسال‌کننده"
+   SMSIR_API_KEY="کلید دسترسی sms.ir"
+   SMSIR_LINE_NUMBER="3000"
+   SMSIR_TEMPLATE_ID="شناسه قالب تایید sms.ir"
+   # اختیاری: در صورت تفاوت نام پارامترهای قالب با 'code' و 'expire'
+   SMSIR_TEMPLATE_CODE_PARAM="code"
+   SMSIR_TEMPLATE_EXPIRY_PARAM="expire"
    NEXT_PUBLIC_APP_URL="http://localhost:3000"
    STORAGE_DRIVER="local" # یا s3
    STORAGE_BUCKET="نام باکت در صورت استفاده از S3"
@@ -80,9 +83,10 @@ Oilbar یک فروشگاه کامل برای فروش آنلاین روغن مو
    - `NEXT_PUBLIC_APP_URL` (دامنه عمومی برای callback پرداخت)
    - `ZARINPAL_MERCHANT_ID`
    - `ZARINPAL_CALLBACK_URL`
-   - `MELIPAYAMAK_USERNAME`
-   - `MELIPAYAMAK_PASSWORD`
-   - `MELIPAYAMAK_FROM`
+   - `SMSIR_API_KEY`
+   - `SMSIR_LINE_NUMBER`
+   - `SMSIR_TEMPLATE_ID`
+   - (اختیاری) `SMSIR_TEMPLATE_CODE_PARAM`، `SMSIR_TEMPLATE_EXPIRY_PARAM`
    - `STORAGE_DRIVER`
    - `STORAGE_BUCKET` + کلیدهای AWS (در صورت انتخاب `s3`)
    - `CRON_SECRET`

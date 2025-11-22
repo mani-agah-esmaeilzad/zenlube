@@ -36,9 +36,21 @@ const EnvSchema = z
       .string()
       .url({ message: "ZARINPAL_CALLBACK_URL باید آدرس معتبر باشد." })
       .optional(),
-    MELIPAYAMAK_USERNAME: z.string({ error: "نام کاربری سرویس پیامک الزامی است." }),
-    MELIPAYAMAK_PASSWORD: z.string({ error: "رمز سرویس پیامک الزامی است." }),
-    MELIPAYAMAK_FROM: z.string({ error: "شماره فرستنده پیامک الزامی است." }),
+    SMSIR_API_KEY: z.string({ error: "کلید دسترسی سرویس پیامک sms.ir الزامی است." }),
+    SMSIR_LINE_NUMBER: z
+      .coerce.number({
+        invalid_type_error: "شماره خط ارسال sms.ir باید عدد معتبر باشد.",
+      })
+      .int()
+      .positive({ message: "شماره خط ارسال sms.ir باید عدد مثبت باشد." }),
+    SMSIR_TEMPLATE_ID: z
+      .coerce.number({
+        invalid_type_error: "شناسه قالب تایید sms.ir باید عدد معتبر باشد.",
+      })
+      .int()
+      .positive({ message: "شناسه قالب تایید sms.ir باید عدد مثبت باشد." }),
+    SMSIR_TEMPLATE_CODE_PARAM: z.string().default("code"),
+    SMSIR_TEMPLATE_EXPIRY_PARAM: z.string().optional(),
     STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
     STORAGE_BUCKET: z.string().optional(),
     AWS_ACCESS_KEY_ID: z.string().optional(),
@@ -82,9 +94,11 @@ const parsedEnv = EnvSchema.parse({
   ZARINPAL_BASE_URL: process.env.ZARINPAL_BASE_URL,
   ZARINPAL_STARTPAY_URL: process.env.ZARINPAL_STARTPAY_URL,
   ZARINPAL_CALLBACK_URL: process.env.ZARINPAL_CALLBACK_URL,
-  MELIPAYAMAK_USERNAME: process.env.MELIPAYAMAK_USERNAME,
-  MELIPAYAMAK_PASSWORD: process.env.MELIPAYAMAK_PASSWORD,
-  MELIPAYAMAK_FROM: process.env.MELIPAYAMAK_FROM,
+  SMSIR_API_KEY: process.env.SMSIR_API_KEY,
+  SMSIR_LINE_NUMBER: process.env.SMSIR_LINE_NUMBER,
+  SMSIR_TEMPLATE_ID: process.env.SMSIR_TEMPLATE_ID,
+  SMSIR_TEMPLATE_CODE_PARAM: process.env.SMSIR_TEMPLATE_CODE_PARAM,
+  SMSIR_TEMPLATE_EXPIRY_PARAM: process.env.SMSIR_TEMPLATE_EXPIRY_PARAM,
   STORAGE_DRIVER: process.env.STORAGE_DRIVER,
   STORAGE_BUCKET: process.env.STORAGE_BUCKET,
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,

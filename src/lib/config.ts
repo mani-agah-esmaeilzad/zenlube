@@ -38,15 +38,11 @@ const EnvSchema = z
       .optional(),
     SMSIR_API_KEY: z.string({ error: "کلید دسترسی سرویس پیامک sms.ir الزامی است." }),
     SMSIR_LINE_NUMBER: z
-      .coerce.number({
-        invalid_type_error: "شماره خط ارسال sms.ir باید عدد معتبر باشد.",
-      })
+      .coerce.number({ error: "شماره خط ارسال sms.ir باید عدد معتبر باشد." })
       .int()
       .positive({ message: "شماره خط ارسال sms.ir باید عدد مثبت باشد." }),
     SMSIR_TEMPLATE_ID: z
-      .coerce.number({
-        invalid_type_error: "شناسه قالب تایید sms.ir باید عدد معتبر باشد.",
-      })
+      .coerce.number({ error: "شناسه قالب تایید sms.ir باید عدد معتبر باشد." })
       .int()
       .positive({ message: "شناسه قالب تایید sms.ir باید عدد مثبت باشد." }),
     SMSIR_TEMPLATE_CODE_PARAM: z.string().default("code"),

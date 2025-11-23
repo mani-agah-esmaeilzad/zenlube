@@ -8,16 +8,19 @@ async function main() {
   const adminPassword = await bcrypt.hash("Admin@123", 10);
   const customerPassword = await bcrypt.hash("Customer@123", 10);
 
+  const adminPhone = "+989990001111";
+  const customerPhone = "+989990002222";
+
   await prisma.user.upsert({
     where: { email: "admin@oilbar.ir" },
     update: {
-      phone: "+989121111111",
+      phone: adminPhone,
     },
     create: {
       email: "admin@oilbar.ir",
       name: "مدیر اویل‌بار",
       password: adminPassword,
-      phone: "+989121111111",
+      phone: adminPhone,
       role: Role.ADMIN,
     },
   });
@@ -25,13 +28,13 @@ async function main() {
   await prisma.user.upsert({
     where: { email: "customer@oilbar.ir" },
     update: {
-      phone: "+989122222222",
+      phone: customerPhone,
     },
     create: {
       email: "customer@oilbar.ir",
       name: "مشتری نمونه",
       password: customerPassword,
-      phone: "+989122222222",
+      phone: customerPhone,
       role: Role.CUSTOMER,
     },
   });

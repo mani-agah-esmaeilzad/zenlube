@@ -1,8 +1,9 @@
 "use server";
 
-import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
 import { registerUserSchema } from "@/lib/validators";
+import { normalizeIranPhone } from "@/lib/phone";
+import { verifyOtpCode } from "@/services/otp";
 
 type RegisterState = {
   success: boolean;
@@ -19,9 +20,8 @@ export async function registerUserAction(
   const parsed = registerUserSchema.safeParse({
     name: raw.name,
     email: raw.email,
-    password: raw.password,
-    confirmPassword: raw.confirmPassword,
     phone: raw.phone,
+    otpCode: raw.otpCode,
   });
 
   if (!parsed.success) {
@@ -32,7 +32,8 @@ export async function registerUserAction(
     };
   }
 
-  const { name, email, password, phone } = parsed.data;
+  const { name, email, phone, otpCode } = parsed.data;
+  const normalizedPhone = normalizeIranPhone(phone);
 
   const existing = await prisma.user.findUnique({ where: { email } });
 
@@ -44,14 +45,31 @@ export async function registerUserAction(
     };
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const existingPhone = await prisma.user.findUnique({ where: { phone: normalizedPhone } });
+
+  if (existingPhone) {
+    return {
+      success: false,
+      message: "این شماره موبایل قبلاً ثبت شده است.",
+      fieldErrors: { phone: ["این شماره موبایل قبلاً ثبت شده است."] },
+    };
+  }
+
+  try {
+    await verifyOtpCode(phone, otpCode, "account");
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "کد تایید معتبر نیست.",
+      fieldErrors: { otpCode: [error instanceof Error ? error.message : "کد تایید معتبر نیست."] },
+    };
+  }
 
   await prisma.user.create({
     data: {
       name,
       email,
-      password: hashedPassword,
-      phone: phone ?? undefined,
+      phone: normalizedPhone,
     },
   });
 

@@ -55,6 +55,7 @@ export function ProfileForm({ name, email, phone }: ProfileFormProps) {
           name="phone"
           defaultValue={phone ?? ""}
           placeholder="09xxxxxxxxx"
+          required
           className="mt-1 w-full rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-700 focus:border-sky-300 focus:outline-none"
         />
         {state?.errors?.phone?.map((error) => (

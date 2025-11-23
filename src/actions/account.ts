@@ -10,10 +10,7 @@ import { normalizeIranPhone, validateIranPhone } from "@/lib/phone";
 const profileSchema = z.object({
   name: z.string().trim().min(2, "نام باید حداقل دو کاراکتر باشد."),
   email: z.string().email("ایمیل معتبر نیست."),
-  phone: z
-    .string()
-    .optional()
-    .refine((value) => !value || validateIranPhone(value), "شماره موبایل معتبر نیست."),
+  phone: z.string().refine((value) => validateIranPhone(value), "شماره موبایل معتبر نیست."),
 });
 
 const addressSchema = z.object({
@@ -52,6 +49,7 @@ export async function updateProfileAction(_prev: ActionState | undefined, formDa
     }
 
     const { name, email, phone } = parsed.data;
+    const normalizedPhone = normalizeIranPhone(phone);
 
     const existing = await prisma.user.findFirst({
       where: {
@@ -69,12 +67,28 @@ export async function updateProfileAction(_prev: ActionState | undefined, formDa
       };
     }
 
+    const phoneOwner = await prisma.user.findFirst({
+      where: {
+        phone: normalizedPhone,
+        id: { not: userId },
+      },
+      select: { id: true },
+    });
+
+    if (phoneOwner) {
+      return {
+        success: false,
+        message: "این شماره موبایل قبلاً ثبت شده است.",
+        errors: { phone: ["این شماره موبایل قبلاً ثبت شده است."] },
+      };
+    }
+
     await prisma.user.update({
       where: { id: userId },
       data: {
         name,
         email,
-        phone: phone ? normalizeIranPhone(phone) : null,
+        phone: normalizedPhone,
       },
     });
 

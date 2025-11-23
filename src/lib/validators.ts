@@ -178,23 +178,16 @@ export const cartItemSchema = z.object({
   quantity: z.number().int().min(1),
 });
 
-export const registerUserSchema = z
-  .object({
-    name: z.string().min(2, "نام باید حداقل دو کاراکتر باشد."),
-    email: z.string().email("ایمیل معتبر نیست."),
-    password: z.string().min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد."),
-    confirmPassword: z.string().min(8, "تکرار رمز عبور باید حداقل ۸ کاراکتر باشد."),
-    phone: optionalString.pipe(
-      z
-        .string()
-        .optional()
-        .refine((value) => !value || validateIranPhone(value), "شماره موبایل معتبر نیست."),
-    ),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "رمز عبور و تکرار آن یکسان نیست.",
-    path: ["confirmPassword"],
-  });
+export const registerUserSchema = z.object({
+  name: z.string().min(2, "نام باید حداقل دو کاراکتر باشد."),
+  email: z.string().email("ایمیل معتبر نیست."),
+  phone: phoneSchema,
+  otpCode: z
+    .string()
+    .trim()
+    .min(4, "کد تایید باید حداقل ۴ رقم باشد.")
+    .max(6, "کد تایید باید حداکثر ۶ رقم باشد."),
+});
 
 export const checkoutOrderSchema = z.object({
   fullName: z.string().trim().min(3, "نام را به‌درستی وارد کنید."),

@@ -28,11 +28,11 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         <p className="mt-2 text-sm text-slate-600">برای مدیریت سبد خرید و دسترسی به پنل ادمین وارد شوید.</p>
         {registered && (
           <p className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-700">
-            حساب شما با موفقیت ایجاد شد. لطفاً با ایمیل و رمز عبور وارد شوید.
+            حساب شما با موفقیت ایجاد شد. با وارد کردن شماره موبایل و دریافت کد تایید وارد شوید.
           </p>
         )}
         <div className="mt-8">
-          <SignInForm callbackUrl={callbackUrl} registered={registered} />
+          <SignInForm callbackUrl={callbackUrl} />
         </div>
         <p className="mt-6 text-center text-xs text-slate-500">
           کاربر جدید هستید؟ <Link href={signUpLink} className="text-sky-600 hover:text-sky-700">ثبت‌نام کنید</Link>

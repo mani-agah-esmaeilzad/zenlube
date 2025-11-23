@@ -3,9 +3,10 @@ import type { AdapterUser } from "next-auth/adapters";
 import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcrypt";
 import prisma from "./prisma";
 import { config } from "./config";
+import { normalizeIranPhone } from "@/lib/phone";
+import { verifyOtpCode } from "@/services/otp";
 
 type RoleAwareToken = JWT & { role?: string | null; adminExpiresAt?: number };
 
@@ -35,25 +36,28 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "ایمیل", type: "email" },
-        password: { label: "رمز عبور", type: "password" },
+        phone: { label: "شماره موبایل", type: "text" },
+        otpCode: { label: "کد تایید", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) {
+        if (!credentials?.phone || !credentials.otpCode) {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+        try {
+          await verifyOtpCode(credentials.phone, credentials.otpCode, "account");
+        } catch {
+          return null;
+        }
+
+        const normalizedPhone = normalizeIranPhone(credentials.phone);
+        const user = await prisma.user.findFirst({
+          where: {
+            phone: normalizedPhone,
+          },
         });
 
-        if (!user?.password) {
-          return null;
-        }
-
-        const isValid = await compare(credentials.password, user.password);
-
-        if (!isValid) {
+        if (!user) {
           return null;
         }
 

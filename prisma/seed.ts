@@ -10,22 +10,28 @@ async function main() {
 
   await prisma.user.upsert({
     where: { email: "admin@oilbar.ir" },
-    update: {},
+    update: {
+      phone: "+989121111111",
+    },
     create: {
       email: "admin@oilbar.ir",
       name: "مدیر اویل‌بار",
       password: adminPassword,
+      phone: "+989121111111",
       role: Role.ADMIN,
     },
   });
 
   await prisma.user.upsert({
     where: { email: "customer@oilbar.ir" },
-    update: {},
+    update: {
+      phone: "+989122222222",
+    },
     create: {
       email: "customer@oilbar.ir",
       name: "مشتری نمونه",
       password: customerPassword,
+      phone: "+989122222222",
       role: Role.CUSTOMER,
     },
   });

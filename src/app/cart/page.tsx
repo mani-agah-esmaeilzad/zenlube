@@ -4,23 +4,27 @@ import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
 
+const pageShellClasses = "w-full bg-slate-950 text-white";
+
 export default async function CartPage() {
   const rawSession = await getAppSession();
   const userId = (rawSession as { user?: { id?: string } } | null)?.user?.id;
 
   if (!userId) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <h1 className="text-3xl font-semibold text-white">سبد خرید</h1>
-        <p className="mt-4 text-sm text-white/70">
-          برای مشاهده و مدیریت سبد خرید، ابتدا وارد حساب کاربری خود شوید.
-        </p>
-        <Link
-          href="/sign-in"
-          className="mt-6 inline-flex rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white hover:bg-purple-400"
-        >
-          ورود به حساب کاربری
-        </Link>
+      <div className={pageShellClasses}>
+        <div className="mx-auto max-w-3xl px-6 py-24 text-center">
+          <h1 className="text-3xl font-semibold text-white">سبد خرید</h1>
+          <p className="mt-4 text-sm text-white/70">
+            برای مشاهده و مدیریت سبد خرید، ابتدا وارد حساب کاربری خود شوید.
+          </p>
+          <Link
+            href="/sign-in"
+            className="mt-6 inline-flex rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white hover:bg-purple-400"
+          >
+            ورود به حساب کاربری
+          </Link>
+        </div>
       </div>
     );
   }
@@ -46,10 +50,11 @@ export default async function CartPage() {
   }, 0) ?? 0;
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 space-y-10">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold text-white">سبد خرید</h1>
+    <div className={pageShellClasses}>
+      <div className="mx-auto max-w-5xl px-6 py-12 space-y-10">
+        <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold text-white">سبد خرید</h1>
           <p className="text-sm text-white/70">
             محصولات انتخاب‌شده شما در پایین قابل مشاهده است. می‌توانید مقدار هر محصول را تغییر دهید یا آن را حذف کنید.
           </p>
@@ -117,6 +122,7 @@ export default async function CartPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

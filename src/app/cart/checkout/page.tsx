@@ -62,14 +62,16 @@ export default async function CheckoutPage() {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 space-y-8">
-      <header className="space-y-2 text-white">
-        <p className="text-sm text-white/60">مرحله پایانی خرید</p>
-        <h1 className="text-3xl font-semibold">تایید و پرداخت سفارش</h1>
-        <p className="text-sm text-white/60">جمع جزء سبد خرید شما {formatPrice(subtotal)} است. لطفاً اطلاعات ارسال و پرداخت را تکمیل کنید.</p>
-      </header>
+    <div className="w-full bg-slate-950 text-white">
+      <div className="mx-auto max-w-5xl px-6 py-12 space-y-8">
+        <header className="space-y-2 text-white">
+          <p className="text-sm text-white/60">مرحله پایانی خرید</p>
+          <h1 className="text-3xl font-semibold">تایید و پرداخت سفارش</h1>
+          <p className="text-sm text-white/60">جمع جزء سبد خرید شما {formatPrice(subtotal)} است. لطفاً اطلاعات ارسال و پرداخت را تکمیل کنید.</p>
+        </header>
 
-      <CheckoutForm items={items} defaults={defaults} />
+        <CheckoutForm items={items} defaults={defaults} />
+      </div>
     </div>
   );
 }

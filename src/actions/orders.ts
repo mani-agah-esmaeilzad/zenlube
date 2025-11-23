@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { isRedirectError } from "next/dist/client/components/error-boundary";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 import prisma from "@/lib/prisma";
 import { checkoutOrderSchema } from "@/lib/validators";

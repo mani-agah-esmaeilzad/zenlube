@@ -4,6 +4,7 @@ import { z } from "zod";
 import { normalizeIranPhone } from "@/lib/phone";
 import { createOtpRequest } from "@/services/otp";
 import { sendSmsIrOtp } from "@/lib/sms/smsir";
+import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
 
@@ -32,7 +33,17 @@ export async function POST(request: Request) {
     }
 
     const { code, expiresAt } = await createOtpRequest(normalizedPhone, parsed.data.purpose);
-    await sendSmsIrOtp({ phone: normalizedPhone, code, expiresAt });
+
+    try {
+      await sendSmsIrOtp({ phone: normalizedPhone, code, expiresAt });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "ارسال پیامک با خطا مواجه شد.";
+      logger.error("OTP SMS delivery failed", { phone: normalizedPhone, message });
+      return NextResponse.json(
+        { success: false, message: "ارسال پیامک تایید از طریق سرویس‌دهنده با خطا مواجه شد. لطفاً چند دقیقه دیگر تلاش کنید." },
+        { status: 502 },
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

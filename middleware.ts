@@ -3,6 +3,10 @@ import { withAuth } from "next-auth/middleware";
 
 export default withAuth(
   function middleware(request) {
+    if (request.nextUrl.pathname.startsWith("/admin/login")) {
+      return NextResponse.next();
+    }
+
     const role = request.nextauth?.token?.role;
     const adminExpiresAt = request.nextauth?.token?.adminExpiresAt;
 
@@ -26,7 +30,11 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => {
+      authorized: ({ token, req }) => {
+        if (req.nextUrl.pathname.startsWith("/admin/login")) {
+          return true;
+        }
+
         if (!token) {
           return false;
         }

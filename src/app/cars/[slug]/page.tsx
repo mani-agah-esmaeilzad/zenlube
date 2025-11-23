@@ -209,7 +209,8 @@ export default async function CarDetailPage({ params }: CarPageProps) {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-12 px-6 py-12 text-white">
+    <div className="w-full bg-slate-950 text-white">
+      <div className="mx-auto max-w-6xl space-y-12 px-6 py-12">
       <EngagementTracker
         entityType="car"
         entityId={car.id}
@@ -410,6 +411,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           </div>
         </section>
       )}
+      </div>
     </div>
   );
 }

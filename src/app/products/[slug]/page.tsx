@@ -80,7 +80,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }));
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
+    <div className="w-full bg-slate-950 text-white">
+      <div className="mx-auto max-w-5xl px-6 py-12">
       <EngagementTracker
         entityType="product"
         entityId={product.id}
@@ -202,6 +203,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           emptyMessage="هنوز پرسشی برای این محصول ثبت نشده است. تجربه خود را در قالب پرسش مطرح کنید."
         />
       </section>
+      </div>
     </div>
-  );
+  </div>
+);
 }

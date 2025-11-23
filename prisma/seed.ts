@@ -8,8 +8,8 @@ async function main() {
   const adminPassword = await bcrypt.hash("Admin@123", 10);
   const customerPassword = await bcrypt.hash("Customer@123", 10);
 
-  const adminPhone = "+989990001111";
-  const customerPhone = "+989990002222";
+  const adminPhone = "09982221311";
+  const customerPhone = "09990002222";
 
   await prisma.user.upsert({
     where: { email: "admin@oilbar.ir" },

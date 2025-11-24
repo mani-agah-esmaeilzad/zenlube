@@ -29,7 +29,7 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="border-b border-slate-200 bg-slate-50/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 text-xs text-slate-600">
-          <span>ارسال رایگان سفارش‌های بالای ۳ میلیون تومان • مشاوره تخصصی: ۰۲۱-۱۲۳۴۵۶۷۸</span>
+          <span>ارسال رایگان سفارش‌های بالای ۳ میلیون تومان • مشاوره تخصصی: ۰۲۶-۳۲۵۱۵۶۳۱</span>
           <Link href="/support" className="text-sky-700 transition hover:text-sky-900">
             پشتیبانی آنلاین
           </Link>

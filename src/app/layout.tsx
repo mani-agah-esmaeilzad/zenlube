@@ -24,13 +24,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl">
-      <body
-        className={`${vazirmatn.variable} bg-white text-slate-700 antialiased`}
-      >
-        <div className="min-h-screen bg-white">
+      <body className={`${vazirmatn.variable} bg-slate-50 text-slate-800 antialiased`}>
+        <div className="min-h-screen bg-slate-50">
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
-            <main className="flex-1 bg-white">{children}</main>
+            <main className="flex-1">{children}</main>
             <SiteFooter />
           </div>
         </div>

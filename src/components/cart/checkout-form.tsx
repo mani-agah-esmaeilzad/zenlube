@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
+import type { InputHTMLAttributes } from "react";
 
 import { createCheckoutOrderAction, CheckoutState } from "@/actions/orders";
 import { formatPrice } from "@/lib/utils";
@@ -98,223 +99,202 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
   return (
     <form action={formAction} className="grid gap-8 lg:grid-cols-[2fr_1fr]">
       <div className="space-y-8">
-        <section className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white">
-          <h2 className="text-lg font-semibold">اطلاعات تماس و ارسال</h2>
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 text-slate-700 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">اطلاعات تماس و ارسال</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="text-xs text-white/70">
-              نام و نام خانوادگی
-              <input
-                name="fullName"
-                defaultValue={defaults.fullName ?? ""}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
-                required
-              />
-              {state.errors?.fullName?.map((error) => (
-                <span key={error} className="mt-1 block text-[11px] text-red-300">
-                  {error}
-                </span>
-              ))}
-            </label>
-            <label className="text-xs text-white/70">
-              ایمیل
-              <input
-                type="email"
-                name="email"
-                defaultValue={defaults.email ?? ""}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
-                required
-              />
-              {state.errors?.email?.map((error) => (
-                <span key={error} className="mt-1 block text-[11px] text-red-300">
-                  {error}
-                </span>
-              ))}
-            </label>
-            <label className="text-xs text-white/70">
+            <FieldInput
+              label="نام و نام خانوادگی"
+              name="fullName"
+              defaultValue={defaults.fullName ?? ""}
+              errors={state.errors?.fullName}
+              required
+            />
+            <FieldInput
+              label="ایمیل"
+              name="email"
+              type="email"
+              defaultValue={defaults.email ?? ""}
+              errors={state.errors?.email}
+              required
+            />
+            <label className="text-xs font-semibold text-slate-500">
               شماره موبایل
               <div className="mt-2 flex gap-2">
                 <input
                   name="phone"
                   type="tel"
                   defaultValue={defaults.phone ?? ""}
-                  className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:border-sky-300 focus:outline-none"
                   required
                 />
                 <button
                   type="button"
                   onClick={(event) => handleSendOtp(event.currentTarget.form!)}
-                  className="shrink-0 rounded-2xl border border-purple-300/60 px-4 py-2 text-xs font-semibold text-purple-200 transition hover:border-purple-200 hover:text-white disabled:opacity-60"
+                  className="shrink-0 rounded-2xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-sky-300 disabled:opacity-60"
                   disabled={isOtpPending}
                 >
                   {isOtpPending ? "در حال ارسال" : "ارسال کد"}
                 </button>
               </div>
               {state.errors?.phone?.map((error) => (
-                <span key={error} className="mt-1 block text-[11px] text-red-300">
+                <span key={error} className="mt-1 block text-[11px] text-red-500">
                   {error}
                 </span>
               ))}
             </label>
-            <label className="text-xs text-white/70">
-              کد تایید پیامکی
-              <input
-                name="otpCode"
-                inputMode="numeric"
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
-                required
-              />
-              {state.errors?.otpCode?.map((error) => (
-                <span key={error} className="mt-1 block text-[11px] text-red-300">
-                  {error}
-                </span>
-              ))}
-            </label>
+            <FieldInput
+              label="کد تایید پیامکی"
+              name="otpCode"
+              inputMode="numeric"
+              defaultValue=""
+              errors={state.errors?.otpCode}
+              required
+            />
           </div>
-
-          {otpMessage && <p className="mt-3 text-xs text-emerald-200">{otpMessage}</p>}
-          {otpError && <p className="mt-3 text-xs text-red-300">{otpError}</p>}
+          {otpMessage && <p className="mt-3 text-xs text-emerald-600">{otpMessage}</p>}
+          {otpError && <p className="mt-3 text-xs text-red-500">{otpError}</p>}
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white">
-          <h2 className="text-lg font-semibold">آدرس تحویل</h2>
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 text-slate-700 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">آدرس تحویل</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="text-xs text-white/70">
-              آدرس اصلی
-              <input
-                name="address1"
-                defaultValue={defaults.address1 ?? ""}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
-                required
-              />
-              {state.errors?.address1?.map((error) => (
-                <span key={error} className="mt-1 block text-[11px] text-red-300">
-                  {error}
-                </span>
-              ))}
-            </label>
-            <label className="text-xs text-white/70">
-              آدرس تکمیلی
-              <input
-                name="address2"
-                defaultValue={defaults.address2 ?? ""}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
-              />
-            </label>
-            <label className="text-xs text-white/70">
-              شهر
-              <input
-                name="city"
-                defaultValue={defaults.city ?? ""}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
-                required
-              />
-              {state.errors?.city?.map((error) => (
-                <span key={error} className="mt-1 block text-[11px] text-red-300">
-                  {error}
-                </span>
-              ))}
-            </label>
-            <label className="text-xs text-white/70">
-              استان
-              <input
-                name="province"
-                defaultValue={defaults.province ?? ""}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
-                required
-              />
-              {state.errors?.province?.map((error) => (
-                <span key={error} className="mt-1 block text-[11px] text-red-300">
-                  {error}
-                </span>
-              ))}
-            </label>
-            <label className="text-xs text-white/70">
-              کد پستی
-              <input
-                name="postalCode"
-                defaultValue={defaults.postalCode ?? ""}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
-                required
-              />
-              {state.errors?.postalCode?.map((error) => (
-                <span key={error} className="mt-1 block text-[11px] text-red-300">
-                  {error}
-                </span>
-              ))}
-            </label>
-            <label className="flex items-center gap-2 text-xs text-white/70">
-              <input type="checkbox" name="saveAddress" defaultChecked className="size-4 rounded border border-white/40 bg-white/10" />
+            <FieldInput
+              label="آدرس اصلی"
+              name="address1"
+              defaultValue={defaults.address1 ?? ""}
+              errors={state.errors?.address1}
+              required
+            />
+            <FieldInput
+              label="آدرس تکمیلی"
+              name="address2"
+              defaultValue={defaults.address2 ?? ""}
+            />
+            <FieldInput
+              label="شهر"
+              name="city"
+              defaultValue={defaults.city ?? ""}
+              errors={state.errors?.city}
+              required
+            />
+            <FieldInput
+              label="استان"
+              name="province"
+              defaultValue={defaults.province ?? ""}
+              errors={state.errors?.province}
+              required
+            />
+            <FieldInput
+              label="کد پستی"
+              name="postalCode"
+              defaultValue={defaults.postalCode ?? ""}
+              errors={state.errors?.postalCode}
+              required
+            />
+            <label className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+              <input type="checkbox" name="saveAddress" defaultChecked className="size-4 rounded border border-slate-300 text-sky-500 focus:ring-sky-300" />
               ذخیره به عنوان آدرس پیش‌فرض
             </label>
           </div>
-
-          <label className="mt-6 block text-xs text-white/70">
+          <label className="mt-6 block text-xs font-semibold text-slate-500">
             توضیحات سفارش
             <textarea
               name="notes"
               rows={3}
               defaultValue=""
-              className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/40 focus:border-purple-300 focus:outline-none"
+              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:border-sky-300 focus:outline-none"
             />
           </label>
         </section>
       </div>
 
-      <aside className="space-y-6">
-        <section className="rounded-3xl border border-purple-500/30 bg-purple-950/30 p-6 text-sm text-white/80">
-          <h2 className="text-lg font-semibold text-purple-100">خلاصه سفارش</h2>
-          <div className="mt-4 space-y-3">
-            {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between text-xs">
-                <span>
-                  {item.name}
-                  <span className="mr-1 text-white/40">×{item.quantity}</span>
-                </span>
-                <span>{formatPrice(item.price * item.quantity)}</span>
-              </div>
-            ))}
-            <div className="flex items-center justify-between text-xs text-white/60">
+      <aside className="rounded-3xl border border-slate-200 bg-white p-6 text-slate-700 shadow-lg shadow-slate-500/10">
+        <h2 className="text-lg font-semibold text-slate-900">خلاصه سفارش</h2>
+        <div className="mt-4 space-y-3 text-sm">
+          {items.map((item) => (
+            <div key={item.id} className="flex items-center justify-between text-slate-600">
+              <span>
+                {item.name}
+                <span className="mr-1 text-slate-400">×{item.quantity}</span>
+              </span>
+              <span>{formatPrice(item.price * item.quantity)}</span>
+            </div>
+          ))}
+          <div className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="flex justify-between text-slate-500">
               <span>جمع جزء</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <label className="mt-4 block text-xs text-white/70">
-              روش ارسال
+            <div className="flex items-center justify-between text-xs text-slate-500">
+              <span>روش ارسال</span>
               <select
                 name="shippingMethod"
                 value={shipping}
                 onChange={(event) => setShipping(event.target.value as typeof shipping)}
-                className="mt-2 w-full rounded-2xl border border-purple-400/40 bg-purple-900/40 px-3 py-2 text-xs text-white focus:border-purple-200 focus:outline-none"
+                className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 focus:border-sky-300 focus:outline-none"
               >
                 {shippingOptions.map((option) => (
-                  <option key={option.value} value={option.value} className="bg-slate-900 text-white">
+                  <option key={option.value} value={option.value}>
                     {option.label} - {formatPrice(option.cost)}
                   </option>
                 ))}
               </select>
-            </label>
-            <div className="flex items-center justify-between text-xs text-white/60">
+            </div>
+            <div className="flex justify-between text-slate-500">
               <span>هزینه ارسال</span>
               <span>{formatPrice(shippingCost)}</span>
             </div>
-            <div className="flex items-center justify-between border-t border-white/10 pt-3 text-sm font-semibold text-purple-100">
+            <div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-semibold text-slate-900">
               <span>مبلغ قابل پرداخت</span>
               <span>{formatPrice(total)}</span>
             </div>
           </div>
-        </section>
+        </div>
 
         {!state.success && state.message && (
-          <p className="rounded-2xl border border-red-300/40 bg-red-900/40 px-4 py-3 text-xs text-red-100">{state.message}</p>
+          <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-600">{state.message}</p>
         )}
 
         <button
           type="submit"
-          className="w-full rounded-full bg-purple-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-purple-400 disabled:opacity-60"
+          className="mt-6 w-full rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:opacity-60"
           disabled={state.success}
         >
           اتصال به درگاه زرین‌پال
         </button>
+        <p className="mt-3 text-xs text-slate-500">با تکمیل فرم و ادامه فرایند خرید، اطلاعات شما با رمزگذاری امن منتقل می‌شود.</p>
       </aside>
     </form>
+  );
+}
+
+type FieldInputProps = {
+  label: string;
+  name: string;
+  type?: string;
+  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
+  defaultValue?: string;
+  errors?: string[];
+  required?: boolean;
+};
+
+function FieldInput({ label, name, type = "text", inputMode, defaultValue, errors, required }: FieldInputProps) {
+  return (
+    <label className="text-xs font-semibold text-slate-500">
+      {label}
+      <input
+        name={name}
+        type={type}
+        inputMode={inputMode}
+        defaultValue={defaultValue ?? ""}
+        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:border-sky-300 focus:outline-none"
+        required={required}
+      />
+      {errors?.map((error) => (
+        <span key={error} className="mt-1 block text-[11px] text-red-500">
+          {error}
+        </span>
+      ))}
+    </label>
   );
 }

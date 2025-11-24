@@ -71,26 +71,26 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
   };
 
   return (
-    <div className="relative grid gap-6 rounded-[40px] border border-white/10 bg-black/30 p-6 shadow-[0_30px_60px_-45px_rgba(113,63,180,0.6)] xl:grid-cols-[220px,1fr]">
+    <div className="relative grid gap-6 rounded-[40px] border border-slate-200 bg-white p-6 shadow-[0_30px_60px_-45px_rgba(15,23,42,0.15)] xl:grid-cols-[220px,1fr]">
       <div className="flex flex-col gap-4">
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-purple-900/30 via-black/70 to-purple-950/40 p-5 text-center text-white/80">
-          <div className="absolute -right-6 top-0 h-full w-16 rounded-full bg-purple-500/10 blur-3xl" />
-          <p className="text-xs uppercase tracking-[0.35em] text-purple-200/60">Oilbar</p>
-          <h3 className="mt-3 text-2xl font-semibold text-white">{cover.title}</h3>
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-100 via-white to-white p-5 text-center text-slate-600">
+          <div className="absolute -right-6 top-0 h-full w-16 rounded-full bg-sky-200/50 blur-3xl" />
+          <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Oilbar</p>
+          <h3 className="mt-3 text-2xl font-semibold text-slate-900">{cover.title}</h3>
           {cover.subtitle && (
-            <p className="mt-2 text-xs leading-6 text-white/60">{cover.subtitle}</p>
+            <p className="mt-2 text-xs leading-6 text-slate-500">{cover.subtitle}</p>
           )}
-          <div className="mt-4 space-y-2 text-xs text-white/60">
+          <div className="mt-4 space-y-2 text-xs text-slate-500">
             {cover.meta.map((item) => (
-              <div key={item.label} className="flex items-center justify-between rounded-full border border-white/10 bg-black/30 px-3 py-1">
-                <span className="text-white/40">{item.label}</span>
-                <span className="text-white">{item.value}</span>
+              <div key={item.label} className="flex items-center justify-between rounded-full border border-slate-200 bg-white px-3 py-1">
+                <span className="text-slate-400">{item.label}</span>
+                <span className="text-slate-900">{item.value}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 rounded-3xl border border-white/10 bg-black/40 p-3">
+        <div className="flex flex-col gap-2 rounded-3xl border border-slate-200 bg-white p-3">
           {pages.map((page, index) => {
             const isActive = index === activeNavIndex;
             return (
@@ -101,12 +101,12 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
                 className={cn(
                   "flex items-center justify-between rounded-2xl px-4 py-2 text-left transition",
                   isActive
-                    ? "bg-purple-500/30 text-white shadow-[inset_0_0_0_1px_rgba(168,85,247,0.5)]"
-                    : "text-white/60 hover:text-white hover:bg-white/10",
+                    ? "bg-sky-50 text-slate-900 shadow-[inset_0_0_0_1px_rgba(14,165,233,0.3)]"
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100",
                 )}
               >
                 <div className="flex flex-col">
-                  <span className="text-[11px] uppercase tracking-[0.3em]">
+                  <span className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
                     صفحه {index + 1}
                   </span>
                   <span className="text-sm font-semibold">{page.title}</span>
@@ -114,7 +114,7 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
                 <span
                   className={cn(
                     "rounded-full border px-2 py-0.5 text-[11px]",
-                    isActive ? "border-purple-300/70 text-purple-100" : "border-white/20",
+                    isActive ? "border-sky-300 text-sky-600" : "border-slate-200 text-slate-400",
                   )}
                 >
                   {page.tag ?? "دفترچه"}
@@ -186,20 +186,20 @@ function NotebookSheet({ page, index, pageCount, className }: NotebookSheetProps
 
   return (
     <article className={cn("relative flex h-full flex-col notebook-sheet", className)}>
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-b from-purple-500/35 via-white/20 to-purple-500/25 opacity-70" />
-      <div className="flex items-center justify-between text-xs text-white/60">
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-b from-sky-200/80 via-transparent to-sky-200/80 opacity-70" />
+      <div className="flex items-center justify-between text-xs text-slate-400">
         <span>
           صفحه {index !== null ? index + 1 : "?"} از {pageCount}
         </span>
         {page.tag && (
-          <span className="rounded-full border border-white/20 px-3 py-1 text-[11px] text-white/70">
+          <span className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-500">
             {page.tag}
           </span>
         )}
       </div>
-      <h3 className="mt-4 text-3xl font-semibold text-white">{page.title}</h3>
-      {page.kicker && <p className="mt-2 text-sm text-white/60">{page.kicker}</p>}
-      <div className="mt-6 space-y-4 text-sm leading-7 text-white/80">
+      <h3 className="mt-4 text-3xl font-semibold text-slate-900">{page.title}</h3>
+      {page.kicker && <p className="mt-2 text-sm text-slate-500">{page.kicker}</p>}
+      <div className="mt-6 space-y-4 text-sm leading-7 text-slate-700">
         {paragraphs.length ? (
           paragraphs.map((paragraph, idx) => (
             <p key={`${page.id}-paragraph-${idx}`} className="whitespace-pre-line">
@@ -207,18 +207,18 @@ function NotebookSheet({ page, index, pageCount, className }: NotebookSheetProps
             </p>
           ))
         ) : (
-          <p className="text-white/50">اطلاعاتی برای این صفحه ثبت نشده است.</p>
+          <p className="text-slate-400">اطلاعاتی برای این صفحه ثبت نشده است.</p>
         )}
       </div>
       {page.highlights?.length ? (
-        <div className="mt-6 grid gap-3 rounded-2xl border border-white/10 bg-black/35 p-4 text-xs text-white/70">
+        <div className="mt-6 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
           {page.highlights.map((highlight) => (
             <div
               key={`${page.id}-${highlight.label}`}
               className="flex items-center justify-between"
             >
-              <span className="text-white/50">{highlight.label}</span>
-              <span className="text-white">{highlight.value}</span>
+              <span className="text-slate-400">{highlight.label}</span>
+              <span className="text-slate-900">{highlight.value}</span>
             </div>
           ))}
         </div>

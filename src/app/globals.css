@@ -89,6 +89,49 @@ select {
   background-color: rgba(255, 255, 255, 0.94) !important;
 }
 
+
+.container-sm {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-md {
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-lg {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-section {
+  position: relative;
+  border-radius: 40px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  padding: clamp(1.5rem, 2vw, 2.5rem);
+  overflow: hidden;
+}
+
+.page-section::before,
+.page-section::after {
+  content: "";
+  position: absolute;
+  inset: -15% -5%;
+  border-radius: 50%;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  pointer-events: none;
+}
+
+.page-section::after {
+  inset: -25% 10% auto auto;
+  border-color: rgba(14, 165, 233, 0.12);
+}
+
 .bg-white\/20 {
   background-color: rgba(255, 255, 255, 0.9) !important;
 }

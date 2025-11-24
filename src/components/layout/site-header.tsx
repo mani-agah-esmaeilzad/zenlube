@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoMark } from "@/components/layout/logo-mark";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { CartIndicator } from "@/components/layout/cart-indicator";
@@ -36,8 +37,9 @@ export async function SiteHeader() {
       </div>
       <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4 text-slate-700">
         <div className="flex items-center gap-8">
-          <Link href="/" className="text-2xl font-semibold text-slate-900">
-            Oilbar
+          <Link href="/" className="inline-flex items-center" aria-label="بازگشت به صفحه اصلی">
+            <LogoMark priority size={64} />
+            <span className="sr-only">Oilbar · اویل بار</span>
           </Link>
           <nav className="hidden items-center gap-6 text-sm lg:flex">
             <CategoryDropdown categories={categories} />

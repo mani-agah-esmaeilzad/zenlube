@@ -63,7 +63,7 @@ export default async function CheckoutPage() {
 
   return (
     <div className="bg-slate-50">
-      <div className="mx-auto max-w-5xl px-6 py-12 space-y-8">
+      <div className="page-section px-6 py-12 space-y-8">
         <header className="space-y-2 text-slate-900">
           <p className="text-sm text-slate-500">مرحله پایانی خرید</p>
           <h1 className="text-3xl font-semibold">تایید و پرداخت سفارش</h1>

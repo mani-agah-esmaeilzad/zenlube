@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { LogoMark } from "@/components/layout/logo-mark";
 
 type MobileNavLink = {
   href: string;
@@ -39,6 +40,10 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
       </button>
       {open && (
         <div className="absolute left-6 right-6 top-20 z-40 rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-500/10">
+          <div className="mb-5 flex items-center">
+            <LogoMark size={44} />
+            <span className="sr-only">Oilbar · اویل بار</span>
+          </div>
           <nav className="flex flex-col gap-4 text-sm text-slate-700">
             <button
               type="button"

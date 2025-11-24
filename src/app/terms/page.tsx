@@ -1,7 +1,7 @@
 export default function TermsPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-10 text-slate-600 shadow-sm">
+    <div className="page-section px-6 py-16">
+      <div className="space-y-4 text-slate-600">
         <h1 className="text-3xl font-semibold text-slate-900">قوانین و شرایط استفاده</h1>
         <p>
           استفاده از خدمات Oilbar به معنای پذیرش قوانین زیر است: صحت اطلاعات وارد شده، عدم استفاده از محتوای سایت بدون ذکر منبع و رعایت قوانین مرتبط با پرداخت و تحویل سفارش.

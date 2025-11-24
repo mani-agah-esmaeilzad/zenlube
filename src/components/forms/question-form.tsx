@@ -70,54 +70,54 @@ export function QuestionForm({ type, slug, title }: QuestionFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-white/10 bg-black/30 p-6">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-md">
       {title ? (
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
       ) : (
-        <h3 className="text-lg font-semibold text-white">پرسش خود را بپرسید</h3>
+        <h3 className="text-lg font-semibold text-slate-900">پرسش خود را بپرسید</h3>
       )}
-      <p className="text-xs leading-6 text-white/60">
+      <p className="text-xs leading-6 text-slate-500">
         سوال شما برای کارشناسان ارسال می‌شود و پس از پاسخ در همین صفحه نمایش داده خواهد شد.
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="flex flex-col text-xs text-white/60">
+        <label className="flex flex-col text-xs font-semibold text-slate-500">
           نام شما
           <input
             value={authorName}
             onChange={(event) => setAuthorName(event.target.value)}
             placeholder="مثال: علی رضایی"
-            className="mt-2 rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm text-white outline-none focus:border-purple-400"
+            className="mt-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-sky-300"
           />
         </label>
-        <label className="flex flex-col text-xs text-white/60">
+        <label className="flex flex-col text-xs font-semibold text-slate-500">
           نوع سوال
           <input
             value={type === "product" ? "سوال درباره محصول" : "سوال درباره خودرو"}
             readOnly
-            className="mt-2 cursor-not-allowed rounded-full border border-white/15 bg-black/30 px-4 py-2 text-sm text-white/60"
+            className="mt-2 cursor-not-allowed rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-500"
           />
         </label>
       </div>
-      <label className="flex flex-col text-xs text-white/60">
+      <label className="flex flex-col text-xs font-semibold text-slate-500">
         متن سوال
         <textarea
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           rows={4}
           placeholder="سوال خود را با جزئیات بیان کنید..."
-          className="mt-2 rounded-3xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-purple-400"
+          className="mt-2 rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-sky-300"
         />
       </label>
       {state.status === "error" && state.message ? (
-        <p className="text-xs text-red-200">{state.message}</p>
+        <p className="text-xs text-red-600">{state.message}</p>
       ) : null}
       {state.status === "success" && state.message ? (
-        <p className="text-xs text-emerald-200">{state.message}</p>
+        <p className="text-xs text-emerald-600">{state.message}</p>
       ) : null}
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex items-center justify-center rounded-full bg-purple-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-purple-400 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center justify-center rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? "در حال ارسال..." : "ثبت سوال"}
       </button>

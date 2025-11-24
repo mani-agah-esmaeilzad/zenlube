@@ -16,6 +16,7 @@ import {
   getLatestReviews,
   getPopularCars,
 } from "@/lib/data";
+import { LogoMark } from "@/components/layout/logo-mark";
 
 type ProductCollection = Awaited<ReturnType<typeof getFeaturedProducts>>;
 
@@ -89,7 +90,7 @@ export default async function Home() {
 
   return (
     <div className="bg-slate-50">
-      <section className="relative isolate overflow-hidden px-6 py-16 text-white lg:px-12">
+      <section className="relative isolate overflow-hidden px-4 py-16 text-white sm:px-8 lg:px-12">
         {heroBanner?.imageUrl ? (
           <Image
             src={heroBanner.imageUrl}
@@ -102,11 +103,12 @@ export default async function Home() {
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
         )}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-slate-900/90" />
-        <div className="relative mx-auto flex max-w-6xl flex-col gap-10">
+        <div className="relative flex w-full flex-col gap-10">
           <div className="space-y-6 lg:max-w-3xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-slate-200">
-              OILBAR
-            </p>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1">
+              <LogoMark size={30} />
+              <span className="sr-only">OILBAR</span>
+            </div>
             <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
               فروشگاه تخصصی روغن موتور با تحویل سریع و ضمانت اصالت
             </h1>
@@ -127,12 +129,12 @@ export default async function Home() {
                 مشاوره فنی
               </Link>
             </div>
-            <div className="grid gap-4 text-sm text-white/80 sm:grid-cols-3">
+            <div className="grid gap-4 text-sm text-white/90 sm:grid-cols-3">
               {stats.map((item) => (
-                <div key={item.label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/50">{item.label}</p>
+                <div key={item.label} className="rounded-2xl border border-white/20 bg-black/30 p-4 backdrop-blur">
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/70">{item.label}</p>
                   <p className="mt-2 text-2xl font-semibold text-white">{item.value}</p>
-                  <p className="text-xs text-white/70">{item.description}</p>
+                  <p className="text-xs text-white/80">{item.description}</p>
                 </div>
               ))}
             </div>
@@ -170,8 +172,8 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl space-y-16 px-6 py-16 lg:px-10">
-        <section className="grid gap-4 lg:grid-cols-3">
+      <div className="space-y-16 px-4 py-16 sm:px-8 lg:px-12">
+        <section className="page-section grid gap-4 lg:grid-cols-3">
           {valueProps.map((prop) => (
             <div
               key={prop.title}
@@ -184,7 +186,7 @@ export default async function Home() {
           ))}
         </section>
 
-        <section className="space-y-5">
+        <section className="page-section space-y-5">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-slate-900">دسته‌بندی‌های محبوب</h2>
@@ -230,7 +232,7 @@ export default async function Home() {
           />
         )}
 
-        <section className="space-y-5">
+        <section className="page-section space-y-5">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-slate-900">برندهای همکار</h2>
@@ -247,7 +249,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="space-y-8">
+        <section className="page-section space-y-8">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-slate-900">دفترچه‌های فنی خودرو</h2>
@@ -265,7 +267,7 @@ export default async function Home() {
         </section>
 
         {!!latestReviews.length && (
-          <section className="space-y-6">
+          <section className="page-section space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold text-slate-900">بازخورد مشتریان</h2>
               <Link href="/products" className="text-sm text-sky-600 hover:text-sky-700">
@@ -281,7 +283,7 @@ export default async function Home() {
         )}
 
         {!!latestBlogPosts.length && (
-          <section className="space-y-6">
+          <section className="page-section space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold text-slate-900">آخرین مقالات وبلاگ</h2>
               <Link href="/blog" className="text-sm text-sky-600 hover:text-sky-700">
@@ -296,25 +298,25 @@ export default async function Home() {
           </section>
         )}
 
-        <section className="rounded-3xl border border-slate-200 bg-gradient-to-r from-slate-900 to-slate-800 p-8 text-white shadow-xl shadow-slate-900/30">
+        <section className="page-section rounded-3xl border border-slate-200 bg-white p-8 text-slate-800 shadow-xl shadow-slate-300/40">
           <div className="flex flex-col gap-4 text-sm lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.45em] text-white/50">خدمات ویژه</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">نیاز به راهنمایی فوری دارید؟</h2>
-              <p className="mt-2 text-white/70">
+              <p className="text-xs uppercase tracking-[0.45em] text-slate-400">خدمات ویژه</p>
+              <h2 className="mt-2 text-2xl font-semibold text-slate-900">نیاز به راهنمایی فوری دارید؟</h2>
+              <p className="mt-2 text-slate-600">
                 تیم فنی Oilbar آماده است مشخصات خودرو شما را بررسی و روغن مناسب را بدون آزمون و خطا پیشنهاد کند.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="tel:02112345678"
-                className="rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
+                className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-sky-200 hover:text-sky-600"
               >
                 تماس تلفنی ۰۲۱-۱۲۳۴۵۶۷۸
               </Link>
               <Link
                 href="/support"
-                className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+                className="rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-600"
               >
                 ثبت درخواست آنلاین
               </Link>
@@ -339,7 +341,7 @@ function Shelf({ title, description, href, products }: ShelfProps) {
   }
 
   return (
-    <section className="space-y-5">
+    <section className="page-section space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-slate-900">{title}</h2>

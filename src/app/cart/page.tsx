@@ -11,7 +11,7 @@ export default async function CartPage() {
   if (!userId) {
     return (
       <div className="bg-slate-50">
-        <div className="mx-auto max-w-3xl px-6 py-24 text-center">
+        <div className="page-section px-6 py-24 text-center">
           <h1 className="text-3xl font-semibold text-slate-900">سبد خرید</h1>
           <p className="mt-4 text-sm text-slate-600">
             برای مشاهده و مدیریت سبد خرید، ابتدا وارد حساب کاربری خود شوید.
@@ -49,7 +49,7 @@ export default async function CartPage() {
 
   return (
     <div className="bg-slate-50">
-      <div className="mx-auto max-w-5xl px-6 py-12 space-y-10">
+      <div className="page-section px-6 py-12 space-y-10">
         <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-semibold text-slate-900">سبد خرید</h1>

@@ -14,7 +14,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
   if (!orderId) {
     return (
       <div className="bg-slate-50">
-        <div className="mx-auto max-w-2xl px-6 py-16 text-center">
+        <div className="page-section px-6 py-16 text-center">
           <h1 className="text-3xl font-semibold text-slate-900">اطلاعات سفارش یافت نشد</h1>
           <p className="mt-4 text-sm text-slate-600">برای مشاهده وضعیت سفارش باید شناسه معتبر داشته باشید.</p>
           <Link href="/products" className="mt-8 inline-flex rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-600">
@@ -39,7 +39,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
   if (!order) {
     return (
       <div className="bg-slate-50">
-        <div className="mx-auto max-w-2xl px-6 py-16 text-center">
+        <div className="page-section px-6 py-16 text-center">
           <h1 className="text-3xl font-semibold text-slate-900">سفارش یافت نشد</h1>
           <p className="mt-4 text-sm text-slate-600">شناسه سفارش وارد شده معتبر نیست یا پرداخت تکمیل نشده است.</p>
           <Link href="/products" className="mt-8 inline-flex rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-600">
@@ -52,7 +52,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
   return (
     <div className="bg-slate-50">
-      <div className="mx-auto max-w-3xl px-6 py-16">
+      <div className="page-section px-6 py-16">
         <div className="rounded-3xl border border-emerald-100 bg-white p-10 shadow-xl shadow-emerald-100/40">
           <h1 className="text-3xl font-semibold text-slate-900">پرداخت با موفقیت انجام شد</h1>
           <p className="mt-2 text-sm text-slate-600">سفارش شما با شناسه {order.id.slice(0, 10)} ثبت شده است.</p>

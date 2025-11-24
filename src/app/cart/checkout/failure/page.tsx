@@ -18,7 +18,7 @@ export default async function CheckoutFailurePage({ searchParams }: FailurePageP
 
   return (
     <div className="bg-slate-50">
-      <div className="mx-auto max-w-2xl px-6 py-16 text-center">
+      <div className="page-section px-6 py-16 text-center">
         <div className="rounded-3xl border border-red-200 bg-white p-10 shadow-lg shadow-red-100/40">
           <h1 className="text-3xl font-semibold text-slate-900">پرداخت ناموفق بود</h1>
           <p className="mt-4 text-sm text-slate-600">{message}</p>

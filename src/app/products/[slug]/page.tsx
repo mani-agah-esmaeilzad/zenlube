@@ -81,7 +81,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="w-full bg-slate-50 text-slate-900">
-      <div className="mx-auto max-w-5xl px-6 py-12 space-y-12">
+      <div className="page-section px-6 py-12 space-y-12">
         <EngagementTracker
           entityType="product"
           entityId={product.id}

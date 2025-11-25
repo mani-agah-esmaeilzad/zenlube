@@ -35,39 +35,41 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }).format(new Date(post.publishedAt));
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12 text-white">
-      <header className="space-y-4">
-        <h1 className="text-4xl font-semibold">{post.title}</h1>
-        <div className="flex flex-wrap items-center gap-3 text-sm text-white/60">
-          <span>{post.authorName}</span>
-          <span>•</span>
-          <span>{published}</span>
-          <span>•</span>
-          <span>{post.readMinutes} دقیقه مطالعه</span>
-        </div>
-        {post.tags.length ? (
-          <div className="flex flex-wrap gap-2 text-xs text-white/50">
-            {post.tags.map((tag) => (
-              <span key={tag} className="rounded-full border border-white/15 px-3 py-1">
-                #{tag}
-              </span>
-            ))}
+    <div className="w-full bg-slate-50 py-12">
+      <div className="mx-auto max-w-3xl space-y-8 px-6 text-slate-900">
+        <header className="space-y-4">
+          <h1 className="text-4xl font-semibold">{post.title}</h1>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">
+            <span>{post.authorName}</span>
+            <span>•</span>
+            <span>{published}</span>
+            <span>•</span>
+            <span>{post.readMinutes} دقیقه مطالعه</span>
           </div>
+          {post.tags.length ? (
+            <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+              {post.tags.map((tag) => (
+                <span key={tag} className="rounded-full border border-slate-200 bg-white px-3 py-1">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </header>
+
+        {post.coverImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            className="h-72 w-full rounded-[32px] border border-slate-200 object-cover"
+            loading="lazy"
+          />
         ) : null}
-      </header>
 
-      {post.coverImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={post.coverImage}
-          alt={post.title}
-          className="mt-8 h-72 w-full rounded-[32px] object-cover"
-          loading="lazy"
-        />
-      ) : null}
-
-      <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 p-8">
-        <BlogArticle content={post.content} />
+        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <BlogArticle content={post.content} />
+        </div>
       </div>
     </div>
   );

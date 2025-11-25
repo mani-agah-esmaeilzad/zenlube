@@ -60,6 +60,8 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
   const activePage = pages[currentIndex] ?? pages[0];
   const nextPage = pendingIndex != null ? pages[pendingIndex] : null;
   const pageCount = pages.length;
+  const sheetSurfaceClass =
+    "rounded-[34px] border border-slate-200 bg-white p-8 text-slate-700 shadow-[0_30px_70px_-40px_rgba(15,23,42,0.3)]";
 
   const handleSelect = (index: number) => {
     if (index === activeNavIndex || isFlipping) {
@@ -128,7 +130,7 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
       <div className="relative notebook-perspective">
         <div
           className={cn(
-            "relative rounded-[34px] border border-white/10 bg-gradient-to-br from-white/12 via-white/5 to-white/10 p-8 text-white transition-opacity duration-150",
+            "relative transition-opacity duration-150",
             isFlipping ? "opacity-0" : "opacity-100",
           )}
         >
@@ -136,7 +138,7 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
             page={activePage}
             index={currentIndex}
             pageCount={pageCount}
-            className="min-h-[360px]"
+            className={cn("min-h-[360px]", sheetSurfaceClass)}
           />
         </div>
 
@@ -147,7 +149,8 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
               index={currentIndex}
               pageCount={pageCount}
               className={cn(
-                "absolute inset-0 rounded-[34px] border border-white/10 bg-gradient-to-br from-white/12 via-white/5 to-white/10 p-8 text-white notebook-page-layer",
+                "absolute inset-0 notebook-page-layer",
+                sheetSurfaceClass,
                 direction === "forward"
                   ? "notebook-flip-out-forward"
                   : "notebook-flip-out-backward",
@@ -158,7 +161,8 @@ export function CarNotebook({ cover, pages }: CarNotebookProps) {
               index={pendingIndex}
               pageCount={pageCount}
               className={cn(
-                "absolute inset-0 rounded-[34px] border border-white/10 bg-gradient-to-br from-white/12 via-white/5 to-white/10 p-8 text-white notebook-page-layer",
+                "absolute inset-0 notebook-page-layer",
+                sheetSurfaceClass,
                 direction === "forward"
                   ? "notebook-flip-in-forward"
                   : "notebook-flip-in-backward",

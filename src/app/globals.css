@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --zen-surface: #fdfcfb;
-  --zen-surface-elevated: #f6f8ff;
+  --zen-surface: #f9fbf8;
+  --zen-surface-elevated: #f2f7f1;
   --zen-card: #ffffff;
-  --zen-primary: #2563eb;
-  --zen-primary-soft: #dbeafe;
-  --zen-primary-accent: #0f172a;
+  --zen-primary: #007a3d;
+  --zen-primary-soft: #e6f4eb;
+  --zen-primary-accent: #e60012;
   --zen-text: #0f172a;
   --zen-text-muted: #4b5563;
   --zen-border: rgba(15, 23, 42, 0.08);
@@ -28,7 +28,7 @@
 }
 
 body {
-  background: linear-gradient(180deg, #f6f7fc 0%, #ffffff 60%, #fdfcfb 100%);
+  background: linear-gradient(180deg, #f6faf4 0%, #fdfdfb 60%, #ffffff 100%);
   color: var(--zen-text);
   font-family: var(--font-vazirmatn), sans-serif;
   font-feature-settings: "ss01" on, "ss02" on;

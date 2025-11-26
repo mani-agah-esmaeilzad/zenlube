@@ -29,10 +29,10 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
         <div className="absolute inset-x-0 top-4 flex flex-wrap items-center gap-2 px-6">
           {product.isBestseller ? (
-            <span className="wp-pill border-amber-200 bg-amber-100/80 font-semibold text-amber-700">پرفروش</span>
+            <span className="wp-pill border-emerald-200 bg-emerald-50 font-semibold text-emerald-700">پرفروش</span>
           ) : null}
           {product.viscosity ? (
-            <span className="wp-pill border-sky-200 bg-sky-100/80 text-sky-700">ویسکوزیته {product.viscosity}</span>
+            <span className="wp-pill border-emerald-200 bg-emerald-50 text-emerald-700">ویسکوزیته {product.viscosity}</span>
           ) : null}
           {product.oilType ? (
             <span className="wp-pill border-white/20 bg-white/90 text-slate-700">{product.oilType}</span>
@@ -55,9 +55,9 @@ export function ProductCard({ product }: ProductCardProps) {
           <span className="rounded-full border border-slate-200 px-3 py-1">{product.category.name}</span>
           {product.originCountry ? <span className="rounded-full border border-slate-200 px-3 py-1">ساخت {product.originCountry}</span> : null}
           {rating ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 font-semibold text-amber-700">
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 font-semibold text-emerald-700">
               ⭐ {rating}
-              <span className="text-amber-600/70">({product.reviewCount})</span>
+              <span className="text-emerald-600/70">({product.reviewCount})</span>
             </span>
           ) : null}
         </div>

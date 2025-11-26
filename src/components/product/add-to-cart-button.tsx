@@ -37,7 +37,7 @@ export function AddToCartButton({ productId, className, disabled = false }: AddT
         type="button"
         onClick={handleAdd}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-l from-sky-500 to-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_15px_30px_rgba(14,165,233,0.35)] transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200 disabled:cursor-not-allowed disabled:opacity-70",
+          "inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-l from-emerald-600 to-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_15px_30px_rgba(5,150,105,0.3)] transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-200 disabled:cursor-not-allowed disabled:opacity-70",
           className,
         )}
         disabled={isDisabled}

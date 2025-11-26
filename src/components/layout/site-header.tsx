@@ -1,4 +1,4 @@
-import type { ReactNode, SVGProps } from "react";
+import type { SVGProps } from "react";
 import Link from "next/link";
 import { LogoMark } from "@/components/layout/logo-mark";
 import { SignInButton } from "@/components/auth/sign-in-button";
@@ -30,9 +30,9 @@ export async function SiteHeader() {
   const quickCategories = categories.slice(0, 5);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/60 bg-white/90 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur">
-      <div className="hidden border-b border-white/10 bg-slate-900 text-[11px] text-white/80 sm:block">
-        <div className="layout-shell flex flex-wrap items-center justify-between gap-4 py-2">
+    <header className="sticky top-0 z-50 border-b border-white/70 bg-white/95 shadow-[0_12px_35px_rgba(15,23,42,0.08)] backdrop-blur">
+      <div className="hidden border-b border-white/5 bg-slate-900 text-[11px] text-white/80 sm:block">
+        <div className="layout-shell flex flex-wrap items-center justify-between gap-3 py-1.5">
           <div className="flex flex-wrap items-center gap-4">
             <span className="inline-flex items-center gap-1">
               <SparkIcon className="h-3.5 w-3.5" />
@@ -59,11 +59,11 @@ export async function SiteHeader() {
         </div>
       </div>
 
-      <div className="layout-shell flex flex-col gap-3 py-4 text-slate-700">
-        <div className="flex items-center justify-between gap-4">
+      <div className="layout-shell flex flex-col gap-2 py-3 text-slate-700">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <MobileNav links={links} isAuthenticated={isAuthenticated} categories={categories} />
-            <Link href="/" className="inline-flex items-center gap-3 rounded-3xl border border-slate-100 bg-white px-3 py-2 shadow-sm transition hover:border-slate-200" aria-label="بازگشت به صفحه اصلی">
+            <Link href="/" className="inline-flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-3 py-2 shadow-sm transition hover:border-slate-200" aria-label="بازگشت به صفحه اصلی">
               <LogoMark priority size={60} />
               <div className="hidden text-right leading-tight lg:block">
                 <p className="text-xs text-slate-400">فروشگاه آنلاین لوازم و روغن موتور</p>
@@ -90,7 +90,7 @@ export async function SiteHeader() {
               جستجو
             </button>
           </form>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="hidden text-xs text-slate-500 lg:flex lg:flex-col lg:items-end">
               <span className="font-semibold text-slate-900">مرکز تماس</span>
               <a href="tel:09352490619" className="text-sky-600 transition hover:text-sky-800">
@@ -116,8 +116,8 @@ export async function SiteHeader() {
           />
         </form>
 
-        <div className="hidden flex-wrap items-center justify-between gap-4 text-sm text-slate-600 lg:flex">
-          <div className="flex items-center gap-4">
+        <div className="hidden flex-wrap items-center justify-between gap-3 text-sm text-slate-600 lg:flex">
+          <div className="flex items-center gap-3">
             <CategoryDropdown categories={categories} />
             <div className="flex items-center gap-2 text-xs text-slate-500">
               {quickCategories.map((category) => (
@@ -143,32 +143,11 @@ export async function SiteHeader() {
           </nav>
         </div>
       </div>
-
-      <div className="border-t border-slate-100 bg-slate-50/70">
-        <div className="layout-shell grid gap-4 py-3 text-xs text-slate-600 sm:grid-cols-2 lg:grid-cols-4">
-          <HeaderFeature icon={<TruckIcon className="h-4 w-4 text-sky-500" />} title="ارسال در همان روز تهران" description="تحویل فوری در تهران و کرج - ارسال ۳ روزه شهرستان" />
-          <HeaderFeature icon={<ShieldIcon className="h-4 w-4 text-emerald-500" />} title="تضمین اصالت کالا" description="واردکننده رسمی برندهای بین‌المللی" />
-          <HeaderFeature icon={<CardIcon className="h-4 w-4 text-amber-500" />} title="پرداخت امن آنلاین" description="درگاه معتبر زرین‌پال و رمز پویا" />
-          <HeaderFeature icon={<GearIcon className="h-4 w-4 text-indigo-500" />} title="تطبیق با خودروی شما" description="فیلتر بر اساس مدل خودرو و استاندارد" />
-        </div>
-      </div>
     </header>
   );
 }
 
 type IconProps = SVGProps<SVGSVGElement>;
-
-function HeaderFeature({ icon, title, description }: { icon: ReactNode; title: string; description: string }) {
-  return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/60 px-4 py-2 shadow-sm">
-      <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100">{icon}</span>
-      <div className="text-xs">
-        <p className="font-semibold text-slate-900">{title}</p>
-        <p className="text-[11px] text-slate-500">{description}</p>
-      </div>
-    </div>
-  );
-}
 
 function PhoneIcon(props: IconProps) {
   return (
@@ -211,45 +190,6 @@ function SparkIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
       <path d="M12 2l1.8 5.4L19 9l-4 3.2 1.5 5.3L12 14.8 7.5 17.5 9 12 5 9l5.2-1.6L12 2z" />
-    </svg>
-  );
-}
-
-function TruckIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-      <path d="M3 7h13v10H3z" />
-      <path d="M16 10h4l1 3v4h-5z" />
-      <circle cx={7.5} cy={17.5} r={1.5} />
-      <circle cx={18.5} cy={17.5} r={1.5} />
-    </svg>
-  );
-}
-
-function ShieldIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-      <path d="M12 2l7 4v5c0 5-3 9-7 11-4-2-7-6-7-11V6z" />
-      <path d="M9 12l2 2 4-4" />
-    </svg>
-  );
-}
-
-function CardIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-      <rect x={2} y={5} width={20} height={14} rx={2} />
-      <path d="M2 10h20" />
-      <path d="M6 15h2" />
-    </svg>
-  );
-}
-
-function GearIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-      <circle cx={12} cy={12} r={3} />
-      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.82l-.06-.05a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.05a2 2 0 01-2.82-2.82l.05-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.05-.06a2 2 0 012.82-2.82l.06.05a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51h.09a1.65 1.65 0 001.82-.33l.06-.05a2 2 0 012.82 2.82l-.05.06a1.65 1.65 0 00-.33 1.82V9c0 .69.4 1.31 1.01 1.62H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1.38z" />
     </svg>
   );
 }

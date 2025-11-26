@@ -13,11 +13,21 @@ function generateOtpCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-export async function createOtpRequest(phone: string, purpose: OtpPurpose = "checkout") {
-  const normalizedPhone = normalizeIranPhone(phone);
-  const now = new Date();
-  const windowStart = new Date(now.getTime() - OTP_RESEND_WINDOW_SECONDS * 1000);
+export class OtpRequestWindowError extends Error {
+  constructor(message = "برای ارسال مجدد کد، لطفاً یک دقیقه صبر کنید.") {
+    super(message);
+    this.name = "OtpRequestWindowError";
+  }
+}
 
+type OtpWindowOptions = {
+  normalizedPhone: string;
+  purpose: OtpPurpose;
+  currentTime: Date;
+};
+
+async function ensureOtpWindowAvailable({ normalizedPhone, purpose, currentTime }: OtpWindowOptions) {
+  const windowStart = new Date(currentTime.getTime() - OTP_RESEND_WINDOW_SECONDS * 1000);
   const recentRequest = await prisma.otpRequest.findFirst({
     where: {
       phone: normalizedPhone,
@@ -25,11 +35,39 @@ export async function createOtpRequest(phone: string, purpose: OtpPurpose = "che
       createdAt: { gte: windowStart },
       consumedAt: null,
     },
-    orderBy: { createdAt: "desc" },
+    select: { id: true },
   });
 
   if (recentRequest) {
-    throw new Error("برای ارسال مجدد کد، لطفاً یک دقیقه صبر کنید.");
+    throw new OtpRequestWindowError();
+  }
+}
+
+export async function assertOtpWindowAvailability(
+  normalizedPhone: string,
+  purpose: OtpPurpose,
+  currentTime: Date = new Date(),
+) {
+  await ensureOtpWindowAvailable({ normalizedPhone, purpose, currentTime });
+  return currentTime;
+}
+
+type CreateOtpRequestOptions = {
+  skipWindowCheck?: boolean;
+  currentTime?: Date;
+  normalizedPhoneOverride?: string;
+};
+
+export async function createOtpRequest(
+  phone: string,
+  purpose: OtpPurpose = "checkout",
+  options?: CreateOtpRequestOptions,
+) {
+  const normalizedPhone = options?.normalizedPhoneOverride ?? normalizeIranPhone(phone);
+  const now = options?.currentTime ?? new Date();
+
+  if (!options?.skipWindowCheck) {
+    await ensureOtpWindowAvailable({ normalizedPhone, purpose, currentTime: now });
   }
 
   const activeRequest = await prisma.otpRequest.findFirst({

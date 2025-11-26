@@ -2,133 +2,193 @@ import type { SVGProps } from "react";
 import Link from "next/link";
 import { LogoMark } from "@/components/layout/logo-mark";
 
+const linkColumns = [
+  {
+    title: "راهنمای خرید",
+    links: [
+      { label: "محصولات جدید", href: "/products?sort=newest" },
+      { label: "پرفروش‌ترین‌ها", href: "/products?sort=bestseller" },
+      { label: "محصولات ویژه", href: "/products?sort=featured" },
+      { label: "برندهای همکار", href: "/brands" },
+    ],
+  },
+  {
+    title: "خدمات مشتری",
+    links: [
+      { label: "سوالات متداول", href: "/support" },
+      { label: "شرایط و قوانین", href: "/terms" },
+      { label: "حریم خصوصی", href: "/policy" },
+      { label: "پشتیبانی آنلاین", href: "/support" },
+    ],
+  },
+  {
+    title: "حساب کاربری",
+    links: [
+      { label: "ورود / ثبت‌نام", href: "/sign-in" },
+      { label: "پیگیری سفارش", href: "/cart" },
+      { label: "آدرس‌های ذخیره شده", href: "/account" },
+      { label: "باشگاه مشتریان", href: "/account" },
+    ],
+  },
+];
+
+const socialLinks = [
+  {
+    label: "واتساپ",
+    href: "https://wa.me/989352490619",
+    icon: WhatsAppIcon,
+    bg: "bg-emerald-500",
+  },
+  {
+    label: "تلگرام",
+    href: "https://t.me/09352490619",
+    icon: TelegramIcon,
+    bg: "bg-sky-500",
+  },
+  {
+    label: "اینستاگرام",
+    href: "https://instagram.com/oilbar.ir",
+    icon: InstagramIcon,
+    bg: "bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400",
+  },
+  {
+    label: "ایمیل",
+    href: "mailto:oilbarshop@gmail.com",
+    icon: MailIcon,
+    bg: "bg-slate-800",
+  },
+];
+
 export function SiteFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-white/90">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10 text-sm text-slate-600 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-2">
-          <LogoMark withText size={72} textAlign="left" />
-          <p className="max-w-md leading-6">
-            فروشگاه تخصصی روغن موتور برای خودروهای مدرن و کلاسیک با تمرکز بر سادگی، سرعت و تجربه کاربری استاندارد.
-          </p>
-          <p className="text-xs text-slate-500">
-            آدرس: البرز، کرج، عظیمیه، پاسداران غربی، بین نیک‌نژادی و غلامی، اتوسرویس مانی
-          </p>
-        </div>
+    <footer className="mt-16 bg-slate-950 text-slate-200">
+      <div className="layout-shell">
+        <section className="wp-section -mt-12 grid gap-6 rounded-[42px] border border-white/20 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-8 text-white lg:grid-cols-[1.5fr,1fr]">
+          <div className="space-y-4">
+            <p className="text-xs uppercase tracking-[0.4em] text-white/70">باشگاه مشتریان Oilbar</p>
+            <h2 className="text-2xl font-bold leading-9">
+              اولین نفری باشید که از تخفیف‌های دوره‌ای، پیشنهاد سرویس فصلی و محتواهای آموزشی مطلع می‌شود.
+            </h2>
+            <p className="text-sm text-white/80">
+              ایمیل یا شماره موبایل خود را وارد کنید تا اخبار، راهنماهای نگهداری و کوپن تخفیف را دریافت کنید. لغو عضویت هر زمان ممکن است.
+            </p>
+            <div className="flex flex-wrap gap-3 text-xs text-white/70">
+              <span className="wp-pill border-white/30 bg-white/10 text-white">ارسال منظم محتوا</span>
+              <span className="wp-pill border-white/30 bg-white/10 text-white">تخفیف نصب و سرویس</span>
+              <span className="wp-pill border-white/30 bg-white/10 text-white">مشاوره اختصاصی</span>
+            </div>
+          </div>
+          <form className="space-y-3 text-sm" action="#">
+            <label htmlFor="newsletter-email" className="text-xs font-semibold text-white/80">
+              ایمیل یا موبایل
+            </label>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                id="newsletter-email"
+                name="newsletter"
+                placeholder="example@email.com"
+                className="w-full rounded-2xl border border-white/30 bg-white/10 px-4 py-3 text-base text-white placeholder:text-white/50 focus:border-white focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="shrink-0 rounded-2xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+              >
+                عضویت
+              </button>
+            </div>
+            <p className="text-[11px] text-white/60">با عضویت، قوانین حریم خصوصی Oilbar را می‌پذیرید.</p>
+          </form>
+        </section>
+      </div>
 
-        <div className="space-y-3">
-          <p className="text-sm font-semibold text-slate-900">راه‌های ارتباطی</p>
-          <ul className="grid gap-4 text-sm sm:grid-cols-2">
-            <li className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
-              <p className="text-xs text-slate-500">تلفن ثابت</p>
-              <a href="tel:02632515631" className="mt-1 block text-base font-semibold text-slate-900 transition hover:text-sky-600">
-                02632515631
-              </a>
-            </li>
-            <li className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
-              <p className="text-xs text-slate-500">پشتیبانی موبایل</p>
-              <a href="tel:09352490619" className="mt-1 block text-base font-semibold text-slate-900 transition hover:text-sky-600">
-                09352490619
-              </a>
-            </li>
-            <li className="flex">
+      <div className="layout-shell grid gap-10 py-12 text-sm text-slate-300 lg:grid-cols-5">
+        <div className="space-y-4 lg:col-span-2">
+          <div className="flex items-center gap-3">
+            <LogoMark size={62} />
+            <div>
+              <p className="text-xs text-slate-400">فروشگاه آنلاین روغن و تجهیزات خودرو</p>
+              <p className="text-lg font-semibold text-white">OILBAR</p>
+            </div>
+          </div>
+          <p className="text-slate-400">
+            بیش از ۱۰ سال تجربه در تامین روغن موتور، فیلتر و افزودنی‌های اصلی برای خودروهای ایرانی و وارداتی. با ما تجربه خریدی استاندارد و بدون دغدغه خواهید داشت.
+          </p>
+          <div className="grid gap-3 text-xs text-slate-500 sm:grid-cols-2">
+            <div className="space-y-1 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="font-semibold text-white">آدرس فروشگاه</p>
+              <p>البرز، کرج، عظیمیه، پاسداران غربی، بین نیک‌نژادی و غلامی، اتوسرویس مانی</p>
+            </div>
+            <div className="space-y-1 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="font-semibold text-white">ساعت کاری</p>
+              <p>شنبه تا پنج‌شنبه ۹ الی ۲۰ • جمعه‌ها ۱۰ الی ۱۵</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {socialLinks.map(({ label, href, icon: Icon, bg }) => (
               <a
-                href="https://wa.me/989352490619"
+                key={label}
+                href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="پشتیبانی واتساپ"
-                className="group flex h-full flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white/90 p-4 font-semibold text-slate-900 shadow-sm transition hover:border-emerald-200"
+                className="group inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs text-white transition hover:border-white/40"
+                aria-label={label}
               >
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm transition group-hover:scale-110">
-                  <WhatsAppIcon className="h-4 w-4" />
+                <span className={`inline-flex h-9 w-9 items-center justify-center rounded-full ${bg} text-white transition group-hover:scale-105`}>
+                  <Icon className="h-4 w-4" />
                 </span>
-                <div>
-                  <p className="text-xs font-normal text-slate-500">پشتیبانی واتساپ</p>
-                  <p className="mt-1">شروع گفتگو</p>
-                </div>
+                {label}
               </a>
-            </li>
-            <li className="flex">
-              <a
-                href="https://t.me/09352490619"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="پشتیبانی تلگرام"
-                className="group flex h-full flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white/90 p-4 font-semibold text-slate-900 shadow-sm transition hover:border-sky-200"
-              >
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white shadow-sm transition group-hover:scale-110">
-                  <TelegramIcon className="h-4 w-4" />
-                </span>
-                <div>
-                  <p className="text-xs font-normal text-slate-500">پشتیبانی تلگرام</p>
-                  <p className="mt-1">ارسال پیام</p>
-                </div>
-              </a>
-            </li>
-            <li className="flex">
-              <a
-                href="https://instagram.com/oilbar.ir"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="صفحه اینستاگرام"
-                className="group flex h-full flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white/90 p-4 font-semibold text-slate-900 shadow-sm transition hover:border-rose-200"
-              >
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 via-rose-500 to-orange-400 text-white shadow-sm transition group-hover:scale-110">
-                  <InstagramIcon className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-xs font-normal text-slate-500">اینستاگرام</p>
-                  <p className="mt-1">@oilbar.ir</p>
-                </div>
-              </a>
-            </li>
-            <li className="flex">
-              <a
-                href="mailto:oilbarshop@gmail.com"
-                aria-label="ایمیل پشتیبانی"
-                className="group flex flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white/90 p-4 font-semibold text-slate-900 shadow-sm transition hover:border-slate-300"
-              >
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm transition group-hover:scale-110">
-                  <MailIcon className="h-5 w-5" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-xs font-normal text-slate-500">ایمیل پشتیبانی</p>
-                  <p className="mt-1 break-all">oilbarshop@gmail.com</p>
-                </div>
-              </a>
-            </li>
-          </ul>
-          <div className="flex flex-wrap items-center gap-4 text-slate-600">
-            <Link href="/policy" className="transition hover:text-slate-900">
-              حریم خصوصی
-            </Link>
-            <Link href="/terms" className="transition hover:text-slate-900">
-              قوانین استفاده
-            </Link>
-            <Link href="/support" className="transition hover:text-slate-900">
-              پشتیبانی
-            </Link>
+            ))}
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-2 text-xs text-slate-500">
-          <a
-            href="https://trustseal.enamad.ir/?id=676134&Code=CIEFXVKystVwcAFxMw9PAkoXuIW996ra"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-sky-200"
-            aria-label="نماد اعتماد الکترونیکی"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              referrerPolicy="origin"
-              src="/logo.png"
-              alt="نماد اعتماد الکترونیکی"
-              className="h-16 w-16 object-contain"
-            />
-          </a>
+        {linkColumns.map((column) => (
+          <div key={column.title} className="space-y-3">
+            <p className="text-sm font-semibold text-white">{column.title}</p>
+            <ul className="space-y-2 text-sm text-slate-400">
+              {column.links.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="transition hover:text-white">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
 
-          <p>© {new Date().getFullYear()} Oilbar · اویل بار - همه حقوق محفوظ است.</p>
+        <div className="space-y-4">
+          <p className="text-sm font-semibold text-white">در تماس باشید</p>
+          <FooterContactCard label="تلفن ثابت" value="۰۲۶-۳۲۵۱۵۶۳۱" href="tel:02632515631" />
+          <FooterContactCard label="مشاوره موبایل" value="۰۹۳۵۲۴۹۰۶۱۹" href="tel:09352490619" accentClass="from-sky-500 to-indigo-500" />
+          <FooterContactCard label="پشتیبانی واتساپ" value="شروع گفتگو" href="https://wa.me/989352490619" accentClass="from-emerald-500 to-lime-500" />
+        </div>
+      </div>
+
+      <div className="border-t border-white/10">
+        <div className="layout-shell flex flex-col gap-4 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Oilbar · اویل بار - تمامی حقوق محفوظ است.</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/policy" className="transition hover:text-white">
+              حریم خصوصی
+            </Link>
+            <Link href="/terms" className="transition hover:text-white">
+              قوانین و مقررات
+            </Link>
+            <Link href="/support" className="transition hover:text-white">
+              پشتیبانی
+            </Link>
+            <a
+              href="https://trustseal.enamad.ir/?id=676134&Code=CIEFXVKystVwcAFxMw9PAkoXuIW996ra"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-white/40"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="نماد اعتماد" className="h-10 w-10 object-contain" />
+              نماد اعتماد
+            </a>
+          </div>
         </div>
       </div>
     </footer>
@@ -136,6 +196,32 @@ export function SiteFooter() {
 }
 
 type IconProps = SVGProps<SVGSVGElement>;
+
+function FooterContactCard({
+  label,
+  value,
+  href,
+  accentClass = "from-slate-500 to-slate-700",
+}: {
+  label: string;
+  value: string;
+  href: string;
+  accentClass?: string;
+}) {
+  return (
+    <a
+      href={href}
+      className="group block rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:border-white/30 hover:bg-white/10"
+    >
+      <p className="text-[11px] text-slate-400">{label}</p>
+      <p className="mt-1 text-base font-semibold text-white">{value}</p>
+      <span className={`mt-2 inline-flex items-center gap-2 text-[11px] text-white/80`}>
+        <span className={`inline-block h-1 w-8 rounded-full bg-gradient-to-l ${accentClass}`} />
+        تماس مستقیم
+      </span>
+    </a>
+  );
+}
 
 function WhatsAppIcon(props: IconProps) {
   return (

@@ -40,13 +40,13 @@ main {
   min-height: 60vh;
 }
 
-a {
+:where(a) {
   color: inherit;
   text-decoration: none;
   transition: color 150ms ease, opacity 150ms ease;
 }
 
-a:hover {
+:where(a):hover {
   color: var(--zen-primary);
 }
 

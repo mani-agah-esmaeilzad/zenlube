@@ -121,39 +121,39 @@ select {
 }
 
 .bg-black\/60 {
-  background-color: rgba(15, 23, 42, 0.08) !important;
+  background-color: rgba(15, 23, 42, 0.6) !important;
 }
 
 .bg-black\/50 {
-  background-color: rgba(15, 23, 42, 0.07) !important;
+  background-color: rgba(15, 23, 42, 0.5) !important;
 }
 
 .bg-black\/40 {
-  background-color: rgba(15, 23, 42, 0.06) !important;
+  background-color: rgba(15, 23, 42, 0.4) !important;
 }
 
 .bg-black\/35 {
-  background-color: rgba(15, 23, 42, 0.055) !important;
+  background-color: rgba(15, 23, 42, 0.35) !important;
 }
 
 .bg-black\/30 {
-  background-color: rgba(15, 23, 42, 0.045) !important;
+  background-color: rgba(15, 23, 42, 0.3) !important;
 }
 
 .bg-black\/20 {
-  background-color: rgba(15, 23, 42, 0.035) !important;
+  background-color: rgba(15, 23, 42, 0.2) !important;
 }
 
 .bg-black\/10 {
-  background-color: rgba(15, 23, 42, 0.02) !important;
+  background-color: rgba(15, 23, 42, 0.1) !important;
 }
 
 .bg-white\/5 {
-  background-color: rgba(248, 250, 252, 0.96) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 .bg-white\/10 {
-  background-color: rgba(255, 255, 255, 0.94) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 
@@ -203,7 +203,7 @@ select {
 }
 
 .bg-white\/20 {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .border-white\/5 {

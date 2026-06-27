@@ -16,6 +16,7 @@
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
     "vehicles:bama:draft": "tsx scripts/scrape-bama-vehicles.ts",
+    "vehicles:table:draft": "tsx scripts/import-vehicle-table.ts",
     "seed:vehicles": "tsx prisma/seed-verified-cars.ts"
   },
   "dependencies": {

@@ -1,36 +1,22 @@
 import type { Metadata } from "next";
-import { Vazirmatn } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
-const vazirmatn = Vazirmatn({
-  variable: "--font-vazirmatn",
-  subsets: ["latin", "arabic"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "Oilbar | فروشگاه تخصصی روغن موتور",
-  description:
-    "Oilbar فروشگاهی مینیمال و مدرن برای خرید روغن موتور، با دسته‌بندی هوشمند، معرفی برندها، پیشنهاد محصولات متناسب با خودرو و پنل مدیریت کامل.",
-  metadataBase: new URL("https://oilbar.ir"),
+  title: "ZenLube | فروشگاه تخصصی روغن موتور و فیلتر خودرو",
+  description: "خرید آنلاین روغن موتور اصل، فیلتر خودرو، ضدیخ و روانکار با ضمانت اصالت، مشاوره تخصصی انتخاب روغن و ارسال سریع سراسر ایران.",
+  metadataBase: new URL("https://zenlube.ir"),
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fa" dir="rtl">
-      <body className={`${vazirmatn.variable} bg-slate-50 text-slate-800 antialiased`}>
-        <div className="min-h-screen bg-slate-50">
-          <div className="flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
+      <body className="bg-surface text-slate-800 antialiased">
+        <div className="flex min-h-screen flex-col bg-surface">
+          <SiteHeader />
+          <main className="flex-1 bg-surface pb-20 lg:pb-0">{children}</main>
+          <SiteFooter />
         </div>
       </body>
     </html>

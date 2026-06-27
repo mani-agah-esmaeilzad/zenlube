@@ -10,19 +10,17 @@ export default async function CartPage() {
 
   if (!userId) {
     return (
-      <div className="bg-slate-50">
-        <div className="page-section px-6 py-24 text-center">
-          <h1 className="text-3xl font-semibold text-slate-900">سبد خرید</h1>
-          <p className="mt-4 text-sm text-slate-600">
-            برای مشاهده و مدیریت سبد خرید، ابتدا وارد حساب کاربری خود شوید.
-          </p>
-          <Link
-            href="/sign-in"
-            className="mt-6 inline-flex rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-600"
-          >
-            ورود به حساب کاربری
-          </Link>
-        </div>
+      <div className="mx-auto max-w-3xl px-6 py-24 text-center">
+        <h1 className="text-3xl font-semibold text-slate-900">سبد خرید</h1>
+        <p className="mt-4 text-sm text-slate-900/70">
+          برای مشاهده و مدیریت سبد خرید، ابتدا وارد حساب کاربری خود شوید.
+        </p>
+        <Link
+          href="/sign-in"
+          className="mt-6 inline-flex rounded-full bg-orange-500 px-6 py-2 text-sm font-semibold text-slate-900 hover:bg-orange-600"
+        >
+          ورود به حساب کاربری
+        </Link>
       </div>
     );
   }
@@ -48,17 +46,16 @@ export default async function CartPage() {
   }, 0) ?? 0;
 
   return (
-    <div className="bg-slate-50">
-      <div className="page-section px-6 py-12 space-y-10">
-        <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold text-slate-900">سبد خرید</h1>
-            <p className="text-sm text-slate-600">
-              محصولات انتخاب‌شده شما در پایین قابل مشاهده است. می‌توانید مقدار هر محصول را تغییر دهید یا آن را حذف کنید.
-            </p>
-          </div>
-          {cart?.items?.length ? <ClearCartButton /> : null}
-        </header>
+    <div className="container-zen py-8 space-y-8">
+      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-semibold text-slate-900">سبد خرید</h1>
+          <p className="text-sm text-slate-900/70">
+            محصولات انتخاب‌شده شما در پایین قابل مشاهده است. می‌توانید مقدار هر محصول را تغییر دهید یا آن را حذف کنید.
+          </p>
+        </div>
+        {cart?.items?.length ? <ClearCartButton /> : null}
+      </header>
 
       {cart?.items?.length ? (
         <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
@@ -66,17 +63,17 @@ export default async function CartPage() {
             {cart.items.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white p-6 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="space-y-2">
                   <h2 className="text-lg font-semibold text-slate-900">{item.product.name}</h2>
-                  <p className="text-xs text-slate-500">برند {item.product.brand.name}</p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-xs text-slate-900/60">برند {item.product.brand.name}</p>
+                  <p className="text-sm text-slate-900/70">
                     قیمت واحد: {formatPrice(item.product.price)}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-3">
-                  <p className="text-sm font-semibold text-slate-900">
+                  <p className="text-sm font-semibold text-orange-600">
                     {formatPrice(Number(item.product.price) * item.quantity)}
                   </p>
                   <CartItemControls productId={item.productId} quantity={item.quantity} />
@@ -84,36 +81,36 @@ export default async function CartPage() {
               </div>
             ))}
           </div>
-          <aside className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-md">
-            <h2 className="text-lg font-semibold text-slate-900">خلاصه سفارش</h2>
+          <aside className="card-zen p-6 text-sm text-slate-900/70">
+            <h2 className="text-lg font-semibold text-[#0f2747]">خلاصه سفارش</h2>
             <div className="mt-4 space-y-3">
               <div className="flex justify-between">
                 <span>جمع کل</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-slate-900/50">
                 <span>هزینه ارسال</span>
                 <span>محاسبه در مرحله بعد</span>
               </div>
             </div>
             <Link
               href="/cart/checkout"
-              className="mt-6 inline-flex w-full justify-center rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-600"
+              className="mt-6 inline-flex w-full justify-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-orange-600"
             >
               ادامه فرآیند خرید
             </Link>
-            <p className="mt-4 text-xs text-slate-500">
+            <p className="mt-4 text-xs text-slate-900/50">
               تایید نهایی سفارش بعد از ورود اطلاعات ارسال و پرداخت انجام می‌شود.
             </p>
           </aside>
         </div>
       ) : (
-        <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-12 text-center text-slate-500">
+        <div className="rounded-3xl border border-white/10 bg-white p-12 text-center text-slate-900/60">
           سبد خرید شما خالی است. از صفحه محصولات بازدید کنید و پیشنهادات ویژه را از دست ندهید.
           <div className="mt-6">
             <Link
               href="/products"
-              className="inline-flex rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-600"
+              className="inline-flex rounded-full bg-orange-500 px-6 py-2 text-sm font-semibold text-slate-900 hover:bg-orange-600"
             >
               رفتن به فروشگاه
             </Link>

@@ -30,11 +30,7 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token, req }) => {
-        if (req.nextUrl.pathname.startsWith("/admin/login")) {
-          return true;
-        }
-
+      authorized: ({ token }) => {
         if (!token) {
           return false;
         }

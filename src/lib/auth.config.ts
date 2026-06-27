@@ -6,8 +6,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import prisma from "./prisma";
 import { config } from "./config";
-import { normalizeIranPhone } from "@/lib/phone";
-import { verifyOtpCode } from "@/services/otp";
 
 type RoleAwareToken = JWT & { role?: string | null; adminExpiresAt?: number };
 

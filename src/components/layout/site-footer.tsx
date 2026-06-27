@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { LogoMark } from "@/components/layout/logo-mark";
 
@@ -59,138 +59,31 @@ const socialLinks = [
   },
 ];
 
+const footerGroups = [
+  { title: "دسته‌بندی‌ها", links: [["روغن موتور", "/products?category=engine-oil"], ["فیلتر روغن", "/products?search=فیلتر روغن"], ["ضدیخ", "/products?search=ضدیخ"], ["روغن گیربکس", "/products?search=گیربکس"]] },
+  { title: "خدمات مشتریان", links: [["پیگیری سفارش", "/account"], ["پشتیبانی", "/support"], ["قوانین", "/terms"], ["حریم خصوصی", "/policy"]] },
+  { title: "راهنما", links: [["راهنمای انتخاب روغن", "/blog"], ["انتخاب بر اساس خودرو", "/cars"], ["برندها", "/brands"], ["مقایسه محصولات", "/products/compare"]] },
+];
+
 export function SiteFooter() {
   return (
-    <footer className="mt-16 bg-slate-950 text-slate-200">
-      <div className="layout-shell">
-        <section className="wp-section -mt-12 grid gap-6 rounded-[42px] border border-white/20 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-8 text-white lg:grid-cols-[1.5fr,1fr]">
-          <div className="space-y-4">
-            <p className="text-xs uppercase tracking-[0.4em] text-white/70">باشگاه مشتریان Oilbar</p>
-            <h2 className="text-2xl font-bold leading-9">
-              اولین نفری باشید که از تخفیف‌های دوره‌ای، پیشنهاد سرویس فصلی و محتواهای آموزشی مطلع می‌شود.
-            </h2>
-            <p className="text-sm text-white/80">
-              ایمیل یا شماره موبایل خود را وارد کنید تا اخبار، راهنماهای نگهداری و کوپن تخفیف را دریافت کنید. لغو عضویت هر زمان ممکن است.
-            </p>
-            <div className="flex flex-wrap gap-3 text-xs text-white/70">
-              <span className="wp-pill border-white/30 bg-white/10 text-white">ارسال منظم محتوا</span>
-              <span className="wp-pill border-white/30 bg-white/10 text-white">تخفیف نصب و سرویس</span>
-              <span className="wp-pill border-white/30 bg-white/10 text-white">مشاوره اختصاصی</span>
-            </div>
-          </div>
-          <form className="space-y-3 text-sm" action="#">
-            <label htmlFor="newsletter-email" className="text-xs font-semibold text-white/80">
-              ایمیل یا موبایل
-            </label>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <input
-                id="newsletter-email"
-                name="newsletter"
-                placeholder="example@email.com"
-                className="w-full rounded-2xl border border-white/30 bg-white/10 px-4 py-3 text-base text-white placeholder:text-white/50 focus:border-white focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="shrink-0 rounded-2xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
-              >
-                عضویت
-              </button>
-            </div>
-            <p className="text-[11px] text-white/60">با عضویت، قوانین حریم خصوصی Oilbar را می‌پذیرید.</p>
-          </form>
-        </section>
-      </div>
-
-      <div className="layout-shell grid gap-10 py-12 text-sm text-slate-300 lg:grid-cols-5">
-        <div className="space-y-4 lg:col-span-2">
-          <div className="flex items-center gap-3">
-            <LogoMark size={62} />
-            <div>
-              <p className="text-xs text-slate-400">فروشگاه آنلاین روغن و تجهیزات خودرو</p>
-              <p className="text-lg font-semibold text-white">OILBAR</p>
-            </div>
-          </div>
-          <p className="text-slate-400">
-            بیش از ۱۰ سال تجربه در تامین روغن موتور، فیلتر و افزودنی‌های اصلی برای خودروهای ایرانی و وارداتی. با ما تجربه خریدی استاندارد و بدون دغدغه خواهید داشت.
-          </p>
-          <div className="grid gap-3 text-xs text-slate-500 sm:grid-cols-2">
-            <div className="space-y-1 rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="font-semibold text-white">آدرس فروشگاه</p>
-              <p>البرز، کرج، عظیمیه، پاسداران غربی، بین نیک‌نژادی و غلامی، اتوسرویس مانی</p>
-            </div>
-            <div className="space-y-1 rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="font-semibold text-white">ساعت کاری</p>
-              <p>شنبه تا پنج‌شنبه ۹ الی ۲۰ • جمعه‌ها ۱۰ الی ۱۵</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {socialLinks.map(({ label, href, icon: Icon, bg }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs text-white transition hover:border-white/40"
-                aria-label={label}
-              >
-                <span className={`inline-flex h-9 w-9 items-center justify-center rounded-full ${bg} text-white transition group-hover:scale-105`}>
-                  <Icon className="h-4 w-4" />
-                </span>
-                {label}
-              </a>
-            ))}
-          </div>
+    <footer className="border-t border-slate-200 bg-[#0f2747] text-white">
+      <div className="container-zen grid gap-10 py-12 lg:grid-cols-[1.4fr_2fr_1fr]">
+        <div>
+          <p className="text-2xl font-black">ZenLube</p>
+          <p className="mt-3 max-w-sm text-sm leading-7 text-white/70">فروشگاه تخصصی روغن موتور، فیلتر و روانکار خودرو با تمرکز بر کالای اصل، انتخاب فنی دقیق و تجربه خرید سریع و مطمئن.</p>
+          <div className="mt-5 space-y-2 text-sm text-white/80"><p>پشتیبانی: ۰۲۱-۱۲۳۴۵۶۷۸</p><p>تهران، مرکز پردازش سفارش ZenLube</p></div>
         </div>
-
-        {linkColumns.map((column) => (
-          <div key={column.title} className="space-y-3">
-            <p className="text-sm font-semibold text-white">{column.title}</p>
-            <ul className="space-y-2 text-sm text-slate-400">
-              {column.links.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className="transition hover:text-white">
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-
-        <div className="space-y-4">
-          <p className="text-sm font-semibold text-white">در تماس باشید</p>
-          <FooterContactCard label="تلفن ثابت" value="۰۲۶-۳۲۵۱۵۶۳۱" href="tel:02632515631" />
-          <FooterContactCard label="مشاوره موبایل" value="۰۹۳۵۲۴۹۰۶۱۹" href="tel:09352490619" accentClass="from-sky-500 to-indigo-500" />
-          <FooterContactCard label="پشتیبانی واتساپ" value="شروع گفتگو" href="https://wa.me/989352490619" accentClass="from-emerald-500 to-lime-500" />
+        <div className="grid gap-7 sm:grid-cols-3">
+          {footerGroups.map((group) => <div key={group.title}><h3 className="font-bold text-white">{group.title}</h3><ul className="mt-4 space-y-3 text-sm text-white/65">{group.links.map(([label, href]) => <li key={label}><Link href={href} className="hover:text-orange-300">{label}</Link></li>)}</ul></div>)}
+        </div>
+        <div>
+          <h3 className="font-bold">خبرنامه و اعتماد</h3>
+          <form className="mt-4 flex overflow-hidden rounded-2xl bg-white p-1"><input aria-label="ایمیل خبرنامه" placeholder="ایمیل شما" className="min-w-0 flex-1 px-3 text-sm text-slate-900 outline-none" /><button className="rounded-xl bg-orange-500 px-3 text-xs font-bold text-white">عضویت</button></form>
+          <Link href="#" className="mt-5 flex h-24 w-24 items-center justify-center rounded-2xl bg-white p-3" aria-label="نماد اعتماد الکترونیکی"><Image src="/enamad-placeholder.svg" alt="محل قرارگیری نماد اعتماد" width={80} height={80} className="h-full w-full object-contain" /></Link>
         </div>
       </div>
-
-      <div className="border-t border-white/10">
-        <div className="layout-shell flex flex-col gap-4 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Oilbar · اویل بار - تمامی حقوق محفوظ است.</p>
-          <div className="flex flex-wrap items-center gap-4">
-            <Link href="/policy" className="transition hover:text-white">
-              حریم خصوصی
-            </Link>
-            <Link href="/terms" className="transition hover:text-white">
-              قوانین و مقررات
-            </Link>
-            <Link href="/support" className="transition hover:text-white">
-              پشتیبانی
-            </Link>
-            <a
-              href="https://trustseal.enamad.ir/?id=676134&Code=CIEFXVKystVwcAFxMw9PAkoXuIW996ra"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-white transition hover:border-white/40"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="نماد اعتماد" className="h-10 w-10 object-contain" />
-              نماد اعتماد
-            </a>
-          </div>
-        </div>
-      </div>
+      <div className="border-t border-white/10 py-4 text-center text-xs text-white/55">© {new Date().getFullYear()} ZenLube - همه حقوق محفوظ است.</div>
     </footer>
   );
 }

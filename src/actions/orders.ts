@@ -11,7 +11,7 @@ import { getAppSession } from "@/lib/session";
 import { requestZarinpalPayment } from "@/lib/payments/zarinpal";
 import { normalizeIranPhone } from "@/lib/phone";
 import { verifyOtpCode, createOtpRequest } from "@/services/otp";
-import { sendSmsIrOtp } from "@/lib/sms/smsir";
+import { sendMelipayamakOtp } from "@/lib/sms/melipayamak";
 import { config } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import { consumeRateLimit } from "@/lib/rate-limit";
@@ -205,9 +205,6 @@ export async function createCheckoutOrderAction(
 
     return redirect(payment.paymentUrl);
   } catch (error) {
-    if (isRedirectError(error)) {
-      throw error;
-    }
     logger.error("Checkout order failed", {
       error: error instanceof Error ? error.message : "unknown",
     });

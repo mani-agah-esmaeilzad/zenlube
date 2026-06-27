@@ -14,7 +14,7 @@ type ProductPageProps = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = await prisma.product.findUnique({ where: { slug }, select: { name: true, description: true } });
-  return product ? { title: `${product.name} | ZenLube`, description: product.description ?? undefined } : { title: "محصول یافت نشد" };
+  return product ? { title: `${product.name} | Oilbar`, description: product.description ?? undefined } : { title: "محصول یافت نشد" };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

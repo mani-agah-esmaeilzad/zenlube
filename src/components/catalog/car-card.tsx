@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import type { CarWithProducts } from "@/types/catalog";
@@ -8,100 +9,73 @@ type CarCardProps = {
   showOverview?: boolean;
 };
 
-export function CarCard({
-  car,
-  showDetailLink = true,
-  showOverview = true,
-}: CarCardProps) {
+export function CarCard({ car, showDetailLink = true, showOverview = true }: CarCardProps) {
   const overviewText = car.overviewDetails?.trim();
-  const overviewSnippet =
-    overviewText && overviewText.length > 180
-      ? `${overviewText.slice(0, 180)}…`
-      : overviewText ?? "";
+  const overviewSnippet = overviewText && overviewText.length > 160 ? `${overviewText.slice(0, 160)}...` : overviewText ?? "";
+  const years = car.yearFrom || car.yearTo ? `${car.yearFrom ?? "؟"} تا ${car.yearTo ?? "؟"}` : "نامشخص";
 
   return (
-    <article className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-500/15">
-      <div className="flex flex-col gap-1">
-        <h3 className="text-xl font-semibold text-slate-900">
-          {car.manufacturer} {car.model}
-        </h3>
-        {car.generation && <p className="text-sm text-slate-500">{car.generation}</p>}
-        {showOverview && overviewSnippet && (
-          <p className="mt-2 text-sm leading-6 text-slate-600">{overviewSnippet}</p>
-        )}
-        <div className="flex flex-wrap gap-3 text-xs text-slate-600">
-          {car.engineType && (
-            <span className="rounded-full border border-slate-200 px-3 py-1">
-              {car.engineType}
-            </span>
+    <article className="group overflow-hidden rounded-3xl border border-[#E5E7EB] bg-white transition hover:-translate-y-1 hover:border-red-200 hover:shadow-[0_18px_44px_rgba(17,24,39,0.1)]">
+      <div className="grid gap-4 p-4 md:grid-cols-[160px_1fr]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#F7F7F8]">
+          {car.imageUrl ? (
+            <Image src={car.imageUrl} alt={`${car.manufacturer} ${car.model}`} fill className="object-cover" sizes="160px" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-lg font-extrabold text-[#111827]">{car.manufacturer.slice(0, 1)}</div>
           )}
-          {car.engineCode && (
-            <span className="rounded-full border border-slate-200 px-3 py-1">
-              {car.engineCode}
-            </span>
-          )}
-          {car.viscosity && (
-            <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-700">
-              ویسکوزیته پیشنهادی {car.viscosity}
-            </span>
-          )}
+        </div>
+        <div>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-extrabold text-[#111827]">{car.manufacturer} {car.model}</h3>
+              {car.generation && <p className="mt-1 text-sm text-[#6B7280]">{car.generation}</p>}
+            </div>
+            <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-600">دفترچه خودرو</span>
+          </div>
+          {showOverview && overviewSnippet && <p className="mt-3 line-clamp-2 text-sm leading-7 text-[#6B7280]">{overviewSnippet}</p>}
+          <div className="mt-4 grid gap-2 text-xs text-[#6B7280] sm:grid-cols-2">
+            <Spec label="سال‌ها" value={years} />
+            <Spec label="نوع موتور" value={car.engineType ?? "نامشخص"} />
+            <Spec label="روغن پیشنهادی" value={car.viscosity ?? "ثبت نشده"} highlight />
+            <Spec label="حجم روغن" value={car.oilCapacityLit ? `${car.oilCapacityLit.toString()} لیتر` : "نامشخص"} />
+          </div>
         </div>
       </div>
-      <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
-        <div className="flex justify-between">
-          <span>سال ساخت:</span>
-          <span>
-            {car.yearFrom ?? "نامشخص"} - {car.yearTo ?? "نامشخص"}
-          </span>
-        </div>
-        {car.oilCapacityLit && (
-          <div className="flex justify-between">
-            <span>ظرفیت روغن:</span>
-            <span>{car.oilCapacityLit.toString()} لیتر</span>
+
+      <div className="border-t border-[#E5E7EB] bg-[#F7F7F8] p-4">
+        {car.productMappings.length > 0 ? (
+          <div>
+            <p className="mb-3 text-sm font-bold text-[#111827]">محصولات سازگار</p>
+            <ul className="space-y-2">
+              {car.productMappings.slice(0, 2).map(({ product }) => (
+                <li key={product.id} className="flex items-center justify-between gap-3 text-sm">
+                  <Link href={`/products/${product.slug}`} className="line-clamp-1 font-semibold text-[#374151] hover:text-red-600">
+                    {product.brand.name} - {product.name}
+                  </Link>
+                  <span className="shrink-0 text-xs font-bold text-[#111827]">{formatPrice(product.price)}</span>
+                </li>
+              ))}
+            </ul>
           </div>
+        ) : (
+          <p className="text-sm text-[#6B7280]">هنوز محصول سازگار برای این خودرو ثبت نشده است.</p>
         )}
-        {car.specification && (
-          <div className="flex justify-between">
-            <span>استاندارد:</span>
-            <span>{car.specification}</span>
+        {showDetailLink && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link href={`/cars/${car.slug}`} className="btn-primary !min-h-10 text-xs">مشاهده دفترچه</Link>
+            <Link href={`/products?car=${car.slug}`} className="btn-outline !min-h-10 text-xs">خرید روغن مناسب</Link>
           </div>
         )}
       </div>
-      {car.productMappings.length > 0 ? (
-        <div className="space-y-3 rounded-2xl border border-sky-200 bg-sky-50/60 p-4">
-          <p className="text-sm font-semibold text-sky-700">محصولات پیشنهادی</p>
-          <ul className="space-y-2">
-            {car.productMappings.slice(0, 3).map(({ product }) => (
-              <li
-                key={product.id}
-                className="flex items-center justify-between gap-4 text-sm text-slate-600"
-              >
-                <Link href={`/products/${product.slug}`} className="hover:text-sky-700">
-                  {product.brand.name} — {product.name}
-                </Link>
-                <span className="text-xs text-slate-500">{formatPrice(product.price)}</span>
-              </li>
-            ))}
-          </ul>
-          {car.productMappings.length > 3 && (
-            <p className="text-xs text-slate-500">
-              {car.productMappings.length - 3} محصول دیگر در سایت موجود است.
-            </p>
-          )}
-        </div>
-      ) : (
-        <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-          هنوز محصولی برای این خودرو ثبت نشده است.
-        </p>
-      )}
-      {showDetailLink && (
-        <Link
-          href={`/cars/${car.slug}`}
-          className="mt-4 inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-sky-200 hover:text-sky-700"
-        >
-          صفحه تخصصی {car.manufacturer} {car.model}
-        </Link>
-      )}
     </article>
+  );
+}
+
+function Spec({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div className={`rounded-2xl border px-3 py-2 ${highlight ? "border-red-100 bg-red-50 text-red-600" : "border-[#E5E7EB] bg-white"}`}>
+      <span className="block text-[11px] font-medium opacity-75">{label}</span>
+      <span className="mt-1 block font-bold">{value}</span>
+    </div>
   );
 }

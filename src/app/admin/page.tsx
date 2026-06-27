@@ -7,6 +7,7 @@ import {
   getBrandsTabData,
   getCarsTabData,
   getCategoriesTabData,
+  getContentTabData,
   getMaintenanceTabData,
   getOverviewTabData,
   getProductsTabData,
@@ -18,6 +19,7 @@ import { getOrdersTabData } from "@/services/admin/orders";
 import { BrandsTab } from "@/components/admin/tabs/BrandsTab";
 import { CarsTab } from "@/components/admin/tabs/CarsTab";
 import { CategoriesTab } from "@/components/admin/tabs/CategoriesTab";
+import { ContentTab } from "@/components/admin/tabs/ContentTab";
 import { MaintenanceTab } from "@/components/admin/tabs/MaintenanceTab";
 import { OverviewTab } from "@/components/admin/tabs/OverviewTab";
 import { ProductsTab } from "@/components/admin/tabs/ProductsTab";
@@ -36,6 +38,7 @@ const tabs = [
   { id: "cars", label: "خودروها" },
   { id: "maintenance", label: "نگهداری" },
   { id: "questions", label: "پرسش‌ها" },
+  { id: "content", label: "محتوا و تنظیمات" },
   { id: "brands", label: "برندها" },
   { id: "categories", label: "دسته‌بندی‌ها" },
   { id: "users", label: "کاربران" },
@@ -69,7 +72,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-bold text-red-600">پنل مدیریت</p>
-            <h1 className="mt-2 text-2xl font-extrabold text-[#111827] md:text-3xl">پیشخوان مدیریتی ZenLube</h1>
+            <h1 className="mt-2 text-2xl font-extrabold text-[#111827] md:text-3xl">پیشخوان مدیریتی Oilbar</h1>
             <p className="mt-2 text-sm leading-7 text-[#6B7280]">
               محصولات، سفارش‌ها، برندها، خودروها و فعالیت کاربران را از یک فضای منظم مدیریت کنید.
             </p>
@@ -148,6 +151,10 @@ async function renderActiveTab(
     case "questions": {
       const data = await getQuestionsTabData();
       return <QuestionsTab data={data} />;
+    }
+    case "content": {
+      const data = await getContentTabData();
+      return <ContentTab data={data} />;
     }
     case "brands": {
       const data = await getBrandsTabData();

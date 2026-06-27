@@ -54,10 +54,10 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
             <div className="border-b border-[#E5E7EB] p-5">
               <div className="flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-                  <span className="flex size-10 items-center justify-center rounded-2xl bg-[#111827] text-base font-black text-white">Z</span>
+                  <span className="flex size-10 items-center justify-center rounded-2xl bg-[#111827] text-base font-black text-white">O</span>
                   <span>
-                    <span className="block text-lg font-extrabold text-[#111827]">ZenLube</span>
-                    <span className="block text-xs text-[#6B7280]">فروشگاه تخصصی خودرو</span>
+                    <span className="block text-lg font-extrabold text-[#111827]">Oilbar</span>
+                    <span className="block text-xs text-[#6B7280]">اویل‌بار، انتخاب مطمئن روغن</span>
                   </span>
                 </Link>
                 <button type="button" aria-label="بستن منو" className="rounded-xl border border-[#E5E7EB] p-2 text-[#6B7280]" onClick={() => setOpen(false)}>

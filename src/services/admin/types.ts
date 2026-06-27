@@ -275,3 +275,44 @@ export type ReportsTabData = {
   products: AdminProduct[];
   cars: AdminCar[];
 };
+
+export type AdminMarketingBanner = {
+  id: string;
+  title: string;
+  subtitle?: string | null;
+  ctaLabel?: string | null;
+  ctaLink?: string | null;
+  imageUrl?: string | null;
+  position: string;
+  isActive: boolean;
+  updatedAt: Date;
+};
+
+export type AdminBlogPost = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage?: string | null;
+  tags: string[];
+  authorName: string;
+  readMinutes: number;
+  publishedAt: Date;
+};
+
+export type AdminGalleryImage = {
+  id: string;
+  title: string;
+  description?: string | null;
+  imageUrl: string;
+  link?: string | null;
+  orderIndex: number;
+  isActive: boolean;
+  updatedAt: Date;
+};
+
+export type ContentTabData = {
+  banners: AdminMarketingBanner[];
+  posts: AdminBlogPost[];
+  galleryImages: AdminGalleryImage[];
+};

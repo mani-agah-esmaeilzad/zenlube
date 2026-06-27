@@ -19,7 +19,7 @@ export function LogoMark({
     <span className={containerClass}>
       <Image
         src={LOGO_SRC}
-        alt="لوگوی اویل بار"
+        alt="لوگوی Oilbar"
         width={size}
         height={size}
         priority={priority}

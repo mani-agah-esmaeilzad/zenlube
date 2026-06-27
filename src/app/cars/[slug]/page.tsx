@@ -1,18 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CarCard } from "@/components/catalog/car-card";
-import { CarNotebook } from "@/components/catalog/car-notebook";
 import { MaintenanceTimeline } from "@/components/catalog/maintenance-timeline";
 import { QuestionForm } from "@/components/forms/question-form";
 import { QuestionList } from "@/components/questions/question-list";
 import { EngagementTracker } from "@/components/analytics/engagement-tracker";
 import { ProductCard } from "@/components/product/product-card";
-import { formatPrice } from "@/lib/utils";
-import {
-  getCarBySlug,
-  getRelatedBlogPostsForCar,
-  getSiblingCars,
-} from "@/lib/data";
+import { getCarBySlug, getRelatedBlogPostsForCar, getSiblingCars } from "@/lib/data";
 
 type CarPageProps = {
   params: Promise<{ slug: string }>;
@@ -22,65 +16,40 @@ export async function generateMetadata({ params }: CarPageProps) {
   const { slug } = await params;
   const car = await getCarBySlug(slug);
 
-  if (!car) {
-    return {
-      title: "خودرو یافت نشد",
-    };
-  }
+  if (!car) return { title: "خودرو یافت نشد" };
 
   return {
-    title: `${car.manufacturer} ${car.model} | روغن مناسب خودرو در Oilbar`,
-    description:
-      `مشخصات کامل ${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""} به همراه روغن موتورهای پیشنهادی و استانداردهای مورد نیاز.`,
+    title: `${car.manufacturer} ${car.model} | دفترچه راهنمای خودرو در Oilbar`,
+    description: `روغن مناسب، حجم روغن، فیلترهای سازگار و نکات نگهداری ${car.manufacturer} ${car.model} در Oilbar.`,
   };
 }
 
 export default async function CarDetailPage({ params }: CarPageProps) {
   const { slug } = await params;
   const car = await getCarBySlug(slug);
-
-  if (!car) {
-    notFound();
-  }
+  if (!car) notFound();
 
   const recommendedProducts = car.productMappings.map((mapping) => mapping.product);
   const siblings = await getSiblingCars(car.manufacturer, car.slug, 4);
   const relatedPosts = await getRelatedBlogPostsForCar(car.manufacturer, car.model, 3);
-  const baseTitle = `${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""}`;
-  const yearsRange =
-    car.yearFrom || car.yearTo
-      ? `${car.yearFrom ?? "نامشخص"} تا ${car.yearTo ?? "نامشخص"}`
-      : "نامشخص";
-  const oilCapacityText = car.oilCapacityLit ? `${car.oilCapacityLit.toString()} لیتر` : "نامشخص";
-  const engineTypeText = car.engineType ?? "نامشخص";
-  const viscosityText = car.viscosity ?? "ثبت‌نشده";
-  const specificationText = car.specification ?? "ثبت‌نشده";
-  const numberFormatter = new Intl.NumberFormat("fa-IR");
-  const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  const productCountText = recommendedProducts.length
-    ? `${numberFormatter.format(recommendedProducts.length)} محصول`
-    : "ثبت‌نشده";
+  const title = `${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""}`;
+  const years = car.yearFrom || car.yearTo ? `${car.yearFrom ?? "نامشخص"} تا ${car.yearTo ?? "نامشخص"}` : "نامشخص";
+  const oilCapacity = car.oilCapacityLit ? `${car.oilCapacityLit.toString()} لیتر` : "نامشخص";
+  const productLookup = new Map(car.productMappings.map(({ product }) => [product.slug, product] as const));
+  const dateFormatter = new Intl.DateTimeFormat("fa-IR", { year: "numeric", month: "2-digit", day: "2-digit" });
 
-  const productLookup = new Map(
-    car.productMappings.map(({ product }) => [product.slug, product] as const),
-  );
-
-  const maintenanceTimelineTasks = (car.maintenanceTasks ?? []).map((task) => ({
+  const maintenanceTasks = (car.maintenanceTasks ?? []).map((task) => ({
     id: task.id,
     title: task.title,
     description: task.description,
     intervalKm: task.intervalKm ?? null,
     intervalMonths: task.intervalMonths ?? null,
     priority: task.priority,
-    recommendedProducts: (task.recommendedProductSlugs ?? []).map((slug) => {
-      const product = productLookup.get(slug);
+    recommendedProducts: (task.recommendedProductSlugs ?? []).map((productSlug) => {
+      const product = productLookup.get(productSlug);
       return {
-        slug,
-        name: product?.name ?? slug,
+        slug: productSlug,
+        name: product?.name ?? productSlug,
         brandName: product?.brand.name,
         price: product ? Number(product.price) : undefined,
       };
@@ -97,321 +66,162 @@ export default async function CarDetailPage({ params }: CarPageProps) {
     answeredAt: question.answeredAt,
   }));
 
-  const autoSuggestedProduct = recommendedProducts
-    .slice()
-    .sort((a, b) => {
-      const ratingA = a.averageRating ? Number(a.averageRating) : 0;
-      const ratingB = b.averageRating ? Number(b.averageRating) : 0;
-      if (ratingA !== ratingB) {
-        return ratingB - ratingA;
-      }
-      return (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
-    })[0];
+  const specs = [
+    ["برند خودرو", car.manufacturer],
+    ["مدل", car.model],
+    ["سال ساخت", years],
+    ["نوع موتور", car.engineType ?? "نامشخص"],
+    ["کد موتور", car.engineCode ?? "نامشخص"],
+    ["حجم روغن موتور", oilCapacity],
+    ["ویسکوزیته پیشنهادی", car.viscosity ?? "ثبت نشده"],
+    ["استاندارد API/ACEA", car.specification ?? "ثبت نشده"],
+  ];
 
-  const overviewText =
-    car.overviewDetails?.trim() ||
-    [
-      `این دفترچه تخصصی برای ${baseTitle} تهیه شده است.`,
-      `سال‌های تولید: ${yearsRange}.`,
-      "از صفحات بعد می‌توانید جزئیات پیشرانه، گیربکس و نگهداری را مرور کنید.",
-    ].join("\n");
-
-  const engineText =
-    car.engineDetails?.trim() ||
-    [
-      engineTypeText !== "نامشخص"
-        ? `نوع موتور: ${engineTypeText}.`
-        : "نوع موتور در سامانه ثبت نشده است.",
-      car.engineCode ? `کد موتور کارخانه: ${car.engineCode}.` : "کد موتور توسط سازنده ثبت نشده است.",
-      car.viscosity
-        ? `ویسکوزیته پیشنهادی: ${viscosityText}.`
-        : "ویسکوزیته پیشنهادی بعداً افزوده خواهد شد.",
-      car.oilCapacityLit ? `حجم روغن همراه با فیلتر: ${oilCapacityText}.` : "",
-      car.specification ? `استانداردهای مورد نیاز: ${specificationText}.` : "",
-      "برای سفارش روغن مناسب می‌توانید از محصولات پیشنهادی همین صفحه استفاده کنید.",
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-  const gearboxText =
-    car.gearboxDetails?.trim() ||
-    [
-      "اطلاعات مربوط به روغن و سرویس گیربکس هنوز تکمیل نشده است.",
-      "از طریق پنل ادمین بخش گیربکس را با ظرفیت روغن، نوع سیال و دوره‌های سرویس به‌روزرسانی کنید.",
-      "تیم فنی Oilbar در صورت نیاز راهنمایی کامل ارائه خواهد داد.",
-    ].join("\n");
-
-  const maintenanceText =
-    car.maintenanceInfo?.trim() ||
-    [
-      "برنامه نگهداری پیشنهادی شامل تعویض روغن موتور هر ۸ تا ۱۰ هزار کیلومتر یا نهایتاً هر ۱۲ ماه است.",
-      "فیلتر روغن و فیلتر هوا را در هر بار سرویس بررسی و در صورت نیاز تعویض کنید.",
-      "برای تنظیم برنامه سرویس متناسب با شرایط رانندگی، با پشتیبانی Oilbar تماس بگیرید.",
-    ].join("\n");
-
-  const notebookCover = {
-    title: baseTitle,
-    subtitle: `دفترچه فنی و نگهداری ${baseTitle}`,
-    meta: [
-      { label: "سال‌های تولید", value: yearsRange },
-      { label: "ویسکوزیته", value: viscosityText },
-      { label: "ظرفیت روغن", value: oilCapacityText },
-    ],
-  };
-
-  const notebookPages = [
-    {
-      id: "overview",
-      title: "معرفی کلی",
-      description: overviewText,
-      highlights: [
-        { label: "سازنده", value: car.manufacturer },
-        { label: "مدل", value: car.model },
-        { label: "تعداد محصولات", value: productCountText },
-      ],
-      tag: "مقدمه",
-    },
-    {
-      id: "engine",
-      title: "موتور و روانکارها",
-      description: engineText,
-      highlights: [
-        { label: "نوع موتور", value: engineTypeText },
-        { label: "کد موتور", value: car.engineCode ?? "ثبت‌نشده" },
-        { label: "ظرفیت روغن", value: oilCapacityText },
-        { label: "استانداردها", value: specificationText },
-      ],
-      tag: "موتور",
-    },
-    {
-      id: "gearbox",
-      title: "جعبه‌دنده و انتقال قدرت",
-      description: gearboxText,
-      highlights: [
-        {
-          label: "وضعیت اطلاعات",
-          value: car.gearboxDetails ? "تکمیل‌شده" : "نیاز به تکمیل",
-        },
-        { label: "محصولات گیربکس", value: "به‌زودی" },
-      ],
-      tag: "گیربکس",
-    },
-    {
-      id: "maintenance",
-      title: "نگهداری و سرویس دوره‌ای",
-      description: maintenanceText,
-      highlights: [
-        { label: "محصولات تأییدشده", value: productCountText },
-        { label: "پشتیبانی", value: "پشتیبانی Oilbar" },
-      ],
-      tag: "نگهداری",
-    },
+  const faqs = [
+    ["چه روغنی برای این خودرو مناسب است؟", car.viscosity ? `روغن با ویسکوزیته ${car.viscosity} و استاندارد ${car.specification ?? "مطابق دفترچه خودرو"} پیشنهاد می‌شود.` : "برای این خودرو هنوز ویسکوزیته پیشنهادی ثبت نشده است."],
+    ["حجم روغن موتور چقدر است؟", `حجم روغن موتور برای این مدل ${oilCapacity} ثبت شده است.`],
+    ["هر چند کیلومتر روغن باید تعویض شود؟", "برای رانندگی شهری معمولاً هر ۸ تا ۱۰ هزار کیلومتر یا سالی یک‌بار بررسی و تعویض روغن پیشنهاد می‌شود."],
   ];
 
   return (
-    <div className="w-full bg-slate-50 text-slate-900">
-      <div className="mx-auto max-w-6xl space-y-12 px-6 py-12">
-      <EngagementTracker
-        entityType="car"
-        entityId={car.id}
-        eventType="notebook_view"
-        metadata={{ slug: car.slug }}
-      />
-      <section className="grid gap-8 xl:grid-cols-[1.45fr,0.85fr]">
-        <CarNotebook cover={notebookCover} pages={notebookPages} />
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-500">
-              دفترچه دیجیتال خودرو
-            </span>
-            <h1 className="mt-4 text-3xl font-semibold text-slate-900">
-              {car.manufacturer} {car.model} {car.generation ?? ""}
-            </h1>
-            <p className="mt-3 text-sm leading-7 text-slate-600">
-              صفحات دفترچه را ورق بزنید تا اطلاعات فنی موتور، توصیه‌های گیربکس و برنامه نگهداری
-              اختصاصی {baseTitle} را مشاهده کنید.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
-              {car.engineType && (
-                <span className="rounded-full border border-slate-200 px-3 py-1">
-                  نوع موتور: {car.engineType}
-                </span>
-              )}
-              {car.engineCode && (
-                <span className="rounded-full border border-slate-200 px-3 py-1">
-                  کد موتور: {car.engineCode}
-                </span>
-              )}
-              {car.viscosity && (
-                <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-violet-700">
-                  ویسکوزیته پیشنهادی: {car.viscosity}
-                </span>
-              )}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3 text-sm">
-              <Link
-                href={`/products?car=${car.slug}`}
-                className="rounded-full bg-slate-900 px-4 py-2 font-semibold text-white transition hover:bg-slate-800"
-              >
-                مشاهده محصولات سازگار
-              </Link>
-              <Link
-                href="/support"
-                className="rounded-full border border-slate-300 px-4 py-2 font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900"
-              >
-                درخواست مشاوره فنی
-              </Link>
-            </div>
+    <div className="container-zen space-y-8 py-6 md:py-8">
+      <EngagementTracker entityType="car" entityId={car.id} eventType="notebook_view" metadata={{ slug: car.slug }} />
+
+      <nav className="text-xs font-medium text-[#6B7280]">
+        <Link href="/" className="hover:text-red-600">خانه</Link>
+        <span className="mx-2">/</span>
+        <Link href="/cars" className="hover:text-red-600">دفترچه خودروها</Link>
+        <span className="mx-2">/</span>
+        {title}
+      </nav>
+
+      <section className="grid gap-6 rounded-3xl bg-[#111827] p-5 text-white md:p-8 lg:grid-cols-[1fr_360px]">
+        <div>
+          <p className="text-sm font-bold text-white/70">دفترچه راهنمای خودرو</p>
+          <h1 className="mt-3 text-2xl font-extrabold leading-[1.7] md:text-4xl">{title}</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-8 text-white/75">
+            اطلاعات فنی، روغن موتور مناسب، حجم روغن، فیلترهای سازگار، برنامه نگهداری و محصولات پیشنهادی این خودرو را یک‌جا ببینید.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href={`/products?car=${car.slug}`} className="btn-primary">مشاهده محصولات سازگار</Link>
+            <Link href="/support" className="btn-outline !border-white/20 !bg-white/10 !text-white">مشاوره تخصصی</Link>
           </div>
-          <CarCard
-            car={{ ...car, productMappings: car.productMappings }}
-            showDetailLink={false}
-            showOverview={false}
-          />
+        </div>
+        <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-white/10">
+          {car.imageUrl ? (
+            <Image src={car.imageUrl} alt={title} fill className="object-cover" sizes="360px" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-5xl font-black">{car.manufacturer.slice(0, 1)}</div>
+          )}
         </div>
       </section>
-      <MaintenanceTimeline carName={baseTitle} tasks={maintenanceTimelineTasks} />
 
-      {autoSuggestedProduct ? (
-        <section className="rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-white p-6 shadow-sm">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-3 py-1 text-[11px] text-violet-700">
-                پیشنهاد خودکار Oilbar
-              </span>
-              <h2 className="mt-3 text-2xl font-semibold text-slate-900">
-                {autoSuggestedProduct.brand.name} · {autoSuggestedProduct.name}
-              </h2>
-              <p className="mt-2 text-sm text-slate-600">
-                بر اساس دفترچه نگهداری و بازخورد کاربران، این روغن بیشترین سازگاری را با {baseTitle} دارد.
-              </p>
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-600">
-                {autoSuggestedProduct.viscosity ? (
-                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1">
-                    ویسکوزیته {autoSuggestedProduct.viscosity}
-                  </span>
-                ) : null}
-                <span className="rounded-full border border-slate-200 bg-white px-3 py-1">
-                  {autoSuggestedProduct.approvals ?? "استاندارد نامشخص"}
-                </span>
-                <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-900">
-                  {formatPrice(autoSuggestedProduct.price)}
-                </span>
+      <section className="grid gap-6 lg:grid-cols-[1fr_360px]">
+        <div className="rounded-3xl border border-[#E5E7EB] bg-white p-6">
+          <h2 className="section-title">اطلاعات فنی این خودرو</h2>
+          <div className="mt-5 overflow-hidden rounded-2xl border border-[#E5E7EB]">
+            {specs.map(([label, value]) => (
+              <div key={label} className="grid grid-cols-[160px_1fr] border-b border-[#E5E7EB] last:border-b-0">
+                <div className="bg-[#F7F7F8] px-4 py-3 text-sm font-bold text-[#6B7280]">{label}</div>
+                <div className="px-4 py-3 text-sm font-bold text-[#111827]">{value}</div>
               </div>
-            </div>
-            <Link
-              href={`/products/${autoSuggestedProduct.slug}`}
-              className="inline-flex items-center justify-center rounded-full bg-violet-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-violet-500"
-            >
-              مشاهده محصول و خرید
-            </Link>
+            ))}
           </div>
-        </section>
-      ) : null}
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <InfoCard title="روغن موتور مناسب این خودرو" value={car.viscosity ?? "ثبت نشده"} helper={car.specification ?? "استاندارد API/ACEA ثبت نشده است."} />
+            <InfoCard title="حجم روغن موتور" value={oilCapacity} helper="همراه با فیلتر روغن بررسی شود." />
+            <InfoCard title="فیلترهای سازگار" value={`${recommendedProducts.length.toLocaleString("fa-IR")} محصول`} helper="از محصولات پایین صفحه انتخاب کنید." />
+            <InfoCard title="برنامه نگهداری پیشنهادی" value={`${maintenanceTasks.length.toLocaleString("fa-IR")} مورد`} helper="بر اساس کیلومتر یا زمان سرویس." />
+          </div>
+        </div>
 
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-900">
-              روغن‌های تأیید شده برای {car.manufacturer} {car.model}
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              این فهرست براساس دفترچه فنی Oilbar تکمیل شده است و محصولات کاملاً سازگار با این
-              خودرو را نمایش می‌دهد. برای مقایسه بیشتر، می‌توانید از فیلتر خودرو در فروشگاه نیز
-              استفاده کنید.
+        <aside className="space-y-4">
+          <div className="rounded-3xl border border-red-100 bg-red-50 p-5">
+            <h2 className="text-lg font-extrabold text-[#111827]">روغن مناسب، خرید مطمئن</h2>
+            <p className="mt-2 text-sm leading-7 text-[#6B7280]">Oilbar محصولات سازگار با این خودرو را بر اساس داده‌های فنی و نگهداری نمایش می‌دهد.</p>
+            <Link href={`/products?car=${car.slug}`} className="btn-primary mt-4 w-full">خرید محصولات مناسب این خودرو</Link>
+          </div>
+          <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+            <h3 className="text-sm font-extrabold text-[#111827]">نکات نگهداری</h3>
+            <p className="mt-3 text-sm leading-7 text-[#6B7280]">
+              {car.maintenanceInfo ?? "روغن موتور و فیلتر روغن را بر اساس شرایط رانندگی و دفترچه خودرو در بازه مناسب تعویض کنید."}
             </p>
           </div>
-          <Link
-            href={`/products?car=${car.slug}`}
-            className="text-sm text-violet-700 hover:text-violet-900"
-          >
-            فیلتر محصولات در فروشگاه
-          </Link>
-        </div>
-        {recommendedProducts.length ? (
-          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {recommendedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-center text-slate-500">
-            هنوز محصولی برای این خودرو ثبت نشده است. می‌توانید با پشتیبانی برای پیشنهاد اختصاصی تماس بگیرید.
-          </div>
-        )}
+        </aside>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr]">
-        <QuestionForm
-          type="car"
-          slug={car.slug}
-          title={`سوالات شما درباره ${car.manufacturer} ${car.model}`}
-        />
-        <QuestionList
-          items={questionItems}
-          emptyMessage="هنوز سوالی برای این خودرو ثبت نشده است. اولین پرسش را شما ثبت کنید."
-        />
-      </section>
+      <MaintenanceTimeline carName={title} tasks={maintenanceTasks} />
 
-      {relatedPosts.length ? (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">مطالب مرتبط با نگهداری {baseTitle}</h2>
-            <Link href="/blog" className="text-sm text-violet-700 hover:text-violet-900">
-              مشاهده همه مقالات
-            </Link>
+      {recommendedProducts.length > 0 && (
+        <section className="space-y-5">
+          <div className="section-heading">
+            <div>
+              <h2 className="section-title">محصولات مناسب این خودرو</h2>
+              <p className="section-subtitle">روغن‌ها و فیلترهای متصل‌شده به دفترچه فنی {title}</p>
+            </div>
+            <Link href={`/products?car=${car.slug}`} className="text-sm font-bold text-red-600">مشاهده همه</Link>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {relatedPosts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                className="group flex flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-5 transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-100/80"
-              >
-                <span className="text-xs text-slate-500">{dateFormatter.format(post.publishedAt)}</span>
-                <h3 className="text-lg font-semibold text-slate-900 group-hover:text-violet-800">
-                  {post.title}
-                </h3>
-                <p className="text-sm leading-6 text-slate-600">{post.excerpt}</p>
-                <span className="text-xs text-violet-700">مطالعه مقاله →</span>
-              </Link>
-            ))}
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {recommendedProducts.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
         </section>
-      ) : null}
+      )}
 
-      {!!siblings.length && (
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">مدل‌های دیگر {car.manufacturer}</h2>
-            <Link href="/cars" className="text-sm text-violet-700 hover:text-violet-900">
-              مشاهده تمام خودروها
-            </Link>
-          </div>
-          <div className="grid gap-4 lg:grid-cols-2">
-            {siblings.map((sibling) => (
-              <Link
-                key={sibling.id}
-                href={`/cars/${sibling.slug}`}
-                className="flex flex-col gap-2 rounded-3xl border border-slate-200 bg-white p-5 text-sm text-slate-600 transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-100/80"
-              >
-                <span className="text-lg font-semibold text-slate-900">
-                  {sibling.manufacturer} {sibling.model}
-                </span>
-                {sibling.generation && <span className="text-slate-500">{sibling.generation}</span>}
-                <div className="flex flex-wrap gap-2 text-xs text-slate-500">
-                  {sibling.engineType && <span className="rounded-full border border-slate-200 px-3 py-1">{sibling.engineType}</span>}
-                  {sibling.viscosity && <span className="rounded-full border border-slate-200 px-3 py-1">ویسکوزیته {sibling.viscosity}</span>}
-                  <span className="rounded-full border border-slate-200 px-3 py-1">
-                    {sibling.yearFrom ?? "?"} - {sibling.yearTo ?? "?"}
-                  </span>
-                </div>
+      <section className="rounded-3xl border border-[#E5E7EB] bg-white p-6">
+        <h2 className="section-title">سوالات پرتکرار</h2>
+        <div className="mt-5 space-y-3">
+          {faqs.map(([question, answer]) => (
+            <details key={question} className="rounded-2xl border border-[#E5E7EB] p-4">
+              <summary className="cursor-pointer text-sm font-bold text-[#111827]">{question}</summary>
+              <p className="mt-3 text-sm leading-7 text-[#6B7280]">{answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <QuestionForm type="car" slug={car.slug} title={`سوالات شما درباره ${title}`} />
+        <QuestionList items={questionItems} emptyMessage="هنوز سوالی برای این خودرو ثبت نشده است." />
+      </section>
+
+      {relatedPosts.length > 0 && (
+        <section className="space-y-5">
+          <h2 className="section-title">مطالب مرتبط با نگهداری {title}</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {relatedPosts.map((post) => (
+              <Link key={post.id} href={`/blog/${post.slug}`} className="rounded-2xl border border-[#E5E7EB] bg-white p-5 transition hover:border-red-200">
+                <span className="text-xs text-[#6B7280]">{dateFormatter.format(post.publishedAt)}</span>
+                <h3 className="mt-2 line-clamp-2 text-base font-bold leading-7 text-[#111827]">{post.title}</h3>
+                <p className="mt-2 line-clamp-3 text-sm leading-7 text-[#6B7280]">{post.excerpt}</p>
               </Link>
             ))}
           </div>
         </section>
       )}
-      </div>
+
+      {siblings.length > 0 && (
+        <section className="space-y-5">
+          <h2 className="section-title">مدل‌های دیگر {car.manufacturer}</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {siblings.map((sibling) => (
+              <Link key={sibling.id} href={`/cars/${sibling.slug}`} className="rounded-2xl border border-[#E5E7EB] bg-white p-5 transition hover:border-red-200">
+                <p className="font-bold text-[#111827]">{sibling.manufacturer} {sibling.model}</p>
+                <p className="mt-2 text-xs text-[#6B7280]">{sibling.generation ?? "نسل ثبت نشده"} · {sibling.viscosity ?? "ویسکوزیته نامشخص"}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function InfoCard({ title, value, helper }: { title: string; value: string; helper: string }) {
+  return (
+    <div className="rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
+      <p className="text-xs font-bold text-[#6B7280]">{title}</p>
+      <p className="mt-2 text-lg font-extrabold text-[#111827]">{value}</p>
+      <p className="mt-1 text-xs leading-6 text-[#6B7280]">{helper}</p>
     </div>
   );
 }

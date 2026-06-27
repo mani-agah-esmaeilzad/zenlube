@@ -22,6 +22,7 @@ import type {
   CategoriesTabData,
   UsersTabData,
   ReportsTabData,
+  ContentTabData,
 } from "./types";
 
 const LOW_STOCK_THRESHOLD = 10;
@@ -382,5 +383,48 @@ export async function getReportsTabData(): Promise<ReportsTabData> {
     carQuestions: carQuestions.map(mapCarQuestion),
     products: products.map(mapProduct),
     cars: cars.map(mapCar),
+  };
+}
+
+export async function getContentTabData(): Promise<ContentTabData> {
+  const [banners, posts, galleryImages] = await Promise.all([
+    prisma.marketingBanner.findMany({ orderBy: [{ position: "asc" }, { updatedAt: "desc" }] }),
+    prisma.blogPost.findMany({ orderBy: { publishedAt: "desc" } }),
+    prisma.galleryImage.findMany({ orderBy: [{ orderIndex: "asc" }, { updatedAt: "desc" }] }),
+  ]);
+
+  return {
+    banners: banners.map((banner) => ({
+      id: banner.id,
+      title: banner.title,
+      subtitle: banner.subtitle,
+      ctaLabel: banner.ctaLabel,
+      ctaLink: banner.ctaLink,
+      imageUrl: banner.imageUrl,
+      position: banner.position,
+      isActive: banner.isActive,
+      updatedAt: banner.updatedAt,
+    })),
+    posts: posts.map((post) => ({
+      id: post.id,
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt,
+      coverImage: post.coverImage,
+      tags: post.tags,
+      authorName: post.authorName,
+      readMinutes: post.readMinutes,
+      publishedAt: post.publishedAt,
+    })),
+    galleryImages: galleryImages.map((image) => ({
+      id: image.id,
+      title: image.title,
+      description: image.description,
+      imageUrl: image.imageUrl,
+      link: image.link,
+      orderIndex: image.orderIndex,
+      isActive: image.isActive,
+      updatedAt: image.updatedAt,
+    })),
   };
 }

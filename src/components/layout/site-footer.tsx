@@ -14,7 +14,7 @@ const footerGroups = [
   {
     title: "درباره فروشگاه",
     links: [
-      ["درباره ZenLube", "/support"],
+      ["درباره Oilbar", "/support"],
       ["تماس با ما", "/support"],
       ["وبلاگ و راهنما", "/blog"],
       ["برندهای همکار", "/brands"],
@@ -67,19 +67,19 @@ export function SiteFooter() {
         <div className="container-zen grid gap-8 py-10 lg:grid-cols-[1.15fr_2fr_1fr]">
           <div>
             <Link href="/" className="flex items-center gap-3">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-[#111827] text-lg font-black text-white">Z</span>
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-[#111827] text-lg font-black text-white">O</span>
               <span>
-                <span className="block text-2xl font-extrabold text-[#111827]">ZenLube</span>
-                <span className="block text-xs font-medium text-[#6B7280]">فروشگاه تخصصی روغن و قطعات مصرفی خودرو</span>
+                <span className="block text-2xl font-extrabold text-[#111827]">Oilbar</span>
+                <span className="block text-xs font-medium text-[#6B7280]">اویل‌بار، مرجع تخصصی روغن موتور و لوازم مصرفی خودرو</span>
               </span>
             </Link>
             <p className="mt-4 max-w-md text-sm leading-8 text-[#6B7280]">
-              ZenLube برای خرید مطمئن روغن موتور، فیلتر و روانکار خودرو ساخته شده است؛ با تمرکز روی اصالت کالا، انتخاب فنی دقیق و تجربه خرید سریع.
+              Oilbar برای خرید مطمئن روغن موتور، فیلتر و روانکار خودرو ساخته شده است؛ با تمرکز روی اصالت کالا، انتخاب فنی دقیق و تجربه خرید سریع.
             </p>
             <div className="mt-5 space-y-2 text-sm font-medium text-[#374151]">
               <p>پشتیبانی: ۰۲۱-۱۲۳۴۵۶۷۸</p>
               <p>ایمیل: support@oilbar.ir</p>
-              <p>تهران، مرکز پردازش سفارش ZenLube</p>
+              <p>تهران، مرکز پردازش سفارش Oilbar</p>
             </div>
           </div>
 
@@ -118,7 +118,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-[#E5E7EB] py-4 text-center text-xs text-[#6B7280]">
-        © {new Date().getFullYear()} ZenLube - همه حقوق محفوظ است.
+        © {new Date().getFullYear()} Oilbar - همه حقوق محفوظ است.
       </div>
     </footer>
   );

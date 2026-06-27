@@ -4,9 +4,9 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
 export const metadata: Metadata = {
-  title: "ZenLube | فروشگاه تخصصی روغن موتور و فیلتر خودرو",
+  title: "Oilbar | مرجع تخصصی روغن موتور و لوازم مصرفی خودرو",
   description: "خرید آنلاین روغن موتور اصل، فیلتر خودرو، ضدیخ و روانکار با ضمانت اصالت، مشاوره تخصصی انتخاب روغن و ارسال سریع.",
-  metadataBase: new URL("https://zenlube.ir"),
+  metadataBase: new URL("https://oilbar.ir"),
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

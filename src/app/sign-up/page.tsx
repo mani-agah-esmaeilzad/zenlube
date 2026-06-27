@@ -17,15 +17,24 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
-      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-500/10">
-        <h1 className="text-2xl font-semibold text-slate-900">ساخت حساب Oilbar</h1>
-        <p className="mt-2 text-sm text-slate-600">با ثبت‌نام، سبد خرید، سفارش‌ها و پیشنهادهای اختصاصی خودروی خود را مدیریت کنید.</p>
-        <div className="mt-8">
-          <SignUpForm callbackUrl={callbackUrl} />
+    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-16 sm:px-6">
+      <div className="rounded-3xl border border-[#E5E7EB] bg-white p-6 shadow-sm sm:p-8">
+        <div className="mb-6">
+          <p className="text-sm font-bold text-[#DC2626]">Oilbar</p>
+          <h1 className="mt-2 text-2xl font-extrabold text-[#111827]">ساخت حساب کاربری</h1>
+          <p className="mt-2 text-sm leading-7 text-[#6B7280]">
+            با ثبت‌نام در Oilbar، سبد خرید، سفارش‌ها و پیشنهادهای مناسب خودروی خود را مدیریت کنید.
+          </p>
         </div>
+        <SignUpForm callbackUrl={callbackUrl} />
         <p className="mt-6 text-center text-xs text-slate-500">
-          قبلاً حساب دارید؟ <Link href={callbackUrl ? `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/sign-in"} className="text-sky-600 hover:text-sky-700">وارد شوید</Link>
+          قبلا حساب دارید؟{" "}
+          <Link
+            href={callbackUrl ? `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/sign-in"}
+            className="font-bold text-[#DC2626] hover:text-[#B91C1C]"
+          >
+            وارد شوید
+          </Link>
         </p>
       </div>
     </div>

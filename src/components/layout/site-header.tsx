@@ -49,13 +49,13 @@ export async function SiteHeader() {
       <div className="container-zen grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 lg:grid-cols-[220px_1fr_auto] lg:gap-6">
         <MobileNav links={links} isAuthenticated={isAuthenticated} categories={categories} />
 
-        <Link href="/" className="flex items-center gap-3" aria-label="صفحه اصلی ZenLube">
+        <Link href="/" className="flex items-center gap-3" aria-label="صفحه اصلی Oilbar">
           <span className="flex size-11 items-center justify-center rounded-2xl bg-[#111827] text-lg font-black text-white shadow-sm">
-            Z
+            O
           </span>
           <span className="hidden leading-tight sm:block">
-            <span className="block text-xl font-extrabold text-[#111827]">ZenLube</span>
-            <span className="block text-[11px] font-medium text-[#6B7280]">روغن و قطعات مصرفی خودرو</span>
+            <span className="block text-xl font-extrabold text-[#111827]">Oilbar</span>
+            <span className="block text-[11px] font-medium text-[#6B7280]">مرجع تخصصی روغن موتور خودرو</span>
           </span>
         </Link>
 

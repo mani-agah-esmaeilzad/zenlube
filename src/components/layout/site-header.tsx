@@ -38,7 +38,7 @@ export async function SiteHeader() {
           </div>
           <div className="flex items-center gap-5 text-white/85">
             <Link href="tel:02112345678" className="transition hover:text-white">
-              پشتیبانی: ۰۲۱-۱۲۳۴۵۶۷۸
+              پشتیبانی: 09190810910
             </Link>
             <Link href={isAuthenticated ? "/account" : "/sign-in"} className="transition hover:text-white">
               {isAuthenticated ? "حساب کاربری" : "ورود / ثبت‌نام"}

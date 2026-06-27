@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
-import type { InputHTMLAttributes } from "react";
 
 import { createCheckoutOrderAction, CheckoutState } from "@/actions/orders";
 import { formatPrice } from "@/lib/utils";
@@ -170,14 +169,6 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
                 </span>
               ))}
             </label>
-            <FieldInput
-              label="کد تایید پیامکی"
-              name="otpCode"
-              inputMode="numeric"
-              defaultValue=""
-              errors={state.errors?.otpCode}
-              required
-            />
           </div>
 
           {otpMessage && <p className="mt-3 text-xs text-emerald-600">{otpMessage}</p>}
@@ -310,7 +301,7 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
               <span>{formatPrice(total)}</span>
             </div>
           </div>
-        </div>
+        </section>
 
         {!state.success && state.message && (
           <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{state.message}</p>
@@ -326,36 +317,5 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
         <p className="mt-3 text-xs text-slate-500">با تکمیل فرم و ادامه فرایند خرید، اطلاعات شما با رمزگذاری امن منتقل می‌شود.</p>
       </aside>
     </form>
-  );
-}
-
-type FieldInputProps = {
-  label: string;
-  name: string;
-  type?: string;
-  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
-  defaultValue?: string;
-  errors?: string[];
-  required?: boolean;
-};
-
-function FieldInput({ label, name, type = "text", inputMode, defaultValue, errors, required }: FieldInputProps) {
-  return (
-    <label className="text-xs font-semibold text-slate-500">
-      {label}
-      <input
-        name={name}
-        type={type}
-        inputMode={inputMode}
-        defaultValue={defaultValue ?? ""}
-        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:border-sky-300 focus:outline-none"
-        required={required}
-      />
-      {errors?.map((error) => (
-        <span key={error} className="mt-1 block text-[11px] text-red-500">
-          {error}
-        </span>
-      ))}
-    </label>
   );
 }

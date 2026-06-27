@@ -3,7 +3,6 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 import prisma from "@/lib/prisma";
 import { checkoutOrderSchema } from "@/lib/validators";
@@ -11,7 +10,7 @@ import { getAppSession } from "@/lib/session";
 import { requestZarinpalPayment } from "@/lib/payments/zarinpal";
 import { normalizeIranPhone } from "@/lib/phone";
 import { verifyOtpCode, createOtpRequest } from "@/services/otp";
-import { sendMelipayamakOtp } from "@/lib/sms/melipayamak";
+import { sendSmsIrOtp } from "@/lib/sms/smsir";
 import { config } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import { consumeRateLimit } from "@/lib/rate-limit";

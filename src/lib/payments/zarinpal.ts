@@ -18,6 +18,7 @@ function uniqueUrls(urls: string[]) {
 }
 
 const BASE_URLS = uniqueUrls([config.ZARINPAL_BASE_URL, ...DEFAULT_BASE_URLS]);
+const PROXY_URL = config.ZARINPAL_PROXY_URL ? normalizeBaseUrl(config.ZARINPAL_PROXY_URL) : null;
 const START_PAY_URL = normalizeBaseUrl(
   config.ZARINPAL_STARTPAY_URL.replace("https://www.zarinpal.com", "https://payment.zarinpal.com") || DEFAULT_START_PAY_URL,
 );
@@ -68,30 +69,55 @@ function getErrorMessage(errors: ZarinpalRequestResponse["errors"]) {
   return errors?.message;
 }
 
+async function postJson<T>(endpoint: string, payload: unknown, label: string, headers?: HeadersInit): Promise<T> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json", ...headers },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    const data = (await response.json().catch(async () => ({ raw: await response.text() }))) as T;
+
+    if (!response.ok) {
+      logger.warn(`Zarinpal ${label} HTTP failed`, { endpoint, status: response.status, body: data });
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return data;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function postJsonWithFallback<T>(path: string, payload: unknown, label: string): Promise<{ data: T; endpoint: string }> {
   const failures: Array<{ endpoint: string; error: string }> = [];
 
+  if (PROXY_URL) {
+    const endpoint = `${PROXY_URL}${path}`;
+    try {
+      const data = await postJson<T>(
+        endpoint,
+        payload,
+        `${label} proxy`,
+        config.ZARINPAL_PROXY_SECRET ? { "x-oilbar-payment-secret": config.ZARINPAL_PROXY_SECRET } : undefined,
+      );
+      return { data, endpoint };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      failures.push({ endpoint, error: message });
+      logger.warn(`Zarinpal ${label} proxy failed`, { endpoint, error: message });
+    }
+  }
+
   for (const baseUrl of BASE_URLS) {
     const endpoint = `${baseUrl}${path}`;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
     try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-
-      const data = (await response.json().catch(async () => ({ raw: await response.text() }))) as T;
-
-      if (!response.ok) {
-        failures.push({ endpoint, error: `HTTP ${response.status}` });
-        logger.warn(`Zarinpal ${label} HTTP failed`, { endpoint, status: response.status, body: data });
-        continue;
-      }
-
+      const data = await postJson<T>(endpoint, payload, label);
       return { data, endpoint };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -101,13 +127,11 @@ async function postJsonWithFallback<T>(path: string, payload: unknown, label: st
         error: message,
         cause: error instanceof Error && "cause" in error ? String(error.cause) : undefined,
       });
-    } finally {
-      clearTimeout(timeout);
     }
   }
 
   logger.error(`Zarinpal ${label} failed on all endpoints`, { failures });
-  throw new Error("ارتباط با زرین‌پال برقرار نشد. اگر این خطا در Vercel ادامه دارد، شبکه Vercel به زرین‌پال دسترسی ندارد و باید از سرور/پراکسی داخل ایران یا درگاه قابل دسترس از خارج استفاده شود.");
+  throw new Error("ارتباط با زرین‌پال برقرار نشد. روی Vercel باید ZARINPAL_PROXY_URL را به یک پراکسی داخل ایران تنظیم کنید یا از درگاهی استفاده کنید که از خارج ایران قابل دسترسی باشد.");
 }
 
 export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<PaymentRequestResult> {
@@ -124,7 +148,7 @@ export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<
     },
   };
 
-  logger.info("Payment init request", { gateway: "ZARINPAL", amount: payload.amount, callbackUrl: args.callbackUrl, endpoints: BASE_URLS });
+  logger.info("Payment init request", { gateway: "ZARINPAL", amount: payload.amount, callbackUrl: args.callbackUrl, proxy: PROXY_URL, endpoints: BASE_URLS });
 
   const { data, endpoint } = await postJsonWithFallback<ZarinpalRequestResponse>("/payment/request.json", payload, "request");
 
@@ -149,7 +173,7 @@ export async function verifyZarinpalPayment(authority: string, amount: Prisma.De
     authority,
   };
 
-  logger.info("Payment verify request", { gateway: "ZARINPAL", authority, amount: payload.amount, endpoints: BASE_URLS });
+  logger.info("Payment verify request", { gateway: "ZARINPAL", authority, amount: payload.amount, proxy: PROXY_URL, endpoints: BASE_URLS });
 
   const { data, endpoint } = await postJsonWithFallback<ZarinpalVerifyResponse>("/payment/verify.json", payload, "verify");
 

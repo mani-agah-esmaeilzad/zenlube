@@ -25,6 +25,8 @@ const EnvSchema = z
     ZARINPAL_BASE_URL: z.string().url().default("https://payment.zarinpal.com/pg/v4"),
     ZARINPAL_STARTPAY_URL: z.string().url().default("https://payment.zarinpal.com/pg/StartPay"),
     ZARINPAL_CALLBACK_URL: z.string().url().optional(),
+    ZARINPAL_PROXY_URL: z.string().url().optional(),
+    ZARINPAL_PROXY_SECRET: z.string().optional(),
     ZARINPAL_AMOUNT_UNIT: z.enum(["toman", "rial"]).default("toman"),
 
     SMS_PROVIDER: z.enum(["smsir", "melipayamak", "console", "disabled"]).default("console"),
@@ -108,6 +110,8 @@ const parsedEnv = EnvSchema.parse({
   ZARINPAL_BASE_URL: process.env.ZARINPAL_BASE_URL,
   ZARINPAL_STARTPAY_URL: process.env.ZARINPAL_STARTPAY_URL,
   ZARINPAL_CALLBACK_URL: process.env.ZARINPAL_CALLBACK_URL,
+  ZARINPAL_PROXY_URL: process.env.ZARINPAL_PROXY_URL,
+  ZARINPAL_PROXY_SECRET: process.env.ZARINPAL_PROXY_SECRET,
   ZARINPAL_AMOUNT_UNIT: process.env.ZARINPAL_AMOUNT_UNIT,
   SMS_PROVIDER: process.env.SMS_PROVIDER,
   SMS_API_KEY: process.env.SMS_API_KEY,

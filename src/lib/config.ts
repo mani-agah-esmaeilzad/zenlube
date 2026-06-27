@@ -22,8 +22,8 @@ const EnvSchema = z
     NEXT_PUBLIC_APP_URL: z.string().url({ message: "NEXT_PUBLIC_APP_URL باید معتبر باشد." }),
 
     ZARINPAL_MERCHANT_ID: z.string().min(1, { message: "شناسه پذیرنده زرین‌پال الزامی است." }),
-    ZARINPAL_BASE_URL: z.string().url().default("https://api.zarinpal.com/pg/v4"),
-    ZARINPAL_STARTPAY_URL: z.string().url().default("https://www.zarinpal.com/pg/StartPay"),
+    ZARINPAL_BASE_URL: z.string().url().default("https://payment.zarinpal.com/pg/v4"),
+    ZARINPAL_STARTPAY_URL: z.string().url().default("https://payment.zarinpal.com/pg/StartPay"),
     ZARINPAL_CALLBACK_URL: z.string().url().optional(),
     ZARINPAL_AMOUNT_UNIT: z.enum(["toman", "rial"]).default("toman"),
 

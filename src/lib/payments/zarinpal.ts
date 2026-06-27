@@ -2,8 +2,8 @@ import { Prisma } from "@/generated/prisma";
 import { config } from "../config";
 import { logger } from "../logger";
 
-const BASE_URL = config.ZARINPAL_BASE_URL;
-const START_PAY_URL = config.ZARINPAL_STARTPAY_URL;
+const BASE_URL = config.ZARINPAL_BASE_URL.replace("https://api.zarinpal.com", "https://payment.zarinpal.com");
+const START_PAY_URL = config.ZARINPAL_STARTPAY_URL.replace("https://www.zarinpal.com", "https://payment.zarinpal.com");
 
 export type PaymentRequestArgs = {
   amount: Prisma.Decimal | number;
@@ -30,10 +30,15 @@ function toGatewayAmount(amount: Prisma.Decimal | number) {
   return config.ZARINPAL_AMOUNT_UNIT === "rial" ? toman * 10 : toman;
 }
 
+function gatewayCurrency() {
+  return config.ZARINPAL_AMOUNT_UNIT === "rial" ? "IRR" : "IRT";
+}
+
 export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<PaymentRequestResult> {
   const payload = {
     merchant_id: config.ZARINPAL_MERCHANT_ID,
     amount: toGatewayAmount(args.amount),
+    currency: gatewayCurrency(),
     description: args.description,
     callback_url: args.callbackUrl,
     metadata: {
@@ -45,11 +50,21 @@ export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<
 
   logger.info("Payment init request", { gateway: "ZARINPAL", amount: payload.amount, callbackUrl: args.callbackUrl });
 
-  const response = await fetch(`${BASE_URL}/payment/request.json`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${BASE_URL}/payment/request.json`, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    logger.error("Zarinpal request network failed", {
+      endpoint: `${BASE_URL}/payment/request.json`,
+      error: error instanceof Error ? error.message : error,
+      cause: error instanceof Error && "cause" in error ? String(error.cause) : undefined,
+    });
+    throw new Error("ارتباط با زرین‌پال برقرار نشد. لطفا چند لحظه بعد دوباره تلاش کنید.");
+  }
 
   const data = (await response.json().catch(async () => ({ raw: await response.text() }))) as {
     data?: { code?: number; authority?: string };
@@ -79,16 +94,27 @@ export async function verifyZarinpalPayment(authority: string, amount: Prisma.De
   const payload = {
     merchant_id: config.ZARINPAL_MERCHANT_ID,
     amount: toGatewayAmount(amount),
+    currency: gatewayCurrency(),
     authority,
   };
 
   logger.info("Payment verify request", { gateway: "ZARINPAL", authority, amount: payload.amount });
 
-  const response = await fetch(`${BASE_URL}/payment/verify.json`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${BASE_URL}/payment/verify.json`, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    logger.error("Zarinpal verification network failed", {
+      endpoint: `${BASE_URL}/payment/verify.json`,
+      error: error instanceof Error ? error.message : error,
+      cause: error instanceof Error && "cause" in error ? String(error.cause) : undefined,
+    });
+    throw new Error("ارتباط با زرین‌پال برای تایید پرداخت برقرار نشد.");
+  }
 
   const data = (await response.json().catch(async () => ({ raw: await response.text() }))) as {
     data?: { code?: number; ref_id?: number; card_pan?: string };

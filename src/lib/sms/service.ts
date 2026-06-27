@@ -143,8 +143,14 @@ export async function sendTemplateSms(phone: string, templateName: string, token
 
 export async function sendOtpSms(phone: string, code: string, expiresAt: Date) {
   const normalizedPhone = normalizeIranPhone(phone);
-  if (!config.SMS_ENABLED || config.SMS_PROVIDER === "disabled" || config.SMS_SANDBOX_MODE || config.SMS_PROVIDER === "console") {
-    return sendTemplateSms(normalizedPhone, "otp", { code }, { eventType: "otp" });
+  if (!config.SMS_ENABLED || config.SMS_PROVIDER === "disabled") {
+    await sendTemplateSms(normalizedPhone, "otp", { code }, { eventType: "otp" });
+    return { success: false, skipped: true, error: "سامانه پیامک فعال نیست." } as const;
+  }
+
+  if (config.SMS_SANDBOX_MODE || config.SMS_PROVIDER === "console") {
+    await sendTemplateSms(normalizedPhone, "otp", { code }, { eventType: "otp" });
+    return { success: false, sandbox: true, error: "سامانه پیامک در حالت تست است." } as const;
   }
 
   try {

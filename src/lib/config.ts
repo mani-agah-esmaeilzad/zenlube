@@ -54,6 +54,7 @@ const EnvSchema = z
     HCAPTCHA_SECRET: z.string().optional(),
     OTP_RATE_LIMIT_WINDOW: z.coerce.number().int().positive().default(300),
     OTP_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(5),
+    OTP_RESEND_WINDOW_SECONDS: z.coerce.number().int().positive().default(20),
     QUESTION_RATE_LIMIT_WINDOW: z.coerce.number().int().positive().default(900),
     QUESTION_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(3),
   })
@@ -131,6 +132,7 @@ const parsedEnv = EnvSchema.parse({
   HCAPTCHA_SECRET: process.env.HCAPTCHA_SECRET,
   OTP_RATE_LIMIT_WINDOW: process.env.OTP_RATE_LIMIT_WINDOW,
   OTP_RATE_LIMIT_MAX: process.env.OTP_RATE_LIMIT_MAX,
+  OTP_RESEND_WINDOW_SECONDS: process.env.OTP_RESEND_WINDOW_SECONDS,
   QUESTION_RATE_LIMIT_WINDOW: process.env.QUESTION_RATE_LIMIT_WINDOW,
   QUESTION_RATE_LIMIT_MAX: process.env.QUESTION_RATE_LIMIT_MAX,
 });

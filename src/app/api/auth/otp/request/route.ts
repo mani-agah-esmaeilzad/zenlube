@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { normalizeIranPhone } from "@/lib/phone";
-import { createOtpRequest, assertOtpWindowAvailability, OtpRequestWindowError } from "@/services/otp";
+import { createOtpRequest, discardOtpRequest, assertOtpWindowAvailability, OtpRequestWindowError } from "@/services/otp";
 import { sendOtpSms } from "@/lib/sms/service";
 import { logger } from "@/lib/logger";
 import { consumeRateLimit } from "@/lib/rate-limit";
@@ -17,8 +17,7 @@ const bodySchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    const json = await request.json();
-    const parsed = bodySchema.safeParse(json);
+    const parsed = bodySchema.safeParse(await request.json());
     if (!parsed.success) {
       return NextResponse.json({ success: false, errors: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
@@ -33,7 +32,7 @@ export async function POST(request: Request) {
       windowCheckedAt = await assertOtpWindowAvailability(normalizedPhone, parsed.data.purpose);
     } catch (windowError) {
       if (windowError instanceof OtpRequestWindowError) {
-        return NextResponse.json({ success: false, message: windowError.message }, { status: 429 });
+        return NextResponse.json({ success: false, message: windowError.message }, { status: 429, headers: { "Retry-After": config.OTP_RESEND_WINDOW_SECONDS.toString() } });
       }
       throw windowError;
     }
@@ -59,20 +58,19 @@ export async function POST(request: Request) {
       normalizedPhoneOverride: normalizedPhone,
     });
 
-    try {
-      await sendOtpSms(normalizedPhone, otp.code, otp.expiresAt);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "ارسال پیامک با خطا مواجه شد.";
-      logger.error("OTP SMS delivery failed", { phone: normalizedPhone, message });
-      return NextResponse.json(
-        { success: false, message: "ارسال پیامک تایید از طریق سرویس‌دهنده با خطا مواجه شد. لطفا چند دقیقه دیگر تلاش کنید." },
-        { status: 502 },
-      );
+    const smsResult = await sendOtpSms(normalizedPhone, otp.code, otp.expiresAt);
+    if (!smsResult.success) {
+      await discardOtpRequest(otp.id);
+      const message =
+        "پیامک ارسال نشد. لطفا تنظیمات SMS_ENABLED، SMS_PROVIDER، SMS_SANDBOX_MODE و کلید سرویس پیامک را در Vercel بررسی کنید.";
+      logger.error("OTP SMS not delivered", { phone: normalizedPhone, reason: smsResult.error });
+      return NextResponse.json({ success: false, message }, { status: 503 });
     }
 
     return NextResponse.json({ success: true, expiresAt: otp.expiresAt.toISOString() });
   } catch (error) {
     const message = error instanceof Error ? error.message : "ارسال کد با خطا مواجه شد.";
+    logger.error("OTP request failed", { message });
     return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }

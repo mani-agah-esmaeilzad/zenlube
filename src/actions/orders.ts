@@ -2,6 +2,8 @@
 
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 import prisma from "@/lib/prisma";
 import { checkoutOrderSchema } from "@/lib/validators";
@@ -49,7 +51,7 @@ export async function sendCheckoutOtpAction(phone: string) {
     throw new Error("تعداد درخواست‌های مجاز برای دریافت کد تایید به حد مجاز رسیده است. لطفاً بعداً تلاش کنید.");
   }
   const { code, expiresAt } = await createOtpRequest(normalizedPhone, "checkout");
-  await sendMelipayamakOtp({ phone: normalizedPhone, code, expiresAt });
+  await sendSmsIrOtp({ phone: normalizedPhone, code, expiresAt });
   return { success: true } as const;
 }
 
@@ -201,10 +203,7 @@ export async function createCheckoutOrderAction(
       data: { paymentAuthority: payment.authority },
     });
 
-    return {
-      success: true,
-      redirectUrl: payment.paymentUrl,
-    };
+    return redirect(payment.paymentUrl);
   } catch (error) {
     logger.error("Checkout order failed", {
       error: error instanceof Error ? error.message : "unknown",

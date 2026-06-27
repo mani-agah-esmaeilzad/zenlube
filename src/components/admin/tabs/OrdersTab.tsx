@@ -193,12 +193,6 @@ function StatusForm({ orderId, currentStatus }: StatusFormProps) {
         name="status"
         defaultValue={currentStatus}
         className="w-full rounded-full border border-slate-300 bg-white px-3 py-1 text-xs focus:border-sky-300 focus:outline-none"
-        onChange={(event) => {
-          const form = event.currentTarget.form;
-          if (form) {
-            form.requestSubmit();
-          }
-        }}
       >
         <option value="PENDING">در انتظار پرداخت</option>
         <option value="PAID">پرداخت شده</option>
@@ -207,6 +201,12 @@ function StatusForm({ orderId, currentStatus }: StatusFormProps) {
         <option value="CANCELLED">لغو شده</option>
       </select>
       <input type="hidden" name="orderId" value={orderId} />
+      <button
+        type="submit"
+        className="w-full rounded-full border border-sky-200 px-3 py-1 text-sky-600 transition hover:bg-sky-50"
+      >
+        ذخیره وضعیت
+      </button>
     </form>
   );
 }

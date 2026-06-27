@@ -1,4 +1,6 @@
+import type { SVGProps } from "react";
 import Link from "next/link";
+import { LogoMark } from "@/components/layout/logo-mark";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { CartIndicator } from "@/components/layout/cart-indicator";
@@ -21,6 +23,8 @@ export async function SiteHeader() {
     { href: "/support", label: "مشاوره" },
   ];
   if (sessionUser?.role === "ADMIN") links.push({ href: "/admin", label: "پنل ادمین", highlight: true });
+
+  const quickCategories = categories.slice(0, 5);
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm shadow-slate-900/5 backdrop-blur">
@@ -58,5 +62,52 @@ export async function SiteHeader() {
         </div>
       </nav>
     </header>
+  );
+}
+
+type IconProps = SVGProps<SVGSVGElement>;
+
+function PhoneIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.86 19.86 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.86 19.86 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11l-1.27 1.27a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+    </svg>
+  );
+}
+
+function SupportIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <circle cx={12} cy={12} r={8} />
+      <path d="M9 10a2 2 0 114 0c0 2-2 2-2 4" />
+      <path d="M12 17h.01" />
+    </svg>
+  );
+}
+
+function SearchIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <circle cx={11} cy={11} r={7} />
+      <path d="M21 21l-4.35-4.35" />
+    </svg>
+  );
+}
+
+function HeadsetIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <path d="M3 15v-3a9 9 0 0118 0v3" />
+      <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3" />
+      <path d="M3 19a2 2 0 002 2h1a2 2 0 002-2v-3" />
+    </svg>
+  );
+}
+
+function SparkIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <path d="M12 2l1.8 5.4L19 9l-4 3.2 1.5 5.3L12 14.8 7.5 17.5 9 12 5 9l5.2-1.6L12 2z" />
+    </svg>
   );
 }

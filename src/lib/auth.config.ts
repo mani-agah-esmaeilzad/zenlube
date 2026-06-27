@@ -35,6 +35,43 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
+        phone: { label: "شماره موبایل", type: "text" },
+        otpCode: { label: "کد تایید", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.phone || !credentials.otpCode) {
+          return null;
+        }
+
+        try {
+          await verifyOtpCode(credentials.phone, credentials.otpCode, "account");
+        } catch {
+          return null;
+        }
+
+        const normalizedPhone = normalizeIranPhone(credentials.phone);
+        const user = await prisma.user.findFirst({
+          where: {
+            phone: normalizedPhone,
+          },
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name ?? undefined,
+          role: user.role,
+        };
+      },
+    }),
+    CredentialsProvider({
+      id: "admin-credentials",
+      name: "Admin Credentials",
+      credentials: {
         email: { label: "ایمیل", type: "email" },
         password: { label: "رمز عبور", type: "password" },
       },
@@ -47,7 +84,7 @@ export const authOptions = {
           where: { email: credentials.email },
         });
 
-        if (!user?.password) {
+        if (!user || user.role !== "ADMIN" || !user.password) {
           return null;
         }
 

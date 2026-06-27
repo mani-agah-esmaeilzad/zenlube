@@ -40,6 +40,10 @@ export async function getBestsellerProducts(limit = 8) {
       carMappings: {
         include: { car: true },
       },
+      reviews: {
+        take: 3,
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 }

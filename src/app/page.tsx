@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ProductCard } from "@/components/product/product-card";
 import { BlogCard } from "@/components/blog/blog-card";
@@ -53,5 +54,39 @@ export default async function Home() {
       <section className="container-zen space-y-5"><h2 className="text-2xl font-black text-[#0f2747]">برندهای محبوب</h2><div className="flex gap-3 overflow-x-auto pb-2">{brands.slice(0, 12).map((b) => <Link key={b.id} href={`/products?brand=${b.slug}`} className="shrink-0 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:border-orange-300">{b.name}</Link>)}</div></section>
       {!!posts.length && <section className="container-zen space-y-5"><h2 className="text-2xl font-black text-[#0f2747]">راهنمای خرید و نگهداری</h2><div className="grid gap-5 md:grid-cols-3">{posts.map((post) => <BlogCard key={post.id} post={post} />)}</div></section>}
     </div>
+  );
+}
+
+type ShelfProps = {
+  title: string;
+  description: string;
+  href: string;
+  products: ProductCollection;
+};
+
+function Shelf({ title, description, href, products }: ShelfProps) {
+  if (!products.length) {
+    return null;
+  }
+
+  return (
+    <section className="layout-shell space-y-4">
+      <div className="section-heading">
+        <h2>{title}</h2>
+        <p>{description}</p>
+      </div>
+      <div className="flex gap-5 overflow-x-auto pb-3">
+        {products.map((product) => (
+          <div key={product.id} className="min-w-[280px] max-w-[320px] flex-1">
+            <ProductCard product={product} />
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-end">
+        <Link href={href} className="text-sm text-sky-600 hover:text-sky-800">
+          مشاهده تمام محصولات →
+        </Link>
+      </div>
+    </section>
   );
 }

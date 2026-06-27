@@ -7,6 +7,7 @@ import { sendMelipayamakOtp, sendMelipayamakText } from "./melipayamak";
 import { sendSmsIrOtp, sendSmsIrText } from "./smsir";
 
 type SmsTokens = Record<string, string | number | null | undefined>;
+type RuntimeSmsProvider = "smsir" | "melipayamak" | "console" | "disabled";
 
 type SendSmsArgs = {
   phone: string;
@@ -36,6 +37,36 @@ export function renderSmsTemplate(templateName: string, tokens: SmsTokens = {}) 
 
 function orderNumber(orderId: string) {
   return orderId.slice(0, 10).toUpperCase();
+}
+
+function hasSmsIrCredentials({ requireTemplate = false } = {}) {
+  const hasApiKey = Boolean(config.SMSIR_API_KEY || config.SMS_API_KEY);
+  const hasLine = Boolean(config.SMSIR_LINE_NUMBER || config.SMS_SENDER_NUMBER);
+  const hasTemplate = Boolean(config.SMSIR_TEMPLATE_ID);
+  return hasApiKey && hasLine && (!requireTemplate || hasTemplate);
+}
+
+function hasMelipayamakCredentials() {
+  return Boolean(config.MELIPAYAMAK_USERNAME && config.MELIPAYAMAK_PASSWORD && config.MELIPAYAMAK_FROM);
+}
+
+function resolveSmsRuntime({ requireOtpTemplate = false } = {}) {
+  let provider = config.SMS_PROVIDER as RuntimeSmsProvider;
+  let inferred = false;
+
+  if ((provider === "console" || provider === "disabled") && hasSmsIrCredentials({ requireTemplate: requireOtpTemplate })) {
+    provider = "smsir";
+    inferred = true;
+  } else if ((provider === "console" || provider === "disabled") && hasMelipayamakCredentials()) {
+    provider = "melipayamak";
+    inferred = true;
+  }
+
+  const sandboxWasExplicitlyEnabled = process.env.SMS_SANDBOX_MODE === "true";
+  const enabled = config.SMS_ENABLED || inferred;
+  const sandbox = sandboxWasExplicitlyEnabled || (!inferred && config.SMS_SANDBOX_MODE);
+
+  return { provider, enabled, sandbox };
 }
 
 async function logSms(args: {
@@ -75,7 +106,9 @@ async function alreadySent(dedupeKey?: string) {
 }
 
 export async function sendSms({ phone, message, eventType = "manual", templateName, dedupeKey }: SendSmsArgs) {
+  const runtime = resolveSmsRuntime();
   const normalizedPhone = normalizeIranPhone(phone);
+
   if (!validateIranPhone(normalizedPhone)) {
     await logSms({ phone, eventType, templateName, message, status: "failed", dedupeKey, errorMessage: "شماره موبایل معتبر نیست." });
     return { success: false, skipped: true, error: "شماره موبایل معتبر نیست." } as const;
@@ -86,20 +119,20 @@ export async function sendSms({ phone, message, eventType = "manual", templateNa
     return { success: true, skipped: true } as const;
   }
 
-  if (!config.SMS_ENABLED || config.SMS_PROVIDER === "disabled") {
-    await logSms({ phone: normalizedPhone, eventType, templateName, message, status: "disabled", provider: config.SMS_PROVIDER, dedupeKey });
+  if (!runtime.enabled || runtime.provider === "disabled") {
+    await logSms({ phone: normalizedPhone, eventType, templateName, message, status: "disabled", provider: runtime.provider, dedupeKey });
     return { success: true, skipped: true } as const;
   }
 
-  if (config.SMS_SANDBOX_MODE || config.SMS_PROVIDER === "console") {
+  if (runtime.sandbox || runtime.provider === "console") {
     logger.info("SMS sandbox", { phone: normalizedPhone, eventType, message });
-    await logSms({ phone: normalizedPhone, eventType, templateName, message, status: "sandbox", provider: config.SMS_PROVIDER, dedupeKey });
+    await logSms({ phone: normalizedPhone, eventType, templateName, message, status: "sandbox", provider: runtime.provider, dedupeKey });
     return { success: true, sandbox: true } as const;
   }
 
   try {
     const result =
-      config.SMS_PROVIDER === "melipayamak"
+      runtime.provider === "melipayamak"
         ? await sendMelipayamakText({ phone: normalizedPhone, message })
         : await sendSmsIrText({ phone: normalizedPhone, message });
 
@@ -109,7 +142,7 @@ export async function sendSms({ phone, message, eventType = "manual", templateNa
       templateName,
       message,
       status: "sent",
-      provider: config.SMS_PROVIDER,
+      provider: runtime.provider,
       providerResponse: result.raw,
       dedupeKey,
     });
@@ -123,7 +156,7 @@ export async function sendSms({ phone, message, eventType = "manual", templateNa
       templateName,
       message,
       status: "failed",
-      provider: config.SMS_PROVIDER,
+      provider: runtime.provider,
       dedupeKey,
       errorMessage: messageText,
     });
@@ -142,20 +175,22 @@ export async function sendTemplateSms(phone: string, templateName: string, token
 }
 
 export async function sendOtpSms(phone: string, code: string, expiresAt: Date) {
+  const runtime = resolveSmsRuntime({ requireOtpTemplate: true });
   const normalizedPhone = normalizeIranPhone(phone);
-  if (!config.SMS_ENABLED || config.SMS_PROVIDER === "disabled") {
+
+  if (!runtime.enabled || runtime.provider === "disabled") {
     await sendTemplateSms(normalizedPhone, "otp", { code }, { eventType: "otp" });
     return { success: false, skipped: true, error: "سامانه پیامک فعال نیست." } as const;
   }
 
-  if (config.SMS_SANDBOX_MODE || config.SMS_PROVIDER === "console") {
+  if (runtime.sandbox || runtime.provider === "console") {
     await sendTemplateSms(normalizedPhone, "otp", { code }, { eventType: "otp" });
     return { success: false, sandbox: true, error: "سامانه پیامک در حالت تست است." } as const;
   }
 
   try {
     const result =
-      config.SMS_PROVIDER === "melipayamak"
+      runtime.provider === "melipayamak"
         ? await sendMelipayamakOtp({ phone: normalizedPhone, code, expiresAt })
         : await sendSmsIrOtp({ phone: normalizedPhone, code, expiresAt });
 
@@ -165,7 +200,7 @@ export async function sendOtpSms(phone: string, code: string, expiresAt: Date) {
       templateName: "otp",
       message: renderSmsTemplate("otp", { code }),
       status: "sent",
-      provider: config.SMS_PROVIDER,
+      provider: runtime.provider,
       providerResponse: result.raw,
     });
     return { success: true, result } as const;
@@ -177,7 +212,7 @@ export async function sendOtpSms(phone: string, code: string, expiresAt: Date) {
       templateName: "otp",
       message: renderSmsTemplate("otp", { code }),
       status: "failed",
-      provider: config.SMS_PROVIDER,
+      provider: runtime.provider,
       errorMessage: message,
     });
     throw error;

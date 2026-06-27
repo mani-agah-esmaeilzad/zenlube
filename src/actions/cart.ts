@@ -48,6 +48,19 @@ export async function addToCartAction(input: { productId: string; quantity?: num
 
     const { productId, quantity } = parsed.data;
 
+    const product = await prisma.product.findFirst({
+      where: { id: productId, isActive: true },
+      select: { stock: true },
+    });
+
+    if (!product) {
+      return { success: false, message: "این محصول دیگر در فروشگاه فعال نیست." };
+    }
+
+    if (product.stock < quantity) {
+      return { success: false, message: "موجودی این محصول کافی نیست." };
+    }
+
     const cart = await prisma.cart.upsert({
       where: { userId: session.user.id },
       update: {},

@@ -135,6 +135,7 @@ model Product {
   viscosity       String?
   oilType         String?
   imageUrl        String?
+  isActive        Boolean       @default(true)
   isFeatured      Boolean       @default(false)
   isBestseller    Boolean       @default(false)
   categoryId      String

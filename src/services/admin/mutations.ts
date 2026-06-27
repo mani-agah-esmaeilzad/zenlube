@@ -121,7 +121,27 @@ export async function saveProduct(data: {
 }
 
 export async function deleteProduct(productId: string) {
+  const orderItemCount = await prisma.orderItem.count({ where: { productId } });
+
+  if (orderItemCount > 0) {
+    await prisma.$transaction([
+      prisma.cartItem.deleteMany({ where: { productId } }),
+      prisma.productCar.deleteMany({ where: { productId } }),
+      prisma.product.update({
+        where: { id: productId },
+        data: {
+          isActive: false,
+          stock: 0,
+          isFeatured: false,
+          isBestseller: false,
+        },
+      }),
+    ]);
+    return { mode: "archived" as const };
+  }
+
   await prisma.product.delete({ where: { id: productId } });
+  return { mode: "deleted" as const };
 }
 
 export async function countProductsByBrand(brandId: string) {

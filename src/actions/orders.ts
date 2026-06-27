@@ -96,6 +96,11 @@ export async function createCheckoutOrderAction(
 
     await verifyOtpCode(input.phone, input.otpCode, "checkout");
 
+    const inactive = cart.items.find((item) => !item.product.isActive);
+    if (inactive) {
+      return { success: false, message: `محصول «${inactive.product.name}» دیگر در فروشگاه فعال نیست.` };
+    }
+
     const unavailable = cart.items.find((item) => item.product.stock < item.quantity);
     if (unavailable) {
       return { success: false, message: `موجودی محصول «${unavailable.product.name}» کافی نیست.` };

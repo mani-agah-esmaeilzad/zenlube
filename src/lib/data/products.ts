@@ -3,7 +3,7 @@ import prisma from "../prisma";
 
 export async function getFeaturedProducts(limit = 6) {
   return prisma.product.findMany({
-    where: { isFeatured: true },
+    where: { isActive: true, isFeatured: true },
     orderBy: [{ isBestseller: "desc" }, { updatedAt: "desc" }],
     include: {
       brand: true,
@@ -23,6 +23,7 @@ export async function getFeaturedProducts(limit = 6) {
 export async function getBestsellerProducts(limit = 8) {
   return prisma.product.findMany({
     where: {
+      isActive: true,
       OR: [
         { isBestseller: true },
         { reviewCount: { gt: 60 } },
@@ -91,6 +92,7 @@ export async function getAllProductsWithFilters({
   sort = "latest",
 }: ProductFilters) {
   const where: Prisma.ProductWhereInput = {
+    isActive: true,
     ...(search
       ? {
           OR: [
@@ -156,8 +158,8 @@ export async function getAllProductsWithFilters({
 }
 
 export async function getProductBySlug(slug: string) {
-  return prisma.product.findUnique({
-    where: { slug },
+  return prisma.product.findFirst({
+    where: { slug, isActive: true },
     include: {
       brand: true,
       category: true,
@@ -209,6 +211,7 @@ export async function getLatestReviews(limit = 6) {
 
 export async function getAllProductsLite() {
   const products = await prisma.product.findMany({
+    where: { isActive: true },
     select: {
       id: true,
       name: true,

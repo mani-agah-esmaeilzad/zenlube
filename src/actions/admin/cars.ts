@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { ensureAdminAction } from "@/lib/auth";
 import { carSchema } from "@/lib/validators";
-import { upsertCar } from "@/services/admin/mutations";
+import { deleteCar, upsertCar } from "@/services/admin/mutations";
 
 export async function createCarAction(formData: FormData): Promise<void> {
   await ensureAdminAction();
@@ -30,4 +30,17 @@ export async function createCarAction(formData: FormData): Promise<void> {
 
   revalidatePath("/admin");
   revalidatePath("/cars");
+}
+
+export async function deleteCarFormAction(formData: FormData): Promise<void> {
+  await ensureAdminAction();
+  const carId = formData.get("carId");
+  if (!carId || typeof carId !== "string") {
+    throw new Error("شناسه خودرو نامعتبر است.");
+  }
+
+  await deleteCar(carId);
+  revalidatePath("/admin");
+  revalidatePath("/cars");
+  revalidatePath("/products");
 }

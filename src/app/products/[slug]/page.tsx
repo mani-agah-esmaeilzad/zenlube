@@ -13,14 +13,14 @@ type ProductPageProps = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = await prisma.product.findUnique({ where: { slug }, select: { name: true, description: true } });
+  const product = await prisma.product.findFirst({ where: { slug, NOT: { slug: { startsWith: "deleted-" } } }, select: { name: true, description: true } });
   return product ? { title: `${product.name} | Oilbar`, description: product.description ?? undefined } : { title: "محصول یافت نشد" };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug },
+  const product = await prisma.product.findFirst({
+    where: { slug, NOT: { slug: { startsWith: "deleted-" } } },
     include: {
       brand: true,
       category: true,
@@ -31,7 +31,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product) notFound();
 
   const relatedProducts = await prisma.product.findMany({
-    where: { categoryId: product.categoryId, id: { not: product.id } },
+    where: { categoryId: product.categoryId, id: { not: product.id }, NOT: { slug: { startsWith: "deleted-" } } },
     take: 4,
     include: { brand: true, category: true, carMappings: { include: { car: true } } },
   });

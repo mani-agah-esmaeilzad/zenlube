@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
 import type { CarsTabData } from "@/services/admin/types";
-import { createCarAction } from "@/actions/admin";
+import { createCarAction, deleteCarFormAction } from "@/actions/admin";
 
 export function CarsTab({ data }: { data: CarsTabData }) {
   const { cars } = data;
@@ -128,6 +128,7 @@ export function CarsTab({ data }: { data: CarsTabData }) {
                     <th className="px-4 py-3 text-right">روغن پیشنهادی</th>
                     <th className="px-4 py-3 text-right">محصولات مرتبط</th>
                     <th className="px-4 py-3 text-right">آخرین بروزرسانی</th>
+                    <th className="px-4 py-3 text-right">حذف</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 bg-slate-50">
@@ -170,6 +171,14 @@ export function CarsTab({ data }: { data: CarsTabData }) {
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-400">
                         {faDateFormatter.format(car.updatedAt)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <form action={deleteCarFormAction}>
+                          <input type="hidden" name="carId" value={car.id} />
+                          <button type="submit" className="rounded-full border border-red-200 px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50">
+                            حذف
+                          </button>
+                        </form>
                       </td>
                     </tr>
                   ))}

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { faDateFormatter } from "@/lib/formatters";
 import type { QuestionsTabData } from "@/services/admin/types";
-import { answerQuestionAction, archiveQuestionAction } from "@/actions/admin";
+import { answerQuestionAction, archiveQuestionAction, deleteQuestionFormAction } from "@/actions/admin";
 
 export function QuestionsTab({ data }: { data: QuestionsTabData }) {
   const { productQuestions, carQuestions } = data;
@@ -84,6 +84,13 @@ export function QuestionsTab({ data }: { data: QuestionsTabData }) {
                           بایگانی
                         </button>
                       </form>
+                      <button
+                        type="submit"
+                        formAction={deleteQuestionFormAction}
+                        className="rounded-full border border-red-200 px-4 py-2 text-xs font-bold text-red-600 transition hover:bg-red-50"
+                      >
+                        حذف
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -161,6 +168,13 @@ export function QuestionsTab({ data }: { data: QuestionsTabData }) {
                           بایگانی
                         </button>
                       </form>
+                      <button
+                        type="submit"
+                        formAction={deleteQuestionFormAction}
+                        className="rounded-full border border-red-200 px-4 py-2 text-xs font-bold text-red-600 transition hover:bg-red-50"
+                      >
+                        حذف
+                      </button>
                     </div>
                   </form>
                 </div>

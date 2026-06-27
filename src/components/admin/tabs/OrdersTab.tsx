@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { updateOrderStatusAction, updateOrderTrackingAction } from "@/actions/admin";
+import { deleteOrderFormAction, updateOrderStatusAction, updateOrderTrackingAction } from "@/actions/admin";
 import { faNumberFormatter } from "@/lib/formatters";
 import { formatPrice } from "@/lib/utils";
 import type { OrdersTabData } from "@/services/admin/types";
@@ -90,6 +90,12 @@ export function OrdersTab({ data }: OrdersTabProps) {
                 <div className="space-y-4">
                   <StatusForm orderId={order.id} currentStatus={order.status} trackingCode={order.shippingTrackingCode} />
                   <TrackingForm orderId={order.id} trackingCode={order.shippingTrackingCode} />
+                  <form action={deleteOrderFormAction} className="rounded-2xl border border-red-100 bg-red-50 p-3">
+                    <input type="hidden" name="orderId" value={order.id} />
+                    <button type="submit" className="w-full rounded-xl bg-red-600 px-3 py-2 text-xs font-bold text-white hover:bg-red-700">
+                      حذف / بایگانی سفارش
+                    </button>
+                  </form>
                 </div>
               </div>
 

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ensureAdminAction } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { sendTemplateSms, smsOrderNumber } from "@/lib/sms/service";
+import { deleteOrderSafely } from "@/services/admin/mutations";
 
 const statusSchema = z.object({
   orderId: z.string().cuid(),
@@ -93,6 +94,18 @@ export async function updateOrderTrackingAction(formData: FormData): Promise<voi
     );
   }
 
+  revalidatePath("/admin");
+  revalidatePath("/account");
+}
+
+export async function deleteOrderFormAction(formData: FormData): Promise<void> {
+  await ensureAdminAction();
+  const orderId = formData.get("orderId");
+  if (!orderId || typeof orderId !== "string") {
+    throw new Error("شناسه سفارش نامعتبر است.");
+  }
+
+  await deleteOrderSafely(orderId);
   revalidatePath("/admin");
   revalidatePath("/account");
 }

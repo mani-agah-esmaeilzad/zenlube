@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
 import type { UsersTabData } from "@/services/admin/types";
-import { updateUserRoleAction } from "@/actions/admin";
+import { deleteUserFormAction, updateUserRoleAction } from "@/actions/admin";
 
 export function UsersTab({ data, sessionUserId }: { data: UsersTabData; sessionUserId: string | null }) {
   const { users } = data;
@@ -96,6 +96,14 @@ export function UsersTab({ data, sessionUserId }: { data: UsersTabData; sessionU
                         به‌روزرسانی
                       </button>
                     </form>
+                    {!isSelf ? (
+                      <form action={deleteUserFormAction} className="mt-2">
+                        <input type="hidden" name="userId" value={user.id} />
+                        <button type="submit" className="rounded-full border border-red-200 px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50">
+                          حذف / بایگانی
+                        </button>
+                      </form>
+                    ) : null}
                   </td>
                 </tr>
               );

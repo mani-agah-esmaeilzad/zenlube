@@ -50,10 +50,10 @@ export async function addToCartAction(input: { productId: string; quantity?: num
 
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      select: { stock: true },
+      select: { slug: true, stock: true },
     });
 
-    if (!product) {
+    if (!product || product.slug.startsWith("deleted-")) {
       return { success: false, message: "این محصول در فروشگاه پیدا نشد." };
     }
 

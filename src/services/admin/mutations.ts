@@ -130,6 +130,11 @@ export async function deleteProduct(productId: string) {
       prisma.product.update({
         where: { id: productId },
         data: {
+          slug: `deleted-${productId}`,
+          sku: null,
+          name: `حذف‌شده ${productId.slice(-6)}`,
+          description: null,
+          imageUrl: null,
           stock: 0,
           isFeatured: false,
           isBestseller: false,
@@ -196,6 +201,10 @@ export async function upsertMaintenanceTask(data: {
 
 export async function deleteMaintenanceTask(taskId: string) {
   await prisma.carMaintenanceTask.delete({ where: { id: taskId } });
+}
+
+export async function deleteCar(carId: string) {
+  await prisma.car.delete({ where: { id: carId } });
 }
 
 export async function answerQuestion(
@@ -300,9 +309,102 @@ export async function archiveQuestion(questionId: string, type: "product" | "car
   return { targetSlug: question.car?.slug };
 }
 
+export async function deleteQuestion(questionId: string, type: "product" | "car") {
+  if (type === "product") {
+    const question = await prisma.productQuestion.delete({
+      where: { id: questionId },
+      include: { product: { select: { slug: true } } },
+    });
+    return { targetSlug: question.product.slug };
+  }
+
+  const question = await prisma.carQuestion.delete({
+    where: { id: questionId },
+    include: { car: { select: { slug: true } } },
+  });
+  return { targetSlug: question.car.slug };
+}
+
 export async function updateUserRole(userId: string, role: "ADMIN" | "CUSTOMER") {
   await prisma.user.update({
     where: { id: userId },
     data: { role },
   });
+}
+
+export async function deleteOrderSafely(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      paymentEvents: { select: { id: true }, take: 1 },
+      paymentTransactions: { select: { id: true }, take: 1 },
+    },
+  });
+
+  if (!order) {
+    throw new Error("سفارش پیدا نشد.");
+  }
+
+  const hasPaymentHistory = Boolean(order.paidAt || order.paymentRefId || order.paymentEvents.length || order.paymentTransactions.length);
+  if (hasPaymentHistory) {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: "CANCELLED",
+        notes: [order.notes, "بایگانی‌شده توسط مدیر"].filter(Boolean).join("\n"),
+      },
+    });
+    return { mode: "archived" as const };
+  }
+
+  await prisma.order.delete({ where: { id: orderId } });
+  return { mode: "deleted" as const };
+}
+
+export async function deleteUserSafely(userId: string, sessionUserId?: string | null) {
+  if (sessionUserId && sessionUserId === userId) {
+    throw new Error("امکان حذف کاربر فعلی وجود ندارد.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { _count: { select: { orders: true } } },
+  });
+
+  if (!user) {
+    throw new Error("کاربر پیدا نشد.");
+  }
+
+  if (user.role === "ADMIN") {
+    const adminCount = await prisma.user.count({ where: { role: "ADMIN" } });
+    if (adminCount <= 1) {
+      throw new Error("امکان حذف آخرین مدیر وجود ندارد.");
+    }
+  }
+
+  await prisma.$transaction([
+    prisma.session.deleteMany({ where: { userId } }),
+    prisma.account.deleteMany({ where: { userId } }),
+    prisma.cartItem.deleteMany({ where: { cart: { userId } } }),
+    prisma.cart.deleteMany({ where: { userId } }),
+    prisma.userAddress.deleteMany({ where: { userId } }),
+  ]);
+
+  if (user._count.orders > 0) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: "کاربر حذف‌شده",
+        email: `deleted-${userId}@oilbar.local`,
+        phone: null,
+        password: null,
+        image: null,
+        role: "CUSTOMER",
+      },
+    });
+    return { mode: "archived" as const };
+  }
+
+  await prisma.user.delete({ where: { id: userId } });
+  return { mode: "deleted" as const };
 }

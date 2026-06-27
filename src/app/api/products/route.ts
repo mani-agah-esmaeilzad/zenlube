@@ -10,6 +10,7 @@ export async function GET(request: Request) {
 
   const products = await prisma.product.findMany({
     where: {
+      NOT: { slug: { startsWith: "deleted-" } },
       ...(search
         ? {
             OR: [

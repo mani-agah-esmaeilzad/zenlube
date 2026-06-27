@@ -50,6 +50,7 @@ const overviewSelect = {
     },
   }),
   products: prisma.product.findMany({
+    where: { NOT: { slug: { startsWith: "deleted-" } } },
     orderBy: { updatedAt: "desc" },
     include: {
       brand: true,
@@ -221,7 +222,7 @@ export async function getProductsTabData(options: ProductTabOptions = {}): Promi
     ? options.stockStatus
     : "all";
 
-  const where: Prisma.ProductWhereInput = {};
+  const where: Prisma.ProductWhereInput = { NOT: { slug: { startsWith: "deleted-" } } };
 
   if (search) {
     where.OR = [
@@ -251,9 +252,9 @@ export async function getProductsTabData(options: ProductTabOptions = {}): Promi
     overviewSelect.brands,
     overviewSelect.cars,
     prisma.product.count({ where }),
-    prisma.product.count({ where: { stock: { lt: LOW_STOCK_THRESHOLD } } }),
+    prisma.product.count({ where: { stock: { lt: LOW_STOCK_THRESHOLD }, NOT: { slug: { startsWith: "deleted-" } } } }),
     prisma.product.findMany({
-      where: { stock: { lt: LOW_STOCK_THRESHOLD } },
+      where: { stock: { lt: LOW_STOCK_THRESHOLD }, NOT: { slug: { startsWith: "deleted-" } } },
       orderBy: { stock: "asc" },
       take: 10,
       select: {

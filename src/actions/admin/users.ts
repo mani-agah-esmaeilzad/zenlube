@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { ensureAdminAction, ensureNotSelf } from "@/lib/auth";
-import { updateUserRole } from "@/services/admin/mutations";
+import { deleteUserSafely, updateUserRole } from "@/services/admin/mutations";
 
 const allowedRoles = new Set(["ADMIN", "CUSTOMER"]);
 
@@ -25,5 +25,16 @@ export async function updateUserRoleAction(formData: FormData): Promise<void> {
 
   await updateUserRole(userId, role as "ADMIN" | "CUSTOMER");
 
+  revalidatePath("/admin");
+}
+
+export async function deleteUserFormAction(formData: FormData): Promise<void> {
+  const { userId: sessionUserId } = await ensureAdminAction();
+  const userId = formData.get("userId");
+  if (!userId || typeof userId !== "string") {
+    throw new Error("شناسه کاربر نامعتبر است.");
+  }
+
+  await deleteUserSafely(userId, sessionUserId);
   revalidatePath("/admin");
 }

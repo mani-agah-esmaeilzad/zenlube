@@ -37,7 +37,7 @@ export function AddToCartButton({ productId, className, disabled = false }: AddT
         type="button"
         onClick={handleAdd}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-l from-emerald-600 to-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_15px_30px_rgba(5,150,105,0.3)] transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-200 disabled:cursor-not-allowed disabled:opacity-70",
+          "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#EF394E] px-5 py-2.5 text-sm font-bold text-white shadow-[0_10px_22px_rgba(239,57,78,0.22)] transition hover:bg-[#DC2626] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none",
           className,
         )}
         disabled={isDisabled}
@@ -59,7 +59,7 @@ export function AddToCartButton({ productId, className, disabled = false }: AddT
       <span
         className={cn(
           "text-center text-[11px]",
-          feedback ? "text-emerald-500" : "text-transparent",
+          feedback ? "text-[#16A34A]" : "text-transparent",
         )}
         aria-live="polite"
       >

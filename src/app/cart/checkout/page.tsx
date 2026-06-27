@@ -62,11 +62,11 @@ export default async function CheckoutPage() {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="container-zen py-8 space-y-8">
-      <header className="card-zen space-y-2 p-6 text-slate-900">
-        <p className="text-sm text-slate-900/60">مرحله پایانی خرید</p>
-        <h1 className="text-3xl font-semibold">تایید و پرداخت سفارش</h1>
-        <p className="text-sm text-slate-900/60">جمع جزء سبد خرید شما {formatPrice(subtotal)} است. لطفاً اطلاعات ارسال و پرداخت را تکمیل کنید.</p>
+    <div className="container-zen space-y-6 py-6 md:py-8">
+      <header className="rounded-3xl border border-[#E5E7EB] bg-white p-6">
+        <p className="text-sm font-bold text-red-600">مرحله پایانی خرید</p>
+        <h1 className="mt-2 text-2xl font-extrabold text-[#111827] md:text-3xl">تایید و پرداخت سفارش</h1>
+        <p className="mt-2 text-sm leading-7 text-[#6B7280]">جمع جزء سبد خرید شما {formatPrice(subtotal)} است. لطفاً اطلاعات ارسال و پرداخت را تکمیل کنید.</p>
       </header>
 
       <CheckoutForm items={items} defaults={defaults} />

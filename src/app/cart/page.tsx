@@ -10,111 +10,74 @@ export default async function CartPage() {
 
   if (!userId) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <h1 className="text-3xl font-semibold text-slate-900">سبد خرید</h1>
-        <p className="mt-4 text-sm text-slate-900/70">
-          برای مشاهده و مدیریت سبد خرید، ابتدا وارد حساب کاربری خود شوید.
-        </p>
-        <Link
-          href="/sign-in"
-          className="mt-6 inline-flex rounded-full bg-orange-500 px-6 py-2 text-sm font-semibold text-slate-900 hover:bg-orange-600"
-        >
-          ورود به حساب کاربری
-        </Link>
+      <div className="container-zen py-20">
+        <div className="mx-auto max-w-xl rounded-3xl border border-[#E5E7EB] bg-white p-8 text-center">
+          <h1 className="text-2xl font-extrabold text-[#111827]">سبد خرید</h1>
+          <p className="mt-4 text-sm leading-7 text-[#6B7280]">برای مشاهده و مدیریت سبد خرید، ابتدا وارد حساب کاربری خود شوید.</p>
+          <Link href="/sign-in" className="btn-primary mt-6">ورود به حساب کاربری</Link>
+        </div>
       </div>
     );
   }
 
   const cart = await prisma.cart.findUnique({
     where: { userId },
-    include: {
-      items: {
-        include: {
-          product: {
-            include: {
-              brand: true,
-            },
-          },
-        },
-      },
-    },
+    include: { items: { include: { product: { include: { brand: true } } } } },
   });
 
-  const subtotal = cart?.items.reduce((sum, item) => {
-    const price = Number(item.product.price);
-    return sum + price * item.quantity;
-  }, 0) ?? 0;
+  const subtotal = cart?.items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0) ?? 0;
 
   return (
-    <div className="container-zen py-8 space-y-8">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="container-zen space-y-6 py-6 md:py-8">
+      <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">سبد خرید</h1>
-          <p className="text-sm text-slate-900/70">
-            محصولات انتخاب‌شده شما در پایین قابل مشاهده است. می‌توانید مقدار هر محصول را تغییر دهید یا آن را حذف کنید.
-          </p>
+          <h1 className="text-2xl font-extrabold text-[#111827] md:text-3xl">سبد خرید</h1>
+          <p className="mt-2 text-sm leading-7 text-[#6B7280]">محصولات انتخاب‌شده را بررسی کنید و سپس وارد مرحله ارسال و پرداخت شوید.</p>
         </div>
         {cart?.items?.length ? <ClearCartButton /> : null}
       </header>
 
       {cart?.items?.length ? (
-        <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-          <div className="space-y-6">
+        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+          <div className="space-y-4">
             {cart.items.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white p-6 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="space-y-2">
-                  <h2 className="text-lg font-semibold text-slate-900">{item.product.name}</h2>
-                  <p className="text-xs text-slate-900/60">برند {item.product.brand.name}</p>
-                  <p className="text-sm text-slate-900/70">
-                    قیمت واحد: {formatPrice(item.product.price)}
-                  </p>
+              <article key={item.id} className="rounded-2xl border border-[#E5E7EB] bg-white p-5">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h2 className="text-base font-bold leading-7 text-[#111827]">{item.product.name}</h2>
+                    <p className="mt-1 text-xs font-medium text-[#6B7280]">برند {item.product.brand.name}</p>
+                    <p className="mt-3 text-sm text-[#6B7280]">قیمت واحد: {formatPrice(item.product.price)}</p>
+                  </div>
+                  <div className="flex flex-col gap-3 md:items-end">
+                    <p className="text-lg font-extrabold text-[#111827]">{formatPrice(Number(item.product.price) * item.quantity)}</p>
+                    <CartItemControls productId={item.productId} quantity={item.quantity} />
+                  </div>
                 </div>
-                <div className="flex flex-col items-end gap-3">
-                  <p className="text-sm font-semibold text-orange-600">
-                    {formatPrice(Number(item.product.price) * item.quantity)}
-                  </p>
-                  <CartItemControls productId={item.productId} quantity={item.quantity} />
-                </div>
-              </div>
+              </article>
             ))}
           </div>
-          <aside className="card-zen p-6 text-sm text-slate-900/70">
-            <h2 className="text-lg font-semibold text-[#0f2747]">خلاصه سفارش</h2>
-            <div className="mt-4 space-y-3">
+
+          <aside className="h-fit rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-[0_10px_28px_rgba(17,24,39,0.06)] lg:sticky lg:top-40">
+            <h2 className="text-lg font-extrabold text-[#111827]">خلاصه سفارش</h2>
+            <div className="mt-5 space-y-4 text-sm text-[#6B7280]">
               <div className="flex justify-between">
                 <span>جمع کل</span>
-                <span>{formatPrice(subtotal)}</span>
+                <span className="font-bold text-[#111827]">{formatPrice(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-slate-900/50">
+              <div className="flex justify-between">
                 <span>هزینه ارسال</span>
                 <span>محاسبه در مرحله بعد</span>
               </div>
             </div>
-            <Link
-              href="/cart/checkout"
-              className="mt-6 inline-flex w-full justify-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-orange-600"
-            >
-              ادامه فرآیند خرید
-            </Link>
-            <p className="mt-4 text-xs text-slate-900/50">
-              تایید نهایی سفارش بعد از ورود اطلاعات ارسال و پرداخت انجام می‌شود.
-            </p>
+            <Link href="/cart/checkout" className="btn-primary mt-6 w-full">ادامه فرایند خرید</Link>
+            <p className="mt-4 text-xs leading-6 text-[#6B7280]">تایید نهایی سفارش بعد از ورود اطلاعات ارسال و پرداخت انجام می‌شود.</p>
           </aside>
         </div>
       ) : (
-        <div className="rounded-3xl border border-white/10 bg-white p-12 text-center text-slate-900/60">
-          سبد خرید شما خالی است. از صفحه محصولات بازدید کنید و پیشنهادات ویژه را از دست ندهید.
-          <div className="mt-6">
-            <Link
-              href="/products"
-              className="inline-flex rounded-full bg-orange-500 px-6 py-2 text-sm font-semibold text-slate-900 hover:bg-orange-600"
-            >
-              رفتن به فروشگاه
-            </Link>
-          </div>
+        <div className="rounded-3xl border border-[#E5E7EB] bg-white p-10 text-center">
+          <h2 className="text-xl font-extrabold text-[#111827]">سبد خرید شما خالی است</h2>
+          <p className="mt-3 text-sm leading-7 text-[#6B7280]">از صفحه محصولات بازدید کنید و پیشنهادهای ویژه را از دست ندهید.</p>
+          <Link href="/products" className="btn-primary mt-6">رفتن به فروشگاه</Link>
         </div>
       )}
     </div>

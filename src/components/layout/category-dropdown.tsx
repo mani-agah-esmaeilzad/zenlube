@@ -1,5 +1,6 @@
 "use client";
 
+import type { SVGProps } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -14,12 +15,27 @@ type CategoryDropdownProps = {
   categories: CategoryNavItem[];
 };
 
+const megaColumns = [
+  {
+    title: "روغن موتور بر اساس ویسکوزیته",
+    links: ["0W-20", "5W-30", "5W-40", "10W-40"],
+  },
+  {
+    title: "بر اساس نوع روغن",
+    links: ["تمام سنتتیک", "نیمه سنتتیک", "مینرال", "API SP"],
+  },
+  {
+    title: "فیلترها و سرویس دوره‌ای",
+    links: ["فیلتر روغن", "فیلتر هوا", "فیلتر کابین", "ضدیخ"],
+  },
+  {
+    title: "برندهای محبوب",
+    links: ["Shell", "Total", "Castrol", "Motul", "Liqui Moly"],
+  },
+];
+
 export function CategoryDropdown({ categories }: CategoryDropdownProps) {
   const [open, setOpen] = useState(false);
-
-  if (categories.length === 0) {
-    return null;
-  }
 
   return (
     <div
@@ -28,62 +44,108 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
       onMouseLeave={() => setOpen(false)}
       onFocus={() => setOpen(true)}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
-          setOpen(false);
-        }
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
       }}
     >
       <button
         type="button"
         className={clsx(
-          "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
+          "inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-100",
           open
-            ? "border-sky-200 bg-white text-slate-900 shadow-sm"
-            : "border-slate-200 bg-white text-slate-700 hover:border-sky-200 hover:text-slate-900",
+            ? "border-red-200 bg-red-50 text-red-600"
+            : "border-transparent bg-[#111827] text-white hover:bg-[#172033]",
         )}
         onClick={() => setOpen((prev) => !prev)}
         onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            setOpen(false);
-          }
+          if (event.key === "Escape") setOpen(false);
         }}
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        دسته‌بندی‌ها
-        <svg className={clsx("h-4 w-4 transition-transform", open ? "rotate-180" : "")} fill="none" stroke="currentColor" strokeWidth="1.4" viewBox="0 0 24 24" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
-        </svg>
+        <MenuIcon className="h-5 w-5" />
+        دسته‌بندی کالاها
+        <ChevronIcon className={clsx("h-4 w-4 transition-transform", open ? "rotate-180" : "")} />
       </button>
 
       <div
         className={clsx(
-          "absolute right-0 top-full z-40 mt-2 w-64 rounded-3xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-500/10 transition",
-          open ? "visible translate-y-0 opacity-100 pointer-events-auto" : "invisible -translate-y-1 opacity-0 pointer-events-none",
+          "absolute right-0 top-full z-50 mt-3 w-[min(92vw,920px)] rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-[0_24px_64px_rgba(17,24,39,0.14)] transition",
+          open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0 pointer-events-none",
         )}
         role="menu"
         tabIndex={-1}
       >
-        <ul className="flex flex-col gap-2 text-sm text-slate-700">
-          {categories.map((category) => (
-            <li key={category.id}>
-              <Link
-                href={`/categories/${category.slug}`}
-                className="block rounded-2xl px-3 py-2 transition hover:bg-sky-50 hover:text-slate-900"
-                onClick={() => setOpen(false)}
-                role="menuitem"
-              >
-                {category.name}
-              </Link>
-            </li>
+        <div className="grid gap-5 lg:grid-cols-[1fr_1fr_1fr_1fr_260px]">
+          {megaColumns.map((column) => (
+            <div key={column.title}>
+              <p className="mb-3 border-b border-[#E5E7EB] pb-2 text-sm font-bold text-[#111827]">
+                {column.title}
+              </p>
+              <ul className="space-y-2 text-sm text-[#6B7280]">
+                {column.links.map((item) => (
+                  <li key={item}>
+                    <Link
+                      href={`/products?search=${encodeURIComponent(item)}`}
+                      className="block rounded-xl px-3 py-2 transition hover:bg-red-50 hover:text-red-600"
+                      onClick={() => setOpen(false)}
+                      role="menuitem"
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
-        <div className="mt-3 border-t border-slate-100 pt-3 text-xs text-slate-500">
-          <Link href="/categories" className="transition hover:text-slate-900" onClick={() => setOpen(false)}>
-            مشاهده همه دسته‌بندی‌ها
-          </Link>
+
+          <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
+            <p className="text-sm font-bold text-[#111827]">ماشینت رو انتخاب کن</p>
+            <p className="mt-2 text-xs leading-6 text-[#6B7280]">
+              با انتخاب خودرو، روغن و فیلترهای سازگار را سریع‌تر پیدا کن.
+            </p>
+            <Link href="/cars" className="btn-primary mt-4 w-full !min-h-10 !py-2 text-xs" onClick={() => setOpen(false)}>
+              انتخاب خودرو
+            </Link>
+          </div>
         </div>
+
+        {categories.length > 0 && (
+          <div className="mt-5 border-t border-[#E5E7EB] pt-4">
+            <p className="mb-3 text-xs font-bold text-[#6B7280]">دسته‌بندی‌های فروشگاه</p>
+            <div className="flex flex-wrap gap-2">
+              {categories.slice(0, 10).map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/categories/${category.slug}`}
+                  className="rounded-full border border-[#E5E7EB] px-3 py-1.5 text-xs font-semibold text-[#374151] transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                  onClick={() => setOpen(false)}
+                >
+                  {category.name}
+                </Link>
+              ))}
+              <Link href="/categories" className="rounded-full px-3 py-1.5 text-xs font-bold text-red-600" onClick={() => setOpen(false)}>
+                مشاهده همه
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
+  );
+}
+
+function MenuIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" aria-hidden="true" {...props}>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function ChevronIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }

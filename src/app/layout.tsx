@@ -5,15 +5,15 @@ import { SiteFooter } from "@/components/layout/site-footer";
 
 export const metadata: Metadata = {
   title: "ZenLube | فروشگاه تخصصی روغن موتور و فیلتر خودرو",
-  description: "خرید آنلاین روغن موتور اصل، فیلتر خودرو، ضدیخ و روانکار با ضمانت اصالت، مشاوره تخصصی انتخاب روغن و ارسال سریع سراسر ایران.",
+  description: "خرید آنلاین روغن موتور اصل، فیلتر خودرو، ضدیخ و روانکار با ضمانت اصالت، مشاوره تخصصی انتخاب روغن و ارسال سریع.",
   metadataBase: new URL("https://zenlube.ir"),
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fa" dir="rtl">
-      <body className="bg-surface text-slate-800 antialiased">
-        <div className="flex min-h-screen flex-col bg-surface">
+      <body className="bg-[#F7F7F8] text-[#1F2937] antialiased">
+        <div className="flex min-h-screen flex-col bg-[#F7F7F8]">
           <SiteHeader />
           <main className="flex-1 bg-surface pb-20 lg:pb-0">{children}</main>
           <SiteFooter />

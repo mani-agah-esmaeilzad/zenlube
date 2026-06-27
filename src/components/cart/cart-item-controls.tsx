@@ -2,11 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import {
-  clearCartAction,
-  removeCartItemAction,
-  updateCartItemAction,
-} from "@/actions/cart";
+import { clearCartAction, removeCartItemAction, updateCartItemAction } from "@/actions/cart";
 import { cn } from "@/lib/utils";
 
 type CartItemControlsProps = {
@@ -27,29 +23,29 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
 
   return (
     <div className="flex items-center gap-3">
-      <button
-        type="button"
-        onClick={() => updateQuantity(quantity - 1)}
-        disabled={isPending || quantity <= 1}
-        className={cn(
-          "flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-lg text-white/80",
-          isPending && "opacity-50",
-        )}
-      >
-        –
-      </button>
-      <span className="text-sm text-white/80">{quantity}</span>
-      <button
-        type="button"
-        onClick={() => updateQuantity(quantity + 1)}
-        disabled={isPending}
-        className={cn(
-          "flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-lg text-white/80",
-          isPending && "opacity-50",
-        )}
-      >
-        +
-      </button>
+      <div className="flex items-center overflow-hidden rounded-xl border border-[#E5E7EB] bg-white">
+        <button
+          type="button"
+          aria-label="کم کردن تعداد"
+          onClick={() => updateQuantity(quantity - 1)}
+          disabled={isPending || quantity <= 1}
+          className={cn("flex h-9 w-9 items-center justify-center text-lg font-bold text-[#6B7280] hover:bg-[#F7F7F8]", isPending && "opacity-50")}
+        >
+          -
+        </button>
+        <span className="flex h-9 min-w-9 items-center justify-center border-x border-[#E5E7EB] text-sm font-bold text-[#111827]">
+          {quantity.toLocaleString("fa-IR")}
+        </span>
+        <button
+          type="button"
+          aria-label="زیاد کردن تعداد"
+          onClick={() => updateQuantity(quantity + 1)}
+          disabled={isPending}
+          className={cn("flex h-9 w-9 items-center justify-center text-lg font-bold text-[#6B7280] hover:bg-[#F7F7F8]", isPending && "opacity-50")}
+        >
+          +
+        </button>
+      </div>
       <button
         type="button"
         onClick={() =>
@@ -58,7 +54,7 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
             router.refresh();
           })
         }
-        className="text-xs text-white/60 hover:text-red-300"
+        className="text-xs font-bold text-[#DC2626] hover:text-[#EF394E]"
         disabled={isPending}
       >
         حذف
@@ -80,7 +76,7 @@ export function ClearCartButton() {
           router.refresh();
         })
       }
-      className="rounded-full border border-white/15 px-4 py-2 text-xs text-white/70 hover:border-red-300 hover:text-red-200 disabled:opacity-60"
+      className="btn-outline !min-h-10 text-xs disabled:opacity-60"
       disabled={isPending}
     >
       خالی کردن سبد

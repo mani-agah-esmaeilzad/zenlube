@@ -64,15 +64,19 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const content = await renderActiveTab(activeTab, userId, params);
 
   return (
-    <div className="space-y-10">
-      <header className="space-y-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">پیشخوان مدیریتی اویل‌بار</h1>
-          <p className="text-sm text-slate-500">
-            در این بخش می‌توانید محصولات، برندها، خودروها و فعالیت‌های کاربران را مدیریت کنید.
-          </p>
+    <div className="container-zen space-y-6 py-6 md:py-8">
+      <header className="rounded-3xl border border-[#E5E7EB] bg-white p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-bold text-red-600">پنل مدیریت</p>
+            <h1 className="mt-2 text-2xl font-extrabold text-[#111827] md:text-3xl">پیشخوان مدیریتی ZenLube</h1>
+            <p className="mt-2 text-sm leading-7 text-[#6B7280]">
+              محصولات، سفارش‌ها، برندها، خودروها و فعالیت کاربران را از یک فضای منظم مدیریت کنید.
+            </p>
+          </div>
+          <Link href="/" className="btn-outline">مشاهده فروشگاه</Link>
         </div>
-        <nav className="flex flex-wrap gap-2 rounded-3xl border border-slate-200 bg-white p-2 shadow-sm shadow-slate-500/10">
+        <nav className="mt-6 flex flex-wrap gap-2 rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-2">
           {tabs.map((tab) => {
             const isActive = tab.id === activeTab;
             return (
@@ -80,10 +84,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 key={tab.id}
                 href={tab.id === "overview" ? "/admin" : `/admin?tab=${tab.id}`}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm transition",
+                  "rounded-xl px-4 py-2 text-sm font-bold transition",
                   isActive
-                    ? "bg-sky-500 text-slate-900"
-                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900",
+                    ? "bg-[#111827] text-white"
+                    : "text-[#6B7280] hover:bg-white hover:text-[#111827]",
                 )}
               >
                 {tab.label}

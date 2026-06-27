@@ -4,10 +4,17 @@ import { getAllProductsWithFilters, getBrandsWithProductCount, getHighlightedCat
 import type { ProductSort } from "@/lib/data";
 
 type ProductsPageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+
 const sorts: { value: ProductSort; label: string }[] = [
-  { value: "bestseller", label: "پرفروش‌ترین" }, { value: "latest", label: "جدیدترین" }, { value: "price-asc", label: "ارزان‌ترین" }, { value: "price-desc", label: "گران‌ترین" }, { value: "rating", label: "مرتبط‌ترین" },
+  { value: "bestseller", label: "پرفروش‌ترین" },
+  { value: "latest", label: "جدیدترین" },
+  { value: "price-asc", label: "ارزان‌ترین" },
+  { value: "price-desc", label: "گران‌ترین" },
+  { value: "rating", label: "مرتبط‌ترین" },
 ];
-const oilFilters = ["0W-20", "5W-30", "5W-40", "10W-40", "تمام سنتتیک", "نیمه سنتتیک", "API SP", "ارسال فوری", "تخفیف‌دار"];
+
+const quickFilters = ["0W-20", "5W-30", "5W-40", "10W-40", "تمام سنتتیک", "نیمه سنتتیک", "API SP", "ارسال فوری", "تخفیف‌دار"];
+const specFilters = ["ویسکوزیته", "نوع روغن", "حجم", "API", "ACEA", "مناسب برای خودرو", "موجودی", "تخفیف‌دار"];
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
@@ -18,28 +25,130 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const allowedSorts = sorts.map((s) => s.value);
   const sort = typeof params.sort === "string" && allowedSorts.includes(params.sort as ProductSort) ? (params.sort as ProductSort) : "latest";
   const page = Number(params.page ?? "1") || 1;
-  const [categories, brands, productsResult] = await Promise.all([getHighlightedCategories(), getBrandsWithProductCount(), getAllProductsWithFilters({ search, category, brand, car, sort, page })]);
+  const [categories, brands, productsResult] = await Promise.all([
+    getHighlightedCategories(),
+    getBrandsWithProductCount(),
+    getAllProductsWithFilters({ search, category, brand, car, sort, page }),
+  ]);
   const { items, pageInfo } = productsResult;
+  const activeFilters = [search, category, brand, car].filter(Boolean) as string[];
+
   return (
-    <div className="container-zen py-8">
-      <nav className="mb-5 text-xs text-slate-500"><Link href="/">خانه</Link> / فروشگاه</nav>
-      <div className="card-zen mb-6 overflow-hidden bg-[#0f2747] p-6 text-white"><h1 className="text-3xl font-black">فروشگاه تخصصی روغن موتور و فیلتر</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-white/70">بر اساس برند، ویسکوزیته، نوع روغن، استاندارد API و سازگاری خودرو فیلتر کنید. {pageInfo.total.toLocaleString("fa-IR")} کالا پیدا شد.</p></div>
-      <form method="get" className="grid gap-6 lg:grid-cols-[280px_1fr]">
-        <aside className="card-zen h-fit p-5 lg:sticky lg:top-44">
-          <div className="flex items-center justify-between"><h2 className="font-black text-[#0f2747]">فیلترها</h2><Link href="/products" className="text-xs font-bold text-orange-600">حذف فیلترها</Link></div>
-          <div className="mt-5 space-y-4">
-            <label className="block text-xs font-bold text-slate-600">جستجو<input name="search" defaultValue={search} className="input-zen mt-2" placeholder="نام محصول، برند، مدل خودرو" /></label>
-            <label className="block text-xs font-bold text-slate-600">دسته‌بندی<select name="category" defaultValue={category ?? ""} className="input-zen mt-2"><option value="">همه دسته‌ها</option>{categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}</select></label>
-            <label className="block text-xs font-bold text-slate-600">برند<select name="brand" defaultValue={brand ?? ""} className="input-zen mt-2"><option value="">همه برندها</option>{brands.map((b) => <option key={b.id} value={b.slug}>{b.name}</option>)}</select></label>
-            <label className="block text-xs font-bold text-slate-600">مناسب برای خودرو<input name="car" defaultValue={car} className="input-zen mt-2" placeholder="اسلاگ خودرو" /></label>
-            <div><p className="mb-2 text-xs font-bold text-slate-600">فیلترهای سریع روغن</p><div className="flex flex-wrap gap-2">{oilFilters.map((f) => <Link key={f} href={`/products?search=${encodeURIComponent(f)}`} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:border-orange-300 hover:text-orange-600">{f}</Link>)}</div></div>
+    <div className="container-zen py-6 md:py-8">
+      <nav className="mb-4 text-xs font-medium text-[#6B7280]">
+        <Link href="/" className="hover:text-red-600">خانه</Link>
+        <span className="mx-2">/</span>
+        فروشگاه
+      </nav>
+
+      <header className="mb-6 rounded-3xl bg-[#111827] p-6 text-white md:p-8">
+        <div className="max-w-3xl">
+          <h1 className="text-2xl font-extrabold leading-[1.7] md:text-3xl">فروشگاه تخصصی روغن موتور و فیلتر</h1>
+          <p className="mt-3 text-sm leading-8 text-white/70">
+            بر اساس برند، ویسکوزیته، نوع روغن، استاندارد API و سازگاری خودرو فیلتر کنید. {pageInfo.total.toLocaleString("fa-IR")} کالا پیدا شد.
+          </p>
+        </div>
+      </header>
+
+      <div className="mb-4 flex gap-2 lg:hidden">
+        <button className="btn-outline flex-1">فیلترها</button>
+        <button className="btn-outline flex-1">مرتب‌سازی</button>
+      </div>
+
+      <form method="get" className="grid gap-6 lg:grid-cols-[300px_1fr]">
+        <aside className="hidden h-fit rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-[0_10px_28px_rgba(17,24,39,0.04)] lg:sticky lg:top-40 lg:block">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-extrabold text-[#111827]">فیلترها</h2>
+            <Link href="/products" className="text-xs font-bold text-red-600">حذف همه فیلترها</Link>
+          </div>
+          <div className="mt-5 space-y-5">
+            <label className="block text-xs font-bold text-[#374151]">
+              جستجو
+              <input name="search" defaultValue={search} className="input-zen mt-2" placeholder="نام محصول، برند، مدل خودرو" />
+            </label>
+            <label className="block text-xs font-bold text-[#374151]">
+              دسته‌بندی
+              <select name="category" defaultValue={category ?? ""} className="input-zen mt-2">
+                <option value="">همه دسته‌ها</option>
+                {categories.map((item) => <option key={item.id} value={item.slug}>{item.name}</option>)}
+              </select>
+            </label>
+            <label className="block text-xs font-bold text-[#374151]">
+              برند
+              <select name="brand" defaultValue={brand ?? ""} className="input-zen mt-2">
+                <option value="">همه برندها</option>
+                {brands.map((item) => <option key={item.id} value={item.slug}>{item.name}</option>)}
+              </select>
+            </label>
+            <label className="block text-xs font-bold text-[#374151]">
+              مناسب برای خودرو
+              <input name="car" defaultValue={car} className="input-zen mt-2" placeholder="اسلاگ خودرو" />
+            </label>
+
+            <div>
+              <p className="mb-3 text-xs font-bold text-[#374151]">فیلترهای فنی</p>
+              <div className="space-y-2">
+                {specFilters.map((item) => (
+                  <label key={item} className="flex items-center justify-between rounded-xl border border-[#E5E7EB] px-3 py-2 text-xs font-medium text-[#6B7280]">
+                    {item}
+                    <input type="checkbox" className="size-4 accent-[#EF394E]" />
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-bold text-[#374151]">فیلترهای سریع روغن</p>
+              <div className="flex flex-wrap gap-2">
+                {quickFilters.map((item) => (
+                  <Link key={item} href={`/products?search=${encodeURIComponent(item)}`} className="rounded-full border border-[#E5E7EB] px-3 py-1.5 text-xs font-semibold text-[#6B7280] hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+                    {item}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
             <button className="btn-primary w-full">اعمال فیلتر</button>
           </div>
         </aside>
+
         <section>
-          <div className="card-zen mb-5 flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"><div className="flex flex-wrap gap-2 text-xs">{[search, category, brand, car].filter(Boolean).map((x) => <span key={x} className="rounded-full bg-orange-50 px-3 py-1 font-bold text-orange-700">{x}</span>)}</div><label className="flex items-center gap-2 text-xs font-bold text-slate-600">مرتب‌سازی<select name="sort" defaultValue={sort} className="rounded-full border border-slate-200 bg-white px-3 py-2">{sorts.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}</select><button className="btn-secondary !px-4 !py-2 text-xs">اعمال</button></label></div>
-          {items.length ? <div className="grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3">{items.map((product) => <ProductCard key={product.id} product={product} />)}</div> : <div className="card-zen p-12 text-center"><p className="text-xl font-black text-slate-800">نتیجه‌ای پیدا نشد</p><p className="mt-2 text-sm text-slate-500">فیلترها را تغییر دهید یا از مشاوره انتخاب روغن کمک بگیرید.</p><Link href="/products" className="btn-primary mt-5">حذف فیلترها</Link></div>}
-          {pageInfo.totalPages > 1 && <div className="mt-8 flex justify-center gap-3 text-sm">{pageInfo.hasPreviousPage && <Link className="btn-outline" href={{ pathname: "/products", query: { ...params, page: String(page - 1) } }}>قبلی</Link>}<span className="rounded-full bg-white px-4 py-2">صفحه {page} از {pageInfo.totalPages}</span>{pageInfo.hasNextPage && <Link className="btn-outline" href={{ pathname: "/products", query: { ...params, page: String(page + 1) } }}>بعدی</Link>}</div>}
+          <div className="mb-5 rounded-2xl border border-[#E5E7EB] bg-white p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex min-h-8 flex-wrap gap-2">
+                {activeFilters.length ? activeFilters.map((item) => (
+                  <span key={item} className="rounded-full bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600">{item}</span>
+                )) : <span className="text-sm text-[#6B7280]">همه محصولات فروشگاه</span>}
+              </div>
+              <label className="flex items-center gap-2 text-xs font-bold text-[#374151]">
+                مرتب‌سازی
+                <select name="sort" defaultValue={sort} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2">
+                  {sorts.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                </select>
+                <button className="btn-secondary !min-h-9 !rounded-xl !px-4 !py-2 text-xs">اعمال</button>
+              </label>
+            </div>
+          </div>
+
+          {items.length ? (
+            <div className="grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3">
+              {items.map((product) => <ProductCard key={product.id} product={product} />)}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-[#E5E7EB] bg-white p-10 text-center">
+              <p className="text-xl font-extrabold text-[#111827]">محصولی با این فیلترها پیدا نشد</p>
+              <p className="mt-2 text-sm text-[#6B7280]">فیلترها را تغییر دهید یا از راهنمای انتخاب روغن کمک بگیرید.</p>
+              <Link href="/products" className="btn-primary mt-5">حذف فیلترها</Link>
+            </div>
+          )}
+
+          {pageInfo.totalPages > 1 && (
+            <div className="mt-8 flex justify-center gap-3 text-sm">
+              {pageInfo.hasPreviousPage && <Link className="btn-outline" href={{ pathname: "/products", query: { ...params, page: String(page - 1) } }}>قبلی</Link>}
+              <span className="inline-flex items-center rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 font-bold text-[#374151]">صفحه {page.toLocaleString("fa-IR")} از {pageInfo.totalPages.toLocaleString("fa-IR")}</span>
+              {pageInfo.hasNextPage && <Link className="btn-outline" href={{ pathname: "/products", query: { ...params, page: String(page + 1) } }}>بعدی</Link>}
+            </div>
+          )}
         </section>
       </form>
     </div>

@@ -12,11 +12,11 @@ export function SignInButton({ className }: SignInButtonProps) {
     <Link
       href="/sign-in"
       className={cn(
-        "rounded-full border border-sky-200 bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-sky-300/40 transition hover:border-sky-300 hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-200",
+        "inline-flex min-h-11 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-white px-4 text-sm font-bold text-[#111827] shadow-sm transition hover:border-red-200 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-100",
         className,
       )}
     >
-      {"ورود / ثبت‌نام"}
+      ورود / ثبت‌نام
     </Link>
   );
 }

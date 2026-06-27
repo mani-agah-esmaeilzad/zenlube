@@ -1,39 +1,31 @@
+import Image from "next/image";
 import Link from "next/link";
+
+const footerGroups = [
+  { title: "دسته‌بندی‌ها", links: [["روغن موتور", "/products?category=engine-oil"], ["فیلتر روغن", "/products?search=فیلتر روغن"], ["ضدیخ", "/products?search=ضدیخ"], ["روغن گیربکس", "/products?search=گیربکس"]] },
+  { title: "خدمات مشتریان", links: [["پیگیری سفارش", "/account"], ["پشتیبانی", "/support"], ["قوانین", "/terms"], ["حریم خصوصی", "/policy"]] },
+  { title: "راهنما", links: [["راهنمای انتخاب روغن", "/blog"], ["انتخاب بر اساس خودرو", "/cars"], ["برندها", "/brands"], ["مقایسه محصولات", "/products/compare"]] },
+];
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-white/90">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+    <footer className="border-t border-slate-200 bg-[#0f2747] text-white">
+      <div className="container-zen grid gap-10 py-12 lg:grid-cols-[1.4fr_2fr_1fr]">
         <div>
-          <p className="text-lg font-semibold text-slate-900">ZenLube</p>
-          <p className="mt-2 max-w-md leading-6 text-slate-600">
-            فروشگاه تخصصی روغن موتور برای خودروهای مدرن و کلاسیک با تمرکز بر سادگی، سرعت و
-            تجربه کاربری مینیمال.
-          </p>
+          <p className="text-2xl font-black">ZenLube</p>
+          <p className="mt-3 max-w-sm text-sm leading-7 text-white/70">فروشگاه تخصصی روغن موتور، فیلتر و روانکار خودرو با تمرکز بر کالای اصل، انتخاب فنی دقیق و تجربه خرید سریع و مطمئن.</p>
+          <div className="mt-5 space-y-2 text-sm text-white/80"><p>پشتیبانی: ۰۲۱-۱۲۳۴۵۶۷۸</p><p>تهران، مرکز پردازش سفارش ZenLube</p></div>
         </div>
-        <div className="flex flex-wrap items-center gap-6 text-slate-600">
-          <Link href="/policy" className="transition hover:text-slate-900">
-            حریم خصوصی
-          </Link>
-          <Link href="/terms" className="transition hover:text-slate-900">
-            قوانین استفاده
-          </Link>
-          <Link href="/support" className="transition hover:text-slate-900">
-            پشتیبانی
-          </Link>
+        <div className="grid gap-7 sm:grid-cols-3">
+          {footerGroups.map((group) => <div key={group.title}><h3 className="font-bold text-white">{group.title}</h3><ul className="mt-4 space-y-3 text-sm text-white/65">{group.links.map(([label, href]) => <li key={label}><Link href={href} className="hover:text-orange-300">{label}</Link></li>)}</ul></div>)}
         </div>
-        <div className="flex flex-col items-end gap-2 text-xs text-slate-400">
-          <Link
-            href="#"
-            className="flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-sky-200"
-            aria-label="نماد اعتماد الکترونیکی"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/enamad-placeholder.svg" alt="محل قرارگیری نماد اعتماد" className="h-16 w-16 object-contain" />
-          </Link>
-          <p>© {new Date().getFullYear()} ZenLube - همه حقوق محفوظ است.</p>
+        <div>
+          <h3 className="font-bold">خبرنامه و اعتماد</h3>
+          <form className="mt-4 flex overflow-hidden rounded-2xl bg-white p-1"><input aria-label="ایمیل خبرنامه" placeholder="ایمیل شما" className="min-w-0 flex-1 px-3 text-sm text-slate-900 outline-none" /><button className="rounded-xl bg-orange-500 px-3 text-xs font-bold text-white">عضویت</button></form>
+          <Link href="#" className="mt-5 flex h-24 w-24 items-center justify-center rounded-2xl bg-white p-3" aria-label="نماد اعتماد الکترونیکی"><Image src="/enamad-placeholder.svg" alt="محل قرارگیری نماد اعتماد" width={80} height={80} className="h-full w-full object-contain" /></Link>
         </div>
       </div>
+      <div className="border-t border-white/10 py-4 text-center text-xs text-white/55">© {new Date().getFullYear()} ZenLube - همه حقوق محفوظ است.</div>
     </footer>
   );
 }

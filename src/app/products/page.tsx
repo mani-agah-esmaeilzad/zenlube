@@ -1,16 +1,13 @@
 import Link from "next/link";
-import { CategoryCard } from "@/components/catalog/category-card";
 import { ProductCard } from "@/components/product/product-card";
-import {
-  getAllProductsWithFilters,
-  getBrandsWithProductCount,
-  getHighlightedCategories,
-} from "@/lib/data";
+import { getAllProductsWithFilters, getBrandsWithProductCount, getHighlightedCategories } from "@/lib/data";
 import type { ProductSort } from "@/lib/data";
 
-type ProductsPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
+type ProductsPageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+const sorts: { value: ProductSort; label: string }[] = [
+  { value: "bestseller", label: "پرفروش‌ترین" }, { value: "latest", label: "جدیدترین" }, { value: "price-asc", label: "ارزان‌ترین" }, { value: "price-desc", label: "گران‌ترین" }, { value: "rating", label: "مرتبط‌ترین" },
+];
+const oilFilters = ["0W-20", "5W-30", "5W-40", "10W-40", "تمام سنتتیک", "نیمه سنتتیک", "API SP", "ارسال فوری", "تخفیف‌دار"];
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
@@ -18,193 +15,33 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const category = typeof params.category === "string" ? params.category : undefined;
   const brand = typeof params.brand === "string" ? params.brand : undefined;
   const car = typeof params.car === "string" ? params.car : undefined;
-  const allowedSorts: ProductSort[] = ["latest", "price-asc", "price-desc", "rating", "bestseller"];
-  const sort =
-    typeof params.sort === "string" && allowedSorts.includes(params.sort as ProductSort)
-      ? (params.sort as ProductSort)
-      : "latest";
+  const allowedSorts = sorts.map((s) => s.value);
+  const sort = typeof params.sort === "string" && allowedSorts.includes(params.sort as ProductSort) ? (params.sort as ProductSort) : "latest";
   const page = Number(params.page ?? "1") || 1;
-
-  const [categories, brands, productsResult] = await Promise.all([
-    getHighlightedCategories(),
-    getBrandsWithProductCount(),
-    getAllProductsWithFilters({ search, category, brand, car, sort, page }),
-  ]);
-
+  const [categories, brands, productsResult] = await Promise.all([getHighlightedCategories(), getBrandsWithProductCount(), getAllProductsWithFilters({ search, category, brand, car, sort, page })]);
   const { items, pageInfo } = productsResult;
-
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12">
-      <header className="flex flex-col gap-4 text-slate-700">
-        <h1 className="text-3xl font-semibold text-slate-900">فروشگاه روغن موتور ZenLube</h1>
-        <p className="text-sm leading-7 text-slate-600">
-          بر اساس برند، دسته‌بندی یا خودرو فیلتر کنید و بهترین روغن موتور را پیدا کنید. تمامی قیمت‌ها به‌روز و موجودی کالاها از طریق پنل مدیریت کنترل می‌شود.
-        </p>
-      </header>
-
-      <form className="mt-10 grid gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:grid-cols-2 lg:grid-cols-5" method="get">
-        <div className="flex flex-col gap-2">
-          <label htmlFor="search" className="text-xs font-semibold text-slate-600">
-            جستجو
-          </label>
-          <input
-            id="search"
-            name="search"
-            defaultValue={search}
-            placeholder="نام محصول، برند یا ویسکوزیته"
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="category" className="text-xs font-semibold text-slate-600">
-            دسته‌بندی
-          </label>
-          <select
-            id="category"
-            name="category"
-            defaultValue={category ?? ""}
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300"
-          >
-            <option value="">همه دسته‌ها</option>
-            {categories.map((item) => (
-              <option key={item.id} value={item.slug}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="brand" className="text-xs font-semibold text-slate-600">
-            برند
-          </label>
-          <select
-            id="brand"
-            name="brand"
-            defaultValue={brand ?? ""}
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300"
-          >
-            <option value="">همه برندها</option>
-            {brands.map((item) => (
-              <option key={item.id} value={item.slug}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="car" className="text-xs font-semibold text-slate-600">
-            فیلتر خودرو (اسلاگ)
-          </label>
-          <input
-            id="car"
-            name="car"
-            defaultValue={car}
-            placeholder="مثال: bmw-3-series-f30-320i"
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="sort" className="text-xs font-semibold text-slate-600">
-            مرتب‌سازی
-          </label>
-          <select
-            id="sort"
-            name="sort"
-            defaultValue={sort}
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300"
-          >
-            <option value="latest">جدیدترین</option>
-            <option value="price-asc">ارزان‌ترین</option>
-            <option value="price-desc">گران‌ترین</option>
-            <option value="rating">بالاترین امتیاز</option>
-            <option value="bestseller">پرفروش‌ترین</option>
-          </select>
-        </div>
-        <div className="sm:col-span-2 lg:col-span-5 flex flex-wrap items-center gap-4">
-          <button
-            type="submit"
-            className="rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-600"
-          >
-            اعمال فیلتر
-          </button>
-          <Link
-            href="/products"
-            className="rounded-full border border-slate-200 px-6 py-2 text-sm text-slate-600 transition hover:border-sky-200 hover:text-sky-700"
-          >
-            حذف فیلترها
-          </Link>
-          <span className="text-xs text-slate-500">{pageInfo.total} نتیجه یافت شد</span>
-        </div>
-      </form>
-
-      <div className="mt-12 grid gap-10 lg:grid-cols-[2fr_1fr]">
-        <div>
-          {items.length ? (
-            <div className="grid gap-8 md:grid-cols-2">
-              {items.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-12 text-center text-slate-500">
-              محصولی با فیلتر انتخابی یافت نشد.
-            </div>
-          )}
-          {pageInfo.totalPages > 1 && (
-            <div className="mt-10 flex items-center justify-center gap-4 text-sm text-slate-600">
-              {pageInfo.hasPreviousPage && (
-                <Link
-                  href={{
-                    pathname: "/products",
-                    query: {
-                      ...params,
-                      page: String(page - 1),
-                    },
-                  }}
-                  className="rounded-full border border-slate-200 px-4 py-2 transition hover:border-sky-200 hover:text-sky-700"
-                >
-                  قبلی
-                </Link>
-              )}
-              <span>
-                صفحه {page} از {pageInfo.totalPages}
-              </span>
-              {pageInfo.hasNextPage && (
-                <Link
-                  href={{
-                    pathname: "/products",
-                    query: {
-                      ...params,
-                      page: String(page + 1),
-                    },
-                  }}
-                  className="rounded-full border border-slate-200 px-4 py-2 transition hover:border-sky-200 hover:text-sky-700"
-                >
-                  بعدی
-                </Link>
-              )}
-            </div>
-          )}
-        </div>
-        <aside className="space-y-6">
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-slate-900">دسته‌بندی‌های محبوب</h2>
-            <div className="grid gap-4">
-              {categories.slice(0, 4).map((categoryItem) => (
-                <CategoryCard key={categoryItem.id} category={categoryItem} />
-              ))}
-            </div>
-          </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
-            <h3 className="text-base font-semibold text-slate-900">چطور محصول مناسب را انتخاب کنم؟</h3>
-            <ol className="mt-4 space-y-2 list-decimal list-inside">
-              <li>دسته‌بندی را بر اساس نوع موتور (بنزینی، دیزلی، سنتتیک) انتخاب کنید.</li>
-              <li>برند مورد اعتماد خود یا پیشنهاد ZenLube را فیلتر کنید.</li>
-              <li>اگر خودرو در لیست ZenLube است، اسلاگ آن را وارد کنید تا محصولات پیشنهادی نمایش داده شوند.</li>
-            </ol>
+    <div className="container-zen py-8">
+      <nav className="mb-5 text-xs text-slate-500"><Link href="/">خانه</Link> / فروشگاه</nav>
+      <div className="card-zen mb-6 overflow-hidden bg-[#0f2747] p-6 text-white"><h1 className="text-3xl font-black">فروشگاه تخصصی روغن موتور و فیلتر</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-white/70">بر اساس برند، ویسکوزیته، نوع روغن، استاندارد API و سازگاری خودرو فیلتر کنید. {pageInfo.total.toLocaleString("fa-IR")} کالا پیدا شد.</p></div>
+      <form method="get" className="grid gap-6 lg:grid-cols-[280px_1fr]">
+        <aside className="card-zen h-fit p-5 lg:sticky lg:top-44">
+          <div className="flex items-center justify-between"><h2 className="font-black text-[#0f2747]">فیلترها</h2><Link href="/products" className="text-xs font-bold text-orange-600">حذف فیلترها</Link></div>
+          <div className="mt-5 space-y-4">
+            <label className="block text-xs font-bold text-slate-600">جستجو<input name="search" defaultValue={search} className="input-zen mt-2" placeholder="نام محصول، برند، مدل خودرو" /></label>
+            <label className="block text-xs font-bold text-slate-600">دسته‌بندی<select name="category" defaultValue={category ?? ""} className="input-zen mt-2"><option value="">همه دسته‌ها</option>{categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}</select></label>
+            <label className="block text-xs font-bold text-slate-600">برند<select name="brand" defaultValue={brand ?? ""} className="input-zen mt-2"><option value="">همه برندها</option>{brands.map((b) => <option key={b.id} value={b.slug}>{b.name}</option>)}</select></label>
+            <label className="block text-xs font-bold text-slate-600">مناسب برای خودرو<input name="car" defaultValue={car} className="input-zen mt-2" placeholder="اسلاگ خودرو" /></label>
+            <div><p className="mb-2 text-xs font-bold text-slate-600">فیلترهای سریع روغن</p><div className="flex flex-wrap gap-2">{oilFilters.map((f) => <Link key={f} href={`/products?search=${encodeURIComponent(f)}`} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:border-orange-300 hover:text-orange-600">{f}</Link>)}</div></div>
+            <button className="btn-primary w-full">اعمال فیلتر</button>
           </div>
         </aside>
-      </div>
+        <section>
+          <div className="card-zen mb-5 flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"><div className="flex flex-wrap gap-2 text-xs">{[search, category, brand, car].filter(Boolean).map((x) => <span key={x} className="rounded-full bg-orange-50 px-3 py-1 font-bold text-orange-700">{x}</span>)}</div><label className="flex items-center gap-2 text-xs font-bold text-slate-600">مرتب‌سازی<select name="sort" defaultValue={sort} className="rounded-full border border-slate-200 bg-white px-3 py-2">{sorts.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}</select><button className="btn-secondary !px-4 !py-2 text-xs">اعمال</button></label></div>
+          {items.length ? <div className="grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3">{items.map((product) => <ProductCard key={product.id} product={product} />)}</div> : <div className="card-zen p-12 text-center"><p className="text-xl font-black text-slate-800">نتیجه‌ای پیدا نشد</p><p className="mt-2 text-sm text-slate-500">فیلترها را تغییر دهید یا از مشاوره انتخاب روغن کمک بگیرید.</p><Link href="/products" className="btn-primary mt-5">حذف فیلترها</Link></div>}
+          {pageInfo.totalPages > 1 && <div className="mt-8 flex justify-center gap-3 text-sm">{pageInfo.hasPreviousPage && <Link className="btn-outline" href={{ pathname: "/products", query: { ...params, page: String(page - 1) } }}>قبلی</Link>}<span className="rounded-full bg-white px-4 py-2">صفحه {page} از {pageInfo.totalPages}</span>{pageInfo.hasNextPage && <Link className="btn-outline" href={{ pathname: "/products", query: { ...params, page: String(page + 1) } }}>بعدی</Link>}</div>}
+        </section>
+      </form>
     </div>
   );
 }

@@ -1,7 +1,10 @@
 import { Prisma } from "@/generated/prisma";
 
-const BASE_URL = process.env.ZARINPAL_BASE_URL ?? "https://api.zarinpal.com/pg/v4";
-const START_PAY_URL = process.env.ZARINPAL_STARTPAY_URL ?? "https://www.zarinpal.com/pg/StartPay";
+import { config } from "../config";
+import { logger } from "../logger";
+
+const BASE_URL = config.ZARINPAL_BASE_URL;
+const START_PAY_URL = config.ZARINPAL_STARTPAY_URL;
 
 export type PaymentRequestArgs = {
   amount: Prisma.Decimal | number;
@@ -23,11 +26,7 @@ export type PaymentVerifyResult = {
 };
 
 function ensureMerchantId() {
-  const merchantId = process.env.ZARINPAL_MERCHANT_ID;
-  if (!merchantId) {
-    throw new Error("شناسه پذیرنده زرین‌پال تنظیم نشده است.");
-  }
-  return merchantId;
+  return config.ZARINPAL_MERCHANT_ID;
 }
 
 function toTomans(amount: Prisma.Decimal | number) {
@@ -58,6 +57,8 @@ export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<
   });
 
   if (!response.ok) {
+    const text = await response.text();
+    logger.error("Zarinpal request failed", { status: response.status, body: text });
     throw new Error("خطا در ایجاد تراکنش زرین‌پال رخ داد.");
   }
 
@@ -68,6 +69,7 @@ export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<
 
   if (!data.data || data.data.code !== 100 || !data.data.authority) {
     const errorMessage = data.errors?.[0]?.message ?? "پاسخ نامعتبر از زرین‌پال";
+    logger.warn("Unexpected Zarinpal request response", { payload: data });
     throw new Error(errorMessage);
   }
 
@@ -95,6 +97,8 @@ export async function verifyZarinpalPayment(authority: string, amount: Prisma.De
   });
 
   if (!response.ok) {
+    const text = await response.text();
+    logger.error("Zarinpal verification failed", { status: response.status, body: text });
     throw new Error("بررسی تراکنش زرین‌پال با خطا مواجه شد.");
   }
 
@@ -105,6 +109,7 @@ export async function verifyZarinpalPayment(authority: string, amount: Prisma.De
 
   if (!data.data || (data.data.code !== 100 && data.data.code !== 101) || !data.data.ref_id) {
     const errorMessage = data.errors?.[0]?.message ?? "تایید تراکنش ناموفق بود.";
+    logger.warn("Unexpected Zarinpal verify response", { payload: data });
     throw new Error(errorMessage);
   }
 

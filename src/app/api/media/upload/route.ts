@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import { randomUUID } from "crypto";
+import { saveFile } from "@/lib/storage";
+import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
 export async function POST(request: Request) {
   try {
@@ -25,18 +23,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "حجم فایل نباید بیش از ۵ مگابایت باشد." }, { status: 400 });
     }
 
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-
-    const extension = path.extname(file.name) || ".jpg";
-    const fileName = `${randomUUID()}${extension}`;
-    const filePath = path.join(UPLOAD_DIR, fileName);
-
     const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(filePath, buffer);
+    const saved = await saveFile({
+      buffer,
+      contentType: file.type,
+      originalName: file.name,
+    });
 
-    return NextResponse.json({ success: true, url: `/uploads/${fileName}` });
+    return NextResponse.json({ success: true, url: saved.url, key: saved.key });
   } catch (error) {
     const message = error instanceof Error ? error.message : "آپلود فایل با خطا مواجه شد.";
+    logger.error("Media upload failed", { error: message });
     return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }

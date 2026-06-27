@@ -4,6 +4,17 @@ import { withAuth } from "next-auth/middleware";
 export default withAuth(
   function middleware(request) {
     const role = request.nextauth?.token?.role;
+    const adminExpiresAt = request.nextauth?.token?.adminExpiresAt;
+
+    if (role === "ADMIN" && typeof adminExpiresAt === "number") {
+      const now = Math.floor(Date.now() / 1000);
+      if (adminExpiresAt < now) {
+        const expiredUrl = new URL("/sign-in", request.url);
+        expiredUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+        expiredUrl.searchParams.set("reason", "admin-session-expired");
+        return NextResponse.redirect(expiredUrl);
+      }
+    }
 
     if (role !== "ADMIN") {
       const signInUrl = new URL("/sign-in", request.url);
@@ -15,7 +26,18 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => Boolean(token),
+      authorized: ({ token }) => {
+        if (!token) {
+          return false;
+        }
+        if (token.role !== "ADMIN") {
+          return false;
+        }
+        if (typeof token.adminExpiresAt === "number") {
+          return token.adminExpiresAt > Math.floor(Date.now() / 1000);
+        }
+        return true;
+      },
     },
   },
 );

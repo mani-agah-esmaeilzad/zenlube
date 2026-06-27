@@ -5,23 +5,29 @@ import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import prisma from "./prisma";
+import { config } from "./config";
+
+type RoleAwareToken = JWT & { role?: string | null; adminExpiresAt?: number };
 
 type JwtCallbackParams = {
-  token: JWT & { role?: string | null };
+  token: RoleAwareToken;
   user?: AdapterUser | null;
 };
 
 type SessionCallbackParams = {
-  session: Session & { user: Session["user"] & { id?: string; role?: string | null } };
-  token: JWT & { sub?: string; role?: string | null };
+  session: Session & {
+    user: Session["user"] & { id?: string; role?: string | null; adminExpiresAt?: number };
+  };
+  token: RoleAwareToken & { sub?: string };
 };
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt" as const,
+    maxAge: 60 * 60 * 24, // 24 hours for standard sessions
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: config.NEXTAUTH_SECRET,
   pages: {
     signIn: "/sign-in",
   },
@@ -65,7 +71,16 @@ export const authOptions = {
       if (user) {
         const userWithRole = user as AdapterUser & { role?: string | null };
         token.role = userWithRole.role ?? token.role;
+        if (token.role === "ADMIN") {
+          token.adminExpiresAt = Math.floor(Date.now() / 1000) + 15 * 60; // 15 minute admin session window
+        }
       }
+
+      if (token.role === "ADMIN" && token.adminExpiresAt && token.adminExpiresAt < Math.floor(Date.now() / 1000)) {
+        delete token.role;
+        delete token.adminExpiresAt;
+      }
+
       return token;
     },
     async session({ session, token }: SessionCallbackParams) {
@@ -74,6 +89,9 @@ export const authOptions = {
       }
       if (typeof token.role === "string") {
         session.user.role = token.role;
+      }
+      if (typeof token.adminExpiresAt === "number") {
+        session.user.adminExpiresAt = token.adminExpiresAt;
       }
       return session;
     },

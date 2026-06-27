@@ -42,8 +42,15 @@ ZenLube یک فروشگاه کامل برای فروش آنلاین روغن م�
    ZARINPAL_CALLBACK_URL="http://localhost:3000/api/payments/zarinpal/callback"
    MELIPAYAMAK_USERNAME="نام کاربری ملی پیامک"
    MELIPAYAMAK_PASSWORD="رمز عبور ملی پیامک"
-   MELIPAYAMAK_ORIGINATOR="شماره ارسال‌کننده"
+   MELIPAYAMAK_FROM="شماره ارسال‌کننده"
    NEXT_PUBLIC_APP_URL="http://localhost:3000"
+   STORAGE_DRIVER="local" # یا s3
+   STORAGE_BUCKET="نام باکت در صورت استفاده از S3"
+   AWS_ACCESS_KEY_ID="کلید دسترسی در صورت استفاده از S3"
+   AWS_SECRET_ACCESS_KEY="کلید محرمانه در صورت استفاده از S3"
+   AWS_REGION="منطقه AWS"
+   CRON_SECRET="رمز تأیید برای Webhookهای زمان‌بندی"
+   HCAPTCHA_SECRET="توکن سرور کپچا (اختیاری)"
    ```
 
 4. دیتابیس را مهاجرت دهید و داده‌های اولیه را اعمال کنید:
@@ -75,7 +82,11 @@ ZenLube یک فروشگاه کامل برای فروش آنلاین روغن م�
    - `ZARINPAL_CALLBACK_URL`
    - `MELIPAYAMAK_USERNAME`
    - `MELIPAYAMAK_PASSWORD`
-   - `MELIPAYAMAK_ORIGINATOR`
+   - `MELIPAYAMAK_FROM`
+   - `STORAGE_DRIVER`
+   - `STORAGE_BUCKET` + کلیدهای AWS (در صورت انتخاب `s3`)
+   - `CRON_SECRET`
+   - `HCAPTCHA_SECRET` (در صورت فعال‌سازی کپچا)
 3. قبل از اولین استقرار، روی محیط production دستور زیر را اجرا کنید (از طریق Vercel CLI یا pipeline):
 
    ```bash

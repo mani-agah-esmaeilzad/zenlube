@@ -26,6 +26,7 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   return (
+    <>
     <div className="flex items-center lg:hidden">
       <button
         type="button"
@@ -115,5 +116,13 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
         </div>
       )}
     </div>
+    <nav className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-slate-200 bg-white px-2 py-2 text-[11px] font-bold text-slate-600 shadow-2xl lg:hidden">
+      <Link href="/" className="text-center">خانه</Link>
+      <button type="button" onClick={() => setOpen(true)} className="text-center font-bold">دسته‌بندی</button>
+      <Link href="/products" className="text-center">جستجو</Link>
+      <Link href="/cart" className="text-center">سبد خرید</Link>
+      <Link href={isAuthenticated ? "/account" : "/sign-in"} className="text-center">حساب</Link>
+    </nav>
+    </>
   );
 }

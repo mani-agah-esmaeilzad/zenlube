@@ -16,6 +16,8 @@
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
     "vehicles:bama:draft": "tsx scripts/scrape-bama-vehicles.ts",
+    "vehicles:bama:details": "tsx scripts/scrape-bama-vehicle-details.ts",
+    "vehicles:oil:candidates": "tsx scripts/scrape-ravenol-oil-specs.ts",
     "vehicles:table:draft": "tsx scripts/import-vehicle-table.ts",
     "seed:vehicles": "tsx prisma/seed-verified-cars.ts"
   },

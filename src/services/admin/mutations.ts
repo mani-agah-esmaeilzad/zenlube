@@ -130,7 +130,6 @@ export async function deleteProduct(productId: string) {
       prisma.product.update({
         where: { id: productId },
         data: {
-          isActive: false,
           stock: 0,
           isFeatured: false,
           isBestseller: false,

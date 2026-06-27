@@ -4,7 +4,7 @@ export async function getBrandsWithProductCount() {
   return prisma.brand.findMany({
     include: {
       _count: {
-        select: { products: { where: { isActive: true } } },
+        select: { products: true },
       },
     },
     orderBy: { name: "asc" },

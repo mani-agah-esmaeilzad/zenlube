@@ -4,7 +4,7 @@ export async function getHighlightedCategories() {
   return prisma.category.findMany({
     include: {
       _count: {
-        select: { products: { where: { isActive: true } } },
+        select: { products: true },
       },
     },
     orderBy: { name: "asc" },

@@ -48,13 +48,13 @@ export async function addToCartAction(input: { productId: string; quantity?: num
 
     const { productId, quantity } = parsed.data;
 
-    const product = await prisma.product.findFirst({
-      where: { id: productId, isActive: true },
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
       select: { stock: true },
     });
 
     if (!product) {
-      return { success: false, message: "این محصول دیگر در فروشگاه فعال نیست." };
+      return { success: false, message: "این محصول در فروشگاه پیدا نشد." };
     }
 
     if (product.stock < quantity) {

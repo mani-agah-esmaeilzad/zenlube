@@ -1,4 +1,3 @@
-import type { HTMLAttributes, ReactNode } from "react";
 import Link from "next/link";
 import { ProductCard } from "@/components/product/product-card";
 import { getAllProductsWithFilters, getBrandsWithProductCount, getHighlightedCategories } from "@/lib/data";
@@ -44,68 +43,5 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         </section>
       </form>
     </div>
-  );
-}
-
-function FilterField({ label, htmlFor, children }: { label: string; htmlFor: string; children: ReactNode }) {
-  return (
-    <label htmlFor={htmlFor} className="flex flex-col gap-2 text-xs font-semibold text-slate-600">
-      {label}
-      {children}
-    </label>
-  );
-}
-
-const menuLinks = [
-  { label: "خانه", href: "/" },
-  { label: "محصولات", href: "/products" },
-  { label: "صنایع", href: "/brands" },
-  { label: "خدمات", href: "/support" },
-  { label: "همکاری با ما", href: "/contact" },
-];
-
-const secondaryLinks = [
-  { label: "راهنمای انتخاب محصول", href: "/products" },
-  { label: "یافتن نمایندگی", href: "/support" },
-  { label: "درخواست مشاوره", href: "/support" },
-];
-
-function CastrolMenu(props: HTMLAttributes<HTMLElement>) {
-  const { className, ...rest } = props;
-  return (
-    <aside
-      {...rest}
-      className={`space-y-6 rounded-[36px] border border-slate-200 bg-white p-6 shadow-[0_20px_45px_rgba(0,122,61,0.08)] ${className ?? ""}`}
-    >
-      <div className="flex items-center gap-3">
-        <LogoMark size={48} />
-        <div className="text-right">
-          <p className="text-xs text-slate-400">Oilbar Global</p>
-          <p className="text-base font-semibold text-slate-900">ناوبری سریع</p>
-        </div>
-      </div>
-      <nav className="space-y-2 text-sm font-semibold text-slate-700">
-        {menuLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`flex items-center justify-between rounded-2xl px-4 py-3 transition ${
-              link.href === "/products" ? "bg-emerald-600 text-white" : "hover:bg-slate-50"
-            }`}
-          >
-            <span>{link.label}</span>
-            <span className="text-xs">{link.href === "/products" ? "●" : "›"}</span>
-          </Link>
-        ))}
-      </nav>
-      <div className="space-y-3 text-xs text-slate-500">
-        {secondaryLinks.map((link) => (
-          <Link key={link.href} href={link.href} className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3 hover:border-emerald-200">
-            <span>{link.label}</span>
-            <span className="text-emerald-600">→</span>
-          </Link>
-        ))}
-      </div>
-    </aside>
   );
 }

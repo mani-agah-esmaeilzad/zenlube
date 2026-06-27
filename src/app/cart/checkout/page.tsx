@@ -69,8 +69,7 @@ export default async function CheckoutPage() {
         <p className="text-sm text-slate-900/60">جمع جزء سبد خرید شما {formatPrice(subtotal)} است. لطفاً اطلاعات ارسال و پرداخت را تکمیل کنید.</p>
       </header>
 
-        <CheckoutForm items={items} defaults={defaults} />
-      </div>
+      <CheckoutForm items={items} defaults={defaults} />
     </div>
   );
 }

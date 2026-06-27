@@ -137,8 +137,6 @@ export async function createCheckoutOrderAction(
         },
       });
 
-      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
-
       if (input.saveAddress) {
         await tx.userAddress.upsert({
           where: { userId_isDefault: { userId, isDefault: true } },

@@ -67,6 +67,14 @@ export async function GET(request: NextRequest) {
         },
       });
 
+      await tx.cartItem.deleteMany({
+        where: {
+          cart: {
+            userId: order.userId,
+          },
+        },
+      });
+
       await Promise.all(
         order.items.map((item) =>
           tx.product.update({

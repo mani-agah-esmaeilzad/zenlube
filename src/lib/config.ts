@@ -36,9 +36,9 @@ const EnvSchema = z
       .string()
       .url({ message: "ZARINPAL_CALLBACK_URL باید آدرس معتبر باشد." })
       .optional(),
-    MELIPAYAMAK_USERNAME: z.string().min(1, { message: "نام کاربری سرویس پیامک الزامی است." }),
-    MELIPAYAMAK_PASSWORD: z.string().min(1, { message: "رمز سرویس پیامک الزامی است." }),
-    MELIPAYAMAK_FROM: z.string().min(1, { message: "شماره فرستنده پیامک الزامی است." }),
+    MELIPAYAMAK_USERNAME: z.string().min(1, { message: "نام کاربری سرویس پیامک الزامی است." }).optional(),
+    MELIPAYAMAK_PASSWORD: z.string().min(1, { message: "رمز سرویس پیامک الزامی است." }).optional(),
+    MELIPAYAMAK_FROM: z.string().min(1, { message: "شماره فرستنده پیامک الزامی است." }).optional(),
     SMSIR_API_KEY: z.string().min(1, { message: "کلید API سرویس sms.ir الزامی است." }),
     SMSIR_LINE_NUMBER: z.coerce.number().int().positive(),
     SMSIR_TEMPLATE_ID: z.coerce.number().int().positive(),

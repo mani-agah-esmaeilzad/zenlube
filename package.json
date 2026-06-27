@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && prisma migrate deploy && npm run lint && npm run test && NEXTAUTH_SECRET=test-secret DATABASE_URL=postgres://user:pass@localhost:5432/zenlube NEXT_PUBLIC_APP_URL=https://example.com ZARINPAL_MERCHANT_ID=test-merchant MELIPAYAMAK_USERNAME=test MELIPAYAMAK_PASSWORD=test MELIPAYAMAK_FROM=5000 SMSIR_API_KEY=test SMSIR_LINE_NUMBER=300000 SMSIR_TEMPLATE_ID=1 next build",
+    "build": "prisma generate && npm run lint && npm run test && NEXTAUTH_SECRET=test-secret DATABASE_URL=postgres://user:pass@localhost:5432/zenlube NEXT_PUBLIC_APP_URL=https://example.com ZARINPAL_MERCHANT_ID=test-merchant MELIPAYAMAK_USERNAME=test MELIPAYAMAK_PASSWORD=test MELIPAYAMAK_FROM=5000 SMSIR_API_KEY=test SMSIR_LINE_NUMBER=300000 SMSIR_TEMPLATE_ID=1 next build",
     "start": "next start",
     "lint": "eslint",
     "test": "NODE_ENV=test NEXTAUTH_SECRET=test-secret DATABASE_URL=postgres://user:pass@localhost:5432/zenlube NEXT_PUBLIC_APP_URL=https://example.com ZARINPAL_MERCHANT_ID=test-merchant MELIPAYAMAK_USERNAME=test MELIPAYAMAK_PASSWORD=test MELIPAYAMAK_FROM=5000 SMSIR_API_KEY=test SMSIR_LINE_NUMBER=300000 SMSIR_TEMPLATE_ID=1 tsx --test tests/*.test.ts",
     "test:watch": "tsx --watch --test tests/*.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
+    "prisma:migrate:no-lock": "PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK=1 prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts"
   },

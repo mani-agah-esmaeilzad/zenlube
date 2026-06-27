@@ -1,6 +1,9 @@
 import { BrandCard } from "@/components/catalog/brand-card";
 import { getBrandsWithProductCount } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function BrandsPage() {
   const brands = await getBrandsWithProductCount();
 
@@ -12,11 +15,17 @@ export default async function BrandsPage() {
           مجموعه‌ای از معتبرترین برندهای جهانی روغن موتور با امکان فیلتر و مشاهده سریع محصولات مرتبط.
         </p>
       </header>
-      <div className="grid gap-6 sm:grid-cols-2">
-        {brands.map((brand) => (
-          <BrandCard key={brand.id} brand={brand} />
-        ))}
-      </div>
+      {brands.length > 0 ? (
+        <div className="grid gap-6 sm:grid-cols-2">
+          {brands.map((brand) => (
+            <BrandCard key={brand.id} brand={brand} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-3xl border border-dashed border-[#D1D5DB] bg-white p-10 text-center text-sm font-semibold text-[#6B7280]">
+          هنوز برندی ثبت نشده است.
+        </div>
+      )}
     </div>
   );
 }

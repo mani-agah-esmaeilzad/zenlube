@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://oilbar.ir"),
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fa" dir="rtl">

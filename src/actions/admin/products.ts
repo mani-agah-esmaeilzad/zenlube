@@ -35,6 +35,7 @@ async function persistProduct<T extends typeof productCreateSchema | typeof prod
   await saveProduct(parsed.data);
 
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/products");
   revalidatePath("/cars");
 

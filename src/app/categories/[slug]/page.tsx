@@ -5,6 +5,9 @@ type CategoryPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function CategoryLandingPage({ params }: CategoryPageProps) {
   const { slug } = await params;
 

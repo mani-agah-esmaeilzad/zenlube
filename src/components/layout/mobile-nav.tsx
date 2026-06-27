@@ -81,16 +81,22 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
               </button>
               {categoriesOpen && (
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  {categories.slice(0, 8).map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/categories/${category.slug}`}
-                      className="rounded-2xl border border-[#E5E7EB] px-3 py-3 text-xs font-semibold text-[#374151]"
-                      onClick={() => setOpen(false)}
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
+                  {categories.length > 0 ? (
+                    categories.slice(0, 8).map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/categories/${category.slug}`}
+                        className="rounded-2xl border border-[#E5E7EB] px-3 py-3 text-xs font-semibold text-[#374151]"
+                        onClick={() => setOpen(false)}
+                      >
+                        {category.name}
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="col-span-2 rounded-2xl border border-dashed border-[#D1D5DB] bg-[#F9FAFB] p-4 text-center text-xs font-semibold text-[#6B7280]">
+                      هنوز دسته‌بندی‌ای ثبت نشده است.
+                    </div>
+                  )}
                 </div>
               )}
 

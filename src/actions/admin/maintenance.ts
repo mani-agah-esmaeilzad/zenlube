@@ -26,6 +26,7 @@ export async function createMaintenanceTaskAction(formData: FormData): Promise<v
   await upsertMaintenanceTask(parsed.data);
 
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/cars");
 }
 
@@ -35,6 +36,7 @@ export async function deleteMaintenanceTaskAction(taskId: string): Promise<Actio
   await deleteMaintenanceTask(taskId);
 
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/cars");
 
   return { success: true };

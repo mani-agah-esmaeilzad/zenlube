@@ -15,25 +15,6 @@ type CategoryDropdownProps = {
   categories: CategoryNavItem[];
 };
 
-const megaColumns = [
-  {
-    title: "روغن موتور بر اساس ویسکوزیته",
-    links: ["0W-20", "5W-30", "5W-40", "10W-40"],
-  },
-  {
-    title: "بر اساس نوع روغن",
-    links: ["تمام سنتتیک", "نیمه سنتتیک", "مینرال", "API SP"],
-  },
-  {
-    title: "فیلترها و سرویس دوره‌ای",
-    links: ["فیلتر روغن", "فیلتر هوا", "فیلتر کابین", "ضدیخ"],
-  },
-  {
-    title: "برندهای محبوب",
-    links: ["Shell", "Total", "Castrol", "Motul", "Liqui Moly"],
-  },
-];
-
 export function CategoryDropdown({ categories }: CategoryDropdownProps) {
   const [open, setOpen] = useState(false);
 
@@ -75,28 +56,31 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
         role="menu"
         tabIndex={-1}
       >
-        <div className="grid gap-5 lg:grid-cols-[1fr_1fr_1fr_1fr_260px]">
-          {megaColumns.map((column) => (
-            <div key={column.title}>
-              <p className="mb-3 border-b border-[#E5E7EB] pb-2 text-sm font-bold text-[#111827]">
-                {column.title}
-              </p>
-              <ul className="space-y-2 text-sm text-[#6B7280]">
-                {column.links.map((item) => (
-                  <li key={item}>
-                    <Link
-                      href={`/products?search=${encodeURIComponent(item)}`}
-                      className="block rounded-xl px-3 py-2 transition hover:bg-red-50 hover:text-red-600"
-                      onClick={() => setOpen(false)}
-                      role="menuitem"
-                    >
-                      {item}
-                    </Link>
-                  </li>
+        <div className="grid gap-5 lg:grid-cols-[1fr_260px]">
+          <div>
+            <p className="mb-3 border-b border-[#E5E7EB] pb-2 text-sm font-bold text-[#111827]">
+              دسته‌بندی‌های فروشگاه
+            </p>
+            {categories.length > 0 ? (
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {categories.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={`/categories/${category.slug}`}
+                    className="block rounded-xl border border-[#E5E7EB] px-3 py-3 text-sm font-semibold text-[#374151] transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                    onClick={() => setOpen(false)}
+                    role="menuitem"
+                  >
+                    {category.name}
+                  </Link>
                 ))}
-              </ul>
-            </div>
-          ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-[#D1D5DB] bg-[#F9FAFB] p-5 text-center text-sm font-semibold text-[#6B7280]">
+                هنوز دسته‌بندی‌ای ثبت نشده است.
+              </div>
+            )}
+          </div>
 
           <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
             <p className="text-sm font-bold text-[#111827]">ماشینت رو انتخاب کن</p>
@@ -111,22 +95,9 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
 
         {categories.length > 0 && (
           <div className="mt-5 border-t border-[#E5E7EB] pt-4">
-            <p className="mb-3 text-xs font-bold text-[#6B7280]">دسته‌بندی‌های فروشگاه</p>
-            <div className="flex flex-wrap gap-2">
-              {categories.slice(0, 10).map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/categories/${category.slug}`}
-                  className="rounded-full border border-[#E5E7EB] px-3 py-1.5 text-xs font-semibold text-[#374151] transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
-                  onClick={() => setOpen(false)}
-                >
-                  {category.name}
-                </Link>
-              ))}
-              <Link href="/categories" className="rounded-full px-3 py-1.5 text-xs font-bold text-red-600" onClick={() => setOpen(false)}>
-                مشاهده همه
-              </Link>
-            </div>
+            <Link href="/categories" className="rounded-full px-3 py-1.5 text-xs font-bold text-red-600" onClick={() => setOpen(false)}>
+              مشاهده همه دسته‌بندی‌ها
+            </Link>
           </div>
         )}
       </div>

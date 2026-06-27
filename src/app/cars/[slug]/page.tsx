@@ -12,6 +12,9 @@ type CarPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({ params }: CarPageProps) {
   const { slug } = await params;
   const car = await getCarBySlug(slug);

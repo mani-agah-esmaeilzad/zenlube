@@ -5,6 +5,9 @@ import type { ProductSort } from "@/lib/data";
 
 type ProductsPageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const sorts: { value: ProductSort; label: string }[] = [
   { value: "bestseller", label: "پرفروش‌ترین" },
   { value: "latest", label: "جدیدترین" },

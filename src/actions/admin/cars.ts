@@ -29,6 +29,7 @@ export async function createCarAction(formData: FormData): Promise<void> {
   await upsertCar(parsed.data);
 
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/cars");
 }
 
@@ -41,6 +42,7 @@ export async function deleteCarFormAction(formData: FormData): Promise<void> {
 
   await deleteCar(carId);
   revalidatePath("/admin");
+  revalidatePath("/");
   revalidatePath("/cars");
   revalidatePath("/products");
 }

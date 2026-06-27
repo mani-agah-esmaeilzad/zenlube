@@ -11,6 +11,9 @@ export const metadata = {
   description: "مشخصات فنی، روغن مناسب، حجم روغن، فیلترها و نکات نگهداری خودروها در Oilbar.",
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function CarsPage({ searchParams }: CarsPageProps) {
   const params = await searchParams;
   const search = typeof params.search === "string" ? params.search : undefined;

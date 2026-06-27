@@ -8,22 +8,23 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { getAllCategoriesLite } from "@/lib/data";
 import { getAppSession } from "@/lib/session";
 
-const searchSuggestions = ["روغن 5W-30", "روغن 10W-40", "فیلتر روغن هیوندای", "روغن مناسب پژو ۲۰۶"];
-
 export async function SiteHeader() {
   const [rawSession, categories] = await Promise.all([getAppSession(), getAllCategoriesLite()]);
   const sessionUser = (rawSession as { user?: { id?: string; role?: string | null } } | null)?.user;
   const isAuthenticated = Boolean(sessionUser?.id);
   type NavLink = { href: string; label: string; highlight?: boolean };
+  const categoryLinks: NavLink[] = categories.slice(0, 6).map((category) => ({
+    href: `/categories/${category.slug}`,
+    label: category.name,
+  }));
   const links: NavLink[] = [
-    { href: "/products", label: "روغن موتور" },
-    { href: "/products?search=فیلتر روغن", label: "فیلتر روغن" },
-    { href: "/products?search=فیلتر هوا", label: "فیلتر هوا" },
-    { href: "/products?search=روغن گیربکس", label: "روغن گیربکس" },
+    { href: "/products", label: "محصولات" },
+    ...categoryLinks,
     { href: "/brands", label: "برندها" },
     { href: "/blog", label: "راهنمای انتخاب روغن" },
     { href: "/support", label: "پشتیبانی" },
   ];
+  const searchSuggestions = categories.slice(0, 6).map((category) => category.name);
   if (sessionUser?.role === "ADMIN") links.push({ href: "/admin", label: "پنل ادمین", highlight: true });
 
   return (
@@ -70,16 +71,18 @@ export async function SiteHeader() {
           <button className="absolute left-1.5 top-1.5 hidden h-10 rounded-xl bg-[#EF394E] px-5 text-xs font-bold text-white transition hover:bg-[#DC2626] md:block">
             جستجو
           </button>
-          <div className="invisible absolute inset-x-0 top-[calc(100%+8px)] z-50 rounded-2xl border border-[#E5E7EB] bg-white p-4 opacity-0 shadow-[0_20px_50px_rgba(17,24,39,0.12)] transition group-focus-within:visible group-focus-within:opacity-100">
-            <p className="mb-3 text-xs font-bold text-[#6B7280]">جستجوهای پرطرفدار</p>
-            <div className="flex flex-wrap gap-2">
-              {searchSuggestions.map((item) => (
-                <Link key={item} href={`/products?search=${encodeURIComponent(item)}`} className="rounded-full border border-[#E5E7EB] px-3 py-1.5 text-xs font-semibold text-[#374151] transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
-                  {item}
-                </Link>
-              ))}
+          {searchSuggestions.length > 0 && (
+            <div className="invisible absolute inset-x-0 top-[calc(100%+8px)] z-50 rounded-2xl border border-[#E5E7EB] bg-white p-4 opacity-0 shadow-[0_20px_50px_rgba(17,24,39,0.12)] transition group-focus-within:visible group-focus-within:opacity-100">
+              <p className="mb-3 text-xs font-bold text-[#6B7280]">دسته‌بندی‌های فروشگاه</p>
+              <div className="flex flex-wrap gap-2">
+                {searchSuggestions.map((item) => (
+                  <Link key={item} href={`/products?search=${encodeURIComponent(item)}`} className="rounded-full border border-[#E5E7EB] px-3 py-1.5 text-xs font-semibold text-[#374151] transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+                    {item}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </form>
 
         <div className="flex items-center justify-end gap-2">

@@ -11,6 +11,9 @@ import { formatPrice } from "@/lib/utils";
 
 type ProductPageProps = { params: Promise<{ slug: string }> };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = await prisma.product.findFirst({ where: { slug, NOT: { slug: { startsWith: "deleted-" } } }, select: { name: true, description: true } });

@@ -1,6 +1,7 @@
 import type { SVGProps } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { getAllCategoriesLite } from "@/lib/data";
 
 const trustItems = [
   "ضمانت اصالت کالا",
@@ -10,7 +11,7 @@ const trustItems = [
   "مشاوره واقعی",
 ];
 
-const footerGroups = [
+const baseFooterGroups = [
   {
     title: "درباره فروشگاه",
     links: [
@@ -38,18 +39,22 @@ const footerGroups = [
       ["راهنمای تعویض روغن", "/blog"],
     ],
   },
-  {
-    title: "دسته‌بندی‌ها",
-    links: [
-      ["روغن موتور", "/products?category=engine-oil"],
-      ["فیلتر روغن", "/products?search=فیلتر روغن"],
-      ["فیلتر هوا", "/products?search=فیلتر هوا"],
-      ["ضدیخ", "/products?search=ضدیخ"],
-    ],
-  },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const categories = await getAllCategoriesLite();
+  const footerGroups = [
+    ...baseFooterGroups,
+    ...(categories.length > 0
+      ? [
+          {
+            title: "دسته‌بندی‌ها",
+            links: categories.slice(0, 6).map((category) => [category.name, `/categories/${category.slug}`] as [string, string]),
+          },
+        ]
+      : []),
+  ];
+
   return (
     <footer className="mt-12 border-t border-[#E5E7EB] bg-white">
       <div className="container-zen grid grid-cols-2 gap-3 py-5 md:grid-cols-5">

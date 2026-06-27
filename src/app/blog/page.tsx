@@ -8,6 +8,9 @@ export const metadata = {
     "جدیدترین مقالات آموزشی و تخصصی درباره انتخاب، نگهداری و مقایسه روغن موتور برای خودروهای مدرن.",
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function BlogPage() {
   const posts = await getAllBlogPosts();
 
@@ -30,11 +33,17 @@ export default async function BlogPage() {
             درخواست موضوع پیشنهادی
           </Link>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {posts.map((post) => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </div>
+        {posts.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            {posts.map((post) => (
+              <BlogCard key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-dashed border-[#D1D5DB] bg-white p-10 text-center text-sm font-semibold text-[#6B7280]">
+            هنوز مقاله‌ای ثبت نشده است.
+          </div>
+        )}
       </section>
     </div>
   );

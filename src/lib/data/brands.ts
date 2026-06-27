@@ -4,7 +4,11 @@ export async function getBrandsWithProductCount() {
   return prisma.brand.findMany({
     include: {
       _count: {
-        select: { products: true },
+        select: {
+          products: {
+            where: { NOT: { slug: { startsWith: "deleted-" } } },
+          },
+        },
       },
     },
     orderBy: { name: "asc" },

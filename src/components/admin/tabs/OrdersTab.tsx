@@ -14,6 +14,14 @@ const statusLabels: Record<string, string> = {
   CANCELLED: "لغو شده",
 };
 
+const statusStyles: Record<string, string> = {
+  PENDING: "bg-amber-50 text-amber-700 border-amber-200",
+  PAID: "bg-blue-50 text-blue-700 border-blue-200",
+  SHIPPED: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  DELIVERED: "bg-green-50 text-green-700 border-green-200",
+  CANCELLED: "bg-red-50 text-red-700 border-red-200",
+};
+
 type OrdersTabProps = {
   data: OrdersTabData;
 };
@@ -22,106 +30,106 @@ export function OrdersTab({ data }: OrdersTabProps) {
   const { orders, filters, pagination, statusCounts, revenueLast30 } = data;
 
   return (
-    <div className="space-y-10">
-      <section className="rounded-3xl border border-slate-200 bg-white p-6">
+    <div className="space-y-6">
+      <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 shadow-sm">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">سفارش‌های فروشگاه</h2>
-            <p className="mt-1 text-xs text-slate-500">
-              وضعیت سفارش‌ها را کنترل کنید، پرداخت‌ها را بررسی کنید و اطلاعات ارسال را بروزرسانی کنید.
+            <h2 className="text-xl font-extrabold text-[#111827]">مدیریت سفارش‌ها</h2>
+            <p className="mt-1 text-sm leading-7 text-[#6B7280]">
+              وضعیت سفارش، پرداخت، کد پیگیری و پیامک اطلاع‌رسانی مشتری را از همین بخش مدیریت کنید.
             </p>
           </div>
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs text-emerald-700">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700">
             فروش ۳۰ روز اخیر: {formatPrice(revenueLast30)}
           </div>
         </header>
 
         <OrdersFilterForm filters={filters} statusCounts={statusCounts} />
-        <div className="mt-4 text-xs text-slate-500">
-          {faNumberFormatter.format(pagination.total)} سفارش — صفحه {faNumberFormatter.format(pagination.page)} از {" "}
+        <div className="mt-4 text-xs text-[#6B7280]">
+          {faNumberFormatter.format(pagination.total)} سفارش، صفحه {faNumberFormatter.format(pagination.page)} از{" "}
           {faNumberFormatter.format(pagination.totalPages)}
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-3xl border border-slate-200">
-        <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
-          <thead className="bg-slate-100 text-xs uppercase text-slate-400">
-            <tr>
-              <th className="px-4 py-3 text-right">شناسه</th>
-              <th className="px-4 py-3 text-right">مشتری</th>
-              <th className="px-4 py-3 text-right">مبلغ</th>
-              <th className="px-4 py-3 text-right">وضعیت</th>
-              <th className="px-4 py-3 text-right">روش ارسال</th>
-              <th className="px-4 py-3 text-right">اقلام</th>
-              <th className="px-4 py-3 text-right">اقدامات</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 bg-slate-50">
-            {orders.length ? (
-              orders.map((order) => (
-                <tr key={order.id} className="align-top">
-                  <td className="px-4 py-4">
-                    <div className="text-xs font-semibold text-slate-900">{order.id.slice(0, 10)}</div>
-                    <div className="mt-1 text-[11px] text-slate-400">{new Date(order.createdAt).toLocaleString("fa-IR")}</div>
-                    <div className="mt-2 text-[11px] text-slate-400">{order.paymentRefId ? `Ref: ${order.paymentRefId}` : "-"}</div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="text-xs font-semibold text-slate-900">{order.fullName}</div>
-                    <div className="mt-1 text-[11px] text-slate-500">{order.email}</div>
-                    <div className="mt-1 text-[11px] text-slate-500">{order.phone}</div>
-                    <div className="mt-2 text-[11px] text-slate-500">
-                      {order.province}، {order.city}
+      <section className="space-y-4">
+        {orders.length ? (
+          orders.map((order) => (
+            <article key={order.id} className="rounded-3xl border border-[#E5E7EB] bg-white p-5 shadow-sm">
+              <div className="grid gap-5 xl:grid-cols-[1.2fr_1fr_1fr]">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-sm font-black text-[#111827]">#{order.id.slice(0, 10)}</span>
+                    <span className={`rounded-full border px-3 py-1 text-[11px] font-bold ${statusStyles[order.status] ?? "bg-slate-100 text-slate-600 border-slate-200"}`}>
+                      {statusLabels[order.status] ?? order.status}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-[#6B7280]">{new Date(order.createdAt).toLocaleString("fa-IR")}</p>
+                  <div className="mt-4 rounded-2xl bg-[#F7F7F8] p-4 text-xs leading-6 text-[#374151]">
+                    <p className="font-bold text-[#111827]">{order.fullName}</p>
+                    <p>{order.phone}</p>
+                    <p>{order.email}</p>
+                    <p className="mt-2 text-[#6B7280]">
+                      {order.province}، {order.city}، {order.address1}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <InfoRow label="مبلغ سفارش" value={formatPrice(order.total)} strong />
+                  <InfoRow label="درگاه" value={order.paymentGateway ?? "-"} />
+                  <InfoRow label="Authority" value={order.paymentAuthority ?? "-"} mono />
+                  <InfoRow label="Ref ID" value={order.paymentRefId ?? "-"} mono />
+                  <InfoRow label="تاریخ پرداخت" value={order.paidAt ? new Date(order.paidAt).toLocaleString("fa-IR") : "-"} />
+                  {order.paymentEvents[0] ? (
+                    <p className="rounded-2xl border border-[#E5E7EB] px-3 py-2 text-[#6B7280]">
+                      آخرین رویداد پرداخت: <span className="font-bold text-[#111827]">{order.paymentEvents[0].status}</span>
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className="space-y-4">
+                  <StatusForm orderId={order.id} currentStatus={order.status} trackingCode={order.shippingTrackingCode} />
+                  <TrackingForm orderId={order.id} trackingCode={order.shippingTrackingCode} />
+                </div>
+              </div>
+
+              <div className="mt-5 border-t border-[#E5E7EB] pt-4">
+                <p className="text-xs font-bold text-[#111827]">اقلام سفارش</p>
+                <div className="mt-2 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                  {order.items.map((item) => (
+                    <div key={item.id} className="rounded-2xl border border-[#E5E7EB] px-3 py-2 text-xs text-[#6B7280]">
+                      <span className="font-bold text-[#111827]">{item.quantity.toLocaleString("fa-IR")}×</span> {item.name}
                     </div>
-                  </td>
-                  <td className="px-4 py-4 text-slate-900">{formatPrice(order.total)}</td>
-                  <td className="px-4 py-4">
-                    <StatusForm orderId={order.id} currentStatus={order.status} />
-                  </td>
-                  <td className="px-4 py-4 text-xs">
-                    <div className="font-semibold text-slate-900">{translateShipping(order.shippingMethod)}</div>
-                    <div className="mt-1 text-[11px] text-slate-500">
-                      {order.shippingTrackingCode ? `کد پیگیری: ${order.shippingTrackingCode}` : "بدون کد پیگیری"}
-                    </div>
-                    <TrackingForm orderId={order.id} trackingCode={order.shippingTrackingCode} />
-                  </td>
-                  <td className="px-4 py-4">
-                    <ul className="space-y-1 text-xs text-slate-500">
-                      {order.items.map((item) => (
-                        <li key={item.id}>
-                          {item.quantity}× {item.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td className="px-4 py-4 text-xs">
-                    <Link
-                      href={`/account?orderId=${order.id}`}
-                      className="inline-flex rounded-full border border-slate-300 px-3 py-1 text-slate-600 transition hover:border-sky-200 hover:text-sky-600"
-                    >
-                      مشاهده در حساب کاربری
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-sm text-slate-400">
-                  سفارشی برای نمایش وجود ندارد.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        {pagination.totalPages > 1 ? (
-          <div className="flex items-center justify-between border-t border-slate-200 bg-slate-100 px-4 py-3 text-xs text-slate-600">
-            {renderPaginationLink(filters, pagination.page - 1, pagination.totalPages, "قبلی")}
-            <span>
-              صفحه {faNumberFormatter.format(pagination.page)} از {faNumberFormatter.format(pagination.totalPages)}
-            </span>
-            {renderPaginationLink(filters, pagination.page + 1, pagination.totalPages, "بعدی")}
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))
+        ) : (
+          <div className="rounded-3xl border border-dashed border-[#E5E7EB] bg-white p-10 text-center text-sm text-[#6B7280]">
+            سفارشی برای نمایش وجود ندارد.
           </div>
-        ) : null}
+        )}
       </section>
+
+      {pagination.totalPages > 1 ? (
+        <div className="flex items-center justify-between rounded-3xl border border-[#E5E7EB] bg-white px-4 py-3 text-xs text-[#6B7280]">
+          {renderPaginationLink(filters, pagination.page - 1, pagination.totalPages, "قبلی")}
+          <span>
+            صفحه {faNumberFormatter.format(pagination.page)} از {faNumberFormatter.format(pagination.totalPages)}
+          </span>
+          {renderPaginationLink(filters, pagination.page + 1, pagination.totalPages, "بعدی")}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function InfoRow({ label, value, strong, mono }: { label: string; value: string; strong?: boolean; mono?: boolean }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] px-3 py-2">
+      <span className="text-[#6B7280]">{label}</span>
+      <span className={`${strong ? "font-black text-[#111827]" : "font-bold text-[#374151]"} ${mono ? "font-mono text-[11px]" : ""}`}>{value}</span>
     </div>
   );
 }
@@ -141,39 +149,32 @@ function OrdersFilterForm({ filters, statusCounts }: FilterFormProps) {
           const params = new URLSearchParams();
           params.set("tab", "orders");
           params.set("status", key);
-          if (filters.query) {
-            params.set("query", filters.query);
-          }
+          if (filters.query) params.set("query", filters.query);
           return (
             <Link
               key={key}
               href={`/admin?${params.toString()}`}
-              className={`rounded-full px-3 py-1 ${
-                currentStatus === key ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              className={`rounded-full px-3 py-1 font-bold ${
+                currentStatus === key ? "bg-[#111827] text-white" : "bg-[#F7F7F8] text-[#6B7280] hover:bg-slate-200"
               }`}
             >
               {label}
-              <span className="mr-1 text-[10px] text-slate-400">{faNumberFormatter.format(count)}</span>
+              <span className="mr-1 text-[10px] opacity-70">{faNumberFormatter.format(count)}</span>
             </Link>
           );
         })}
       </div>
-      <form method="get" action="/admin" className="flex gap-2 text-xs text-slate-500">
+      <form method="get" action="/admin" className="flex flex-col gap-2 text-xs text-[#6B7280] sm:flex-row">
         <input type="hidden" name="tab" value="orders" />
-        {currentStatus && currentStatus !== "all" ? (
-          <input type="hidden" name="status" value={currentStatus} />
-        ) : null}
+        {currentStatus && currentStatus !== "all" ? <input type="hidden" name="status" value={currentStatus} /> : null}
         <input
           type="search"
           name="query"
           defaultValue={filters.query ?? ""}
-          placeholder="شناسه، نام یا ایمیل"
-          className="flex-1 rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-600 focus:border-sky-300 focus:outline-none"
+          placeholder="جستجو با شناسه، نام، موبایل یا ایمیل"
+          className="input-zen flex-1 text-xs"
         />
-        <button
-          type="submit"
-          className="rounded-full border border-slate-300 px-4 py-2 text-slate-600 transition hover:border-sky-200 hover:text-sky-600"
-        >
+        <button type="submit" className="btn-outline">
           جستجو
         </button>
       </form>
@@ -181,100 +182,64 @@ function OrdersFilterForm({ filters, statusCounts }: FilterFormProps) {
   );
 }
 
-type StatusFormProps = {
-  orderId: string;
-  currentStatus: string;
-};
+function StatusForm({ orderId, currentStatus, trackingCode }: { orderId: string; currentStatus: string; trackingCode?: string | null }) {
+  const nextText = currentStatus === "SHIPPED" ? `سفارش آماده ارسال پیامک با کد ${trackingCode ?? "ثبت نشده"}` : "پیامک وضعیت برای مشتری ارسال شود";
 
-function StatusForm({ orderId, currentStatus }: StatusFormProps) {
   return (
-    <form action={updateOrderStatusAction} className="space-y-2 text-xs text-slate-600">
-      <select
-        name="status"
-        defaultValue={currentStatus}
-        className="w-full rounded-full border border-slate-300 bg-white px-3 py-1 text-xs focus:border-sky-300 focus:outline-none"
-      >
-        <option value="PENDING">در انتظار پرداخت</option>
-        <option value="PAID">پرداخت شده</option>
-        <option value="SHIPPED">ارسال شده</option>
-        <option value="DELIVERED">تحویل شده</option>
-        <option value="CANCELLED">لغو شده</option>
-      </select>
+    <form action={updateOrderStatusAction} className="space-y-2 rounded-2xl border border-[#E5E7EB] p-3 text-xs text-[#6B7280]">
+      <label className="font-bold text-[#374151]">
+        تغییر وضعیت
+        <select name="status" defaultValue={currentStatus} className="input-zen mt-2 text-xs">
+          <option value="PENDING">در انتظار پرداخت</option>
+          <option value="PAID">پرداخت شده / در حال پردازش</option>
+          <option value="SHIPPED">ارسال شده</option>
+          <option value="DELIVERED">تحویل شده</option>
+          <option value="CANCELLED">لغو شده</option>
+        </select>
+      </label>
+      <label className="flex items-center gap-2 text-[11px]">
+        <input type="checkbox" name="sendSms" value="true" className="size-4 accent-[#DC2626]" />
+        {nextText}
+      </label>
       <input type="hidden" name="orderId" value={orderId} />
-      <button
-        type="submit"
-        className="w-full rounded-full border border-sky-200 px-3 py-1 text-sky-600 transition hover:bg-sky-50"
-      >
+      <button type="submit" className="btn-primary min-h-10 w-full text-xs">
         ذخیره وضعیت
       </button>
     </form>
   );
 }
 
-type TrackingFormProps = {
-  orderId: string;
-  trackingCode?: string | null;
-};
-
-function TrackingForm({ orderId, trackingCode }: TrackingFormProps) {
+function TrackingForm({ orderId, trackingCode }: { orderId: string; trackingCode?: string | null }) {
   return (
-    <form action={updateOrderTrackingAction} className="mt-3 flex gap-2 text-xs">
+    <form action={updateOrderTrackingAction} className="space-y-2 rounded-2xl border border-[#E5E7EB] p-3 text-xs text-[#6B7280]">
       <input type="hidden" name="orderId" value={orderId} />
-      <input
-        name="shippingTrackingCode"
-        defaultValue={trackingCode ?? ""}
-        placeholder="کد پیگیری"
-        className="flex-1 rounded-full border border-slate-300 px-3 py-1 text-xs focus:border-sky-300 focus:outline-none"
-      />
-      <button
-        type="submit"
-        className="rounded-full border border-sky-200 px-3 py-1 text-sky-600 transition hover:bg-sky-50"
-      >
-        ذخیره
+      <label className="font-bold text-[#374151]">
+        کد پیگیری
+        <input name="shippingTrackingCode" defaultValue={trackingCode ?? ""} placeholder="مثلا POST-123456" className="input-zen mt-2 text-xs" />
+      </label>
+      <label className="flex items-center gap-2 text-[11px]">
+        <input type="checkbox" name="sendSms" value="true" className="size-4 accent-[#DC2626]" />
+        ارسال پیامک کد پیگیری به مشتری
+      </label>
+      <button type="submit" className="btn-outline min-h-10 w-full text-xs">
+        ذخیره کد پیگیری
       </button>
     </form>
   );
 }
 
-function translateShipping(value: string) {
-  switch (value) {
-    case "STANDARD":
-      return "ارسال استاندارد";
-    case "EXPRESS":
-      return "ارسال سریع";
-    case "PICKUP":
-      return "تحویل حضوری";
-    default:
-      return value;
-  }
-}
-
-function renderPaginationLink(
-  filters: OrdersTabData["filters"],
-  targetPage: number,
-  totalPages: number,
-  label: string,
-) {
+function renderPaginationLink(filters: OrdersTabData["filters"], targetPage: number, totalPages: number, label: string) {
   const isDisabled = targetPage < 1 || targetPage > totalPages;
-  if (isDisabled) {
-    return <span className="opacity-50">{label}</span>;
-  }
+  if (isDisabled) return <span className="opacity-50">{label}</span>;
 
   const params = new URLSearchParams();
   params.set("tab", "orders");
   params.set("page", targetPage.toString());
-  if (filters.status && filters.status !== "all") {
-    params.set("status", filters.status);
-  }
-  if (filters.query) {
-    params.set("query", filters.query);
-  }
+  if (filters.status && filters.status !== "all") params.set("status", filters.status);
+  if (filters.query) params.set("query", filters.query);
 
   return (
-    <Link
-      href={`/admin?${params.toString()}`}
-      className="rounded-full border border-slate-300 px-3 py-1 text-slate-600 transition hover:border-sky-200 hover:text-sky-600"
-    >
+    <Link href={`/admin?${params.toString()}`} className="btn-outline min-h-9 px-4 py-2 text-xs">
       {label}
     </Link>
   );

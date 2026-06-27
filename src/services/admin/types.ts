@@ -101,6 +101,8 @@ export type AdminOrderDetail = AdminOrder & {
   paymentMethod: string;
   paymentGateway?: string | null;
   paymentRefId?: string | null;
+  paymentAuthority?: string | null;
+  paidAt?: Date | null;
   shippingMethod: string;
   shippingTrackingCode?: string | null;
   phone: string;
@@ -111,6 +113,13 @@ export type AdminOrderDetail = AdminOrder & {
   postalCode: string;
   notes?: string | null;
   items: AdminOrderItem[];
+  paymentEvents: Array<{
+    id: string;
+    gateway: string;
+    authority?: string | null;
+    status: string;
+    createdAt: Date;
+  }>;
 };
 
 export type AdminUser = {
@@ -315,4 +324,14 @@ export type ContentTabData = {
   banners: AdminMarketingBanner[];
   posts: AdminBlogPost[];
   galleryImages: AdminGalleryImage[];
+  smsLogs: Array<{
+    id: string;
+    phone: string;
+    eventType: string;
+    templateName?: string | null;
+    status: string;
+    provider?: string | null;
+    errorMessage?: string | null;
+    createdAt: Date;
+  }>;
 };

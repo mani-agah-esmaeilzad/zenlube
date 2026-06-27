@@ -10,6 +10,11 @@ type SendOtpArgs = {
   templateId?: number;
 };
 
+type SendTextArgs = {
+  phone: string;
+  message: string;
+};
+
 type SmsIrResponse = {
   status?: number | string;
   message?: string;
@@ -20,31 +25,30 @@ type SmsIrResponse = {
   [key: string]: unknown;
 };
 
-const smsIrClient = new Smsir(config.SMSIR_API_KEY, config.SMSIR_LINE_NUMBER);
+function createClient() {
+  const apiKey = config.SMSIR_API_KEY ?? config.SMS_API_KEY;
+  const lineNumber = config.SMSIR_LINE_NUMBER ?? Number(config.SMS_SENDER_NUMBER);
+
+  if (!apiKey || !lineNumber || !Number.isFinite(lineNumber)) {
+    throw new Error("تنظیمات sms.ir کامل نیست.");
+  }
+
+  return new Smsir(apiKey, lineNumber);
+}
 
 function buildParameters(code: string, ttlSeconds: number) {
-  const parameters = [
-    {
-      name: config.SMSIR_TEMPLATE_CODE_PARAM,
-      value: code,
-    },
-  ];
+  const parameters = [{ name: config.SMSIR_TEMPLATE_CODE_PARAM, value: code }];
 
   if (config.SMSIR_TEMPLATE_EXPIRY_PARAM) {
     const ttlMinutes = Math.max(1, Math.ceil(ttlSeconds / 60));
-    parameters.push({
-      name: config.SMSIR_TEMPLATE_EXPIRY_PARAM,
-      value: ttlMinutes.toString(),
-    });
+    parameters.push({ name: config.SMSIR_TEMPLATE_EXPIRY_PARAM, value: ttlMinutes.toString() });
   }
 
   return parameters;
 }
 
 function isErrorStatus(status?: number | string) {
-  if (typeof status === "number") {
-    return status !== 1 && status !== 200;
-  }
+  if (typeof status === "number") return status !== 1 && status !== 200;
   if (typeof status === "string") {
     const parsed = Number(status);
     return Number.isFinite(parsed) && parsed !== 1 && parsed !== 200;
@@ -53,36 +57,53 @@ function isErrorStatus(status?: number | string) {
 }
 
 export async function sendSmsIrOtp({ phone, code, expiresAt, templateId }: SendOtpArgs) {
+  const targetTemplateId = templateId ?? config.SMSIR_TEMPLATE_ID;
+  if (!targetTemplateId) throw new Error("قالب پیامک تایید sms.ir تنظیم نشده است.");
+
   const ttlSeconds = Math.max(30, Math.round((expiresAt.getTime() - Date.now()) / 1000));
   const parameters = buildParameters(code, ttlSeconds);
-  const targetTemplateId = templateId ?? config.SMSIR_TEMPLATE_ID;
+  const client = createClient();
 
-  const MAX_ATTEMPTS = 3;
-  let lastError: Error | undefined;
+  const response = await client.SendVerifyCode(phone, targetTemplateId, parameters);
+  const data = (response?.data ?? {}) as SmsIrResponse;
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-    try {
-      const response = await smsIrClient.SendVerifyCode(phone, targetTemplateId, parameters);
-      const data = (response?.data ?? {}) as SmsIrResponse;
-
-      if (isErrorStatus(data.status)) {
-        throw new Error(data.message ?? "ارسال پیامک تایید توسط sms.ir پذیرفته نشد.");
-      }
-
-      const messageId = data.data?.verificationCodeId ?? data.data?.messageId ?? null;
-
-      return { messageId } as const;
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error("ارسال پیامک با خطای ناشناخته شکست خورد.");
-      logger.warn("sms.ir OTP send failed", { attempt, phone, error: lastError.message });
-      await new Promise((resolve) => setTimeout(resolve, attempt * 500));
-    }
+  if (isErrorStatus(data.status)) {
+    throw new Error(data.message ?? "ارسال پیامک تایید توسط sms.ir پذیرفته نشد.");
   }
 
-  logger.error("sms.ir OTP delivery failed permanently", {
-    phone,
-    error: lastError?.message,
+  const messageId = data.data?.verificationCodeId ?? data.data?.messageId ?? null;
+  return { messageId, raw: data } as const;
+}
+
+export async function sendSmsIrText({ phone, message }: SendTextArgs) {
+  const apiKey = config.SMSIR_API_KEY ?? config.SMS_API_KEY;
+  const lineNumber = config.SMSIR_LINE_NUMBER ?? Number(config.SMS_SENDER_NUMBER);
+
+  if (!apiKey || !lineNumber || !Number.isFinite(lineNumber)) {
+    throw new Error("تنظیمات sms.ir کامل نیست.");
+  }
+
+  const response = await fetch("https://api.sms.ir/v1/send/bulk", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "x-api-key": apiKey,
+    },
+    body: JSON.stringify({
+      lineNumber,
+      messageText: message,
+      mobiles: [phone],
+      sendDateTime: null,
+    }),
   });
 
-  throw lastError ?? new Error("ارسال پیامک با مشکل مواجه شد.");
+  const data = (await response.json().catch(() => ({}))) as SmsIrResponse;
+
+  if (!response.ok || isErrorStatus(data.status)) {
+    logger.warn("sms.ir text send failed", { status: response.status, data });
+    throw new Error(data.message ?? "ارسال پیامک توسط sms.ir ناموفق بود.");
+  }
+
+  return { messageId: data.data?.messageId ?? null, raw: data } as const;
 }

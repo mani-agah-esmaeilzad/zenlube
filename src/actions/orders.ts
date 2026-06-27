@@ -2,7 +2,6 @@
 
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import prisma from "@/lib/prisma";
 import { checkoutOrderSchema } from "@/lib/validators";
@@ -10,7 +9,7 @@ import { getAppSession } from "@/lib/session";
 import { requestZarinpalPayment } from "@/lib/payments/zarinpal";
 import { normalizeIranPhone } from "@/lib/phone";
 import { verifyOtpCode, createOtpRequest } from "@/services/otp";
-import { sendSmsIrOtp } from "@/lib/sms/smsir";
+import { sendOtpSms, sendTemplateSms, smsOrderNumber } from "@/lib/sms/service";
 import { config } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import { consumeRateLimit } from "@/lib/rate-limit";
@@ -47,10 +46,10 @@ export async function sendCheckoutOtpAction(phone: string) {
   ]);
 
   if (!phoneOk || !ipOk) {
-    throw new Error("تعداد درخواست‌های مجاز برای دریافت کد تایید به حد مجاز رسیده است. لطفاً بعداً تلاش کنید.");
+    throw new Error("تعداد درخواست‌های مجاز برای دریافت کد تایید به حد مجاز رسیده است. لطفا بعدا تلاش کنید.");
   }
   const { code, expiresAt } = await createOtpRequest(normalizedPhone, "checkout");
-  await sendSmsIrOtp({ phone: normalizedPhone, code, expiresAt });
+  await sendOtpSms(normalizedPhone, code, expiresAt);
   return { success: true } as const;
 }
 
@@ -79,39 +78,31 @@ export async function createCheckoutOrderAction(
     if (!parsed.success) {
       return {
         success: false,
-        message: "لطفاً خطاهای فرم را اصلاح کنید.",
+        message: "لطفا خطاهای فرم را اصلاح کنید.",
         errors: parsed.error.flatten().fieldErrors,
       };
     }
 
     const input = parsed.data;
-
     const cart = await prisma.cart.findUnique({
       where: { userId },
-      include: {
-        items: {
-          include: { product: true },
-        },
-      },
+      include: { items: { include: { product: true } } },
     });
 
     if (!cart || !cart.items.length) {
-      return {
-        success: false,
-        message: "سبد خرید شما خالی است.",
-      };
+      return { success: false, message: "سبد خرید شما خالی است." };
     }
 
     await verifyOtpCode(input.phone, input.otpCode, "checkout");
 
-    const subtotal = cart.items.reduce((sum, item) => {
-      const price = Number(item.product.price);
-      return sum + price * item.quantity;
-    }, 0);
+    const unavailable = cart.items.find((item) => item.product.stock < item.quantity);
+    if (unavailable) {
+      return { success: false, message: `موجودی محصول «${unavailable.product.name}» کافی نیست.` };
+    }
 
+    const subtotal = cart.items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0);
     const shippingCost = input.shippingMethod === "EXPRESS" ? 120000 : input.shippingMethod === "STANDARD" ? 60000 : 0;
     const total = subtotal + shippingCost;
-
     const normalizedPhone = normalizeIranPhone(input.phone);
 
     const order = await prisma.$transaction(async (tx) => {
@@ -144,19 +135,13 @@ export async function createCheckoutOrderAction(
             },
           },
         },
-        include: { items: true },
       });
 
       await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
 
       if (input.saveAddress) {
         await tx.userAddress.upsert({
-          where: {
-            userId_isDefault: {
-              userId,
-              isDefault: true,
-            },
-          },
+          where: { userId_isDefault: { userId, isDefault: true } },
           update: {
             fullName: input.fullName,
             phone: normalizedPhone,
@@ -183,14 +168,22 @@ export async function createCheckoutOrderAction(
       return createdOrder;
     });
 
+    logger.info("Order created", { orderId: order.id, userId, total });
     revalidatePath("/cart");
+
+    await sendTemplateSms(
+      normalizedPhone,
+      "order_created",
+      { orderNumber: smsOrderNumber(order.id) },
+      { eventType: "order_created", dedupeKey: `order_created:${order.id}` },
+    );
 
     const callbackBase = config.ZARINPAL_CALLBACK_URL ?? `${config.NEXT_PUBLIC_APP_URL}/api/payments/zarinpal/callback`;
     const callbackUrl = `${callbackBase}?orderId=${order.id}`;
 
     const payment = await requestZarinpalPayment({
       amount: order.total,
-      description: `پرداخت سفارش ${order.id}`,
+      description: `پرداخت سفارش ${smsOrderNumber(order.id)} در Oilbar`,
       callbackUrl,
       email: input.email,
       phone: normalizedPhone,
@@ -202,14 +195,23 @@ export async function createCheckoutOrderAction(
       data: { paymentAuthority: payment.authority },
     });
 
-    return redirect(payment.paymentUrl);
+    await sendTemplateSms(
+      normalizedPhone,
+      "payment_started",
+      { orderNumber: smsOrderNumber(order.id) },
+      { eventType: "payment_started", dedupeKey: `payment_started:${order.id}:${payment.authority}` },
+    );
+
+    return {
+      success: true,
+      message: "در حال انتقال به درگاه پرداخت...",
+      redirectUrl: payment.paymentUrl,
+    };
   } catch (error) {
-    logger.error("Checkout order failed", {
-      error: error instanceof Error ? error.message : "unknown",
-    });
+    logger.error("Checkout order failed", { error: error instanceof Error ? error.message : "unknown" });
     return {
       success: false,
-      message: error instanceof Error ? error.message : "ثبت سفارش با خطا مواجه شد.",
+      message: error instanceof Error ? error.message : "اتصال به درگاه پرداخت ناموفق بود. لطفا دوباره تلاش کنید.",
     };
   }
 }

@@ -21,7 +21,7 @@ export function ContentTab({ data }: { data: ContentTabData }) {
       <section className="grid gap-4 md:grid-cols-3">
         <MetricCard label="بنرها" value={data.banners.length} helper={`${data.banners.filter((item) => item.isActive).length} فعال`} />
         <MetricCard label="مقالات" value={data.posts.length} helper="راهنماها و محتوای آموزشی" />
-        <MetricCard label="رسانه‌ها" value={data.galleryImages.length} helper={`${data.galleryImages.filter((item) => item.isActive).length} فعال`} />
+        <MetricCard label="پیامک‌ها" value={data.smsLogs.length} helper="آخرین لاگ‌های ارسال" />
       </section>
 
       <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
@@ -89,6 +89,34 @@ export function ContentTab({ data }: { data: ContentTabData }) {
             </div>
           ))}
         </Panel>
+      </section>
+
+      <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-lg font-extrabold text-[#111827]">تنظیمات و لاگ پیامک</h2>
+            <p className="mt-1 text-xs leading-6 text-[#6B7280]">
+              فعال/غیرفعال بودن SMS از env کنترل می‌شود: SMS_ENABLED، SMS_PROVIDER، SMS_SANDBOX_MODE، SMS_API_KEY و SMS_SENDER_NUMBER.
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {data.smsLogs.length ? data.smsLogs.map((log) => (
+            <div key={log.id} className="rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4 text-xs">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-bold text-[#111827]">{log.eventType}</span>
+                <span className={`rounded-full px-2 py-1 font-bold ${log.status === "sent" || log.status === "sandbox" ? "bg-green-50 text-[#16A34A]" : log.status === "failed" ? "bg-red-50 text-[#DC2626]" : "bg-slate-100 text-[#6B7280]"}`}>
+                  {log.status}
+                </span>
+              </div>
+              <p className="mt-2 text-[#6B7280]">{log.phone} · {log.provider ?? "بدون provider"}</p>
+              {log.errorMessage ? <p className="mt-2 line-clamp-2 text-[#DC2626]">{log.errorMessage}</p> : null}
+              <p className="mt-2 text-[#9CA3AF]">{faDateFormatter.format(log.createdAt)}</p>
+            </div>
+          )) : (
+            <p className="rounded-2xl border border-dashed border-[#E5E7EB] p-6 text-center text-sm text-[#6B7280] md:col-span-2 xl:col-span-3">هنوز لاگ پیامکی ثبت نشده است.</p>
+          )}
+        </div>
       </section>
     </div>
   );

@@ -414,6 +414,22 @@ model RateLimitHit {
   @@index([identifier, windowKey])
 }
 
+model SmsLog {
+  id               String   @id @default(cuid())
+  phone            String
+  eventType        String
+  templateName     String?
+  message          String   @db.Text
+  status           String
+  provider         String?
+  providerResponse Json?
+  dedupeKey        String?  @unique
+  errorMessage     String?
+  createdAt        DateTime @default(now())
+
+  @@index([phone, eventType, createdAt])
+}
+
 model PaymentEvent {
   id         String   @id @default(cuid())
   orderId    String

@@ -32,17 +32,14 @@ type ActionState = {
 async function requireUserId() {
   const session = await getAppSession();
   const userId = (session as { user?: { id?: string } } | null)?.user?.id;
-  if (!userId) {
-    throw new Error("ابتدا وارد حساب کاربری خود شوید.");
-  }
+  if (!userId) throw new Error("ابتدا وارد حساب کاربری خود شوید.");
   return userId;
 }
 
 export async function updateProfileAction(_prev: ActionState | undefined, formData: FormData): Promise<ActionState> {
   try {
     const userId = await requireUserId();
-    const raw = Object.fromEntries(formData);
-    const parsed = profileSchema.safeParse(raw);
+    const parsed = profileSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
       return { success: false, message: "اطلاعات را بررسی کنید.", errors: parsed.error.flatten().fieldErrors };
@@ -51,62 +48,31 @@ export async function updateProfileAction(_prev: ActionState | undefined, formDa
     const { name, email, phone } = parsed.data;
     const normalizedPhone = normalizeIranPhone(phone);
 
-    const existing = await prisma.user.findFirst({
-      where: {
-        email,
-        id: { not: userId },
-      },
-      select: { id: true },
-    });
+    const [emailOwner, phoneOwner] = await Promise.all([
+      prisma.user.findFirst({ where: { email, id: { not: userId } }, select: { id: true } }),
+      prisma.user.findFirst({ where: { phone: normalizedPhone, id: { not: userId } }, select: { id: true } }),
+    ]);
 
-    if (existing) {
-      return {
-        success: false,
-        message: "این ایمیل قبلاً ثبت شده است.",
-        errors: { email: ["این ایمیل قبلاً ثبت شده است."] },
-      };
+    if (emailOwner) {
+      return { success: false, message: "این ایمیل قبلا ثبت شده است.", errors: { email: ["این ایمیل قبلا ثبت شده است."] } };
     }
-
-    const phoneOwner = await prisma.user.findFirst({
-      where: {
-        phone: normalizedPhone,
-        id: { not: userId },
-      },
-      select: { id: true },
-    });
-
     if (phoneOwner) {
-      return {
-        success: false,
-        message: "این شماره موبایل قبلاً ثبت شده است.",
-        errors: { phone: ["این شماره موبایل قبلاً ثبت شده است."] },
-      };
+      return { success: false, message: "این شماره موبایل قبلا ثبت شده است.", errors: { phone: ["این شماره موبایل قبلا ثبت شده است."] } };
     }
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        name,
-        email,
-        phone: normalizedPhone,
-      },
-    });
+    await prisma.user.update({ where: { id: userId }, data: { name, email, phone: normalizedPhone } });
 
     revalidatePath("/account");
-    return { success: true, message: "پروفایل با موفقیت بروزرسانی شد." };
+    return { success: true, message: "پروفایل با موفقیت به‌روزرسانی شد." };
   } catch (error) {
-    return { success: false, message: error instanceof Error ? error.message : "بروزرسانی پروفایل با خطا مواجه شد." };
+    return { success: false, message: error instanceof Error ? error.message : "به‌روزرسانی پروفایل با خطا مواجه شد." };
   }
 }
 
-export async function updateDefaultAddressAction(
-  _prev: ActionState | undefined,
-  formData: FormData,
-): Promise<ActionState> {
+export async function updateDefaultAddressAction(_prev: ActionState | undefined, formData: FormData): Promise<ActionState> {
   try {
     const userId = await requireUserId();
-    const raw = Object.fromEntries(formData);
-    const parsed = addressSchema.safeParse(raw);
+    const parsed = addressSchema.safeParse(Object.fromEntries(formData));
 
     if (!parsed.success) {
       return { success: false, message: "اطلاعات آدرس را بررسی کنید.", errors: parsed.error.flatten().fieldErrors };
@@ -116,12 +82,7 @@ export async function updateDefaultAddressAction(
     const normalizedPhone = normalizeIranPhone(input.phone);
 
     await prisma.userAddress.upsert({
-      where: {
-        userId_isDefault: {
-          userId,
-          isDefault: true,
-        },
-      },
+      where: { userId_isDefault: { userId, isDefault: true } },
       update: {
         fullName: input.fullName,
         phone: normalizedPhone,

@@ -387,10 +387,11 @@ export async function getReportsTabData(): Promise<ReportsTabData> {
 }
 
 export async function getContentTabData(): Promise<ContentTabData> {
-  const [banners, posts, galleryImages] = await Promise.all([
+  const [banners, posts, galleryImages, smsLogs] = await Promise.all([
     prisma.marketingBanner.findMany({ orderBy: [{ position: "asc" }, { updatedAt: "desc" }] }),
     prisma.blogPost.findMany({ orderBy: { publishedAt: "desc" } }),
     prisma.galleryImage.findMany({ orderBy: [{ orderIndex: "asc" }, { updatedAt: "desc" }] }),
+    prisma.smsLog.findMany({ orderBy: { createdAt: "desc" }, take: 12 }),
   ]);
 
   return {
@@ -425,6 +426,16 @@ export async function getContentTabData(): Promise<ContentTabData> {
       orderIndex: image.orderIndex,
       isActive: image.isActive,
       updatedAt: image.updatedAt,
+    })),
+    smsLogs: smsLogs.map((log) => ({
+      id: log.id,
+      phone: log.phone,
+      eventType: log.eventType,
+      templateName: log.templateName,
+      status: log.status,
+      provider: log.provider,
+      errorMessage: log.errorMessage,
+      createdAt: log.createdAt,
     })),
   };
 }

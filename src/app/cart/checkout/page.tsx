@@ -21,20 +21,12 @@ export default async function CheckoutPage() {
       include: {
         items: {
           include: {
-            product: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-              },
-            },
+            product: { select: { id: true, name: true, price: true } },
           },
         },
       },
     }),
-    prisma.userAddress.findFirst({
-      where: { userId: user.id, isDefault: true },
-    }),
+    prisma.userAddress.findFirst({ where: { userId: user.id, isDefault: true } }),
   ]);
 
   if (!cart || cart.items.length === 0) {
@@ -64,9 +56,11 @@ export default async function CheckoutPage() {
   return (
     <div className="container-zen space-y-6 py-6 md:py-8">
       <header className="rounded-3xl border border-[#E5E7EB] bg-white p-6">
-        <p className="text-sm font-bold text-red-600">مرحله پایانی خرید</p>
+        <p className="text-sm font-bold text-[#DC2626]">مرحله پایانی خرید</p>
         <h1 className="mt-2 text-2xl font-extrabold text-[#111827] md:text-3xl">تایید و پرداخت سفارش</h1>
-        <p className="mt-2 text-sm leading-7 text-[#6B7280]">جمع جزء سبد خرید شما {formatPrice(subtotal)} است. لطفاً اطلاعات ارسال و پرداخت را تکمیل کنید.</p>
+        <p className="mt-2 text-sm leading-7 text-[#6B7280]">
+          جمع کالاهای سبد خرید شما {formatPrice(subtotal)} است. اطلاعات ارسال را تکمیل کنید تا به درگاه پرداخت منتقل شوید.
+        </p>
       </header>
 
       <CheckoutForm items={items} defaults={defaults} />

@@ -10,87 +10,76 @@ type SuccessPageProps = {
 export default async function CheckoutSuccessPage({ searchParams }: SuccessPageProps) {
   const params = await searchParams;
   const orderId = typeof params?.orderId === "string" ? params.orderId : null;
-
-  if (!orderId) {
-    return (
-      <div className="bg-slate-50">
-        <div className="page-section px-6 py-16 text-center">
-          <h1 className="text-3xl font-semibold text-slate-900">اطلاعات سفارش یافت نشد</h1>
-          <p className="mt-4 text-sm text-slate-600">برای مشاهده وضعیت سفارش باید شناسه معتبر داشته باشید.</p>
-          <Link href="/products" className="mt-8 inline-flex rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-600">
-            بازگشت به فروشگاه
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    include: {
-      items: {
-        include: {
-          product: { select: { name: true } },
-        },
-      },
-    },
-  });
+  const order = orderId
+    ? await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { items: { include: { product: { select: { name: true } } } } },
+      })
+    : null;
 
   if (!order) {
-    return (
-      <div className="bg-slate-50">
-        <div className="page-section px-6 py-16 text-center">
-          <h1 className="text-3xl font-semibold text-slate-900">سفارش یافت نشد</h1>
-          <p className="mt-4 text-sm text-slate-600">شناسه سفارش وارد شده معتبر نیست یا پرداخت تکمیل نشده است.</p>
-          <Link href="/products" className="mt-8 inline-flex rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-600">
-            بازگشت به فروشگاه
-          </Link>
-        </div>
-      </div>
-    );
+    return <ResultShell type="missing" title="اطلاعات سفارش یافت نشد" message="برای مشاهده وضعیت سفارش باید شناسه معتبر داشته باشید." />;
   }
 
   return (
-    <div className="bg-slate-50">
-      <div className="page-section px-6 py-16">
-        <div className="rounded-3xl border border-emerald-100 bg-white p-10 shadow-xl shadow-emerald-100/40">
-          <h1 className="text-3xl font-semibold text-slate-900">پرداخت با موفقیت انجام شد</h1>
-          <p className="mt-2 text-sm text-slate-600">سفارش شما با شناسه {order.id.slice(0, 10)} ثبت شده است.</p>
-          <div className="mt-8 space-y-4 text-sm text-slate-600">
-            <div className="flex items-center justify-between">
-              <span>مبلغ پرداختی</span>
-              <span className="font-semibold text-slate-900">{formatPrice(order.total)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>کد پیگیری زرین‌پال</span>
-              <span className="font-mono text-xs text-slate-500">{order.paymentRefId ?? "-"}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-slate-900">اقلام سفارش</span>
-              <ul className="space-y-1 text-xs text-slate-600">
-                {order.items.map((item) => (
-                  <li key={item.id}>
-                    {item.quantity}× {item.product.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="mt-10 flex flex-wrap gap-3 text-xs">
-            <Link
-              href="/account"
-              className="rounded-full border border-slate-300 px-5 py-2 text-slate-700 transition hover:border-slate-400"
-            >
-              مشاهده وضعیت سفارش
-            </Link>
-            <Link
-              href="/products"
-              className="rounded-full bg-sky-500 px-5 py-2 text-white transition hover:bg-sky-600"
-            >
-              ادامه خرید
-            </Link>
+    <div className="container-zen py-10">
+      <div className="mx-auto max-w-3xl rounded-3xl border border-emerald-200 bg-white p-6 shadow-sm md:p-8">
+        <div className="flex flex-col gap-4 text-center md:items-center">
+          <div className="mx-auto grid size-16 place-items-center rounded-full bg-emerald-50 text-3xl font-black text-[#16A34A]">✓</div>
+          <div>
+            <h1 className="text-2xl font-extrabold text-[#111827] md:text-3xl">پرداخت با موفقیت انجام شد</h1>
+            <p className="mt-2 text-sm leading-7 text-[#6B7280]">سفارش #{order.id.slice(0, 10).toUpperCase()} ثبت شد و برای پردازش آماده است.</p>
           </div>
         </div>
+
+        <div className="mt-8 grid gap-3 md:grid-cols-2">
+          <Info label="مبلغ پرداختی" value={formatPrice(order.total)} />
+          <Info label="کد پیگیری پرداخت" value={order.paymentRefId ?? "-"} mono />
+          <Info label="وضعیت سفارش" value="پرداخت شده" />
+          <Info label="تحویل گیرنده" value={order.fullName} />
+        </div>
+
+        <div className="mt-8 rounded-3xl border border-[#E5E7EB] p-5">
+          <h2 className="text-sm font-black text-[#111827]">اقلام سفارش</h2>
+          <div className="mt-3 space-y-2">
+            {order.items.map((item) => (
+              <div key={item.id} className="flex justify-between rounded-2xl bg-[#F7F7F8] px-3 py-2 text-xs text-[#6B7280]">
+                <span>{item.product.name}</span>
+                <span className="font-bold text-[#111827]">{item.quantity.toLocaleString("fa-IR")} عدد</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link href={`/account?orderId=${order.id}`} className="btn-primary flex-1 text-center">
+            مشاهده سفارش
+          </Link>
+          <Link href="/products" className="btn-outline flex-1 text-center">
+            بازگشت به فروشگاه
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Info({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
+      <p className="text-xs text-[#6B7280]">{label}</p>
+      <p className={`mt-1 font-black text-[#111827] ${mono ? "font-mono text-xs" : "text-sm"}`}>{value}</p>
+    </div>
+  );
+}
+
+function ResultShell({ title, message }: { type: string; title: string; message: string }) {
+  return (
+    <div className="container-zen py-16 text-center">
+      <div className="mx-auto max-w-xl rounded-3xl border border-[#E5E7EB] bg-white p-8">
+        <h1 className="text-2xl font-extrabold text-[#111827]">{title}</h1>
+        <p className="mt-3 text-sm text-[#6B7280]">{message}</p>
+        <Link href="/products" className="btn-primary mt-8 inline-flex">بازگشت به فروشگاه</Link>
       </div>
     </div>
   );

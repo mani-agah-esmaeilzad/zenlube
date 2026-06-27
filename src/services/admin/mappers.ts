@@ -132,6 +132,7 @@ export function mapOrderDetail(order: Prisma.OrderGetPayload<{
   include: {
     user: { select: { email: true } };
     items: { include: { product: { select: { name: true } } } };
+    paymentEvents: { select: { id: true; gateway: true; authority: true; status: true; createdAt: true } };
   };
 }>): AdminOrderDetail {
   return {
@@ -144,6 +145,8 @@ export function mapOrderDetail(order: Prisma.OrderGetPayload<{
     paymentMethod: order.paymentMethod,
     paymentGateway: order.paymentGateway,
     paymentRefId: order.paymentRefId,
+    paymentAuthority: order.paymentAuthority,
+    paidAt: order.paidAt,
     shippingMethod: order.shippingMethod,
     shippingTrackingCode: order.shippingTrackingCode,
     phone: order.phone,
@@ -158,6 +161,13 @@ export function mapOrderDetail(order: Prisma.OrderGetPayload<{
       name: item.product.name,
       quantity: item.quantity,
       price: toNumber(item.price),
+    })),
+    paymentEvents: order.paymentEvents.map((event) => ({
+      id: event.id,
+      gateway: event.gateway,
+      authority: event.authority,
+      status: event.status,
+      createdAt: event.createdAt,
     })),
   };
 }

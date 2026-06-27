@@ -2,15 +2,16 @@
 
 import type { InputHTMLAttributes } from "react";
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
+import { useFormStatus } from "react-dom";
 import { createCheckoutOrderAction, CheckoutState } from "@/actions/orders";
 import { formatPrice } from "@/lib/utils";
 
 const initialState: CheckoutState = { success: false };
 
 const shippingOptions = [
-  { value: "STANDARD", label: "ارسال استاندارد (۳ تا ۵ روز)", cost: 60000 },
-  { value: "EXPRESS", label: "ارسال سریع (۱ تا ۲ روز)", cost: 120000 },
-  { value: "PICKUP", label: "تحویل حضوری از انبار تهران", cost: 0 },
+  { value: "STANDARD", label: "ارسال استاندارد", detail: "۳ تا ۵ روز کاری", cost: 60000 },
+  { value: "EXPRESS", label: "ارسال سریع", detail: "۱ تا ۲ روز کاری", cost: 120000 },
+  { value: "PICKUP", label: "تحویل حضوری", detail: "هماهنگی با پشتیبانی", cost: 0 },
 ] as const;
 
 type CheckoutItem = { id: string; name: string; quantity: number; price: number };
@@ -38,7 +39,9 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
   const total = subtotal + shippingCost;
 
   useEffect(() => {
-    if (state.success && state.redirectUrl) window.location.href = state.redirectUrl;
+    if (state.success && state.redirectUrl) {
+      window.location.href = state.redirectUrl;
+    }
   }, [state.success, state.redirectUrl]);
 
   useEffect(() => {
@@ -68,7 +71,7 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
           setOtpError(data.message ?? "ارسال کد با خطا مواجه شد.");
           return;
         }
-        setOtpMessage("کد تایید ارسال شد. لطفاً ظرف ۵ دقیقه آن را وارد کنید.");
+        setOtpMessage("کد تایید ارسال شد. لطفا ظرف ۵ دقیقه آن را وارد کنید.");
       } catch (error) {
         setOtpError(error instanceof Error ? error.message : "ارسال کد با خطا مواجه شد.");
       }
@@ -76,10 +79,12 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
   };
 
   return (
-    <form action={formAction} className="grid gap-6 lg:grid-cols-[1fr_360px]">
+    <form action={formAction} className="grid gap-6 lg:grid-cols-[1fr_380px]">
       <div className="space-y-6">
-        <section className="rounded-2xl border border-[#E5E7EB] bg-white p-5 md:p-6">
-          <h2 className="text-lg font-extrabold text-[#111827]">اطلاعات تماس و ارسال</h2>
+        <Stepper />
+
+        <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
+          <SectionTitle title="اطلاعات تماس" subtitle="کد تایید برای همین شماره ارسال می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field label="نام و نام خانوادگی" name="fullName" defaultValue={defaults.fullName ?? ""} errors={state.errors?.fullName} required />
             <Field label="ایمیل" name="email" type="email" defaultValue={defaults.email ?? ""} errors={state.errors?.email} required />
@@ -99,8 +104,8 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
           {otpError && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-[#DC2626]">{otpError}</p>}
         </section>
 
-        <section className="rounded-2xl border border-[#E5E7EB] bg-white p-5 md:p-6">
-          <h2 className="text-lg font-extrabold text-[#111827]">آدرس تحویل</h2>
+        <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
+          <SectionTitle title="آدرس و ارسال" subtitle="آدرس دقیق باعث پردازش سریع‌تر سفارش می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field label="آدرس اصلی" name="address1" defaultValue={defaults.address1 ?? ""} errors={state.errors?.address1} required />
             <Field label="آدرس تکمیلی" name="address2" defaultValue={defaults.address2 ?? ""} />
@@ -112,6 +117,30 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
               ذخیره به عنوان آدرس پیش‌فرض
             </label>
           </div>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            {shippingOptions.map((option) => (
+              <label
+                key={option.value}
+                className={`cursor-pointer rounded-2xl border p-4 text-xs transition ${
+                  shipping === option.value ? "border-[#DC2626] bg-red-50" : "border-[#E5E7EB] bg-white hover:border-red-200"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="shippingMethod"
+                  value={option.value}
+                  checked={shipping === option.value}
+                  onChange={() => setShipping(option.value)}
+                  className="sr-only"
+                />
+                <span className="block font-black text-[#111827]">{option.label}</span>
+                <span className="mt-1 block text-[#6B7280]">{option.detail}</span>
+                <span className="mt-3 block font-bold text-[#DC2626]">{formatPrice(option.cost)}</span>
+              </label>
+            ))}
+          </div>
+
           <label className="mt-5 block text-xs font-bold text-[#374151]">
             توضیحات سفارش
             <textarea name="notes" rows={3} defaultValue="" className="input-zen mt-2 resize-none" />
@@ -120,40 +149,72 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
       </div>
 
       <aside className="space-y-4">
-        <section className="rounded-2xl border border-[#E5E7EB] bg-white p-5 text-sm shadow-[0_10px_28px_rgba(17,24,39,0.06)] lg:sticky lg:top-40">
+        <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 text-sm shadow-[0_10px_28px_rgba(17,24,39,0.06)] lg:sticky lg:top-40">
           <h2 className="text-lg font-extrabold text-[#111827]">خلاصه سفارش</h2>
           <div className="mt-4 space-y-3">
             {items.map((item) => (
               <div key={item.id} className="flex items-start justify-between gap-3 text-xs text-[#6B7280]">
-                <span className="line-clamp-2">{item.name}<span className="mr-1 text-[#9CA3AF]">×{item.quantity.toLocaleString("fa-IR")}</span></span>
+                <span className="line-clamp-2">
+                  {item.name}
+                  <span className="mr-1 text-[#9CA3AF]">×{item.quantity.toLocaleString("fa-IR")}</span>
+                </span>
                 <span className="shrink-0 font-bold text-[#374151]">{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
-            <div className="border-t border-[#E5E7EB] pt-3">
-              <div className="flex justify-between text-[#6B7280]"><span>جمع جزء</span><span>{formatPrice(subtotal)}</span></div>
-            </div>
-            <label className="block text-xs font-bold text-[#374151]">
-              روش ارسال
-              <select name="shippingMethod" value={shipping} onChange={(event) => setShipping(event.target.value as typeof shipping)} className="input-zen mt-2 text-xs">
-                {shippingOptions.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label} - {formatPrice(option.cost)}</option>
-                ))}
-              </select>
-            </label>
-            <div className="flex justify-between text-[#6B7280]"><span>هزینه ارسال</span><span>{formatPrice(shippingCost)}</span></div>
+            <SummaryRow label="جمع کالاها" value={formatPrice(subtotal)} />
+            <SummaryRow label="هزینه ارسال" value={formatPrice(shippingCost)} />
             <div className="flex justify-between border-t border-[#E5E7EB] pt-3 text-base font-extrabold text-[#111827]">
               <span>مبلغ قابل پرداخت</span>
               <span>{formatPrice(total)}</span>
             </div>
           </div>
           {!state.success && state.message && <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-[#DC2626]">{state.message}</p>}
-          <button type="submit" className="btn-primary mt-5 w-full" disabled={state.success}>
-            اتصال به درگاه زرین‌پال
-          </button>
-          <p className="mt-3 text-xs leading-6 text-[#6B7280]">اطلاعات شما با رمزگذاری امن منتقل می‌شود.</p>
+          {state.success && state.message && <p className="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">{state.message}</p>}
+          <SubmitButton />
+          <p className="mt-3 text-xs leading-6 text-[#6B7280]">پرداخت از طریق درگاه امن زرین‌پال انجام می‌شود. بعد از پرداخت، وضعیت سفارش در حساب کاربری شما ثبت می‌شود.</p>
         </section>
       </aside>
     </form>
+  );
+}
+
+function Stepper() {
+  const steps = ["سبد خرید", "آدرس و ارسال", "پرداخت", "تکمیل سفارش"];
+  return (
+    <div className="grid grid-cols-4 gap-2 rounded-3xl border border-[#E5E7EB] bg-white p-3 text-center text-[11px] font-bold text-[#6B7280]">
+      {steps.map((step, index) => (
+        <div key={step} className={`rounded-2xl px-2 py-3 ${index === 1 || index === 2 ? "bg-red-50 text-[#DC2626]" : "bg-[#F7F7F8]"}`}>
+          {step}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SectionTitle({ title, subtitle }: { title: string; subtitle: string }) {
+  return (
+    <div>
+      <h2 className="text-lg font-extrabold text-[#111827]">{title}</h2>
+      <p className="mt-1 text-xs leading-6 text-[#6B7280]">{subtitle}</p>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between border-t border-[#E5E7EB] pt-3 text-[#6B7280]">
+      <span>{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="btn-primary mt-5 w-full" disabled={pending}>
+      {pending ? "در حال انتقال به درگاه پرداخت..." : "پرداخت و ثبت نهایی سفارش"}
+    </button>
   );
 }
 

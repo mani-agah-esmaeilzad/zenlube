@@ -43,6 +43,17 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
             product: { select: { name: true } },
           },
         },
+        paymentEvents: {
+          orderBy: { createdAt: "desc" },
+          take: 3,
+          select: {
+            id: true,
+            gateway: true,
+            authority: true,
+            status: true,
+            createdAt: true,
+          },
+        },
       },
       skip,
       take: filters.perPage,

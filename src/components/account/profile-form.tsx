@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState } from "react";
-
 import { updateProfileAction } from "@/actions/account";
 
 type ProfileFormProps = {
@@ -11,68 +10,34 @@ type ProfileFormProps = {
 };
 
 type FormState = Awaited<ReturnType<typeof updateProfileAction>>;
-
 const initialState: FormState = { success: false };
 
 export function ProfileForm({ name, email, phone }: ProfileFormProps) {
   const [state, formAction] = useActionState(updateProfileAction, initialState);
 
   return (
-    <form action={formAction} className="space-y-4 text-sm">
-      <div>
-        <label className="text-xs text-slate-500">نام و نام خانوادگی</label>
-        <input
-          name="name"
-          defaultValue={name ?? ""}
-          className="mt-1 w-full rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-700 focus:border-sky-300 focus:outline-none"
-          required
-        />
-        {state?.errors?.name?.map((error) => (
-          <p key={error} className="mt-1 text-xs text-red-500">
-            {error}
-          </p>
-        ))}
-      </div>
-      <div>
-        <label className="text-xs text-slate-500">ایمیل</label>
-        <input
-          type="email"
-          name="email"
-          defaultValue={email ?? ""}
-          className="mt-1 w-full rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-700 focus:border-sky-300 focus:outline-none"
-          required
-        />
-        {state?.errors?.email?.map((error) => (
-          <p key={error} className="mt-1 text-xs text-red-500">
-            {error}
-          </p>
-        ))}
-      </div>
-      <div>
-        <label className="text-xs text-slate-500">شماره موبایل</label>
-        <input
-          type="tel"
-          name="phone"
-          defaultValue={phone ?? ""}
-          placeholder="09xxxxxxxxx"
-          required
-          className="mt-1 w-full rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-700 focus:border-sky-300 focus:outline-none"
-        />
-        {state?.errors?.phone?.map((error) => (
-          <p key={error} className="mt-1 text-xs text-red-500">
-            {error}
-          </p>
-        ))}
+    <form action={formAction} className="grid gap-4 text-sm md:grid-cols-2">
+      <Field label="نام و نام خانوادگی" name="name" defaultValue={name ?? ""} errors={state?.errors?.name} />
+      <Field label="ایمیل" name="email" type="email" defaultValue={email ?? ""} errors={state?.errors?.email} />
+      <Field label="شماره موبایل" name="phone" type="tel" defaultValue={phone ?? ""} errors={state?.errors?.phone} />
+      <div className="flex items-end">
+        <button type="submit" className="btn-primary w-full">ذخیره تغییرات</button>
       </div>
       {state?.message && (
-        <p className={`text-xs ${state.success ? "text-emerald-600" : "text-red-500"}`}>{state.message}</p>
+        <p className={`md:col-span-2 rounded-2xl px-4 py-3 text-xs font-bold ${state.success ? "bg-green-50 text-[#16A34A]" : "bg-red-50 text-[#DC2626]"}`}>
+          {state.message}
+        </p>
       )}
-      <button
-        type="submit"
-        className="w-full rounded-full bg-sky-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-sky-600"
-      >
-        ذخیره تغییرات
-      </button>
     </form>
+  );
+}
+
+function Field({ label, name, defaultValue, type = "text", errors }: { label: string; name: string; defaultValue: string; type?: string; errors?: string[] }) {
+  return (
+    <label className="text-xs font-bold text-[#374151]">
+      {label}
+      <input name={name} type={type} defaultValue={defaultValue} className="input-zen mt-2" required />
+      {errors?.map((error) => <span key={error} className="mt-1 block text-[11px] text-[#DC2626]">{error}</span>)}
+    </label>
   );
 }

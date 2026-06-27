@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { resetDatabaseExceptAdminFormAction } from "@/actions/admin";
 import { formatPrice } from "@/lib/utils";
 import {
   faDateFormatter,
@@ -228,6 +229,22 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
 
   return (
     <div className="space-y-10">
+      <section className="rounded-3xl border border-red-200 bg-red-50 p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-lg font-black text-red-700">پاکسازی کامل دیتابیس</h2>
+            <p className="mt-1 text-sm leading-7 text-red-700/80">
+              همه اطلاعات فروشگاه حذف می‌شود و فقط ادمین فعلی باقی می‌ماند.
+            </p>
+          </div>
+          <form action={resetDatabaseExceptAdminFormAction}>
+            <button type="submit" className="min-h-11 rounded-2xl bg-red-600 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-red-700">
+              حذف همه اطلاعات به جز ادمین
+            </button>
+          </form>
+        </div>
+      </section>
+
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {overviewCards.map((card) => (
           <div

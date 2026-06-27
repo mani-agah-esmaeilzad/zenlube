@@ -127,7 +127,7 @@ export async function deleteProduct(productId: string) {
     await prisma.$transaction([
       prisma.cartItem.deleteMany({ where: { productId } }),
       prisma.productCar.deleteMany({ where: { productId } }),
-      prisma.product.update({
+      prisma.product.updateMany({
         where: { id: productId },
         data: {
           slug: `deleted-${productId}`,
@@ -144,7 +144,7 @@ export async function deleteProduct(productId: string) {
     return { mode: "archived" as const };
   }
 
-  await prisma.product.delete({ where: { id: productId } });
+  await prisma.product.deleteMany({ where: { id: productId } });
   return { mode: "deleted" as const };
 }
 
@@ -153,7 +153,7 @@ export async function countProductsByBrand(brandId: string) {
 }
 
 export async function deleteBrand(brandId: string) {
-  await prisma.brand.delete({ where: { id: brandId } });
+  await prisma.brand.deleteMany({ where: { id: brandId } });
 }
 
 export async function countProductsByCategory(categoryId: string) {
@@ -161,7 +161,7 @@ export async function countProductsByCategory(categoryId: string) {
 }
 
 export async function deleteCategory(categoryId: string) {
-  await prisma.category.delete({ where: { id: categoryId } });
+  await prisma.category.deleteMany({ where: { id: categoryId } });
 }
 
 export async function upsertMaintenanceTask(data: {
@@ -200,11 +200,11 @@ export async function upsertMaintenanceTask(data: {
 }
 
 export async function deleteMaintenanceTask(taskId: string) {
-  await prisma.carMaintenanceTask.delete({ where: { id: taskId } });
+  await prisma.carMaintenanceTask.deleteMany({ where: { id: taskId } });
 }
 
 export async function deleteCar(carId: string) {
-  await prisma.car.delete({ where: { id: carId } });
+  await prisma.car.deleteMany({ where: { id: carId } });
 }
 
 export async function answerQuestion(
@@ -311,18 +311,20 @@ export async function archiveQuestion(questionId: string, type: "product" | "car
 
 export async function deleteQuestion(questionId: string, type: "product" | "car") {
   if (type === "product") {
-    const question = await prisma.productQuestion.delete({
+    const question = await prisma.productQuestion.findUnique({
       where: { id: questionId },
       include: { product: { select: { slug: true } } },
     });
-    return { targetSlug: question.product.slug };
+    await prisma.productQuestion.deleteMany({ where: { id: questionId } });
+    return { targetSlug: question?.product.slug };
   }
 
-  const question = await prisma.carQuestion.delete({
+  const question = await prisma.carQuestion.findUnique({
     where: { id: questionId },
     include: { car: { select: { slug: true } } },
   });
-  return { targetSlug: question.car.slug };
+  await prisma.carQuestion.deleteMany({ where: { id: questionId } });
+  return { targetSlug: question?.car.slug };
 }
 
 export async function updateUserRole(userId: string, role: "ADMIN" | "CUSTOMER") {
@@ -337,7 +339,6 @@ export async function deleteOrderSafely(orderId: string) {
     where: { id: orderId },
     include: {
       paymentEvents: { select: { id: true }, take: 1 },
-      paymentTransactions: { select: { id: true }, take: 1 },
     },
   });
 
@@ -345,7 +346,7 @@ export async function deleteOrderSafely(orderId: string) {
     throw new Error("سفارش پیدا نشد.");
   }
 
-  const hasPaymentHistory = Boolean(order.paidAt || order.paymentRefId || order.paymentEvents.length || order.paymentTransactions.length);
+  const hasPaymentHistory = Boolean(order.paidAt || order.paymentRefId || order.paymentEvents.length);
   if (hasPaymentHistory) {
     await prisma.order.update({
       where: { id: orderId },
@@ -357,7 +358,7 @@ export async function deleteOrderSafely(orderId: string) {
     return { mode: "archived" as const };
   }
 
-  await prisma.order.delete({ where: { id: orderId } });
+  await prisma.order.deleteMany({ where: { id: orderId } });
   return { mode: "deleted" as const };
 }
 
@@ -405,6 +406,68 @@ export async function deleteUserSafely(userId: string, sessionUserId?: string | 
     return { mode: "archived" as const };
   }
 
-  await prisma.user.delete({ where: { id: userId } });
+  await prisma.user.deleteMany({ where: { id: userId } });
   return { mode: "deleted" as const };
+}
+
+async function deletePaymentTransactionsIfTableExists() {
+  await prisma.$executeRawUnsafe(`
+    DO $$
+    BEGIN
+      IF to_regclass('public."PaymentTransaction"') IS NOT NULL THEN
+        DELETE FROM "PaymentTransaction";
+      END IF;
+    END $$;
+  `);
+}
+
+export async function resetDatabaseExceptAdmin(adminUserId: string) {
+  const admin = await prisma.user.findUnique({
+    where: { id: adminUserId },
+    select: { id: true, role: true },
+  });
+
+  if (!admin || admin.role !== "ADMIN") {
+    throw new Error("مدیر معتبر برای پاکسازی دیتابیس پیدا نشد.");
+  }
+
+  await deletePaymentTransactionsIfTableExists();
+
+  await prisma.$transaction([
+    prisma.paymentEvent.deleteMany(),
+    prisma.smsLog.deleteMany(),
+    prisma.rateLimitHit.deleteMany(),
+    prisma.otpRequest.deleteMany(),
+    prisma.verificationToken.deleteMany(),
+    prisma.engagementEvent.deleteMany(),
+
+    prisma.productQuestion.deleteMany(),
+    prisma.carQuestion.deleteMany(),
+    prisma.productReview.deleteMany(),
+    prisma.productCar.deleteMany(),
+    prisma.carMaintenanceTask.deleteMany(),
+
+    prisma.cartItem.deleteMany(),
+    prisma.cart.deleteMany(),
+    prisma.orderItem.deleteMany(),
+    prisma.order.deleteMany(),
+
+    prisma.galleryImage.deleteMany(),
+    prisma.marketingBanner.deleteMany(),
+    prisma.blogPost.deleteMany(),
+    prisma.product.deleteMany(),
+    prisma.car.deleteMany(),
+    prisma.category.deleteMany(),
+    prisma.brand.deleteMany(),
+
+    prisma.userAddress.deleteMany(),
+    prisma.account.deleteMany({ where: { userId: { not: adminUserId } } }),
+    prisma.session.deleteMany({ where: { userId: { not: adminUserId } } }),
+    prisma.user.deleteMany({ where: { id: { not: adminUserId } } }),
+  ]);
+
+  await prisma.user.update({
+    where: { id: adminUserId },
+    data: { role: "ADMIN" },
+  });
 }

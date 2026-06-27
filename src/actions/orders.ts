@@ -7,6 +7,7 @@ import prisma from "@/lib/prisma";
 import { checkoutOrderSchema } from "@/lib/validators";
 import { getAppSession } from "@/lib/session";
 import { requestZarinpalPayment } from "@/lib/payments/zarinpal";
+import { requestExternalZarinpalPayment } from "@/lib/payments/payment-api";
 import { normalizeIranPhone } from "@/lib/phone";
 import { verifyOtpCode, createOtpRequest } from "@/services/otp";
 import { sendOtpSms, sendTemplateSms, smsOrderNumber } from "@/lib/sms/service";
@@ -176,28 +177,31 @@ export async function createCheckoutOrderAction(
       { eventType: "order_created", dedupeKey: `order_created:${order.id}` },
     );
 
-    const callbackBase = config.ZARINPAL_CALLBACK_URL ?? `${config.NEXT_PUBLIC_APP_URL}/api/payments/zarinpal/callback`;
-    const callbackUrl = `${callbackBase}?orderId=${order.id}`;
+    const callbackUrl = `${config.ZARINPAL_CALLBACK_URL ?? `${config.NEXT_PUBLIC_APP_URL}/api/payments/zarinpal/callback`}?orderId=${order.id}`;
 
-    const payment = await requestZarinpalPayment({
-      amount: order.total,
+    const payment = config.PAYMENT_API_BASE_URL
+      ? await requestExternalZarinpalPayment(order.id)
+      : await requestZarinpalPayment({
+          amount: order.total,
       description: `پرداخت سفارش ${smsOrderNumber(order.id)} در Oilbar`,
-      callbackUrl,
-      email: input.email,
-      phone: normalizedPhone,
-      metadata: { orderId: order.id },
-    });
+          callbackUrl,
+          email: input.email,
+          phone: normalizedPhone,
+          metadata: { orderId: order.id },
+        });
 
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { paymentAuthority: payment.authority },
-    });
+    if (payment.authority) {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { paymentAuthority: payment.authority },
+      });
+    }
 
     await sendTemplateSms(
       normalizedPhone,
       "payment_started",
       { orderNumber: smsOrderNumber(order.id) },
-      { eventType: "payment_started", dedupeKey: `payment_started:${order.id}:${payment.authority}` },
+      { eventType: "payment_started", dedupeKey: `payment_started:${order.id}:${payment.authority ?? "external"}` },
     );
 
     return {

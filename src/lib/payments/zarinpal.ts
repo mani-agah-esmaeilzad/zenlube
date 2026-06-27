@@ -64,6 +64,13 @@ function gatewayCurrency() {
   return config.ZARINPAL_AMOUNT_UNIT === "rial" ? "IRR" : "IRT";
 }
 
+function merchantId() {
+  if (!config.ZARINPAL_MERCHANT_ID) {
+    throw new Error("ZARINPAL_MERCHANT_ID تنظیم نشده است.");
+  }
+  return config.ZARINPAL_MERCHANT_ID;
+}
+
 function getErrorMessage(errors: ZarinpalRequestResponse["errors"]) {
   if (Array.isArray(errors)) return errors[0]?.message;
   return errors?.message;
@@ -136,7 +143,7 @@ async function postJsonWithFallback<T>(path: string, payload: unknown, label: st
 
 export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<PaymentRequestResult> {
   const payload = {
-    merchant_id: config.ZARINPAL_MERCHANT_ID,
+    merchant_id: merchantId(),
     amount: toGatewayAmount(args.amount),
     currency: gatewayCurrency(),
     description: args.description,
@@ -167,7 +174,7 @@ export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<
 
 export async function verifyZarinpalPayment(authority: string, amount: Prisma.Decimal | number): Promise<PaymentVerifyResult> {
   const payload = {
-    merchant_id: config.ZARINPAL_MERCHANT_ID,
+    merchant_id: merchantId(),
     amount: toGatewayAmount(amount),
     currency: gatewayCurrency(),
     authority,

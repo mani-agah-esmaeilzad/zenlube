@@ -308,6 +308,7 @@ model Order {
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     OrderItem[]
   paymentEvents PaymentEvent[]
+  paymentTransactions PaymentTransaction[]
 }
 
 model OrderItem {
@@ -443,4 +444,31 @@ model PaymentEvent {
 
   @@index([orderId, createdAt])
   @@index([gateway, authority])
+}
+
+model PaymentTransaction {
+  id              String   @id @default(cuid())
+  orderId         String
+  gateway         String   @default("zarinpal")
+  amount          Decimal  @db.Decimal(10, 2)
+  currency        String   @default("IRT")
+  authority       String?  @unique
+  refId           String?
+  cardPan         String?
+  status          String   @default("pending")
+  requestPayload  Json?
+  requestResponse Json?
+  verifyPayload   Json?
+  verifyResponse  Json?
+  errorCode       String?
+  errorMessage    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  paidAt          DateTime?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, status])
+  @@index([gateway, status])
+  @@index([createdAt])
 }

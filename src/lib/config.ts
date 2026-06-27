@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const urlLike = (name: string) =>
   z.string().refine((value) => /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(value), {
-    message: `${name} باید یک آدرس معتبر باشد.`,
+    message: `${name} must be a valid URL.`,
   });
 
 const booleanEnv = (defaultValue: "true" | "false") =>
@@ -17,17 +17,19 @@ const EnvSchema = z
     DATABASE_URL: urlLike("DATABASE_URL"),
     DATABASE_DIRECT_URL: urlLike("DATABASE_DIRECT_URL").optional(),
     DATABASE_POOL_MAX: z.coerce.number().int().positive().max(1000).optional(),
-    NEXTAUTH_SECRET: z.string().min(1, { message: "NEXTAUTH_SECRET الزامی است." }),
-    NEXTAUTH_URL: z.string().url({ message: "NEXTAUTH_URL باید معتبر باشد." }).optional(),
-    NEXT_PUBLIC_APP_URL: z.string().url({ message: "NEXT_PUBLIC_APP_URL باید معتبر باشد." }),
+    NEXTAUTH_SECRET: z.string().min(1, { message: "NEXTAUTH_SECRET is required." }),
+    NEXTAUTH_URL: z.string().url({ message: "NEXTAUTH_URL must be valid." }).optional(),
+    NEXT_PUBLIC_APP_URL: z.string().url({ message: "NEXT_PUBLIC_APP_URL must be valid." }),
 
-    ZARINPAL_MERCHANT_ID: z.string().min(1, { message: "شناسه پذیرنده زرین‌پال الزامی است." }),
+    ZARINPAL_MERCHANT_ID: z.string().min(1).optional(),
     ZARINPAL_BASE_URL: z.string().url().default("https://payment.zarinpal.com/pg/v4"),
     ZARINPAL_STARTPAY_URL: z.string().url().default("https://payment.zarinpal.com/pg/StartPay"),
     ZARINPAL_CALLBACK_URL: z.string().url().optional(),
     ZARINPAL_PROXY_URL: z.string().url().optional(),
     ZARINPAL_PROXY_SECRET: z.string().optional(),
     ZARINPAL_AMOUNT_UNIT: z.enum(["toman", "rial"]).default("toman"),
+    PAYMENT_API_BASE_URL: z.string().url().optional(),
+    PAYMENT_SERVICE_SECRET: z.string().optional(),
 
     SMS_PROVIDER: z.enum(["smsir", "melipayamak", "console", "disabled"]).default("console"),
     SMS_API_KEY: z.string().optional(),
@@ -66,24 +68,32 @@ const EnvSchema = z
         ctx.addIssue({
           path: ["STORAGE_BUCKET"],
           code: z.ZodIssueCode.custom,
-          message: "برای استفاده از ذخیره‌سازی S3 مقدار STORAGE_BUCKET الزامی است.",
+          message: "STORAGE_BUCKET is required when STORAGE_DRIVER=s3.",
         });
       }
       if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY || !env.AWS_REGION) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["AWS_ACCESS_KEY_ID"],
-          message: "برای ذخیره‌سازی S3 باید کلیدهای AWS تنظیم شوند.",
+          message: "AWS keys and region are required when STORAGE_DRIVER=s3.",
         });
       }
     }
 
+    if (!env.PAYMENT_API_BASE_URL && !env.ZARINPAL_MERCHANT_ID) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["ZARINPAL_MERCHANT_ID"],
+        message: "ZARINPAL_MERCHANT_ID is required when PAYMENT_API_BASE_URL is not configured.",
+      });
+    }
+
     if (env.SMS_ENABLED && env.SMS_PROVIDER === "smsir") {
       if (!env.SMSIR_API_KEY && !env.SMS_API_KEY) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["SMSIR_API_KEY"], message: "برای sms.ir کلید API لازم است." });
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["SMSIR_API_KEY"], message: "SMS API key is required for sms.ir." });
       }
       if (!env.SMSIR_LINE_NUMBER && !env.SMS_SENDER_NUMBER) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["SMSIR_LINE_NUMBER"], message: "برای sms.ir شماره خط لازم است." });
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["SMSIR_LINE_NUMBER"], message: "SMS line number is required for sms.ir." });
       }
     }
 
@@ -92,7 +102,7 @@ const EnvSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["MELIPAYAMAK_USERNAME"],
-          message: "برای ملی‌پیامک نام کاربری، رمز و شماره فرستنده لازم است.",
+          message: "Melipayamak username, password, and sender are required.",
         });
       }
     }
@@ -113,6 +123,8 @@ const parsedEnv = EnvSchema.parse({
   ZARINPAL_PROXY_URL: process.env.ZARINPAL_PROXY_URL,
   ZARINPAL_PROXY_SECRET: process.env.ZARINPAL_PROXY_SECRET,
   ZARINPAL_AMOUNT_UNIT: process.env.ZARINPAL_AMOUNT_UNIT,
+  PAYMENT_API_BASE_URL: process.env.PAYMENT_API_BASE_URL ?? process.env.NEXT_PUBLIC_PAYMENT_API_BASE_URL,
+  PAYMENT_SERVICE_SECRET: process.env.PAYMENT_SERVICE_SECRET,
   SMS_PROVIDER: process.env.SMS_PROVIDER,
   SMS_API_KEY: process.env.SMS_API_KEY,
   SMS_SENDER_NUMBER: process.env.SMS_SENDER_NUMBER,

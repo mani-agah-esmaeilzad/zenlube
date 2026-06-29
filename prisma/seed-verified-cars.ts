@@ -27,7 +27,8 @@ function assertCompleteCar(car: VerifiedCarSeed) {
     }
   }
 
-  if (!Number.isFinite(car.oilCapacityLit) || car.oilCapacityLit <= 0) {
+  const hasNoCombustionEngine = car.viscosity.includes("فاقد روغن موتور") || car.specification.includes("روغن موتور ندارد");
+  if (!Number.isFinite(car.oilCapacityLit) || car.oilCapacityLit < 0 || (!hasNoCombustionEngine && car.oilCapacityLit === 0)) {
     throw new Error(`Vehicle seed "${car.slug}" has invalid oilCapacityLit.`);
   }
 

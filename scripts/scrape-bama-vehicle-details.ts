@@ -63,12 +63,17 @@ function persianDigitsToEnglish(value: string) {
   return value.replace(/[۰-۹٠-٩]/g, (digit) => map[digit] ?? digit);
 }
 
+function persianYearToGregorian(year: number) {
+  if (year >= 1300 && year <= 1500) return year + 621;
+  return year;
+}
+
 function parseYearRange(title: string) {
   const normalized = persianDigitsToEnglish(title);
   const match = normalized.match(/سال\s+(\d{4})(?:\s*[-تا]+\s*(\d{4}))?/);
   if (!match) return { yearFrom: null, yearTo: null };
-  const yearFrom = Number(match[1]);
-  const yearTo = Number(match[2] ?? match[1]);
+  const yearFrom = persianYearToGregorian(Number(match[1]));
+  const yearTo = persianYearToGregorian(Number(match[2] ?? match[1]));
   return {
     yearFrom: Number.isFinite(yearFrom) ? yearFrom : null,
     yearTo: Number.isFinite(yearTo) ? yearTo : null,

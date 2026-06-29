@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
+import { createPageInfo, getPaginationParams } from "@/lib/pagination";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -7,42 +9,50 @@ export async function GET(request: Request) {
   const categoryId = searchParams.get("category") ?? undefined;
   const brandId = searchParams.get("brand") ?? undefined;
   const carSlug = searchParams.get("car") ?? undefined;
+  const { page, pageSize, skip } = getPaginationParams(Object.fromEntries(searchParams), { defaultPageSize: 24, maxPageSize: 100 });
 
-  const products = await prisma.product.findMany({
-    where: {
-      NOT: { slug: { startsWith: "deleted-" } },
-      ...(search
-        ? {
-            OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { description: { contains: search, mode: "insensitive" } },
-              { viscosity: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-      ...(categoryId ? { categoryId } : {}),
-      ...(brandId ? { brandId } : {}),
-      ...(carSlug
-        ? {
-            carMappings: {
-              some: {
-                car: { slug: carSlug },
-              },
+  const where: Prisma.ProductWhereInput = {
+    NOT: { slug: { startsWith: "deleted-" } },
+    ...(search
+      ? {
+          OR: [
+            { name: { contains: search, mode: Prisma.QueryMode.insensitive } },
+            { description: { contains: search, mode: Prisma.QueryMode.insensitive } },
+            { viscosity: { contains: search, mode: Prisma.QueryMode.insensitive } },
+          ],
+        }
+      : {}),
+    ...(categoryId ? { categoryId } : {}),
+    ...(brandId ? { brandId } : {}),
+    ...(carSlug
+      ? {
+          carMappings: {
+            some: {
+              car: { slug: carSlug },
             },
-          }
-        : {}),
-    },
-    include: {
-      brand: true,
-      category: true,
-      carMappings: {
-        include: {
-          car: true,
+          },
+        }
+      : {}),
+  };
+
+  const [products, total] = await prisma.$transaction([
+    prisma.product.findMany({
+      where,
+      include: {
+        brand: true,
+        category: true,
+        carMappings: {
+          include: {
+            car: true,
+          },
         },
       },
-    },
-    orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
-  });
+      orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+      skip,
+      take: pageSize,
+    }),
+    prisma.product.count({ where }),
+  ]);
 
   return NextResponse.json({
     products: products.map((product) => ({
@@ -52,5 +62,6 @@ export async function GET(request: Request) {
         car,
       })),
     })),
+    pageInfo: createPageInfo(page, pageSize, total),
   });
 }

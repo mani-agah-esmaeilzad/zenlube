@@ -17,7 +17,11 @@
     "seed": "tsx prisma/seed.ts",
     "vehicles:bama:draft": "tsx scripts/scrape-bama-vehicles.ts",
     "vehicles:bama:details": "tsx scripts/scrape-bama-vehicle-details.ts",
+    "vehicles:oil:liqui": "tsx scripts/scrape-liqui-moly-oil-specs.ts",
     "vehicles:oil:candidates": "tsx scripts/scrape-ravenol-oil-specs.ts",
+    "vehicles:oil:merge": "tsx scripts/merge-oil-candidates.ts",
+    "vehicles:build:verified": "tsx scripts/build-verified-cars.ts",
+    "vehicles:pipeline": "tsx scripts/run-vehicle-pipeline.ts",
     "vehicles:table:draft": "tsx scripts/import-vehicle-table.ts",
     "seed:vehicles": "tsx prisma/seed-verified-cars.ts"
   },

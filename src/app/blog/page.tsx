@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { BlogCard } from "@/components/blog/blog-card";
-import { getAllBlogPosts } from "@/lib/data";
+import { Pagination } from "@/components/ui/pagination";
+import { getPaginatedBlogPosts } from "@/lib/data";
+import { getPaginationParams } from "@/lib/pagination";
+
+type BlogPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 export const metadata = {
   title: "وبلاگ Oilbar | راهنمای تخصصی روغن موتور",
@@ -11,8 +17,10 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function BlogPage() {
-  const posts = await getAllBlogPosts();
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const params = await searchParams;
+  const { page, pageSize } = getPaginationParams(params, { defaultPageSize: 10, maxPageSize: 30 });
+  const { items: posts, pageInfo } = await getPaginatedBlogPosts({ page, pageSize });
 
   return (
     <div className="container-zen space-y-8 py-6 md:py-8">
@@ -45,6 +53,7 @@ export default async function BlogPage() {
             هنوز مقاله‌ای ثبت نشده است.
           </div>
         )}
+        <Pagination pathname="/blog" searchParams={params} pageInfo={pageInfo} />
       </section>
     </div>
   );

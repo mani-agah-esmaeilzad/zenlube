@@ -7,6 +7,8 @@ import { getAppSession } from "@/lib/session";
 import { ProfileForm } from "@/components/account/profile-form";
 import { AddressForm } from "@/components/account/address-form";
 import { LocalFavorites } from "@/components/account/local-favorites";
+import { Pagination } from "@/components/ui/pagination";
+import { createPageInfo, getPaginationParams } from "@/lib/pagination";
 
 type AccountPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -31,12 +33,13 @@ const timeline = [
 export default async function AccountPage({ searchParams }: AccountPageProps) {
   const params = await searchParams;
   const selectedOrderId = typeof params?.orderId === "string" ? params.orderId : null;
+  const { page, pageSize, skip } = getPaginationParams(params, { defaultPageSize: 8, maxPageSize: 30 });
   const rawSession = await getAppSession();
   const user = (rawSession as { user?: { id?: string; name?: string | null; email?: string | null } } | null)?.user;
 
   if (!user?.id) redirect("/sign-in?callbackUrl=/account");
 
-  const [dbUser, orders] = await Promise.all([
+  const [dbUser, orders, totalOrders, pendingOrders, deliveredOrders, paidOrders, selectedOrderFromQuery] = await Promise.all([
     prisma.user.findUnique({
       where: { id: user.id },
       include: { addresses: { orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }] } },
@@ -45,14 +48,24 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
       include: { items: { include: { product: { select: { name: true, slug: true } } } } },
+      skip,
+      take: pageSize,
     }),
+    prisma.order.count({ where: { userId: user.id } }),
+    prisma.order.count({ where: { userId: user.id, status: "PENDING" } }),
+    prisma.order.count({ where: { userId: user.id, status: "DELIVERED" } }),
+    prisma.order.count({ where: { userId: user.id, status: { in: ["PAID", "SHIPPED", "DELIVERED"] } } }),
+    selectedOrderId
+      ? prisma.order.findFirst({
+          where: { id: selectedOrderId, userId: user.id },
+          include: { items: { include: { product: { select: { name: true, slug: true } } } } },
+        })
+      : null,
   ]);
 
   const defaultAddress = dbUser?.addresses?.find((address) => address.isDefault) ?? dbUser?.addresses?.[0] ?? null;
-  const selectedOrder = selectedOrderId ? orders.find((order) => order.id === selectedOrderId) ?? null : orders[0] ?? null;
-  const pendingOrders = orders.filter((order) => order.status === "PENDING").length;
-  const deliveredOrders = orders.filter((order) => order.status === "DELIVERED").length;
-  const paidOrders = orders.filter((order) => ["PAID", "SHIPPED", "DELIVERED"].includes(order.status)).length;
+  const selectedOrder = selectedOrderFromQuery ?? orders[0] ?? null;
+  const ordersPageInfo = createPageInfo(page, pageSize, totalOrders);
 
   return (
     <div className="container-zen py-6 md:py-8">
@@ -94,7 +107,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-4">
-              <Metric label="کل سفارش‌ها" value={orders.length} />
+              <Metric label="کل سفارش‌ها" value={totalOrders} />
               <Metric label="در انتظار پرداخت" value={pendingOrders} tone="amber" />
               <Metric label="سفارش موفق" value={paidOrders} tone="blue" />
               <Metric label="تحویل‌شده" value={deliveredOrders} tone="green" />
@@ -106,6 +119,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           <section id="orders" className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
             <SectionHeader title="سفارش‌های من" subtitle="تاریخچه سفارش‌ها و وضعیت پرداخت و ارسال" />
             {orders.length ? (
+              <>
               <div className="mt-5 grid gap-3">
                 {orders.map((order) => (
                   <Link
@@ -127,6 +141,8 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                   </Link>
                 ))}
               </div>
+              <Pagination pathname="/account" searchParams={params} pageInfo={ordersPageInfo} />
+              </>
             ) : (
               <EmptyState title="هنوز سفارشی ثبت نکرده‌اید" actionHref="/products" actionLabel="شروع خرید" />
             )}

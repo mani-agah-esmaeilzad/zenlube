@@ -1,11 +1,19 @@
 import { CategoryCard } from "@/components/catalog/category-card";
-import { getHighlightedCategories } from "@/lib/data";
+import { Pagination } from "@/components/ui/pagination";
+import { getPaginatedCategoriesWithProductCount } from "@/lib/data";
+import { getPaginationParams } from "@/lib/pagination";
+
+type CategoriesPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function CategoriesPage() {
-  const categories = await getHighlightedCategories();
+export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
+  const params = await searchParams;
+  const { page, pageSize } = getPaginationParams(params, { defaultPageSize: 12, maxPageSize: 48 });
+  const { items: categories, pageInfo } = await getPaginatedCategoriesWithProductCount({ page, pageSize });
 
   return (
     <div className="container-zen space-y-8 py-6 md:py-8">
@@ -27,6 +35,7 @@ export default async function CategoriesPage() {
           هنوز دسته‌بندی‌ای ثبت نشده است.
         </div>
       )}
+      <Pagination pathname="/categories" searchParams={params} pageInfo={pageInfo} />
     </div>
   );
 }

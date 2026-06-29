@@ -59,7 +59,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
           <section className="rounded-3xl border border-[#E5E7EB] bg-[#111827] p-5 text-white">
-            <p className="text-xs font-bold text-red-200">حساب کاربری Oilbar</p>
+            <p className="text-xs font-bold text-[#F5C56B]">حساب کاربری Oilbar</p>
             <h1 className="mt-2 text-xl font-black">{dbUser?.name ?? "کاربر اویل‌بار"}</h1>
             <p className="mt-2 text-xs text-slate-300">{dbUser?.phone ?? dbUser?.email}</p>
           </section>
@@ -72,7 +72,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               ["اطلاعات حساب", "#profile"],
               ["پشتیبانی", "/support"],
             ].map(([label, href]) => (
-              <Link key={label} href={href} className="rounded-2xl px-3 py-3 transition hover:bg-red-50 hover:text-[#DC2626]">
+              <Link key={label} href={href} className="rounded-2xl px-3 py-3 transition hover:bg-[#FFF8E8] hover:text-[#D97706]">
                 {label}
               </Link>
             ))}
@@ -83,7 +83,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           <section id="overview" className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm font-bold text-[#DC2626]">خوش آمدید</p>
+                <p className="text-sm font-bold text-[#D97706]">خوش آمدید</p>
                 <h2 className="mt-2 text-2xl font-black text-[#111827]">داشبورد خرید شما</h2>
                 <p className="mt-2 text-sm leading-7 text-[#6B7280]">سفارش‌ها، آدرس پیش‌فرض، اطلاعات حساب و خودروهای مناسب روغن را از اینجا مدیریت کنید.</p>
               </div>
@@ -111,8 +111,8 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                   <Link
                     key={order.id}
                     href={`/account?orderId=${order.id}#order-detail`}
-                    className={`rounded-2xl border p-4 transition hover:border-red-200 ${
-                      selectedOrder?.id === order.id ? "border-red-200 bg-red-50" : "border-[#E5E7EB] bg-white"
+                    className={`rounded-2xl border p-4 transition hover:border-[#F5C56B] ${
+                      selectedOrder?.id === order.id ? "border-[#F5C56B] bg-[#FFF8E8]" : "border-[#E5E7EB] bg-white"
                     }`}
                   >
                     <div className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto] md:items-center">
@@ -122,7 +122,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                       </div>
                       <Badge status={order.status} />
                       <p className="text-sm font-black text-[#111827]">{formatPrice(order.total)}</p>
-                      <span className="text-xs font-bold text-[#DC2626]">مشاهده جزئیات</span>
+                      <span className="text-xs font-bold text-[#D97706]">مشاهده جزئیات</span>
                     </div>
                   </Link>
                 ))}
@@ -234,7 +234,7 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
 }
 
 function Badge({ status }: { status: string }) {
-  const style = status === "CANCELLED" ? "bg-red-50 text-[#DC2626]" : status === "DELIVERED" ? "bg-green-50 text-[#16A34A]" : "bg-blue-50 text-blue-700";
+  const style = status === "CANCELLED" ? "bg-red-50 text-[#DC2626]" : status === "DELIVERED" ? "bg-green-50 text-[#16A34A]" : "bg-[#FFF8E8] text-[#D97706]";
   return <span className={`w-fit rounded-full px-3 py-1 text-xs font-bold ${style}`}>{statusLabels[status] ?? status}</span>;
 }
 

@@ -1,123 +1,188 @@
-import type { SVGProps } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import type { SVGProps } from "react";
 import { SignInButton } from "@/components/auth/sign-in-button";
-import { SignOutButton } from "@/components/auth/sign-out-button";
-import { CartIndicator } from "@/components/layout/cart-indicator";
 import { CategoryDropdown } from "@/components/layout/category-dropdown";
+import { LOGO_SRC } from "@/components/layout/logo-mark";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { getAllCategoriesLite } from "@/lib/data";
-import { getAppSession } from "@/lib/session";
+
+type NavLink = {
+  href: string;
+  label: string;
+  highlight?: boolean;
+};
+
+function SearchIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.9}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <circle cx={11} cy={11} r={7} />
+      <path d="m20 20-3.5-3.5" />
+    </svg>
+  );
+}
 
 export async function SiteHeader() {
-  const [rawSession, categories] = await Promise.all([getAppSession(), getAllCategoriesLite()]);
-  const sessionUser = (rawSession as { user?: { id?: string; role?: string | null } } | null)?.user;
-  const isAuthenticated = Boolean(sessionUser?.id);
-  type NavLink = { href: string; label: string; highlight?: boolean };
-  const categoryLinks: NavLink[] = categories.slice(0, 6).map((category) => ({
-    href: `/categories/${category.slug}`,
-    label: category.name,
-  }));
+  const categories = await getAllCategoriesLite().catch(() => []);
+
   const links: NavLink[] = [
     { href: "/products", label: "محصولات" },
-    ...categoryLinks,
     { href: "/brands", label: "برندها" },
+    { href: "/categories", label: "دسته‌بندی‌ها" },
     { href: "/blog", label: "راهنمای انتخاب روغن" },
     { href: "/support", label: "پشتیبانی" },
   ];
-  const searchSuggestions = categories.slice(0, 6).map((category) => category.name);
-  if (sessionUser?.role === "ADMIN") links.push({ href: "/admin", label: "پنل ادمین", highlight: true });
+
+  const searchSuggestions = categories.slice(0, 4).map((category) => category.name);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white/95 backdrop-blur">
-      <div className="hidden bg-[#111827] text-white md:block">
-        <div className="container-zen flex items-center justify-between py-2 text-xs">
-          <div className="flex items-center gap-5 text-white/85">
-            <span>ارسال سریع تهران و شهرستان</span>
-            <span className="h-3 w-px bg-white/20" />
-            <span>ضمانت اصالت روغن و فیلتر</span>
+    <header className="sticky top-0 z-50 border-b border-[#E7E8EE] bg-white/96 shadow-[0_10px_30px_rgba(17,24,39,0.05)] backdrop-blur">
+      <div className="hidden bg-[#171B23] text-white lg:block">
+        <div className="container-zen flex items-center justify-between py-3 text-xs">
+          <div className="flex items-center gap-3 text-white/90">
+            <ShieldIcon className="h-4 w-4 text-[#F59E0B]" />
+            <span>ضمانت اصالت کالا</span>
+            <span className="h-3 w-px bg-white/15" />
+            <span>۷ روز ضمانت بازگشت وجه</span>
           </div>
-          <div className="flex items-center gap-5 text-white/85">
-            <Link href="tel:02112345678" className="transition hover:text-white">
-              پشتیبانی: 09190810910
-            </Link>
-            <Link href={isAuthenticated ? "/account" : "/sign-in"} className="transition hover:text-white">
-              {isAuthenticated ? "حساب کاربری" : "ورود / ثبت‌نام"}
-            </Link>
+          <div className="flex items-center gap-3 text-white/80">
+            <HeadsetIcon className="h-4 w-4 text-[#F59E0B]" />
+            <span>پشتیبانی: ۰۲۱-۹۱۰۰-۷۲۰۰</span>
           </div>
         </div>
       </div>
 
-      <div className="container-zen grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 lg:grid-cols-[220px_1fr_auto] lg:gap-6">
-        <MobileNav links={links} isAuthenticated={isAuthenticated} categories={categories} />
-
-        <Link href="/" className="flex items-center gap-3" aria-label="صفحه اصلی Oilbar">
-          <span className="flex size-11 items-center justify-center rounded-2xl bg-[#111827] text-lg font-black text-white shadow-sm">
-            O
-          </span>
-          <span className="hidden leading-tight sm:block">
-            <span className="block text-xl font-extrabold text-[#111827]">Oilbar</span>
-            <span className="block text-[11px] font-medium text-[#6B7280]">مرجع تخصصی روغن موتور خودرو</span>
-          </span>
-        </Link>
-
-        <form action="/products" className="group relative order-4 col-span-3 lg:order-none lg:col-span-1">
-          <SearchIcon className="pointer-events-none absolute right-4 top-4 h-5 w-5 text-[#6B7280]" />
-          <input
-            name="search"
-            className="h-13 w-full rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] py-3 pl-28 pr-12 text-sm text-[#1F2937] outline-none transition focus:border-red-300 focus:bg-white focus:shadow-[0_0_0_4px_rgba(239,57,78,0.08)]"
-            placeholder="جستجو در روغن موتور، فیلتر، برند یا مدل خودرو..."
-            aria-label="جستجوی محصول"
-          />
-          <button className="absolute left-1.5 top-1.5 hidden h-10 rounded-xl bg-[#EF394E] px-5 text-xs font-bold text-white transition hover:bg-[#DC2626] md:block">
-            جستجو
-          </button>
-          {searchSuggestions.length > 0 && (
-            <div className="invisible absolute inset-x-0 top-[calc(100%+8px)] z-50 rounded-2xl border border-[#E5E7EB] bg-white p-4 opacity-0 shadow-[0_20px_50px_rgba(17,24,39,0.12)] transition group-focus-within:visible group-focus-within:opacity-100">
-              <p className="mb-3 text-xs font-bold text-[#6B7280]">دسته‌بندی‌های فروشگاه</p>
-              <div className="flex flex-wrap gap-2">
-                {searchSuggestions.map((item) => (
-                  <Link key={item} href={`/products?search=${encodeURIComponent(item)}`} className="rounded-full border border-[#E5E7EB] px-3 py-1.5 text-xs font-semibold text-[#374151] transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
-                    {item}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </form>
-
-        <div className="flex items-center justify-end gap-2">
-          <div className="hidden lg:block">{isAuthenticated ? <SignOutButton /> : <SignInButton />}</div>
-          <CartIndicator />
+      <div className="container-zen grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 lg:grid-cols-[auto_minmax(380px,1fr)_auto] lg:gap-6">
+        <div className="flex items-center gap-3 lg:hidden">
+          <MobileNav categories={categories} isAuthenticated={false} links={links} />
+          <Link aria-label="صفحه اصلی Oilbar" href="/" className="flex items-center">
+            <Image alt="لوگوی Oilbar" className="h-auto w-[122px]" height={46} priority src={LOGO_SRC} width={172} />
+          </Link>
         </div>
-      </div>
 
-      <nav className="hidden border-t border-[#E5E7EB] bg-white lg:block">
-        <div className="container-zen flex items-center gap-2 py-2">
-          <CategoryDropdown categories={categories} />
-          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto text-sm font-semibold text-[#374151]">
+        <div className="hidden min-w-0 items-center gap-8 lg:flex">
+          <Link aria-label="صفحه اصلی Oilbar" href="/" className="shrink-0">
+            <Image alt="لوگوی Oilbar" className="h-auto w-[158px]" height={52} priority src={LOGO_SRC} width={224} />
+          </Link>
+
+          <nav className="flex min-w-0 flex-1 items-center justify-end gap-1 text-sm font-bold text-[#344054]">
+            <CategoryDropdown categories={categories} />
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`whitespace-nowrap rounded-xl px-3 py-2 transition hover:bg-red-50 hover:text-red-600 ${
-                  link.highlight ? "bg-red-50 text-red-600" : ""
+                className={`rounded-xl px-3 py-2 transition hover:bg-[#FFF7E8] hover:text-[#D97706] ${
+                  link.highlight ? "bg-[#FFF7E8] text-[#D97706]" : ""
                 }`}
               >
                 {link.label}
               </Link>
             ))}
-          </div>
+          </nav>
         </div>
-      </nav>
+
+        <form action="/products" className="group relative order-3 col-span-3 lg:order-none lg:col-span-1">
+          <SearchIcon className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#667085]" />
+          <input
+            aria-label="جستجوی محصول"
+            className="input-zen h-16 rounded-[20px] border-[#E7E8EE] bg-white pr-12 text-sm font-medium shadow-[0_10px_30px_rgba(17,24,39,0.03)]"
+            name="search"
+            placeholder="جستجو برای روغن، فیلتر، برند یا خودرو..."
+          />
+          <div className="invisible absolute inset-x-0 top-[calc(100%+10px)] z-50 rounded-[22px] border border-[#ECEEF2] bg-white p-4 opacity-0 shadow-[0_20px_60px_rgba(17,24,39,0.12)] transition group-focus-within:visible group-focus-within:opacity-100">
+            <p className="mb-3 text-xs font-bold text-[#667085]">جستجوهای پیشنهادی</p>
+            <div className="flex flex-wrap gap-2">
+              {searchSuggestions.map((item) => (
+                <Link
+                  key={item}
+                  className="rounded-full border border-[#E7E8EE] px-3 py-1.5 text-xs font-semibold text-[#344054] transition hover:border-[#F59E0B] hover:bg-[#FFF9EC] hover:text-[#D97706]"
+                  href={`/products?search=${encodeURIComponent(item)}`}
+                >
+                  {item}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </form>
+
+        <div className="flex items-center justify-end gap-2">
+          <div className="hidden lg:block">
+            <SignInButton />
+          </div>
+          <Link
+            className="inline-flex h-12 min-w-12 items-center justify-center rounded-2xl border border-[#E7E8EE] bg-white px-4 text-sm font-bold text-[#171B23] shadow-sm transition hover:border-[#F5C56B] hover:text-[#D97706]"
+            href="/cart"
+          >
+            <CartIcon className="h-5 w-5" />
+          </Link>
+        </div>
+      </div>
     </header>
   );
 }
 
-function SearchIcon(props: SVGProps<SVGSVGElement>) {
+function HeadsetIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-      <circle cx={11} cy={11} r={7} />
-      <path d="m20 20-3.5-3.5" />
+    <svg
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.8}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path d="M4 13a8 8 0 1 1 16 0" />
+      <path d="M4 13v4a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2Z" />
+      <path d="M20 13v4a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2Z" />
+      <path d="M9 21h6" />
+    </svg>
+  );
+}
+
+function ShieldIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.8}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path d="M12 3 5 6v6c0 4.5 2.8 7.9 7 9 4.2-1.1 7-4.5 7-9V6l-7-3Z" />
+      <path d="m9.5 12.5 1.8 1.8 3.7-4.3" />
+    </svg>
+  );
+}
+
+function CartIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.8}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <circle cx={9} cy={20} r={1} />
+      <circle cx={17} cy={20} r={1} />
+      <path d="M3 4h2l2.4 12.2a1 1 0 0 0 1 .8h9.5a1 1 0 0 0 1-.8L21 8H7" />
     </svg>
   );
 }

@@ -87,7 +87,7 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
             className={cn(
               "rounded-2xl border p-4 transition",
               task.status === "due"
-                ? "border-red-200 bg-red-50"
+                ? "border-[#FDE7B0] bg-[#FFF8E8]"
                 : task.status === "upcoming"
                 ? "border-amber-200 bg-amber-50"
                 : "border-[#E5E7EB] bg-[#F7F7F8]",
@@ -97,7 +97,7 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-base font-extrabold text-[#111827]">{task.title}</h3>
-                  <span className={cn("rounded-full px-3 py-1 text-[11px] font-bold", task.status === "due" ? "bg-red-100 text-[#DC2626]" : task.status === "upcoming" ? "bg-amber-100 text-[#F59E0B]" : "bg-green-50 text-[#16A34A]")}>
+                  <span className={cn("rounded-full px-3 py-1 text-[11px] font-bold", task.status === "due" ? "bg-[#FFF1F3] text-[#DC2626]" : task.status === "upcoming" ? "bg-[#FFF8E8] text-[#D97706]" : "bg-green-50 text-[#16A34A]")}>
                     {statusLabels[task.status]}
                   </span>
                 </div>
@@ -122,7 +122,7 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
             {task.recommendedProducts?.length ? (
               <div className="mt-4 flex flex-wrap gap-2">
                 {task.recommendedProducts.map((product) => (
-                  <Link key={product.slug} href={`/products/${product.slug}`} className="rounded-full border border-red-100 bg-white px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-50">
+                  <Link key={product.slug} href={`/products/${product.slug}`} className="rounded-full border border-[#FDE7B0] bg-white px-3 py-1.5 text-xs font-bold text-[#D97706] hover:bg-[#FFF8E8]">
                     {product.brandName ? `${product.brandName} - ${product.name}` : product.name}
                     {typeof product.price === "number" ? <span className="mr-2 font-medium text-[#6B7280]">{formatPrice(product.price)}</span> : null}
                   </Link>

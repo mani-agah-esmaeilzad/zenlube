@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MaintenanceTimeline } from "@/components/catalog/maintenance-timeline";
@@ -91,9 +90,9 @@ export default async function CarDetailPage({ params }: CarPageProps) {
       <EngagementTracker entityType="car" entityId={car.id} eventType="notebook_view" metadata={{ slug: car.slug }} />
 
       <nav className="text-xs font-medium text-[#6B7280]">
-        <Link href="/" className="hover:text-red-600">خانه</Link>
+        <Link href="/" className="hover:text-[#D97706]">خانه</Link>
         <span className="mx-2">/</span>
-        <Link href="/cars" className="hover:text-red-600">دفترچه خودروها</Link>
+        <Link href="/cars" className="hover:text-[#D97706]">دفترچه خودروها</Link>
         <span className="mx-2">/</span>
         {title}
       </nav>
@@ -112,7 +111,8 @@ export default async function CarDetailPage({ params }: CarPageProps) {
         </div>
         <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-white/10">
           {car.imageUrl ? (
-            <Image src={car.imageUrl} alt={title} fill className="object-cover" sizes="360px" />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={car.imageUrl} alt={title} className="h-full w-full object-cover" loading="lazy" />
           ) : (
             <div className="flex h-full items-center justify-center text-5xl font-black">{car.manufacturer.slice(0, 1)}</div>
           )}
@@ -139,7 +139,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
         </div>
 
         <aside className="space-y-4">
-          <div className="rounded-3xl border border-red-100 bg-red-50 p-5">
+          <div className="rounded-3xl border border-[#FDE7B0] bg-[#FFF8E8] p-5">
             <h2 className="text-lg font-extrabold text-[#111827]">روغن مناسب، خرید مطمئن</h2>
             <p className="mt-2 text-sm leading-7 text-[#6B7280]">Oilbar محصولات سازگار با این خودرو را بر اساس داده‌های فنی و نگهداری نمایش می‌دهد.</p>
             <Link href={`/products?car=${car.slug}`} className="btn-primary mt-4 w-full">خرید محصولات مناسب این خودرو</Link>
@@ -162,7 +162,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
               <h2 className="section-title">محصولات مناسب این خودرو</h2>
               <p className="section-subtitle">روغن‌ها و فیلترهای متصل‌شده به دفترچه فنی {title}</p>
             </div>
-            <Link href={`/products?car=${car.slug}`} className="text-sm font-bold text-red-600">مشاهده همه</Link>
+            <Link href={`/products?car=${car.slug}`} className="text-sm font-bold text-[#D97706]">مشاهده همه</Link>
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {recommendedProducts.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} />)}
@@ -192,7 +192,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           <h2 className="section-title">مطالب مرتبط با نگهداری {title}</h2>
           <div className="grid gap-4 md:grid-cols-3">
             {relatedPosts.map((post) => (
-              <Link key={post.id} href={`/blog/${post.slug}`} className="rounded-2xl border border-[#E5E7EB] bg-white p-5 transition hover:border-red-200">
+              <Link key={post.id} href={`/blog/${post.slug}`} className="rounded-2xl border border-[#E5E7EB] bg-white p-5 transition hover:border-[#F5C56B]">
                 <span className="text-xs text-[#6B7280]">{dateFormatter.format(post.publishedAt)}</span>
                 <h3 className="mt-2 line-clamp-2 text-base font-bold leading-7 text-[#111827]">{post.title}</h3>
                 <p className="mt-2 line-clamp-3 text-sm leading-7 text-[#6B7280]">{post.excerpt}</p>
@@ -207,7 +207,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           <h2 className="section-title">مدل‌های دیگر {car.manufacturer}</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {siblings.map((sibling) => (
-              <Link key={sibling.id} href={`/cars/${sibling.slug}`} className="rounded-2xl border border-[#E5E7EB] bg-white p-5 transition hover:border-red-200">
+              <Link key={sibling.id} href={`/cars/${sibling.slug}`} className="rounded-2xl border border-[#E5E7EB] bg-white p-5 transition hover:border-[#F5C56B]">
                 <p className="font-bold text-[#111827]">{sibling.manufacturer} {sibling.model}</p>
                 <p className="mt-2 text-xs text-[#6B7280]">{sibling.generation ?? "نسل ثبت نشده"} · {sibling.viscosity ?? "ویسکوزیته نامشخص"}</p>
               </Link>

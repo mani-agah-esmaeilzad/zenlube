@@ -78,7 +78,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <label htmlFor="phone" className="text-xs font-semibold text-slate-600">
+        <label htmlFor="phone" className="text-xs font-bold text-[#475467]">
           شماره موبایل
         </label>
         <div className="flex gap-2">
@@ -88,12 +88,12 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
             type="tel"
             placeholder="09xxxxxxxxx"
             required
-            className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
+            className="input-zen"
           />
           <button
             type="button"
             onClick={(event) => handleSendOtp(event.currentTarget.form)}
-            className="shrink-0 rounded-full border border-sky-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-sky-400 hover:text-slate-800 disabled:opacity-60"
+            className="shrink-0 rounded-2xl border border-[#F5C56B] px-4 py-2 text-xs font-bold text-[#D97706] transition hover:bg-[#FFF8E8] hover:text-[#171B23] disabled:opacity-60"
             disabled={isOtpPending}
           >
             {isOtpPending ? "در حال ارسال" : "ارسال کد"}
@@ -101,7 +101,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
         </div>
       </div>
       <div className="space-y-2">
-        <label htmlFor="otpCode" className="text-xs font-semibold text-slate-600">
+        <label htmlFor="otpCode" className="text-xs font-bold text-[#475467]">
           کد تایید پیامکی
         </label>
         <input
@@ -109,20 +109,20 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
           name="otpCode"
           inputMode="numeric"
           required
-          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
+          className="input-zen"
         />
       </div>
-      {otpMessage && <p className="text-xs text-emerald-500">{otpMessage}</p>}
-      {otpError && <p className="text-xs text-red-400">{otpError}</p>}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {otpMessage && <p className="rounded-xl bg-green-50 px-3 py-2 text-xs font-bold text-emerald-600">{otpMessage}</p>}
+      {otpError && <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-500">{otpError}</p>}
+      {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-500">{error}</p>}
       <button
         type="submit"
-        className="w-full rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:opacity-60"
+        className="btn-primary w-full"
         disabled={isPending}
       >
         {isPending ? "در حال ورود..." : "ورود"}
       </button>
-      <p className="text-center text-xs text-slate-500">کد تایید به شماره وارد شده ارسال می‌شود.</p>
+      <p className="text-center text-xs text-[#667085]">کد تایید به شماره وارد شده ارسال می‌شود.</p>
     </form>
   );
 }

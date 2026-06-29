@@ -8,21 +8,22 @@ export default async function BrandsPage() {
   const brands = await getBrandsWithProductCount();
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 space-y-10">
-      <header className="space-y-3 text-slate-700">
-        <h1 className="text-3xl font-semibold text-slate-900">برندهای همکاری شده با Oilbar</h1>
-        <p className="text-sm leading-7 text-slate-600">
+    <div className="container-zen space-y-8 py-6 md:py-8">
+      <header className="rounded-[32px] border border-[#E7E8EE] bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-8">
+        <p className="text-sm font-bold text-[#D97706]">برندهای فروشگاه</p>
+        <h1 className="mt-3 text-2xl font-black text-[#171B23] md:text-4xl">برندهای همکاری‌شده با Oilbar</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-8 text-[#667085]">
           مجموعه‌ای از معتبرترین برندهای جهانی روغن موتور با امکان فیلتر و مشاهده سریع محصولات مرتبط.
         </p>
       </header>
       {brands.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {brands.map((brand) => (
             <BrandCard key={brand.id} brand={brand} />
           ))}
         </div>
       ) : (
-        <div className="rounded-3xl border border-dashed border-[#D1D5DB] bg-white p-10 text-center text-sm font-semibold text-[#6B7280]">
+        <div className="rounded-[28px] border border-dashed border-[#D0D5DD] bg-white p-10 text-center text-sm font-semibold text-[#667085]">
           هنوز برندی ثبت نشده است.
         </div>
       )}

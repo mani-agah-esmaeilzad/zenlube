@@ -83,7 +83,7 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
       <div className="space-y-6">
         <Stepper />
 
-        <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
+        <section className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-6">
           <SectionTitle title="اطلاعات تماس" subtitle="کد تایید برای همین شماره ارسال می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field label="نام و نام خانوادگی" name="fullName" defaultValue={defaults.fullName ?? ""} errors={state.errors?.fullName} required />
@@ -92,7 +92,7 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
               شماره موبایل
               <div className="mt-2 flex gap-2">
                 <input name="phone" type="tel" defaultValue={defaults.phone ?? ""} className="input-zen" required />
-                <button type="button" onClick={(event) => handleSendOtp(event.currentTarget.form!)} className="btn-outline shrink-0 !min-h-11 text-xs" disabled={isOtpPending}>
+                <button type="button" onClick={(event) => handleSendOtp(event.currentTarget.form!)} className="btn-outline shrink-0 !min-h-11 border-[#F5C56B] text-xs text-[#D97706]" disabled={isOtpPending}>
                   {isOtpPending ? "در حال ارسال" : "ارسال کد"}
                 </button>
               </div>
@@ -104,7 +104,7 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
           {otpError && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-[#DC2626]">{otpError}</p>}
         </section>
 
-        <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
+        <section className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-6">
           <SectionTitle title="آدرس و ارسال" subtitle="آدرس دقیق باعث پردازش سریع‌تر سفارش می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field label="آدرس اصلی" name="address1" defaultValue={defaults.address1 ?? ""} errors={state.errors?.address1} required />
@@ -112,8 +112,8 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
             <Field label="شهر" name="city" defaultValue={defaults.city ?? ""} errors={state.errors?.city} required />
             <Field label="استان" name="province" defaultValue={defaults.province ?? ""} errors={state.errors?.province} required />
             <Field label="کد پستی" name="postalCode" defaultValue={defaults.postalCode ?? ""} errors={state.errors?.postalCode} required />
-            <label className="flex items-center gap-2 self-end rounded-2xl border border-[#E5E7EB] px-4 py-3 text-xs font-bold text-[#374151]">
-              <input type="checkbox" name="saveAddress" defaultChecked className="size-4 accent-[#EF394E]" />
+            <label className="flex items-center gap-2 self-end rounded-2xl border border-[#E7E8EE] px-4 py-3 text-xs font-bold text-[#374151]">
+              <input type="checkbox" name="saveAddress" defaultChecked className="size-4 accent-[#F59E0B]" />
               ذخیره به عنوان آدرس پیش‌فرض
             </label>
           </div>
@@ -123,7 +123,7 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
               <label
                 key={option.value}
                 className={`cursor-pointer rounded-2xl border p-4 text-xs transition ${
-                  shipping === option.value ? "border-[#DC2626] bg-red-50" : "border-[#E5E7EB] bg-white hover:border-red-200"
+                  shipping === option.value ? "border-[#F5C56B] bg-[#FFF8E8]" : "border-[#E7E8EE] bg-white hover:border-[#F5C56B]"
                 }`}
               >
                 <input
@@ -136,7 +136,7 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
                 />
                 <span className="block font-black text-[#111827]">{option.label}</span>
                 <span className="mt-1 block text-[#6B7280]">{option.detail}</span>
-                <span className="mt-3 block font-bold text-[#DC2626]">{formatPrice(option.cost)}</span>
+                <span className="mt-3 block font-bold text-[#D97706]">{formatPrice(option.cost)}</span>
               </label>
             ))}
           </div>
@@ -149,7 +149,7 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
       </div>
 
       <aside className="space-y-4">
-        <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 text-sm shadow-[0_10px_28px_rgba(17,24,39,0.06)] lg:sticky lg:top-40">
+        <section className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 text-sm shadow-[0_16px_40px_rgba(15,23,42,0.07)] lg:sticky lg:top-40">
           <h2 className="text-lg font-extrabold text-[#111827]">خلاصه سفارش</h2>
           <div className="mt-4 space-y-3">
             {items.map((item) => (
@@ -181,9 +181,9 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
 function Stepper() {
   const steps = ["سبد خرید", "آدرس و ارسال", "پرداخت", "تکمیل سفارش"];
   return (
-    <div className="grid grid-cols-4 gap-2 rounded-3xl border border-[#E5E7EB] bg-white p-3 text-center text-[11px] font-bold text-[#6B7280]">
+    <div className="grid grid-cols-4 gap-2 rounded-[24px] border border-[#E7E8EE] bg-white p-3 text-center text-[11px] font-bold text-[#6B7280]">
       {steps.map((step, index) => (
-        <div key={step} className={`rounded-2xl px-2 py-3 ${index === 1 || index === 2 ? "bg-red-50 text-[#DC2626]" : "bg-[#F7F7F8]"}`}>
+        <div key={step} className={`rounded-2xl px-2 py-3 ${index === 1 || index === 2 ? "bg-[#FFF8E8] text-[#D97706]" : "bg-[#F7F7F8]"}`}>
           {step}
         </div>
       ))}

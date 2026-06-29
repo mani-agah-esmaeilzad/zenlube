@@ -1,11 +1,19 @@
 import { BrandCard } from "@/components/catalog/brand-card";
-import { getBrandsWithProductCount } from "@/lib/data";
+import { Pagination } from "@/components/ui/pagination";
+import { getPaginatedBrandsWithProductCount } from "@/lib/data";
+import { getPaginationParams } from "@/lib/pagination";
+
+type BrandsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function BrandsPage() {
-  const brands = await getBrandsWithProductCount();
+export default async function BrandsPage({ searchParams }: BrandsPageProps) {
+  const params = await searchParams;
+  const { page, pageSize } = getPaginationParams(params, { defaultPageSize: 12, maxPageSize: 48 });
+  const { items: brands, pageInfo } = await getPaginatedBrandsWithProductCount({ page, pageSize });
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12 space-y-10">
@@ -26,6 +34,7 @@ export default async function BrandsPage() {
           هنوز برندی ثبت نشده است.
         </div>
       )}
+      <Pagination pathname="/brands" searchParams={params} pageInfo={pageInfo} />
     </div>
   );
 }

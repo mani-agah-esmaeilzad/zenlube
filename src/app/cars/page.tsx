@@ -1,6 +1,8 @@
 import { CarCard } from "@/components/catalog/car-card";
 import { CarSearchSelector } from "@/components/layout/car-search-selector";
-import { getCarHierarchy, getCarsWithProducts } from "@/lib/data";
+import { Pagination } from "@/components/ui/pagination";
+import { getCarHierarchy, getPaginatedCarsWithProducts } from "@/lib/data";
+import { getPaginationParams } from "@/lib/pagination";
 
 type CarsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -17,14 +19,12 @@ export const revalidate = 0;
 export default async function CarsPage({ searchParams }: CarsPageProps) {
   const params = await searchParams;
   const search = typeof params.search === "string" ? params.search : undefined;
+  const { page, pageSize } = getPaginationParams(params, { defaultPageSize: 12, maxPageSize: 48 });
 
-  const [cars, carHierarchy] = await Promise.all([getCarsWithProducts(), getCarHierarchy()]);
-  const filteredCars = search
-    ? cars.filter((car) => {
-        const haystack = `${car.manufacturer} ${car.model} ${car.generation ?? ""} ${car.engineCode ?? ""} ${car.engineType ?? ""}`.toLowerCase();
-        return haystack.includes(search.toLowerCase());
-      })
-    : cars;
+  const [{ items: cars, pageInfo }, carHierarchy] = await Promise.all([
+    getPaginatedCarsWithProducts({ search, page, pageSize }),
+    getCarHierarchy(),
+  ]);
 
   return (
     <div className="container-zen space-y-8 py-6 md:py-8">
@@ -44,6 +44,8 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
             placeholder="جستجو بر اساس نام خودرو، مدل یا سال ساخت..."
             className="min-h-12 flex-1 rounded-2xl border border-white/10 bg-white px-4 text-sm text-[#1F2937] outline-none focus:ring-4 focus:ring-red-500/20"
           />
+          <input type="hidden" name="page" value="1" />
+          <input type="hidden" name="pageSize" value={pageInfo.pageSize} />
           <button type="submit" className="btn-primary">جستجو</button>
         </form>
       </header>
@@ -65,17 +67,18 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-2">
-        {filteredCars.map((car) => (
+        {cars.map((car) => (
           <div id={car.slug} key={car.id}>
             <CarCard car={car} />
           </div>
         ))}
-        {filteredCars.length === 0 && (
+        {cars.length === 0 && (
           <div className="rounded-3xl border border-dashed border-[#E5E7EB] bg-white p-10 text-center text-[#6B7280] lg:col-span-2">
             خودرویی با این مشخصات یافت نشد.
           </div>
         )}
       </section>
+      <Pagination pathname="/cars" searchParams={params} pageInfo={pageInfo} />
     </div>
   );
 }

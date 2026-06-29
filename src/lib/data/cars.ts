@@ -1,4 +1,5 @@
 import prisma from "../prisma";
+import { createPageInfo } from "../pagination";
 
 export async function getPopularCars(limit = 6) {
   return prisma.car.findMany({
@@ -46,6 +47,65 @@ export async function getCarsWithProducts() {
       { generation: "asc" },
     ],
   });
+}
+
+export async function getPaginatedCarsWithProducts({
+  search,
+  page = 1,
+  pageSize = 12,
+}: {
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}) {
+  const where = search
+    ? {
+        OR: [
+          { manufacturer: { contains: search, mode: "insensitive" as const } },
+          { model: { contains: search, mode: "insensitive" as const } },
+          { generation: { contains: search, mode: "insensitive" as const } },
+          { engineCode: { contains: search, mode: "insensitive" as const } },
+          { engineType: { contains: search, mode: "insensitive" as const } },
+        ],
+      }
+    : {};
+
+  const skip = (page - 1) * pageSize;
+  const [items, total] = await prisma.$transaction([
+    prisma.car.findMany({
+      where,
+      include: {
+        productMappings: {
+          include: {
+            product: {
+              include: {
+                brand: true,
+              },
+            },
+          },
+        },
+        maintenanceTasks: {
+          orderBy: [
+            { priority: "asc" },
+            { updatedAt: "desc" },
+          ],
+        },
+      },
+      orderBy: [
+        { manufacturer: "asc" },
+        { model: "asc" },
+        { generation: "asc" },
+      ],
+      skip,
+      take: pageSize,
+    }),
+    prisma.car.count({ where }),
+  ]);
+
+  return {
+    items,
+    pageInfo: createPageInfo(page, pageSize, total),
+  };
 }
 
 export type CarHierarchy = {

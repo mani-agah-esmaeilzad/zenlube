@@ -1,5 +1,6 @@
 import { Prisma } from "@/generated/prisma";
 import prisma from "../prisma";
+import { createPageInfo } from "../pagination";
 
 export async function getLatestBlogPosts(limit = 6) {
   return prisma.blogPost.findMany({
@@ -42,6 +43,23 @@ export async function getAllBlogPosts() {
   return prisma.blogPost.findMany({
     orderBy: { publishedAt: "desc" },
   });
+}
+
+export async function getPaginatedBlogPosts({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }) {
+  const skip = (page - 1) * pageSize;
+  const [items, total] = await prisma.$transaction([
+    prisma.blogPost.findMany({
+      orderBy: { publishedAt: "desc" },
+      skip,
+      take: pageSize,
+    }),
+    prisma.blogPost.count(),
+  ]);
+
+  return {
+    items,
+    pageInfo: createPageInfo(page, pageSize, total),
+  };
 }
 
 export async function getBlogPostBySlug(slug: string) {

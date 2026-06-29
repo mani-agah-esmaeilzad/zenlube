@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/product/product-card";
+import { Pagination } from "@/components/ui/pagination";
 import { getAllProductsWithFilters, getBrandsWithProductCount, getHighlightedCategories } from "@/lib/data";
 import type { ProductSort } from "@/lib/data";
 
@@ -65,6 +66,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <Link href="/products" className="text-xs font-bold text-red-600">حذف همه فیلترها</Link>
           </div>
           <div className="mt-5 space-y-5">
+            <input type="hidden" name="page" value="1" />
             <label className="block text-xs font-bold text-[#374151]">
               جستجو
               <input name="search" defaultValue={search} className="input-zen mt-2" placeholder="نام محصول، برند، مدل خودرو" />
@@ -145,13 +147,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </div>
           )}
 
-          {pageInfo.totalPages > 1 && (
-            <div className="mt-8 flex justify-center gap-3 text-sm">
-              {pageInfo.hasPreviousPage && <Link className="btn-outline" href={{ pathname: "/products", query: { ...params, page: String(page - 1) } }}>قبلی</Link>}
-              <span className="inline-flex items-center rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 font-bold text-[#374151]">صفحه {page.toLocaleString("fa-IR")} از {pageInfo.totalPages.toLocaleString("fa-IR")}</span>
-              {pageInfo.hasNextPage && <Link className="btn-outline" href={{ pathname: "/products", query: { ...params, page: String(page + 1) } }}>بعدی</Link>}
-            </div>
-          )}
+          <Pagination pathname="/products" searchParams={params} pageInfo={pageInfo} />
         </section>
       </form>
     </div>

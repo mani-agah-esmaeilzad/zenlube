@@ -38,11 +38,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }).format(new Date(post.publishedAt));
 
   return (
-    <div className="w-full bg-slate-50 py-12">
-      <div className="mx-auto max-w-3xl space-y-8 px-6 text-slate-900">
-        <header className="space-y-4">
-          <h1 className="text-4xl font-semibold">{post.title}</h1>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">
+    <div className="container-zen py-6 md:py-8">
+      <div className="mx-auto max-w-4xl space-y-8 text-[#171B23]">
+        <header className="rounded-[32px] border border-[#E7E8EE] bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-8">
+          <h1 className="text-3xl font-black leading-[1.6] md:text-4xl">{post.title}</h1>
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-[#667085]">
             <span>{post.authorName}</span>
             <span>•</span>
             <span>{published}</span>
@@ -50,9 +50,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <span>{post.readMinutes} دقیقه مطالعه</span>
           </div>
           {post.tags.length ? (
-            <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+            <div className="mt-4 flex flex-wrap gap-2 text-xs text-[#667085]">
               {post.tags.map((tag) => (
-                <span key={tag} className="rounded-full border border-slate-200 bg-white px-3 py-1">
+                <span key={tag} className="rounded-full border border-[#E7E8EE] bg-[#F7F8FA] px-3 py-1">
                   #{tag}
                 </span>
               ))}
@@ -65,12 +65,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <img
             src={post.coverImage}
             alt={post.title}
-            className="h-72 w-full rounded-[32px] border border-slate-200 object-cover"
+            className="h-72 w-full rounded-[32px] border border-[#E7E8EE] object-cover"
             loading="lazy"
           />
         ) : null}
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="rounded-[32px] border border-[#E7E8EE] bg-white p-8 shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
           <BlogArticle content={post.content} />
         </div>
       </div>

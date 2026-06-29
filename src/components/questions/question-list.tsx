@@ -26,9 +26,9 @@ const statusLabel: Record<QuestionItem["status"], string> = {
 };
 
 const statusStyle: Record<QuestionItem["status"], string> = {
-  PENDING: "border-amber-200 bg-amber-50 text-amber-700",
+  PENDING: "border-[#FDE7B0] bg-[#FFF8E8] text-[#D97706]",
   ANSWERED: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  ARCHIVED: "border-slate-200 bg-slate-50 text-slate-500",
+  ARCHIVED: "border-[#E7E8EE] bg-[#F7F8FA] text-[#667085]",
 };
 
 const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
@@ -43,7 +43,7 @@ export function QuestionList({ items, emptyMessage }: QuestionListProps) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50/60 p-8 text-center text-sm text-slate-500">
+      <div className="rounded-[28px] border border-dashed border-[#D0D5DD] bg-[#F7F8FA] p-8 text-center text-sm text-[#667085]">
         {emptyMessage ?? "هنوز پرسشی ثبت نشده است."}
       </div>
     );
@@ -79,8 +79,8 @@ export function QuestionList({ items, emptyMessage }: QuestionListProps) {
 function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div className="flex flex-col gap-1">
-      <h4 className="text-base font-semibold text-slate-900">{title}</h4>
-      <p className="text-xs text-slate-500">{subtitle}</p>
+      <h4 className="text-base font-extrabold text-[#171B23]">{title}</h4>
+      <p className="text-xs text-[#667085]">{subtitle}</p>
     </div>
   );
 }
@@ -91,11 +91,11 @@ function QuestionCard({ question, variant }: { question: QuestionItem; variant: 
   const showAnswer = Boolean(question.answer);
 
   return (
-    <article className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
+    <article className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h5 className="text-sm font-semibold text-slate-900">{question.question}</h5>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <h5 className="text-sm font-bold text-[#171B23]">{question.question}</h5>
+          <p className="mt-1 text-[11px] text-[#667085]">
             {question.authorName} • ثبت شده در {createdAt}
           </p>
         </div>
@@ -104,25 +104,25 @@ function QuestionCard({ question, variant }: { question: QuestionItem; variant: 
         </span>
       </div>
       {question.linkHref && question.linkLabel ? (
-        <Link href={question.linkHref} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-sky-600 hover:text-sky-800">
+        <Link href={question.linkHref} className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[#D97706] hover:text-[#B45309]">
           {question.linkLabel}
           <ArrowIcon className="h-3 w-3" />
         </Link>
       ) : null}
 
-      <div className="mt-4 grid gap-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-4 text-sm leading-7 text-slate-700">
+      <div className="mt-4 grid gap-4 rounded-[22px] border border-dashed border-[#E7E8EE] bg-[#F7F8FA] p-4 text-sm leading-7 text-[#475467]">
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-slate-500">متن پرسش</p>
+          <p className="text-xs font-bold text-[#667085]">متن پرسش</p>
           <p>{question.question}</p>
         </div>
         {showAnswer ? (
-          <div className="rounded-2xl border border-emerald-100 bg-white/80 p-4">
+          <div className="rounded-[20px] border border-emerald-100 bg-white p-4">
             <p className="text-xs font-semibold text-emerald-700">پاسخ کارشناس Oilbar</p>
-            <p className="mt-2 text-slate-700">{question.answer}</p>
-            {answeredAt ? <p className="mt-2 text-[11px] text-slate-400">تاریخ پاسخ: {answeredAt}</p> : null}
+            <p className="mt-2 text-[#475467]">{question.answer}</p>
+            {answeredAt ? <p className="mt-2 text-[11px] text-[#98A2B3]">تاریخ پاسخ: {answeredAt}</p> : null}
           </div>
         ) : variant === "pending" ? (
-          <div className="rounded-2xl border border-amber-100 bg-white/80 p-4 text-xs text-amber-700">
+          <div className="rounded-[20px] border border-[#FDE7B0] bg-white p-4 text-xs text-[#D97706]">
             این پرسش در صف بررسی است و حداکثر ظرف ۲۴ ساعت پاسخ داده می‌شود.
           </div>
         ) : null}

@@ -57,7 +57,7 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
         <select
           value={selectedBrand}
           onChange={(event) => handleBrandChange(event.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300"
+          className="w-full rounded-xl border border-[#E7E8EE] bg-white px-3 py-2 text-sm text-[#475467] outline-none transition focus:border-[#F5C56B]"
         >
           <option value="">انتخاب برند</option>
           {hierarchy.map((brand) => (
@@ -73,7 +73,7 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
         <select
           value={selectedModel}
           onChange={(event) => handleModelChange(event.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full rounded-xl border border-[#E7E8EE] bg-white px-3 py-2 text-sm text-[#475467] outline-none transition focus:border-[#F5C56B] disabled:cursor-not-allowed disabled:opacity-40"
           disabled={!selectedBrand}
         >
           <option value="">انتخاب مدل</option>
@@ -90,7 +90,7 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
         <select
           value={selectedCarSlug}
           onChange={(event) => setSelectedCarSlug(event.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-sky-300 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full rounded-xl border border-[#E7E8EE] bg-white px-3 py-2 text-sm text-[#475467] outline-none transition focus:border-[#F5C56B] disabled:cursor-not-allowed disabled:opacity-40"
           disabled={!selectedModel}
         >
           <option value="">انتخاب نسخه</option>
@@ -105,7 +105,7 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
       <button
         type="submit"
         disabled={!selectedCarSlug}
-        className="w-full min-w-[140px] rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:bg-sky-400/60 disabled:text-white/70 md:w-auto"
+        className="w-full min-w-[140px] rounded-xl border border-[#F59E0B] bg-[linear-gradient(180deg,#FFB52F_0%,#F59E0B_100%)] px-4 py-2 text-sm font-semibold text-white transition hover:border-[#E78A00] hover:bg-[linear-gradient(180deg,#FFC14A_0%,#E78A00_100%)] disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#EAECF0] disabled:text-[#98A2B3] md:w-auto"
       >
         مشاهده دفترچه
       </button>

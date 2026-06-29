@@ -1,15 +1,10 @@
 import type { SVGProps } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { LOGO_SRC } from "@/components/layout/logo-mark";
 import { getAllCategoriesLite } from "@/lib/data";
 
-const trustItems = [
-  "ضمانت اصالت کالا",
-  "ارسال سریع",
-  "پرداخت امن",
-  "پشتیبانی تخصصی",
-  "مشاوره واقعی",
-];
+const trustItems = ["ضمانت اصالت کالا", "ارسال سریع", "پرداخت امن", "پشتیبانی تخصصی", "مشاوره واقعی"];
 
 const baseFooterGroups = [
   {
@@ -42,10 +37,10 @@ const baseFooterGroups = [
 ];
 
 export async function SiteFooter() {
-  const categories = await getAllCategoriesLite();
+  const categories = await getAllCategoriesLite().catch(() => []);
   const footerGroups = [
     ...baseFooterGroups,
-    ...(categories.length > 0
+    ...(categories.length
       ? [
           {
             title: "دسته‌بندی‌ها",
@@ -56,46 +51,45 @@ export async function SiteFooter() {
   ];
 
   return (
-    <footer className="mt-12 border-t border-[#E5E7EB] bg-white">
+    <footer className="mt-14 border-t border-[#E7E8EE] bg-white">
       <div className="container-zen grid grid-cols-2 gap-3 py-5 md:grid-cols-5">
         {trustItems.map((item) => (
-          <div key={item} className="flex items-center gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-3">
+          <div key={item} className="flex items-center gap-3 rounded-[22px] border border-[#E7E8EE] bg-[#F7F8FA] p-3">
             <span className="flex size-9 items-center justify-center rounded-xl bg-white text-[#16A34A]">
               <CheckIcon className="h-5 w-5" />
             </span>
-            <span className="text-xs font-bold text-[#374151] md:text-sm">{item}</span>
+            <span className="text-xs font-bold text-[#344054] md:text-sm">{item}</span>
           </div>
         ))}
       </div>
 
-      <div className="border-t border-[#E5E7EB]">
+      <div className="border-t border-[#E7E8EE]">
         <div className="container-zen grid gap-8 py-10 lg:grid-cols-[1.15fr_2fr_1fr]">
           <div>
-            <Link href="/" className="flex items-center gap-3">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-[#111827] text-lg font-black text-white">O</span>
-              <span>
-                <span className="block text-2xl font-extrabold text-[#111827]">Oilbar</span>
-                <span className="block text-xs font-medium text-[#6B7280]">اویل‌بار، مرجع تخصصی روغن موتور و لوازم مصرفی خودرو</span>
-              </span>
+            <Link className="inline-flex items-center" href="/">
+              <Image alt="لوگوی Oilbar" className="h-auto w-[148px]" height={50} src={LOGO_SRC} width={210} />
             </Link>
-            <p className="mt-4 max-w-md text-sm leading-8 text-[#6B7280]">
-              Oilbar برای خرید مطمئن روغن موتور، فیلتر و روانکار خودرو ساخته شده است؛ با تمرکز روی اصالت کالا، انتخاب فنی دقیق و تجربه خرید سریع.
+            <p className="mt-4 max-w-md text-sm leading-8 text-[#667085]">
+              Oilbar برای خرید مطمئن روغن موتور، فیلتر و روانکار خودرو ساخته شده است؛ با تمرکز روی اصالت کالا، انتخاب فنی
+              دقیق و تجربه خرید سریع.
             </p>
-            <div className="mt-5 space-y-2 text-sm font-medium text-[#374151]">
-              <p>پشتیبانی: 09190910910</p>
+            <div className="mt-5 space-y-2 text-sm font-medium text-[#344054]">
+              <p>پشتیبانی: 09190810910</p>
               <p>ایمیل: support@oilbar.ir</p>
-              <p>البرز, کرج, عظیمیه, پاسداران غربی, بین نیک نژادی و غلامی, اتوسرویس مانی</p>
+              <p>البرز، کرج، عظیمیه، پاسداران غربی، بین نیک‌نژادی و غلامی، اتوسرویس مانی</p>
             </div>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {footerGroups.map((group) => (
               <div key={group.title}>
-                <h3 className="text-sm font-bold text-[#111827]">{group.title}</h3>
-                <ul className="mt-4 space-y-3 text-sm text-[#6B7280]">
+                <h3 className="text-sm font-bold text-[#171B23]">{group.title}</h3>
+                <ul className="mt-4 space-y-3 text-sm text-[#667085]">
                   {group.links.map(([label, href]) => (
                     <li key={label}>
-                      <Link href={href} className="transition hover:text-red-600">{label}</Link>
+                      <Link className="transition hover:text-[#D97706]" href={href}>
+                        {label}
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -104,17 +98,21 @@ export async function SiteFooter() {
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-[#111827]">خبرنامه و اعتماد</h3>
-            <p className="mt-3 text-sm leading-7 text-[#6B7280]">پیشنهادهای ویژه و راهنماهای انتخاب روغن را دریافت کنید.</p>
-            <form className="mt-4 flex overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white p-1">
-              <input aria-label="ایمیل خبرنامه" placeholder="ایمیل شما" className="min-w-0 flex-1 px-3 text-sm text-[#1F2937] outline-none" />
-              <button className="rounded-xl bg-[#EF394E] px-4 text-xs font-bold text-white">عضویت</button>
+            <h3 className="text-sm font-bold text-[#171B23]">خبرنامه و اعتماد</h3>
+            <p className="mt-3 text-sm leading-7 text-[#667085]">پیشنهادهای ویژه و راهنماهای انتخاب روغن را دریافت کنید.</p>
+            <form className="mt-4 flex overflow-hidden rounded-[18px] border border-[#E7E8EE] bg-white p-1">
+              <input aria-label="ایمیل خبرنامه" className="min-w-0 flex-1 px-3 text-sm text-[#1F2937] outline-none" placeholder="ایمیل شما" />
+              <button className="rounded-[14px] bg-[#F59E0B] px-4 text-xs font-bold text-white">عضویت</button>
             </form>
             <div className="mt-5 flex gap-3">
-              <Link href="#" className="flex h-24 w-24 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-3" aria-label="نماد اعتماد الکترونیکی">
-                <Image src="/enamad-placeholder.svg" alt="محل قرارگیری نماد اعتماد" width={80} height={80} className="h-full w-full object-contain" />
+              <Link
+                aria-label="نماد اعتماد الکترونیکی"
+                className="flex h-24 w-24 items-center justify-center rounded-[20px] border border-[#E7E8EE] bg-[#F7F8FA] p-3"
+                href="#"
+              >
+                <Image alt="محل قرارگیری نماد اعتماد" className="h-full w-full object-contain" height={80} src="/enamad-placeholder.svg" width={80} />
               </Link>
-              <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] text-center text-xs font-bold text-[#6B7280]">
+              <div className="flex h-24 w-24 items-center justify-center rounded-[20px] border border-[#E7E8EE] bg-[#F7F8FA] text-center text-xs font-bold text-[#667085]">
                 نشان ملی ثبت
               </div>
             </div>
@@ -122,16 +120,23 @@ export async function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-[#E5E7EB] py-4 text-center text-xs text-[#6B7280]">
-        © {new Date().getFullYear()} Oilbar - همه حقوق محفوظ است.
-      </div>
+      <div className="border-t border-[#E7E8EE] py-4 text-center text-xs text-[#667085]">© {new Date().getFullYear()} Oilbar - همه حقوق محفوظ است.</div>
     </footer>
   );
 }
 
 function CheckIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+    <svg
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+      {...props}
+    >
       <path d="M20 6 9 17l-5-5" />
     </svg>
   );

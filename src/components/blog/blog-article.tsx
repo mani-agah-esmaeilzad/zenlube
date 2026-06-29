@@ -66,11 +66,11 @@ export function BlogArticle({ content }: BlogArticleProps) {
   const blocks = parseMarkdown(content);
 
   return (
-    <article className="flex flex-col gap-6 text-slate-700 leading-8">
+    <article className="flex flex-col gap-6 text-[#475467] leading-8">
       {blocks.map((block, index) => {
         if (block.type === "heading") {
           return (
-            <h3 key={`${block.type}-${index}`} className="text-2xl font-semibold text-slate-900">
+            <h3 key={`${block.type}-${index}`} className="text-2xl font-extrabold text-[#171B23]">
               {block.text}
             </h3>
           );
@@ -78,7 +78,7 @@ export function BlogArticle({ content }: BlogArticleProps) {
 
         if (block.type === "list") {
           return (
-            <ul key={`${block.type}-${index}`} className="list-disc space-y-2 pl-6 text-slate-700">
+            <ul key={`${block.type}-${index}`} className="list-disc space-y-2 pr-6 text-[#475467]">
               {block.items.map((item, itemIndex) => (
                 <li key={itemIndex}>{item}</li>
               ))}

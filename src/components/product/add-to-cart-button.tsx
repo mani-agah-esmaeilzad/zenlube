@@ -37,7 +37,7 @@ export function AddToCartButton({ productId, className, disabled = false }: AddT
         type="button"
         onClick={handleAdd}
         className={cn(
-          "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#EF394E] px-5 py-2.5 text-sm font-bold text-white shadow-[0_10px_22px_rgba(239,57,78,0.22)] transition hover:bg-[#DC2626] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none",
+          "inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] border border-[#F59E0B] bg-[linear-gradient(180deg,#FFB52F_0%,#F59E0B_100%)] px-5 py-2.5 text-sm font-extrabold text-white shadow-[0_14px_28px_rgba(245,158,11,0.24)] transition hover:border-[#E78A00] hover:bg-[linear-gradient(180deg,#FFC14A_0%,#E78A00_100%)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0] disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#EAECF0] disabled:text-[#98A2B3] disabled:shadow-none",
           className,
         )}
         disabled={isDisabled}

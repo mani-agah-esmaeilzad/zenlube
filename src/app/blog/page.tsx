@@ -23,33 +23,33 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { items: posts, pageInfo } = await getPaginatedBlogPosts({ page, pageSize });
 
   return (
-    <div className="mx-auto max-w-5xl space-y-10 px-6 py-12">
-      <header className="space-y-4 text-slate-700">
-        <h1 className="text-4xl font-semibold text-slate-900">وبلاگ تخصصی Oilbar</h1>
-        <p className="text-sm leading-7 text-slate-600">
-          مجموعه‌ای از تجربیات فنی، راهنمای خرید، مقایسه محصولات و نکات نگهداری برای موتور خودرو. تیم تحریریه ما به
-          صورت مستمر محتوا را بر اساس استانداردهای روز به‌روزرسانی می‌کند.
+    <div className="container-zen space-y-8 py-6 md:py-8">
+      <header className="rounded-[32px] border border-[#E7E8EE] bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-8">
+        <p className="text-sm font-bold text-[#D97706]">آموزش و راهنما</p>
+        <h1 className="mt-3 text-3xl font-black text-[#171B23] md:text-4xl">وبلاگ تخصصی Oilbar</h1>
+        <p className="mt-3 max-w-4xl text-sm leading-8 text-[#667085]">
+          مجموعه‌ای از تجربیات فنی، راهنمای خرید، مقایسه محصولات و نکات نگهداری برای موتور خودرو. تیم تحریریه ما به صورت مستمر محتوا را بر اساس استانداردهای روز به‌روزرسانی می‌کند.
         </p>
       </header>
 
       <section className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
-          <span>مجموع {pageInfo.total.toLocaleString("fa-IR")} مقاله تخصصی منتشر شده است.</span>
+        <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-[#667085]">
+          <span>مجموع {posts.length} مقاله تخصصی منتشر شده است.</span>
           <Link
             href="/support"
-            className="rounded-full border border-slate-200 px-4 py-2 text-xs text-slate-600 transition hover:border-sky-200 hover:text-sky-700"
+            className="rounded-full border border-[#E7E8EE] px-4 py-2 text-xs font-bold text-[#475467] transition hover:border-[#F5C56B] hover:bg-[#FFF8E8] hover:text-[#D97706]"
           >
             درخواست موضوع پیشنهادی
           </Link>
         </div>
         {posts.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {posts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}
           </div>
         ) : (
-          <div className="rounded-3xl border border-dashed border-[#D1D5DB] bg-white p-10 text-center text-sm font-semibold text-[#6B7280]">
+          <div className="rounded-[28px] border border-dashed border-[#D0D5DD] bg-white p-10 text-center text-sm font-semibold text-[#667085]">
             هنوز مقاله‌ای ثبت نشده است.
           </div>
         )}

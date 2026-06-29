@@ -63,9 +63,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <EngagementTracker entityType="product" entityId={product.id} eventType="product_view" metadata={{ slug: product.slug }} />
 
       <nav className="mb-4 text-xs font-medium text-[#6B7280]">
-        <Link href="/" className="hover:text-red-600">خانه</Link>
+        <Link href="/" className="hover:text-[#D97706]">خانه</Link>
         <span className="mx-2">/</span>
-        <Link href="/products" className="hover:text-red-600">فروشگاه</Link>
+        <Link href="/products" className="hover:text-[#D97706]">فروشگاه</Link>
         <span className="mx-2">/</span>
         {product.name}
       </nav>
@@ -88,11 +88,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 md:p-6">
           <div className="flex flex-wrap gap-2 text-xs font-bold">
-            <Link href={`/products?brand=${product.brand.slug}`} className="rounded-full bg-red-50 px-3 py-1.5 text-red-600">{product.brand.name}</Link>
+            <Link href={`/products?brand=${product.brand.slug}`} className="rounded-full bg-[#FFF8E8] px-3 py-1.5 text-[#D97706]">{product.brand.name}</Link>
             <Link href={`/products?category=${product.category.slug}`} className="rounded-full bg-[#F3F4F6] px-3 py-1.5 text-[#374151]">{product.category.name}</Link>
             <span className="rounded-full bg-green-50 px-3 py-1.5 text-[#16A34A]">ضمانت اصالت</span>
           </div>
-          <h1 className="mt-4 text-2xl font-extrabold leading-[1.8] text-[#111827] md:text-3xl">{product.name}</h1>
+          <h1 className="mt-4 text-2xl font-extrabold leading-[1.8] text-[#171B23] md:text-3xl">{product.name}</h1>
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-[#6B7280]">
             <span>کد کالا: {product.sku ?? product.id.slice(0, 8)}</span>
             <span className="h-1 w-1 rounded-full bg-[#D1D5DB]" />
@@ -133,7 +133,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <h2 className="section-title">مناسب برای چه خودروهایی است؟</h2>
           <div className="mt-4 flex flex-wrap gap-2">
             {product.carMappings.map(({ car }) => (
-              <Link key={car.id} href={`/cars/${car.slug}`} className="rounded-full border border-[#E5E7EB] px-4 py-2 text-sm font-bold text-[#374151] hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+              <Link key={car.id} href={`/cars/${car.slug}`} className="rounded-full border border-[#E7E8EE] px-4 py-2 text-sm font-bold text-[#374151] hover:border-[#F5C56B] hover:bg-[#FFF8E8] hover:text-[#D97706]">
                 {car.manufacturer} {car.model}
               </Link>
             ))}
@@ -158,7 +158,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <section className="mt-8 space-y-4">
           <div className="section-heading">
             <h2 className="section-title">محصولات مرتبط</h2>
-            <Link href="/products" className="text-sm font-bold text-red-600">مشاهده همه</Link>
+            <Link href="/products" className="text-sm font-bold text-[#D97706]">مشاهده همه</Link>
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {relatedProducts.map((item) => <ProductCard key={item.id} product={item} />)}

@@ -31,10 +31,10 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
       <button
         type="button"
         className={clsx(
-          "inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-100",
+          "inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0]",
           open
-            ? "border-red-200 bg-red-50 text-red-600"
-            : "border-transparent bg-[#111827] text-white hover:bg-[#172033]",
+            ? "border-[#F5C56B] bg-[#FFF8E8] text-[#D97706]"
+            : "border-transparent bg-[#171B23] text-white hover:bg-[#252C39]",
         )}
         onClick={() => setOpen((prev) => !prev)}
         onKeyDown={(event) => {
@@ -44,7 +44,7 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
         aria-expanded={open}
       >
         <MenuIcon className="h-5 w-5" />
-        دسته‌بندی کالاها
+        دسته‌بندی‌ها
         <ChevronIcon className={clsx("h-4 w-4 transition-transform", open ? "rotate-180" : "")} />
       </button>
 
@@ -67,7 +67,7 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
                   <Link
                     key={category.id}
                     href={`/categories/${category.slug}`}
-                    className="block rounded-xl border border-[#E5E7EB] px-3 py-3 text-sm font-semibold text-[#374151] transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                    className="block rounded-xl border border-[#E5E7EB] px-3 py-3 text-sm font-semibold text-[#374151] transition hover:border-[#F5C56B] hover:bg-[#FFF8E8] hover:text-[#D97706]"
                     onClick={() => setOpen(false)}
                     role="menuitem"
                   >
@@ -82,7 +82,7 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
             )}
           </div>
 
-          <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
+          <div className="rounded-2xl border border-[#FDE7B0] bg-[#FFF8E8] p-4">
             <p className="text-sm font-bold text-[#111827]">ماشینت رو انتخاب کن</p>
             <p className="mt-2 text-xs leading-6 text-[#6B7280]">
               با انتخاب خودرو، روغن و فیلترهای سازگار را سریع‌تر پیدا کن.
@@ -95,7 +95,7 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
 
         {categories.length > 0 && (
           <div className="mt-5 border-t border-[#E5E7EB] pt-4">
-            <Link href="/categories" className="rounded-full px-3 py-1.5 text-xs font-bold text-red-600" onClick={() => setOpen(false)}>
+            <Link href="/categories" className="rounded-full px-3 py-1.5 text-xs font-bold text-[#D97706]" onClick={() => setOpen(false)}>
               مشاهده همه دسته‌بندی‌ها
             </Link>
           </div>

@@ -20,7 +20,7 @@ function SubmitButton() {
   return (
     <button
       type="submit"
-      className="w-full rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:opacity-60"
+      className="btn-primary w-full"
       disabled={pending}
     >
       {pending ? "در حال ثبت‌نام..." : "ایجاد حساب"}
@@ -78,7 +78,7 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
   return (
     <form action={formAction} className="space-y-5">
       <div className="space-y-2">
-        <label htmlFor="name" className="text-xs font-semibold text-slate-600">
+        <label htmlFor="name" className="text-xs font-bold text-[#475467]">
           نام و نام خانوادگی
         </label>
         <input
@@ -86,17 +86,17 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           name="name"
           required
           minLength={2}
-          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
+          className="input-zen"
         />
         {fieldErrors.name?.map((error) => (
-          <p key={error} className="text-xs text-red-500">
+          <p key={error} className="text-xs font-bold text-red-500">
             {error}
           </p>
         ))}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="email" className="text-xs font-semibold text-slate-600">
+        <label htmlFor="email" className="text-xs font-bold text-[#475467]">
           ایمیل
         </label>
         <input
@@ -104,17 +104,17 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           name="email"
           type="email"
           required
-          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
+          className="input-zen"
         />
         {fieldErrors.email?.map((error) => (
-          <p key={error} className="text-xs text-red-500">
+          <p key={error} className="text-xs font-bold text-red-500">
             {error}
           </p>
         ))}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="phone" className="text-xs font-semibold text-slate-600">
+        <label htmlFor="phone" className="text-xs font-bold text-[#475467]">
           شماره موبایل
         </label>
         <div className="flex gap-2">
@@ -124,26 +124,26 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
             type="tel"
             placeholder="09xxxxxxxxx"
             required
-            className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
+            className="input-zen"
           />
           <button
             type="button"
             onClick={(event) => handleSendOtp(event.currentTarget.form)}
-            className="shrink-0 rounded-full border border-sky-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-sky-400 hover:text-slate-800 disabled:opacity-60"
+            className="shrink-0 rounded-2xl border border-[#F5C56B] px-4 py-2 text-xs font-bold text-[#D97706] transition hover:bg-[#FFF8E8] hover:text-[#171B23] disabled:opacity-60"
             disabled={isOtpPending}
           >
             {isOtpPending ? "در حال ارسال" : "ارسال کد"}
           </button>
         </div>
         {fieldErrors.phone?.map((error) => (
-          <p key={error} className="text-xs text-red-500">
+          <p key={error} className="text-xs font-bold text-red-500">
             {error}
           </p>
         ))}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="otpCode" className="text-xs font-semibold text-slate-600">
+        <label htmlFor="otpCode" className="text-xs font-bold text-[#475467]">
           کد تایید پیامکی
         </label>
         <input
@@ -151,20 +151,20 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           name="otpCode"
           inputMode="numeric"
           required
-          className="w-full rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-300"
+          className="input-zen"
         />
         {fieldErrors.otpCode?.map((error) => (
-          <p key={error} className="text-xs text-red-500">
+          <p key={error} className="text-xs font-bold text-red-500">
             {error}
           </p>
         ))}
       </div>
 
-      {otpMessage && <p className="text-xs text-emerald-600">{otpMessage}</p>}
-      {otpError && <p className="text-xs text-red-500">{otpError}</p>}
+      {otpMessage && <p className="rounded-xl bg-green-50 px-3 py-2 text-xs font-bold text-emerald-600">{otpMessage}</p>}
+      {otpError && <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-500">{otpError}</p>}
 
       {state?.message && !state.success && (
-        <p className="text-xs text-red-500">{state.message}</p>
+        <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-500">{state.message}</p>
       )}
 
       <SubmitButton />

@@ -56,3 +56,15 @@ export const config = {
   QUESTION_RATE_LIMIT_WINDOW: parseNumber(process.env.QUESTION_RATE_LIMIT_WINDOW, 900),
   QUESTION_RATE_LIMIT_MAX: parseNumber(process.env.QUESTION_RATE_LIMIT_MAX, 3),
 } as const;
+
+export function isProduction() {
+  return config.NODE_ENV === "production";
+}
+
+export function isDevelopment() {
+  return config.NODE_ENV === "development";
+}
+
+export function isTest() {
+  return config.NODE_ENV === "test";
+}

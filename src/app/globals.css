@@ -244,6 +244,184 @@ a {
   border-radius: 24px;
 }
 
+.admin-app-bg {
+  background:
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 28%),
+    radial-gradient(circle at top left, rgba(17, 24, 39, 0.05), transparent 20%),
+    linear-gradient(180deg, #f5f7fb 0%, #eef2f8 100%);
+}
+
+.admin-panel {
+  border: 1px solid #e6eaf2;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 28px;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.07);
+}
+
+.admin-panel-muted {
+  border: 1px solid #e6eaf2;
+  background: linear-gradient(180deg, #fbfcfe 0%, #f4f7fb 100%);
+  border-radius: 28px;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.05);
+}
+
+.admin-chip,
+.admin-tab-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  border-radius: 999px;
+  border: 1px solid #e6eaf2;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 0 14px;
+  color: #475467;
+}
+
+.admin-chip-active,
+.admin-tab-chip-active {
+  border-color: rgba(245, 158, 11, 0.18);
+  background: #111827;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(17, 24, 39, 0.12);
+}
+
+body.admin-route {
+  background: #020617;
+}
+
+body.admin-route .site-shell {
+  background: #020617;
+}
+
+body.admin-route .site-chrome {
+  display: none;
+}
+
+body.admin-route .site-main {
+  padding-bottom: 0;
+}
+
+.admin-sidebar {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.18), transparent 32%),
+    linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  border-radius: 32px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.18);
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  border-radius: 18px;
+  padding: 0 14px;
+  color: rgba(255, 255, 255, 0.68);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.admin-nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.admin-nav-link-active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-shadow: inset 4px 0 0 0 var(--zen-orange);
+}
+
+.admin-kpi {
+  border: 1px solid #e6eaf2;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.05);
+}
+
+.admin-kpi-label {
+  color: #667085;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.admin-kpi-value {
+  margin-top: 14px;
+  color: #111827;
+  font-size: clamp(1.4rem, 1.2vw + 1rem, 2rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.admin-kpi-helper {
+  margin-top: 6px;
+  color: #98a2b3;
+  font-size: 0.74rem;
+  line-height: 1.9;
+}
+
+.admin-workspace :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea) {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid #e6eaf2;
+  background: #fff;
+  color: #111827;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.admin-workspace :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select) {
+  min-height: 46px;
+  padding: 0.8rem 0.95rem;
+}
+
+.admin-workspace textarea {
+  min-height: 110px;
+  padding: 0.9rem 0.95rem;
+  resize: vertical;
+}
+
+.admin-workspace :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea):focus {
+  border-color: rgba(245, 158, 11, 0.55);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.08);
+}
+
+.admin-workspace table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-workspace thead th {
+  background: #f8fafc;
+  color: #98a2b3;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.admin-workspace tbody tr {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.admin-workspace tbody td {
+  vertical-align: top;
+}
+
+.admin-workspace details summary::-webkit-details-marker {
+  display: none;
+}
+
 @media (max-width: 767px) {
   .section-heading {
     align-items: start;

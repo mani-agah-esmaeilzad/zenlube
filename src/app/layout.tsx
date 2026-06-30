@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AdminRouteBodyClass } from "@/components/layout/admin-route-body-class";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
@@ -17,10 +18,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html dir="rtl" lang="fa">
       <body className="bg-surface text-[#1F2937] antialiased">
-        <div className="flex min-h-screen flex-col bg-surface">
-          <SiteHeader />
-          <main className="flex-1 pb-20 lg:pb-0">{children}</main>
-          <SiteFooter />
+        <AdminRouteBodyClass />
+        <div className="site-shell flex min-h-screen flex-col bg-surface">
+          <div className="site-chrome">
+            <SiteHeader />
+          </div>
+          <main className="site-main flex-1 pb-20 lg:pb-0">{children}</main>
+          <div className="site-chrome">
+            <SiteFooter />
+          </div>
         </div>
       </body>
     </html>

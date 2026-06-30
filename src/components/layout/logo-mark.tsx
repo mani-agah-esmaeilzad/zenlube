@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export const LOGO_SRC = "/ChatGPT%20Image%20Nov%2024,%202025,%2009_22_15%20PM.png";
+export const LOGO_SRC = "/logo.png";
 
 type LogoMarkProps = {
   className?: string;
@@ -23,6 +23,7 @@ export function LogoMark({
         width={size}
         height={size}
         priority={priority}
+        unoptimized
         className="h-auto w-auto"
       />
     </span>

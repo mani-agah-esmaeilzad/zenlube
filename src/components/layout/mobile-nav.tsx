@@ -38,7 +38,7 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
     <>
       <button
         aria-label="باز کردن منوی موبایل"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E7E8EE] bg-white text-[#171B23] shadow-sm transition hover:border-[#F59E0B] hover:text-[#D97706]"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#E7E8EE] bg-white text-[#171B23] shadow-sm transition hover:border-[#F59E0B] hover:text-[#D97706]"
         onClick={() => setOpen(true)}
         type="button"
       >
@@ -54,11 +54,11 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
             type="button"
           />
 
-          <aside className="absolute inset-y-0 right-0 flex w-[min(88vw,390px)] flex-col overflow-hidden rounded-l-[30px] bg-white shadow-[0_30px_80px_rgba(17,24,39,0.22)]">
-            <div className="border-b border-[#E7E8EE] p-5">
+          <aside className="absolute inset-y-0 right-0 flex w-[min(88vw,390px)] flex-col overflow-hidden rounded-l-[28px] bg-white shadow-[0_30px_80px_rgba(17,24,39,0.22)]">
+            <div className="border-b border-[#E7E8EE] p-4">
               <div className="flex items-center justify-between gap-3">
                 <Link className="flex items-center" href="/" onClick={() => setOpen(false)}>
-                  <Image alt="لوگوی Oilbar" className="h-auto w-[124px]" height={44} src={LOGO_SRC} width={176} />
+                  <Image alt="لوگوی Oilbar" className="h-auto w-[112px]" height={44} src={LOGO_SRC} unoptimized width={176} />
                 </Link>
 
                 <button
@@ -71,15 +71,15 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
                 </button>
               </div>
 
-              <form action="/products" className="relative mt-4">
+              <form action="/products" className="relative mt-3">
                 <SearchIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
                 <input className="input-zen pr-10" name="search" placeholder="جستجو در روغن، فیلتر یا خودرو" />
               </form>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5">
+            <div className="flex-1 overflow-y-auto p-4">
               <button
-                className="flex w-full items-center justify-between rounded-2xl bg-[#F7F8FA] px-4 py-3 text-sm font-bold text-[#171B23]"
+                className="flex w-full items-center justify-between rounded-xl bg-[#F7F8FA] px-4 py-2.5 text-sm font-bold text-[#171B23]"
                 onClick={() => setCategoriesOpen((value) => !value)}
                 type="button"
               >
@@ -93,7 +93,7 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
                     categories.slice(0, 8).map((category) => (
                       <Link
                         key={category.id}
-                        className="rounded-2xl border border-[#E7E8EE] px-3 py-3 text-xs font-semibold text-[#344054]"
+                        className="rounded-xl border border-[#E7E8EE] px-3 py-2.5 text-xs font-semibold text-[#344054]"
                         href={`/categories/${category.slug}`}
                         onClick={() => setOpen(false)}
                       >
@@ -112,7 +112,7 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
                 {links.map((link) => (
                   <Link
                     key={link.href}
-                    className={`block rounded-2xl border px-4 py-3 transition ${
+                    className={`block rounded-xl border px-4 py-2.5 transition ${
                       link.highlight
                         ? "border-[#F5C56B] bg-[#FFF8E8] text-[#D97706]"
                         : "border-[#E7E8EE] hover:border-[#F5C56B] hover:bg-[#FFF8E8] hover:text-[#D97706]"
@@ -127,7 +127,7 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
                 {drawerLinks.map((link) => (
                   <Link
                     key={link.label}
-                    className="block rounded-2xl px-4 py-3 text-[#667085]"
+                    className="block rounded-xl px-4 py-2.5 text-[#667085]"
                     href={link.href}
                     onClick={() => setOpen(false)}
                   >
@@ -137,7 +137,7 @@ export function MobileNav({ links, isAuthenticated, categories }: MobileNavProps
               </nav>
             </div>
 
-            <div className="border-t border-[#E7E8EE] p-5">
+            <div className="border-t border-[#E7E8EE] p-4">
               {isAuthenticated ? <SignOutButton /> : <SignInButton />}
             </div>
           </aside>

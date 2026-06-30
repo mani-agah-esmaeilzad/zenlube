@@ -67,7 +67,7 @@ export async function SiteFooter() {
         <div className="container-zen grid gap-8 py-10 lg:grid-cols-[1.15fr_2fr_1fr]">
           <div>
             <Link className="inline-flex items-center" href="/">
-              <Image alt="لوگوی Oilbar" className="h-auto w-[148px]" height={50} src={LOGO_SRC} width={210} />
+              <Image alt="لوگوی Oilbar" className="h-auto w-[148px]" height={50} src={LOGO_SRC} unoptimized width={210} />
             </Link>
             <p className="mt-4 max-w-md text-sm leading-8 text-[#667085]">
               Oilbar برای خرید مطمئن روغن موتور، فیلتر و روانکار خودرو ساخته شده است؛ با تمرکز روی اصالت کالا، انتخاب فنی

@@ -31,7 +31,7 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
       <button
         type="button"
         className={clsx(
-          "inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0]",
+          "inline-flex h-10 items-center gap-2 rounded-xl border px-3.5 text-[13px] font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0]",
           open
             ? "border-[#F5C56B] bg-[#FFF8E8] text-[#D97706]"
             : "border-transparent bg-[#171B23] text-white hover:bg-[#252C39]",
@@ -43,20 +43,20 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <MenuIcon className="h-5 w-5" />
+        <MenuIcon className="h-4 w-4" />
         دسته‌بندی‌ها
         <ChevronIcon className={clsx("h-4 w-4 transition-transform", open ? "rotate-180" : "")} />
       </button>
 
       <div
         className={clsx(
-          "absolute right-0 top-full z-50 mt-3 w-[min(92vw,920px)] rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-[0_24px_64px_rgba(17,24,39,0.14)] transition",
+          "absolute right-0 top-full z-50 mt-2.5 w-[min(92vw,920px)] rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_24px_64px_rgba(17,24,39,0.14)] transition",
           open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0 pointer-events-none",
         )}
         role="menu"
         tabIndex={-1}
       >
-        <div className="grid gap-5 lg:grid-cols-[1fr_260px]">
+        <div className="grid gap-4 lg:grid-cols-[1fr_240px]">
           <div>
             <p className="mb-3 border-b border-[#E5E7EB] pb-2 text-sm font-bold text-[#111827]">
               دسته‌بندی‌های فروشگاه

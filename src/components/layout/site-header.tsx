@@ -45,9 +45,9 @@ export async function SiteHeader() {
   const searchSuggestions = categories.slice(0, 4).map((category) => category.name);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#E7E8EE] bg-white/96 shadow-[0_10px_30px_rgba(17,24,39,0.05)] backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[#E7E8EE] bg-white/96 shadow-[0_6px_24px_rgba(17,24,39,0.04)] backdrop-blur">
       <div className="hidden bg-[#171B23] text-white lg:block">
-        <div className="container-zen flex items-center justify-between py-3 text-xs">
+        <div className="container-zen flex items-center justify-between py-2 text-[11px]">
           <div className="flex items-center gap-3 text-white/90">
             <ShieldIcon className="h-4 w-4 text-[#F59E0B]" />
             <span>ضمانت اصالت کالا</span>
@@ -61,26 +61,26 @@ export async function SiteHeader() {
         </div>
       </div>
 
-      <div className="container-zen grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 lg:grid-cols-[auto_minmax(380px,1fr)_auto] lg:gap-6">
+      <div className="container-zen grid grid-cols-[auto_1fr_auto] items-center gap-2 py-2.5 lg:grid-cols-[auto_minmax(360px,1fr)_auto] lg:gap-4">
         <div className="flex items-center gap-3 lg:hidden">
           <MobileNav categories={categories} isAuthenticated={false} links={links} />
           <Link aria-label="صفحه اصلی Oilbar" href="/" className="flex items-center">
-            <Image alt="لوگوی Oilbar" className="h-auto w-[122px]" height={46} priority src={LOGO_SRC} width={172} />
+            <Image alt="لوگوی Oilbar" className="h-auto w-[108px]" height={46} priority src={LOGO_SRC} unoptimized width={172} />
           </Link>
         </div>
 
-        <div className="hidden min-w-0 items-center gap-8 lg:flex">
+        <div className="hidden min-w-0 items-center gap-5 lg:flex">
           <Link aria-label="صفحه اصلی Oilbar" href="/" className="shrink-0">
-            <Image alt="لوگوی Oilbar" className="h-auto w-[158px]" height={52} priority src={LOGO_SRC} width={224} />
+            <Image alt="لوگوی Oilbar" className="h-auto w-[136px]" height={52} priority src={LOGO_SRC} unoptimized width={224} />
           </Link>
 
-          <nav className="flex min-w-0 flex-1 items-center justify-end gap-1 text-sm font-bold text-[#344054]">
+          <nav className="flex min-w-0 flex-1 items-center justify-end gap-0.5 text-[13px] font-bold text-[#344054]">
             <CategoryDropdown categories={categories} />
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-xl px-3 py-2 transition hover:bg-[#FFF7E8] hover:text-[#D97706] ${
+                className={`rounded-lg px-2.5 py-1.5 transition hover:bg-[#FFF7E8] hover:text-[#D97706] ${
                   link.highlight ? "bg-[#FFF7E8] text-[#D97706]" : ""
                 }`}
               >
@@ -91,14 +91,14 @@ export async function SiteHeader() {
         </div>
 
         <form action="/products" className="group relative order-3 col-span-3 lg:order-none lg:col-span-1">
-          <SearchIcon className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#667085]" />
+          <SearchIcon className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
           <input
             aria-label="جستجوی محصول"
-            className="input-zen h-16 rounded-[20px] border-[#E7E8EE] bg-white pr-12 text-sm font-medium shadow-[0_10px_30px_rgba(17,24,39,0.03)]"
+            className="input-zen h-12 rounded-2xl border-[#E7E8EE] bg-white pr-11 text-sm font-medium shadow-[0_8px_24px_rgba(17,24,39,0.03)] lg:h-[52px]"
             name="search"
             placeholder="جستجو برای روغن، فیلتر، برند یا خودرو..."
           />
-          <div className="invisible absolute inset-x-0 top-[calc(100%+10px)] z-50 rounded-[22px] border border-[#ECEEF2] bg-white p-4 opacity-0 shadow-[0_20px_60px_rgba(17,24,39,0.12)] transition group-focus-within:visible group-focus-within:opacity-100">
+          <div className="invisible absolute inset-x-0 top-[calc(100%+8px)] z-50 rounded-[22px] border border-[#ECEEF2] bg-white p-4 opacity-0 shadow-[0_20px_60px_rgba(17,24,39,0.12)] transition group-focus-within:visible group-focus-within:opacity-100">
             <p className="mb-3 text-xs font-bold text-[#667085]">جستجوهای پیشنهادی</p>
             <div className="flex flex-wrap gap-2">
               {searchSuggestions.map((item) => (
@@ -119,7 +119,7 @@ export async function SiteHeader() {
             <SignInButton />
           </div>
           <Link
-            className="inline-flex h-12 min-w-12 items-center justify-center rounded-2xl border border-[#E7E8EE] bg-white px-4 text-sm font-bold text-[#171B23] shadow-sm transition hover:border-[#F5C56B] hover:text-[#D97706]"
+            className="inline-flex h-10 min-w-10 items-center justify-center rounded-xl border border-[#E7E8EE] bg-white px-3 text-sm font-bold text-[#171B23] shadow-sm transition hover:border-[#F5C56B] hover:text-[#D97706]"
             href="/cart"
           >
             <CartIcon className="h-5 w-5" />

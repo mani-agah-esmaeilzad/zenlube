@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export const LOGO_SRC = "/logo.png";
+export const LOGO_SRC = "/oilbar-logo-main.png";
 
 type LogoMarkProps = {
   className?: string;

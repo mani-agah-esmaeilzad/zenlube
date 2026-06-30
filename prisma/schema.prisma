@@ -430,7 +430,6 @@ model SmsLog {
 
   @@index([phone, eventType, createdAt])
 }
-
 model PaymentEvent {
   id         String   @id @default(cuid())
   orderId    String

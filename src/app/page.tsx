@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Oilbar | به‌زودی",
@@ -40,16 +39,6 @@ export default function Home() {
                 در حال نهایی‌سازی تجربه خرید، جستجوی دقیق محصولات و آماده‌سازی فروشگاه هستیم. صفحه اصلی موقتاً به حالت
                 Coming Soon تغییر کرده و نسخه کامل به‌زودی منتشر می‌شود.
               </p>
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link className="btn-primary min-w-[210px] rounded-[18px] text-base" href="/support">
-                  ارتباط با پشتیبانی
-                </Link>
-                <Link className="btn-outline min-w-[210px] rounded-[18px] border-white/20 bg-white/5 text-base text-white hover:bg-white/10" href="/blog">
-                  مطالعه راهنماها
-                </Link>
-              </div>
-
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 {launchHighlights.map((item) => (
                   <div

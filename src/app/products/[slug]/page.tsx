@@ -3,10 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { ProductCard } from "@/components/product/product-card";
+import { RecentlyViewedTracker } from "@/components/product/recently-viewed-tracker";
+import { WishlistButton } from "@/components/product/wishlist-button";
 import { QuestionForm } from "@/components/forms/question-form";
 import { QuestionList } from "@/components/questions/question-list";
+import { ReviewCard } from "@/components/review/review-card";
+import { ReviewForm } from "@/components/review/review-form";
 import { EngagementTracker } from "@/components/analytics/engagement-tracker";
+import { getShippingEstimateLabel } from "@/lib/commerce";
 import prisma from "@/lib/prisma";
+import { getAppSession } from "@/lib/session";
 import { formatPrice } from "@/lib/utils";
 
 type ProductPageProps = { params: Promise<{ slug: string }> };
@@ -22,21 +28,54 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
+  const session = await getAppSession();
+  const userId = (session as { user?: { id?: string } } | null)?.user?.id;
   const product = await prisma.product.findFirst({
     where: { slug, NOT: { slug: { startsWith: "deleted-" } } },
     include: {
       brand: true,
       category: true,
       carMappings: { include: { car: true } },
+      reviews: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              imageUrl: true,
+              brand: { select: { name: true } },
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 8,
+      },
       questions: { where: { status: { not: "ARCHIVED" } }, orderBy: { createdAt: "desc" } },
     },
   });
   if (!product) notFound();
 
+  const wishlistItem = userId
+    ? await prisma.wishlistItem.findUnique({
+        where: { userId_productId: { userId, productId: product.id } },
+        select: { id: true },
+      })
+    : null;
+
   const relatedProducts = await prisma.product.findMany({
-    where: { categoryId: product.categoryId, id: { not: product.id }, NOT: { slug: { startsWith: "deleted-" } } },
+    where: {
+      id: { not: product.id },
+      NOT: { slug: { startsWith: "deleted-" } },
+      OR: [
+        { categoryId: product.categoryId },
+        { brandId: product.brandId },
+        { tags: { hasSome: product.tags.slice(0, 4) } },
+      ],
+    },
     take: 4,
     include: { brand: true, category: true, carMappings: { include: { car: true } } },
+    orderBy: [{ brandId: "asc" }, { isFeatured: "desc" }, { reviewCount: "desc" }],
   });
 
   const specs = [
@@ -57,10 +96,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     answeredAt: question.answeredAt,
   }));
   const isAvailable = product.stock > 0;
+  const shippingEstimate = getShippingEstimateLabel("STANDARD");
 
   return (
     <div className="container-zen py-6 md:py-8">
       <EngagementTracker entityType="product" entityId={product.id} eventType="product_view" metadata={{ slug: product.slug }} />
+      <RecentlyViewedTracker productId={product.id} />
 
       <nav className="mb-4 text-xs font-medium text-[#6B7280]">
         <Link href="/" className="hover:text-[#D97706]">خانه</Link>
@@ -122,8 +163,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <p>ضمانت اصالت و سلامت فیزیکی کالا</p>
             <p>مشاوره تخصصی قبل از خرید</p>
             <p>ارسال سریع با بسته‌بندی امن</p>
+            <p className="font-bold text-[#D97706]">{shippingEstimate}</p>
           </div>
           <AddToCartButton productId={product.id} disabled={!isAvailable} />
+          <div className="mt-3">
+            <WishlistButton productId={product.id} initialActive={Boolean(wishlistItem)} />
+          </div>
           <Link href="/products/compare" className="btn-outline mt-3 w-full">افزودن به مقایسه</Link>
         </aside>
       </section>
@@ -152,6 +197,32 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <p className="text-sm leading-8 text-[#374151]">
           این محصول با تمرکز بر سازگاری فنی، اصالت کالا و تجربه خرید مطمئن ارائه می‌شود. برای انتخاب دقیق‌تر به ویسکوزیته، استاندارد API و دفترچه راهنمای خودرو توجه کنید.
         </p>
+      </section>
+
+      <section className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_.95fr]">
+        <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-black text-[#111827]">نظر و امتیاز کاربران</h2>
+              <p className="mt-1 text-sm text-[#667085]">
+                میانگین امتیاز {product.averageRating ? Number(product.averageRating).toLocaleString("fa-IR") : "۰"} از ۵ بر اساس {product.reviewCount.toLocaleString("fa-IR")} نظر
+              </p>
+            </div>
+            <span className="rounded-full bg-[#FFF8E8] px-3 py-1.5 text-xs font-bold text-[#D97706]">
+              {product.reviewCount.toLocaleString("fa-IR")} نظر
+            </span>
+          </div>
+          <div className="mt-5 space-y-4">
+            {product.reviews.length ? (
+              product.reviews.map((review) => <ReviewCard key={review.id} review={review} />)
+            ) : (
+              <div className="rounded-2xl border border-dashed border-[#D0D5DD] px-5 py-8 text-center text-sm text-[#667085]">
+                هنوز نظری برای این محصول ثبت نشده است.
+              </div>
+            )}
+          </div>
+        </div>
+        <ReviewForm productId={product.id} />
       </section>
 
       {relatedProducts.length > 0 && (

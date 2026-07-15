@@ -3,11 +3,19 @@ import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
 import type { UsersTabData } from "@/services/admin/types";
 import { deleteUserFormAction, updateUserRoleAction } from "@/actions/admin";
 
+const roleLabels: Record<string, string> = {
+  ADMIN: "مدیر کل",
+  OPERATIONS_MANAGER: "اپریشن",
+  CONTENT_MANAGER: "محتوا",
+  SUPPORT: "پشتیبانی",
+  CUSTOMER: "مشتری",
+};
+
 export function UsersTab({ data, sessionUserId }: { data: UsersTabData; sessionUserId: string | null }) {
   const { users } = data;
 
   const totalUsers = users.length;
-  const totalAdmins = users.filter((user) => user.role === "ADMIN").length;
+  const totalAdmins = users.filter((user) => user.role !== "CUSTOMER").length;
   const totalCustomers = totalUsers - totalAdmins;
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -64,7 +72,7 @@ export function UsersTab({ data, sessionUserId }: { data: UsersTabData; sessionU
                     </div>
                   </td>
                   <td className="px-4 py-3 text-xs text-slate-500">{user.email}</td>
-                  <td className="px-4 py-3 text-xs text-slate-500">{user.role === "ADMIN" ? "مدیر" : "مشتری"}</td>
+                  <td className="px-4 py-3 text-xs text-slate-500">{roleLabels[user.role] ?? user.role}</td>
                   <td className="px-4 py-3">{faNumberFormatter.format(user.ordersCount)}</td>
                   <td className="px-4 py-3 text-xs text-slate-400">{faDateFormatter.format(user.createdAt)}</td>
                   <td className="px-4 py-3">
@@ -78,9 +86,12 @@ export function UsersTab({ data, sessionUserId }: { data: UsersTabData; sessionU
                           "rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs text-slate-700",
                           isSelf && "cursor-not-allowed opacity-50",
                         )}
-                      >
-                        <option value="CUSTOMER">مشتری</option>
-                        <option value="ADMIN">مدیر</option>
+                        >
+                          <option value="CUSTOMER">مشتری</option>
+                          <option value="SUPPORT">پشتیبانی</option>
+                          <option value="CONTENT_MANAGER">محتوا</option>
+                          <option value="OPERATIONS_MANAGER">اپریشن</option>
+                          <option value="ADMIN">مدیر کل</option>
                       </select>
                       <button
                         type="submit"

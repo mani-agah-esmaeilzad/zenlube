@@ -10,6 +10,8 @@ export class AuthorizationError extends Error {
 
 export type AppSession = Awaited<ReturnType<typeof getAppSession>>;
 
+export const backofficeRoles = new Set(["ADMIN", "OPERATIONS_MANAGER", "CONTENT_MANAGER", "SUPPORT"]);
+
 function extractRole(session: AppSession) {
   return (session as { user?: { role?: string | null } } | null)?.user?.role ?? null;
 }
@@ -22,7 +24,7 @@ export async function requireAdminUser({ redirectTo = "/sign-in?callbackUrl=/adm
   const session = await getAppSession();
   const role = extractRole(session);
 
-  if (role !== "ADMIN") {
+  if (!role || !backofficeRoles.has(role)) {
     redirect(redirectTo);
   }
 
@@ -39,7 +41,7 @@ export async function ensureAdminAction() {
   const session = await getAppSession();
   const role = extractRole(session);
 
-  if (role !== "ADMIN") {
+  if (!role || !backofficeRoles.has(role)) {
     throw new AuthorizationError();
   }
 
@@ -47,6 +49,16 @@ export async function ensureAdminAction() {
     session,
     userId: extractUserId(session),
   } as const;
+}
+
+export function ensureRoleAccess(
+  role: string | null | undefined,
+  allowedRoles: string[],
+  message = "دسترسی این بخش برای نقش فعلی مجاز نیست.",
+) {
+  if (!role || !allowedRoles.includes(role)) {
+    throw new AuthorizationError(message);
+  }
 }
 
 export function ensureNotSelf(targetUserId: string, sessionUserId: string | null | undefined) {

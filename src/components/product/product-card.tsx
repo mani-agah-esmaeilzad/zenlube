@@ -2,6 +2,7 @@ import type { SVGProps } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
+import { WishlistButton } from "@/components/product/wishlist-button";
 import { formatPrice } from "@/lib/utils";
 import type { ProductWithRelations } from "@/types/catalog";
 
@@ -45,13 +46,9 @@ export function ProductCard({ product }: ProductCardProps) {
           ) : null}
         </div>
 
-        <button
-          aria-label="افزودن به علاقه‌مندی"
-          className="absolute left-3 top-3 inline-flex size-9 items-center justify-center rounded-full border border-[#E7E8EE] bg-white text-[#667085] transition hover:border-[#F5C56B] hover:text-[#D97706]"
-          type="button"
-        >
-          <HeartIcon className="h-4 w-4" />
-        </button>
+        <div className="absolute left-3 top-3">
+          <WishlistButton compact productId={product.id} />
+        </div>
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
@@ -112,23 +109,6 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
     </article>
-  );
-}
-
-function HeartIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.8}
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
-    </svg>
   );
 }
 

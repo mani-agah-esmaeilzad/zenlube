@@ -142,6 +142,30 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
     { label: "به‌روزرسانی دفترچه خودروها", href: "/admin?tab=maintenance" },
   ];
 
+  const operationalAlerts = [
+    {
+      title: "محصولات کم‌موجودی",
+      value: lowStockCount,
+      helper: `${faNumberFormatter.format(outOfStockCount)} کالا کاملاً ناموجود است.`,
+      href: "/admin?tab=products&stockStatus=low",
+      tone: lowStockCount > 0 ? "warning" : "ok",
+    },
+    {
+      title: "سفارش‌های منتظر اقدام",
+      value: ordersByStatus.PENDING ?? 0,
+      helper: "سفارش‌هایی که هنوز پرداخت یا پردازش نشده‌اند.",
+      href: "/admin?tab=orders&status=PENDING",
+      tone: (ordersByStatus.PENDING ?? 0) > 0 ? "warning" : "ok",
+    },
+    {
+      title: "پرسش‌های بی‌پاسخ",
+      value: pendingProductQuestions + pendingCarQuestions,
+      helper: "پرسش‌های محصول و خودرو که هنوز پاسخی نگرفته‌اند.",
+      href: "/admin?tab=questions",
+      tone: pendingProductQuestions + pendingCarQuestions > 0 ? "warning" : "ok",
+    },
+  ];
+
   const orderStatusItems = Object.entries(orderStatusLabels).map(([key, label]) => {
     const value = ordersByStatus[key] ?? 0;
     const share = totalOrders > 0 ? Math.round((value / totalOrders) * 100) : 0;
@@ -269,6 +293,35 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="admin-panel p-5 md:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-black text-[#111827]">هشدارهای عملیاتی</h2>
+            <p className="mt-1 text-xs leading-6 text-[#667085]">
+              مواردی که همین حالا نیاز به رسیدگی دارند تا تجربه خرید و عملیات فروشگاه آسیب نبیند.
+            </p>
+          </div>
+          <span className="admin-chip">{faNumberFormatter.format(operationalAlerts.filter((item) => item.value > 0).length)} مورد فعال</span>
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+          {operationalAlerts.map((alert) => (
+            <Link
+              key={alert.title}
+              href={alert.href}
+              className={`rounded-[22px] border p-4 transition ${
+                alert.tone === "warning"
+                  ? "border-amber-200 bg-amber-50 hover:border-amber-300"
+                  : "border-emerald-200 bg-emerald-50 hover:border-emerald-300"
+              }`}
+            >
+              <p className="text-xs font-bold text-[#667085]">{alert.title}</p>
+              <p className="mt-3 text-2xl font-black text-[#111827]">{faNumberFormatter.format(alert.value)}</p>
+              <p className="mt-2 text-[11px] leading-5 text-[#667085]">{alert.helper}</p>
+            </Link>
+          ))}
         </div>
       </section>
 

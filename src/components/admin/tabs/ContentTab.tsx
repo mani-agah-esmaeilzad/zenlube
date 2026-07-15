@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Children } from "react";
 import type { ReactNode } from "react";
+import { deleteCouponAction, deleteMarketingBannerAction } from "@/actions/admin";
+import { BannerCreateForm, CouponCreateForm } from "@/components/admin/forms/ContentCampaignForms";
 import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
 import type { ContentTabData } from "@/services/admin/types";
 
@@ -10,7 +12,7 @@ const cmsSections = [
   { title: "رسانه‌ها", status: "مدل فعال", detail: "GalleryImage برای تصاویر عمومی، ترتیب نمایش و وضعیت فعال/غیرفعال آماده است." },
   { title: "تنظیمات سایت", status: "نیازمند مدل", detail: "نام سایت، لوگو، شبکه‌های اجتماعی، footer و announcement برای ذخیره پایدار به SiteSetting نیاز دارد." },
   { title: "منو و مگامنو", status: "نیازمند مدل", detail: "برای reorder و parent/child منو بهتر است NavigationItem اضافه شود." },
-  { title: "کد تخفیف", status: "نیازمند مدل", detail: "Coupon/Campaign برای درصد، مبلغ ثابت، محدودیت مصرف و تاریخ انقضا لازم است." },
+  { title: "کد تخفیف", status: "مدل فعال", detail: "Coupon برای درصد، مبلغ ثابت، محدودیت مصرف، سقف تخفیف و تاریخ انقضا فعال شد." },
   { title: "ارسال و تحویل", status: "منطق ثابت", detail: "ShippingMethod در سفارش وجود دارد، اما تنظیم قیمت‌ها اکنون در منطق checkout ثابت است." },
   { title: "پیام‌های پشتیبانی", status: "نیازمند مدل", detail: "برای inbox پشتیبانی نیاز به ContactMessage یا Ticket وجود دارد." },
 ];
@@ -51,6 +53,7 @@ export function ContentTab({ data }: { data: ContentTabData }) {
 
       <section className="grid gap-6 xl:grid-cols-3">
         <Panel title="بنرهای مارکتینگ" empty="بنری ثبت نشده است.">
+          <BannerCreateForm />
           {data.banners.map((banner) => (
             <div key={banner.id} className="rounded-2xl border border-[#E5E7EB] p-4">
               <div className="flex items-start justify-between gap-3">
@@ -63,6 +66,10 @@ export function ContentTab({ data }: { data: ContentTabData }) {
                 </span>
               </div>
               {banner.subtitle && <p className="mt-2 line-clamp-2 text-xs leading-6 text-[#6B7280]">{banner.subtitle}</p>}
+              <form action={deleteMarketingBannerAction} className="mt-3">
+                <input type="hidden" name="id" value={banner.id} />
+                <button type="submit" className="text-xs font-bold text-[#B42318]">حذف بنر</button>
+              </form>
             </div>
           ))}
         </Panel>
@@ -89,6 +96,38 @@ export function ContentTab({ data }: { data: ContentTabData }) {
             </div>
           ))}
         </Panel>
+      </section>
+
+      <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+        <h2 className="text-lg font-extrabold text-[#111827]">کدهای تخفیف و کمپین</h2>
+        <div className="mt-5 grid gap-6 xl:grid-cols-[380px_1fr]">
+          <CouponCreateForm />
+
+          <div className="grid gap-3 md:grid-cols-2">
+            {data.coupons.length ? data.coupons.map((coupon) => (
+              <div key={coupon.id} className="rounded-2xl border border-[#E5E7EB] p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-[#111827]">{coupon.code}</p>
+                    <p className="mt-1 text-xs text-[#6B7280]">{coupon.title}</p>
+                  </div>
+                  <span className={`rounded-full px-2 py-1 text-[11px] font-bold ${coupon.isActive ? "bg-green-50 text-[#16A34A]" : "bg-slate-100 text-[#6B7280]"}`}>
+                    {coupon.isActive ? "فعال" : "غیرفعال"}
+                  </span>
+                </div>
+                <p className="mt-3 text-xs text-[#6B7280]">
+                  {coupon.discountType === "PERCENTAGE" ? `${coupon.amount.toLocaleString("fa-IR")}٪` : `${coupon.amount.toLocaleString("fa-IR")} تومان`} · استفاده {coupon.usedCount.toLocaleString("fa-IR")}
+                </p>
+                <form action={deleteCouponAction} className="mt-3">
+                  <input type="hidden" name="id" value={coupon.id} />
+                  <button type="submit" className="text-xs font-bold text-[#B42318]">حذف کد</button>
+                </form>
+              </div>
+            )) : (
+              <p className="rounded-2xl border border-dashed border-[#E5E7EB] p-6 text-center text-sm text-[#6B7280] md:col-span-2">هنوز کد تخفیفی ثبت نشده است.</p>
+            )}
+          </div>
+        </div>
       </section>
 
       <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5">

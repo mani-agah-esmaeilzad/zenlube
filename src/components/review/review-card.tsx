@@ -31,6 +31,14 @@ export function ReviewCard({ review }: ReviewCardProps) {
           ⭐ {review.rating}/5
         </span>
       </div>
+      {review.isVerifiedPurchase ? (
+        <span className="w-fit rounded-full bg-green-50 px-3 py-1 text-[11px] font-bold text-[#027A48]">
+          خرید تاییدشده
+        </span>
+      ) : null}
+      {review.title ? (
+        <p className="text-sm font-bold text-slate-900">{review.title}</p>
+      ) : null}
       {review.comment && (
         <p className="leading-7 text-slate-600">“{review.comment}”</p>
       )}

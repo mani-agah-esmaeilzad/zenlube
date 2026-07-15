@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import prisma from "@/lib/prisma";
+import { appendOrderStatusEvent, calculateCouponDiscount, findActiveCouponByCode, getShippingEstimateLabel } from "@/lib/commerce";
 import { checkoutOrderSchema } from "@/lib/validators";
 import { getAppSession } from "@/lib/session";
 import { requestZarinpalPayment } from "@/lib/payments/zarinpal";
@@ -108,8 +109,24 @@ export async function createCheckoutOrderAction(
 
     const subtotal = cart.items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0);
     const shippingCost = input.shippingMethod === "EXPRESS" ? 120000 : input.shippingMethod === "STANDARD" ? 60000 : 0;
-    const total = subtotal + shippingCost;
+    const estimatedDeliveryLabel = getShippingEstimateLabel(input.shippingMethod);
     const normalizedPhone = normalizeIranPhone(input.phone);
+    const coupon = input.couponCode ? await findActiveCouponByCode(input.couponCode) : null;
+
+    if (input.couponCode && !coupon) {
+      return { success: false, message: "کد تخفیف معتبر نیست یا منقضی شده است." };
+    }
+
+    const discountValidation = coupon
+      ? calculateCouponDiscount(coupon, subtotal)
+      : { valid: true as const, discount: 0, message: null };
+
+    if (!discountValidation.valid) {
+      return { success: false, message: discountValidation.message ?? "کد تخفیف قابل استفاده نیست." };
+    }
+
+    const discountAmount = discountValidation.discount;
+    const total = Math.max(0, subtotal + shippingCost - discountAmount);
 
     const order = await prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
@@ -130,6 +147,10 @@ export async function createCheckoutOrderAction(
           paymentGateway: "ZARINPAL",
           shippingMethod: input.shippingMethod,
           shippingCost,
+          discountAmount,
+          couponId: coupon?.id ?? null,
+          couponCode: coupon?.code ?? null,
+          estimatedDeliveryLabel,
           notes: input.notes,
           items: {
             createMany: {
@@ -143,30 +164,76 @@ export async function createCheckoutOrderAction(
         },
       });
 
+      await appendOrderStatusEvent(tx, {
+        orderId: createdOrder.id,
+        status: "PENDING",
+        title: "سفارش ثبت شد",
+        detail: `سفارش با مبلغ ${total.toLocaleString("fa-IR")} تومان ثبت شد.`,
+      });
+
       if (input.saveAddress) {
-        await tx.userAddress.upsert({
-          where: { userId_isDefault: { userId, isDefault: true } },
-          update: {
-            fullName: input.fullName,
-            phone: normalizedPhone,
-            address1: input.address1,
-            address2: input.address2,
-            city: input.city,
-            province: input.province,
-            postalCode: input.postalCode,
-          },
-          create: {
+        await tx.userAddress.updateMany({
+          where: { userId, isDefault: true },
+          data: { isDefault: false },
+        });
+
+        const existingAddress = await tx.userAddress.findFirst({
+          where: {
             userId,
             fullName: input.fullName,
             phone: normalizedPhone,
             address1: input.address1,
-            address2: input.address2,
+            address2: input.address2 ?? null,
             city: input.city,
             province: input.province,
             postalCode: input.postalCode,
-            isDefault: true,
           },
+          select: { id: true },
         });
+
+        if (existingAddress) {
+          await tx.userAddress.update({
+            where: { id: existingAddress.id },
+            data: { isDefault: true },
+          });
+        } else {
+          await tx.userAddress.create({
+            data: {
+              userId,
+              label: "آدرس checkout",
+              fullName: input.fullName,
+              phone: normalizedPhone,
+              address1: input.address1,
+              address2: input.address2,
+              city: input.city,
+              province: input.province,
+              postalCode: input.postalCode,
+              isDefault: true,
+            },
+          });
+        }
+      } else {
+        const hasDefaultAddress = await tx.userAddress.findFirst({
+          where: { userId, isDefault: true },
+          select: { id: true },
+        });
+
+        if (!hasDefaultAddress) {
+          await tx.userAddress.create({
+            data: {
+              userId,
+              label: "آدرس اصلی",
+              fullName: input.fullName,
+              phone: normalizedPhone,
+              address1: input.address1,
+              address2: input.address2,
+              city: input.city,
+              province: input.province,
+              postalCode: input.postalCode,
+              isDefault: true,
+            },
+          });
+        }
       }
 
       return createdOrder;
@@ -196,9 +263,17 @@ export async function createCheckoutOrderAction(
         });
 
     if (payment.authority) {
-      await prisma.order.update({
-        where: { id: order.id },
-        data: { paymentAuthority: payment.authority },
+      await prisma.$transaction(async (tx) => {
+        await tx.order.update({
+          where: { id: order.id },
+          data: { paymentAuthority: payment.authority },
+        });
+        await appendOrderStatusEvent(tx, {
+          orderId: order.id,
+          status: "PAYMENT_STARTED",
+          title: "انتقال به درگاه پرداخت",
+          detail: "کاربر برای تکمیل پرداخت به درگاه منتقل شد.",
+        });
       });
     }
 

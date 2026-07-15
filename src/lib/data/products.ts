@@ -76,6 +76,10 @@ type ProductFilters = {
   brand?: string;
   car?: string;
   tags?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?: boolean;
+  minRating?: number;
   page?: number;
   pageSize?: number;
   sort?: ProductSort;
@@ -87,6 +91,10 @@ export async function getAllProductsWithFilters({
   brand,
   car,
   tags,
+  minPrice,
+  maxPrice,
+  inStock,
+  minRating,
   page = 1,
   pageSize = 12,
   sort = "latest",
@@ -121,6 +129,22 @@ export async function getAllProductsWithFilters({
           },
         }
       : {}),
+    ...(typeof minPrice === "number" && Number.isFinite(minPrice)
+      ? {
+          price: {
+            ...(typeof maxPrice === "number" && Number.isFinite(maxPrice) ? { lte: maxPrice } : {}),
+            gte: minPrice,
+          },
+        }
+      : typeof maxPrice === "number" && Number.isFinite(maxPrice)
+        ? {
+            price: {
+              lte: maxPrice,
+            },
+          }
+        : {}),
+    ...(inStock ? { stock: { gt: 0 } } : {}),
+    ...(typeof minRating === "number" && Number.isFinite(minRating) ? { averageRating: { gte: minRating } } : {}),
   };
 
   const skip = (page - 1) * pageSize;
@@ -241,4 +265,83 @@ export async function getAllProductsLite() {
     averageRating: product.averageRating != null ? Number(product.averageRating) : null,
     price: Number(product.price),
   }));
+}
+
+export async function getSearchSuggestions(query: string) {
+  const term = query.trim();
+  if (term.length < 2) {
+    return {
+      products: [],
+      brands: [],
+      categories: [],
+      cars: [],
+    };
+  }
+
+  const [products, brands, categories, cars] = await Promise.all([
+    prisma.product.findMany({
+      where: {
+        NOT: { slug: { startsWith: "deleted-" } },
+        OR: [
+          { name: { contains: term, mode: "insensitive" } },
+          { sku: { contains: term, mode: "insensitive" } },
+          { brand: { name: { contains: term, mode: "insensitive" } } },
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        brand: { select: { name: true } },
+      },
+      take: 6,
+      orderBy: [{ isFeatured: "desc" }, { reviewCount: "desc" }, { updatedAt: "desc" }],
+    }),
+    prisma.brand.findMany({
+      where: { name: { contains: term, mode: "insensitive" } },
+      select: { id: true, name: true, slug: true },
+      take: 4,
+      orderBy: { name: "asc" },
+    }),
+    prisma.category.findMany({
+      where: { name: { contains: term, mode: "insensitive" } },
+      select: { id: true, name: true, slug: true },
+      take: 4,
+      orderBy: { name: "asc" },
+    }),
+    prisma.car.findMany({
+      where: {
+        OR: [
+          { manufacturer: { contains: term, mode: "insensitive" } },
+          { model: { contains: term, mode: "insensitive" } },
+          { generation: { contains: term, mode: "insensitive" } },
+        ],
+      },
+      select: {
+        id: true,
+        slug: true,
+        manufacturer: true,
+        model: true,
+        generation: true,
+      },
+      take: 4,
+      orderBy: [{ manufacturer: "asc" }, { model: "asc" }],
+    }),
+  ]);
+
+  return {
+    products: products.map((item) => ({
+      id: item.id,
+      name: item.name,
+      slug: item.slug,
+      brandName: item.brand.name,
+    })),
+    brands,
+    categories,
+    cars: cars.map((item) => ({
+      id: item.id,
+      slug: item.slug,
+      name: [item.manufacturer, item.model, item.generation].filter(Boolean).join(" "),
+    })),
+  };
 }

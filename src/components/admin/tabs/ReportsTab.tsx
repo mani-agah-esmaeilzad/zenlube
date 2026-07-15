@@ -1,10 +1,26 @@
 import Link from "next/link";
 
-import { faNumberFormatter } from "@/lib/formatters";
+import { updateReturnRequestAction } from "@/actions/admin";
+import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
 import type { ReportsTabData } from "@/services/admin/types";
 
 export function ReportsTab({ data }: { data: ReportsTabData }) {
-  const { engagementGroups, maintenanceTasks, productQuestions, carQuestions, products, cars } = data;
+  const {
+    engagementGroups,
+    maintenanceTasks,
+    productQuestions,
+    carQuestions,
+    products,
+    cars,
+    averageOrderValue,
+    paidOrdersCount,
+    wishlistItemsCount,
+    recentViewsCount,
+    couponCount,
+    couponRedemptions,
+    auditLogs,
+    returnRequests,
+  } = data;
 
   const notebookViewEntries = engagementGroups.filter(
     (item) => item.entityType === "car" && item.eventType === "notebook_view",
@@ -49,7 +65,26 @@ export function ReportsTab({ data }: { data: ReportsTabData }) {
       value: faNumberFormatter.format(totalEngagementEvents),
       helper: `${Object.keys(engagementByEventType).length} نوع رویداد`,
     },
+    {
+      label: "میانگین ارزش سفارش",
+      value: `${Math.round(averageOrderValue).toLocaleString("fa-IR")} تومان`,
+      helper: `${faNumberFormatter.format(paidOrdersCount)} سفارش موفق`,
+    },
+    {
+      label: "علاقه‌مندی و بازدید اخیر",
+      value: faNumberFormatter.format(wishlistItemsCount + recentViewsCount),
+      helper: `wishlist: ${faNumberFormatter.format(wishlistItemsCount)} · recent: ${faNumberFormatter.format(recentViewsCount)}`,
+    },
+    {
+      label: "کمپین‌ها و تخفیف‌ها",
+      value: faNumberFormatter.format(couponRedemptions),
+      helper: `${faNumberFormatter.format(couponCount)} کد تخفیف ثبت شده`,
+    },
   ];
+
+  const productViewEntries = engagementGroups.filter(
+    (item) => item.entityType === "product" && item.eventType === "product_view",
+  );
 
   const topCarNotebookViews = notebookViewEntries
     .map((entry) => {
@@ -68,6 +103,15 @@ export function ReportsTab({ data }: { data: ReportsTabData }) {
       if (!product) {
         return null;
       }
+      return { product, count: entry.count };
+    })
+    .filter(Boolean)
+    .slice(0, 8) as Array<{ product: (typeof products)[number]; count: number }>;
+
+  const topViewedProducts = productViewEntries
+    .map((entry) => {
+      const product = products.find((item) => item.id === entry.entityId);
+      if (!product) return null;
       return { product, count: entry.count };
     })
     .filter(Boolean)
@@ -156,6 +200,83 @@ export function ReportsTab({ data }: { data: ReportsTabData }) {
           ) : (
             <p className="mt-6 text-center text-xs text-slate-400">هنوز داده‌ای برای نمایش مقایسه‌ها ثبت نشده است.</p>
           )}
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">پربازدیدترین محصولات</h3>
+            <p className="mt-2 text-xs text-slate-500">
+              بازدید واقعی صفحات محصول و نشانه‌ای از intent خرید.
+            </p>
+          </div>
+        </div>
+        {topViewedProducts.length ? (
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {topViewedProducts.map(({ product, count }) => (
+              <Link
+                key={product.id}
+                href={`/products/${product.slug}`}
+                className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
+              >
+                <div>
+                  <p className="font-medium text-slate-900">{product.brand.name} · {product.name}</p>
+                  <p className="text-[11px] text-slate-400">{product.viscosity ?? "ویسکوزیته نامشخص"}</p>
+                </div>
+                <span className="rounded-full border border-sky-200 px-3 py-1 text-xs text-sky-600">
+                  {faNumberFormatter.format(count)} بازدید
+                </span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-6 text-center text-xs text-slate-400">هنوز داده‌ای برای بازدید محصولات ثبت نشده است.</p>
+        )}
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+          <h3 className="text-lg font-semibold text-slate-900">درخواست‌های مرجوعی اخیر</h3>
+          <div className="mt-4 space-y-3">
+            {returnRequests.length ? returnRequests.map((item) => (
+              <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-medium text-slate-900">{item.userName}</p>
+                  <span className="text-[11px] text-slate-400">{faDateFormatter.format(item.requestedAt)}</span>
+                </div>
+                <p className="mt-2 text-xs text-slate-600">سفارش: {item.orderId.slice(0, 8)} · {item.reason}</p>
+                <p className="mt-1 text-[11px] text-slate-400">وضعیت: {item.status}</p>
+                <form action={updateReturnRequestAction} className="mt-3 grid gap-2">
+                  <input type="hidden" name="id" value={item.id} />
+                  <select name="status" defaultValue={item.status} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700">
+                    <option value="REQUESTED">درخواست‌شده</option>
+                    <option value="APPROVED">تایید شد</option>
+                    <option value="REJECTED">رد شد</option>
+                    <option value="RECEIVED">کالا دریافت شد</option>
+                    <option value="REFUNDED">مبلغ برگشت داده شد</option>
+                  </select>
+                  <input name="refundAmount" defaultValue={item.refundAmount ?? ""} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700" placeholder="مبلغ استرداد" />
+                  <textarea name="adminNotes" rows={2} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700" placeholder="یادداشت داخلی" />
+                  <button type="submit" className="rounded-xl bg-slate-900 px-3 py-2 text-xs font-bold text-white">به‌روزرسانی مرجوعی</button>
+                </form>
+              </div>
+            )) : <p className="text-xs text-slate-400">درخواستی ثبت نشده است.</p>}
+          </div>
+        </div>
+        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+          <h3 className="text-lg font-semibold text-slate-900">لاگ فعالیت ادمین</h3>
+          <div className="mt-4 space-y-3">
+            {auditLogs.length ? auditLogs.map((item) => (
+              <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-medium text-slate-900">{item.summary}</p>
+                  <span className="text-[11px] text-slate-400">{faDateFormatter.format(item.createdAt)}</span>
+                </div>
+                <p className="mt-2 text-xs text-slate-600">{item.actorName} · {item.action} · {item.targetType}</p>
+              </div>
+            )) : <p className="text-xs text-slate-400">لاگ ادمینی ثبت نشده است.</p>}
+          </div>
         </div>
       </section>
 

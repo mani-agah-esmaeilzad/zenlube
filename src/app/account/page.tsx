@@ -4,11 +4,13 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
+import { ReturnRequestForm } from "@/components/account/return-request-form";
 import { ProfileForm } from "@/components/account/profile-form";
 import { AddressForm } from "@/components/account/address-form";
-import { LocalFavorites } from "@/components/account/local-favorites";
+import { AddressBookForm } from "@/components/account/address-book-form";
 import { Pagination } from "@/components/ui/pagination";
 import { createPageInfo, getPaginationParams } from "@/lib/pagination";
+import { reorderOrderAction } from "@/actions/account";
 
 type AccountPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -20,6 +22,14 @@ const statusLabels: Record<string, string> = {
   SHIPPED: "ارسال شده",
   DELIVERED: "تحویل شده",
   CANCELLED: "لغو شده",
+};
+
+const returnStatusLabels: Record<string, string> = {
+  REQUESTED: "ثبت شده",
+  APPROVED: "تایید شده",
+  REJECTED: "رد شده",
+  RECEIVED: "کالا دریافت شد",
+  REFUNDED: "استرداد انجام شد",
 };
 
 const timeline = [
@@ -39,7 +49,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
   if (!user?.id) redirect("/sign-in?callbackUrl=/account");
 
-  const [dbUser, orders, totalOrders, pendingOrders, deliveredOrders, paidOrders, selectedOrderFromQuery] = await Promise.all([
+  const [dbUser, orders, totalOrders, pendingOrders, deliveredOrders, paidOrders, selectedOrderFromQuery, wishlistItems, recentlyViewedProducts] = await Promise.all([
     prisma.user.findUnique({
       where: { id: user.id },
       include: { addresses: { orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }] } },
@@ -47,7 +57,11 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     prisma.order.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
-      include: { items: { include: { product: { select: { name: true, slug: true } } } } },
+      include: {
+        items: { include: { product: { select: { name: true, slug: true } } } },
+        statusEvents: { orderBy: { createdAt: "asc" } },
+        returnRequests: { orderBy: { requestedAt: "desc" } },
+      },
       skip,
       take: pageSize,
     }),
@@ -58,9 +72,47 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     selectedOrderId
       ? prisma.order.findFirst({
           where: { id: selectedOrderId, userId: user.id },
-          include: { items: { include: { product: { select: { name: true, slug: true } } } } },
+          include: {
+            items: { include: { product: { select: { name: true, slug: true } } } },
+            statusEvents: { orderBy: { createdAt: "asc" } },
+            returnRequests: { orderBy: { requestedAt: "desc" } },
+          },
         })
       : null,
+    prisma.wishlistItem.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+      include: {
+        product: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            imageUrl: true,
+            price: true,
+            brand: { select: { name: true } },
+          },
+        },
+      },
+    }),
+    prisma.recentlyViewedProduct.findMany({
+      where: { userId: user.id },
+      orderBy: { viewedAt: "desc" },
+      take: 6,
+      include: {
+        product: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            imageUrl: true,
+            price: true,
+            brand: { select: { name: true } },
+          },
+        },
+      },
+    }),
   ]);
 
   const defaultAddress = dbUser?.addresses?.find((address) => address.isDefault) ?? dbUser?.addresses?.[0] ?? null;
@@ -163,6 +215,13 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             </div>
           </section>
 
+          <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
+            <SectionHeader title="دفترچه آدرس‌ها" subtitle="چند آدرس مختلف ذخیره کنید و آدرس پیش‌فرض را هر زمان تغییر دهید." />
+            <div className="mt-5">
+              <AddressBookForm addresses={dbUser?.addresses ?? []} />
+            </div>
+          </section>
+
           <section id="garage" className="grid gap-4 md:grid-cols-2">
             <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
               <p className="text-sm font-black text-[#111827]">گاراژ خودرو</p>
@@ -171,7 +230,44 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               </p>
               <Link href="/cars" className="btn-outline mt-5 inline-flex">افزودن خودرو / مشاهده دفترچه</Link>
             </div>
-            <LocalFavorites />
+            <ProductShelf
+              title="علاقه‌مندی‌ها"
+              emptyMessage="هنوز محصولی به علاقه‌مندی‌ها اضافه نکرده‌اید."
+              items={wishlistItems.map((item) => ({
+                id: item.product.id,
+                slug: item.product.slug,
+                name: item.product.name,
+                brandName: item.product.brand.name,
+                price: Number(item.product.price),
+              }))}
+            />
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-2">
+            <ProductShelf
+              title="اخیراً دیده‌شده"
+              emptyMessage="هنوز محصولی را مشاهده نکرده‌اید."
+              items={recentlyViewedProducts.map((item) => ({
+                id: item.product.id,
+                slug: item.product.slug,
+                name: item.product.name,
+                brandName: item.product.brand.name,
+                price: Number(item.product.price),
+              }))}
+            />
+            <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+              <p className="text-sm font-black text-[#111827]">سفارش مجدد سریع</p>
+              <p className="mt-2 text-xs leading-6 text-[#6B7280]">
+                از بین محصولات علاقه‌مندی و اخیراً دیده‌شده می‌توانید سریع‌تر به خرید بعدی برگردید.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {wishlistItems.slice(0, 3).map((item) => (
+                  <Link key={item.id} href={`/products/${item.product.slug}`} className="rounded-full bg-[#FFF8E8] px-3 py-2 text-xs font-bold text-[#D97706]">
+                    {item.product.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </section>
 
           <section id="profile" className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
@@ -186,10 +282,28 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   );
 }
 
-function OrderDetail({ order }: { order: Awaited<ReturnType<typeof prisma.order.findMany>>[number] & { items: Array<{ id: string; quantity: number; price: unknown; product: { name: string; slug: string } }> } }) {
+type AccountOrder = Awaited<ReturnType<typeof prisma.order.findMany>>[number] & {
+  items: Array<{ id: string; quantity: number; price: unknown; product: { name: string; slug: string } }>;
+  statusEvents?: Array<{ id: string; status: string; title: string; detail: string | null; createdAt: Date }>;
+  returnRequests?: Array<{
+    id: string;
+    status: string;
+    reason: string;
+    details: string | null;
+    refundAmount: unknown;
+    adminNotes: string | null;
+    requestedAt: Date;
+    reviewedAt: Date | null;
+    refundedAt: Date | null;
+  }>;
+};
+
+function OrderDetail({ order }: { order: AccountOrder }) {
   const shippingCost = Number(order.shippingCost ?? 0);
+  const discountAmount = Number(order.discountAmount ?? 0);
   const itemsTotal = order.items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
   const activeIndex = order.status === "CANCELLED" ? 0 : Math.max(0, timeline.findLastIndex((item) => item.key === order.status));
+  const canRequestReturn = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
 
   return (
     <section id="order-detail" className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
@@ -214,16 +328,87 @@ function OrderDetail({ order }: { order: Awaited<ReturnType<typeof prisma.order.
         <div className="space-y-3 rounded-3xl border border-[#E5E7EB] bg-[#F7F7F8] p-4 text-xs">
           <Summary label="جمع کالاها" value={formatPrice(itemsTotal)} />
           <Summary label="هزینه ارسال" value={formatPrice(shippingCost)} />
+          {discountAmount > 0 ? <Summary label="تخفیف" value={formatPrice(discountAmount)} /> : null}
           <Summary label="مبلغ نهایی" value={formatPrice(order.total)} strong />
           <Summary label="وضعیت" value={statusLabels[order.status] ?? order.status} />
           <Summary label="کد پیگیری ارسال" value={order.shippingTrackingCode ?? "ثبت نشده"} />
           <Summary label="کد پرداخت" value={order.paymentRefId ?? "ثبت نشده"} />
+          <Summary label="تحویل تقریبی" value={order.estimatedDeliveryLabel ?? "ثبت نشده"} />
+          {order.couponCode ? <Summary label="کد تخفیف" value={order.couponCode} /> : null}
           <div className="border-t border-[#E5E7EB] pt-3 leading-6 text-[#6B7280]">
             <p className="font-bold text-[#111827]">آدرس گیرنده</p>
             <p>{order.fullName}، {order.phone}</p>
             <p>{order.province}، {order.city}، {order.address1}</p>
           </div>
           <Link href="/support" className="btn-outline mt-3 w-full justify-center">درخواست پشتیبانی</Link>
+          <form action={reorderOrderAction}>
+            <input type="hidden" name="orderId" value={order.id} />
+            <button type="submit" className="btn-primary mt-3 w-full justify-center">خرید مجدد همین سفارش</button>
+          </form>
+        </div>
+      </div>
+
+      {order.statusEvents?.length ? (
+        <div className="mt-6 rounded-3xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
+          <p className="text-sm font-black text-[#111827]">تایم‌لاین سفارش</p>
+          <div className="mt-4 space-y-3">
+            {order.statusEvents.map((event) => (
+              <div key={event.id} className="rounded-2xl border border-[#E5E7EB] bg-white px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-bold text-[#111827]">{event.title}</p>
+                  <span className="text-[11px] text-[#98A2B3]">{new Date(event.createdAt).toLocaleString("fa-IR")}</span>
+                </div>
+                {event.detail ? <p className="mt-2 text-xs leading-6 text-[#667085]">{event.detail}</p> : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mt-6 grid gap-4 xl:grid-cols-[1fr_360px]">
+        <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-black text-[#111827]">سابقه مرجوعی سفارش</p>
+              <p className="mt-1 text-xs leading-6 text-[#6B7280]">تمام درخواست‌های ثبت‌شده برای این سفارش و وضعیت بررسی تیم پشتیبانی.</p>
+            </div>
+          </div>
+          {order.returnRequests?.length ? (
+            <div className="mt-4 space-y-3">
+              {order.returnRequests.map((request) => (
+                <div key={request.id} className="rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4 text-xs">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-bold text-[#111827]">{returnStatusLabels[request.status] ?? request.status}</p>
+                    <span className="text-[#98A2B3]">{new Date(request.requestedAt).toLocaleString("fa-IR")}</span>
+                  </div>
+                  <p className="mt-2 leading-6 text-[#374151]">{request.reason}</p>
+                  {request.details ? <p className="mt-2 leading-6 text-[#6B7280]">{request.details}</p> : null}
+                  {request.adminNotes ? <p className="mt-2 leading-6 text-[#D97706]">یادداشت پشتیبانی: {request.adminNotes}</p> : null}
+                  <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-[#667085]">
+                    {request.reviewedAt ? <span>بررسی: {new Date(request.reviewedAt).toLocaleString("fa-IR")}</span> : null}
+                    {request.refundedAt ? <span>استرداد: {new Date(request.refundedAt).toLocaleString("fa-IR")}</span> : null}
+                    {request.refundAmount != null ? <span>مبلغ استرداد: {formatPrice(Number(request.refundAmount))}</span> : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-4 text-xs leading-6 text-[#6B7280]">برای این سفارش هنوز درخواست مرجوعی ثبت نشده است.</p>
+          )}
+        </div>
+
+        <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+          <p className="text-sm font-black text-[#111827]">ثبت درخواست مرجوعی</p>
+          <p className="mt-2 text-xs leading-6 text-[#6B7280]">
+            اگر کالا مشکل دارد یا با سفارش مطابقت ندارد، درخواست را ثبت کنید تا تیم پشتیبانی آن را بررسی کند.
+          </p>
+          {canRequestReturn ? (
+            <ReturnRequestForm orderId={order.id} />
+          ) : (
+            <p className="mt-4 rounded-2xl bg-[#F7F7F8] px-4 py-3 text-xs leading-6 text-[#6B7280]">
+              برای سفارش‌های پرداخت‌شده، ارسال‌شده یا تحویل‌شده می‌توانید درخواست مرجوعی ثبت کنید.
+            </p>
+          )}
         </div>
       </div>
     </section>
@@ -259,6 +444,37 @@ function Summary({ label, value, strong }: { label: string; value: string; stron
     <div className="flex justify-between gap-3">
       <span className="text-[#6B7280]">{label}</span>
       <span className={strong ? "font-black text-[#111827]" : "font-bold text-[#374151]"}>{value}</span>
+    </div>
+  );
+}
+
+function ProductShelf({
+  title,
+  emptyMessage,
+  items,
+}: {
+  title: string;
+  emptyMessage: string;
+  items: Array<{ id: string; slug: string; name: string; brandName: string; price: number }>;
+}) {
+  return (
+    <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+      <p className="text-sm font-black text-[#111827]">{title}</p>
+      {items.length ? (
+        <div className="mt-4 space-y-3">
+          {items.map((item) => (
+            <Link key={item.id} href={`/products/${item.slug}`} className="flex items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] px-4 py-3 text-sm">
+              <div>
+                <p className="font-bold text-[#111827]">{item.name}</p>
+                <p className="mt-1 text-xs text-[#667085]">{item.brandName}</p>
+              </div>
+              <span className="text-xs font-black text-[#D97706]">{formatPrice(item.price)}</span>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-3 text-xs leading-6 text-[#6B7280]">{emptyMessage}</p>
+      )}
     </div>
   );
 }

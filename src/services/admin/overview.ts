@@ -368,6 +368,12 @@ export async function getReportsTabData(): Promise<ReportsTabData> {
     carQuestions,
     products,
     cars,
+    paidOrdersAggregate,
+    wishlistItemsCount,
+    recentViewsCount,
+    couponAggregate,
+    auditLogs,
+    returnRequests,
   ] = await Promise.all([
     overviewSelect.engagementGroups,
     overviewSelect.maintenanceTasks,
@@ -375,7 +381,47 @@ export async function getReportsTabData(): Promise<ReportsTabData> {
     overviewSelect.carQuestions,
     overviewSelect.products,
     overviewSelect.cars,
+    prisma.order.aggregate({
+      where: { status: { in: ["PAID", "SHIPPED", "DELIVERED"] } },
+      _count: { _all: true },
+      _sum: { total: true },
+    }),
+    prisma.wishlistItem.count(),
+    prisma.recentlyViewedProduct.count(),
+    prisma.coupon.aggregate({
+      _count: { _all: true },
+      _sum: { usedCount: true },
+    }),
+    prisma.adminAuditLog.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 12,
+      include: {
+        actorUser: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    }),
+    prisma.returnRequest.findMany({
+      orderBy: { requestedAt: "desc" },
+      take: 12,
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    }),
   ]);
+
+  const paidOrdersCount = paidOrdersAggregate._count._all;
+  const averageOrderValue = paidOrdersCount
+    ? Number((paidOrdersAggregate._sum.total ?? new Prisma.Decimal(0)).toNumber()) / paidOrdersCount
+    : 0;
 
   return {
     engagementGroups: engagementGroups.map(mapEngagementGroup),
@@ -384,14 +430,40 @@ export async function getReportsTabData(): Promise<ReportsTabData> {
     carQuestions: carQuestions.map(mapCarQuestion),
     products: products.map(mapProduct),
     cars: cars.map(mapCar),
+    averageOrderValue,
+    paidOrdersCount,
+    wishlistItemsCount,
+    recentViewsCount,
+    couponCount: couponAggregate._count._all,
+    couponRedemptions: couponAggregate._sum.usedCount ?? 0,
+    auditLogs: auditLogs.map((log) => ({
+      id: log.id,
+      actorName: log.actorUser?.name ?? "سیستم",
+      actorEmail: log.actorUser?.email,
+      targetType: log.targetType,
+      targetId: log.targetId,
+      action: log.action,
+      summary: log.summary,
+      createdAt: log.createdAt,
+    })),
+    returnRequests: returnRequests.map((item) => ({
+      id: item.id,
+      orderId: item.orderId,
+      userName: item.user.name ?? item.user.email ?? "کاربر",
+      reason: item.reason,
+      status: item.status,
+      requestedAt: item.requestedAt,
+      refundAmount: item.refundAmount ? item.refundAmount.toNumber() : null,
+    })),
   };
 }
 
 export async function getContentTabData(): Promise<ContentTabData> {
-  const [banners, posts, galleryImages, smsLogs] = await Promise.all([
+  const [banners, posts, galleryImages, coupons, smsLogs] = await Promise.all([
     prisma.marketingBanner.findMany({ orderBy: [{ position: "asc" }, { updatedAt: "desc" }] }),
     prisma.blogPost.findMany({ orderBy: { publishedAt: "desc" } }),
     prisma.galleryImage.findMany({ orderBy: [{ orderIndex: "asc" }, { updatedAt: "desc" }] }),
+    prisma.coupon.findMany({ orderBy: [{ isActive: "desc" }, { createdAt: "desc" }] }),
     prisma.smsLog.findMany({ orderBy: { createdAt: "desc" }, take: 12 }),
   ]);
 
@@ -427,6 +499,18 @@ export async function getContentTabData(): Promise<ContentTabData> {
       orderIndex: image.orderIndex,
       isActive: image.isActive,
       updatedAt: image.updatedAt,
+    })),
+    coupons: coupons.map((coupon) => ({
+      id: coupon.id,
+      code: coupon.code,
+      title: coupon.title,
+      discountType: coupon.discountType,
+      amount: coupon.amount.toNumber(),
+      minOrderAmount: coupon.minOrderAmount?.toNumber() ?? null,
+      usageLimit: coupon.usageLimit,
+      usedCount: coupon.usedCount,
+      isActive: coupon.isActive,
+      endsAt: coupon.endsAt,
     })),
     smsLogs: smsLogs.map((log) => ({
       id: log.id,

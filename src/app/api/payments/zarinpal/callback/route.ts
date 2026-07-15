@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
+import { appendOrderStatusEvent } from "@/lib/commerce";
 import { verifyZarinpalPayment } from "@/lib/payments/zarinpal";
 import { sendTemplateSms, smsOrderNumber } from "@/lib/sms/service";
 import { logger } from "@/lib/logger";
@@ -34,9 +35,9 @@ export async function GET(request: NextRequest) {
   }
 
   if (status !== "OK") {
-    await prisma.$transaction([
-      prisma.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } }),
-      prisma.paymentEvent.create({
+    await prisma.$transaction(async (tx) => {
+      await tx.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } });
+      await tx.paymentEvent.create({
         data: {
           orderId: order.id,
           authority,
@@ -44,8 +45,14 @@ export async function GET(request: NextRequest) {
           status: status ?? "CANCELLED",
           payload: { query: Object.fromEntries(searchParams.entries()) },
         },
-      }),
-    ]);
+      });
+      await appendOrderStatusEvent(tx, {
+        orderId: order.id,
+        status: "CANCELLED",
+        title: "پرداخت تکمیل نشد",
+        detail: "فرآیند پرداخت توسط کاربر یا درگاه نهایی نشد.",
+      });
+    });
     await sendTemplateSms(
       order.phone,
       "payment_failed",
@@ -93,6 +100,20 @@ export async function GET(request: NextRequest) {
           payload: verification,
         },
       });
+
+      if (order.couponId) {
+        await tx.coupon.update({
+          where: { id: order.couponId },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
+
+      await appendOrderStatusEvent(tx, {
+        orderId: order.id,
+        status: "PAID",
+        title: "پرداخت موفق",
+        detail: verification.refId ? `پرداخت با کد ${verification.refId} تایید شد.` : "پرداخت با موفقیت تایید شد.",
+      });
     });
 
     await sendTemplateSms(
@@ -106,9 +127,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "unknown";
     logger.error("Zarinpal verification failed", { error: message, orderId: order.id, authority });
-    await prisma.$transaction([
-      prisma.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } }),
-      prisma.paymentEvent.create({
+    await prisma.$transaction(async (tx) => {
+      await tx.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } });
+      await tx.paymentEvent.create({
         data: {
           orderId: order.id,
           authority,
@@ -116,8 +137,14 @@ export async function GET(request: NextRequest) {
           status: "FAILED",
           payload: { error: message },
         },
-      }),
-    ]);
+      });
+      await appendOrderStatusEvent(tx, {
+        orderId: order.id,
+        status: "FAILED",
+        title: "تایید پرداخت ناموفق بود",
+        detail: "در تایید نهایی پرداخت از سمت درگاه خطا رخ داد.",
+      });
+    });
     await sendTemplateSms(
       order.phone,
       "payment_failed",

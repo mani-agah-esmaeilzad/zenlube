@@ -126,7 +126,7 @@ export type AdminUser = {
   id: string;
   name?: string | null;
   email?: string | null;
-  role: "ADMIN" | "CUSTOMER";
+  role: "ADMIN" | "OPERATIONS_MANAGER" | "CONTENT_MANAGER" | "SUPPORT" | "CUSTOMER";
   ordersCount: number;
   createdAt: Date;
 };
@@ -283,6 +283,31 @@ export type ReportsTabData = {
   carQuestions: AdminCarQuestion[];
   products: AdminProduct[];
   cars: AdminCar[];
+  averageOrderValue: number;
+  paidOrdersCount: number;
+  wishlistItemsCount: number;
+  recentViewsCount: number;
+  couponCount: number;
+  couponRedemptions: number;
+  auditLogs: Array<{
+    id: string;
+    actorName: string;
+    actorEmail?: string | null;
+    targetType: string;
+    targetId: string;
+    action: string;
+    summary: string;
+    createdAt: Date;
+  }>;
+  returnRequests: Array<{
+    id: string;
+    orderId: string;
+    userName: string;
+    reason: string;
+    status: string;
+    requestedAt: Date;
+    refundAmount?: number | null;
+  }>;
 };
 
 export type AdminMarketingBanner = {
@@ -324,6 +349,18 @@ export type ContentTabData = {
   banners: AdminMarketingBanner[];
   posts: AdminBlogPost[];
   galleryImages: AdminGalleryImage[];
+  coupons: Array<{
+    id: string;
+    code: string;
+    title: string;
+    discountType: string;
+    amount: number;
+    minOrderAmount?: number | null;
+    usageLimit?: number | null;
+    usedCount: number;
+    isActive: boolean;
+    endsAt?: Date | null;
+  }>;
   smsLogs: Array<{
     id: string;
     phone: string;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AdminRouteBodyClass } from "@/components/layout/admin-route-body-class";
+import { SiteChromeShell } from "@/components/layout/site-chrome-shell";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
@@ -20,13 +21,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="bg-surface text-[#1F2937] antialiased">
         <AdminRouteBodyClass />
         <div className="site-shell flex min-h-screen flex-col bg-surface">
-          <div className="site-chrome">
+          <SiteChromeShell hideOnHome>
             <SiteHeader />
-          </div>
+          </SiteChromeShell>
           <main className="site-main flex-1 pb-20 lg:pb-0">{children}</main>
-          <div className="site-chrome">
+          <SiteChromeShell hideOnHome>
             <SiteFooter />
-          </div>
+          </SiteChromeShell>
         </div>
       </body>
     </html>

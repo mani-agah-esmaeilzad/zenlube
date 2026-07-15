@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { ensureAdminAction } from "@/lib/auth";
+import { appendOrderStatusEvent } from "@/lib/commerce";
 import prisma from "@/lib/prisma";
 import { sendTemplateSms, smsOrderNumber } from "@/lib/sms/service";
 import { deleteOrderSafely } from "@/services/admin/mutations";
@@ -44,9 +45,23 @@ export async function updateOrderStatusAction(formData: FormData): Promise<void>
     throw new Error(firstError);
   }
 
-  const order = await prisma.order.update({
-    where: { id: parsed.data.orderId },
-    data: { status: parsed.data.status },
+  const order = await prisma.$transaction(async (tx) => {
+    const updatedOrder = await tx.order.update({
+      where: { id: parsed.data.orderId },
+      data: {
+        status: parsed.data.status,
+        deliveredAt: parsed.data.status === "DELIVERED" ? new Date() : undefined,
+      },
+    });
+
+    await appendOrderStatusEvent(tx, {
+      orderId: updatedOrder.id,
+      status: parsed.data.status,
+      title: `وضعیت سفارش به ${parsed.data.status} تغییر کرد`,
+      detail: "این تغییر توسط مدیر فروشگاه ثبت شد.",
+    });
+
+    return updatedOrder;
   });
 
   if (parsed.data.sendSms) {
@@ -80,9 +95,20 @@ export async function updateOrderTrackingAction(formData: FormData): Promise<voi
     throw new Error(firstError);
   }
 
-  const order = await prisma.order.update({
-    where: { id: parsed.data.orderId },
-    data: { shippingTrackingCode: parsed.data.shippingTrackingCode },
+  const order = await prisma.$transaction(async (tx) => {
+    const updatedOrder = await tx.order.update({
+      where: { id: parsed.data.orderId },
+      data: { shippingTrackingCode: parsed.data.shippingTrackingCode },
+    });
+
+    await appendOrderStatusEvent(tx, {
+      orderId: updatedOrder.id,
+      status: "TRACKING_UPDATED",
+      title: "کد پیگیری ثبت شد",
+      detail: `کد پیگیری ${parsed.data.shippingTrackingCode} برای سفارش ثبت شد.`,
+    });
+
+    return updatedOrder;
   });
 
   if (parsed.data.sendSms) {

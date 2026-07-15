@@ -15,7 +15,7 @@ export default async function CheckoutPage() {
     redirect("/sign-in?callbackUrl=/cart/checkout");
   }
 
-  const [cart, defaultAddress] = await Promise.all([
+  const [cart, defaultAddress, addresses] = await Promise.all([
     prisma.cart.findUnique({
       where: { userId: user.id },
       include: {
@@ -27,6 +27,10 @@ export default async function CheckoutPage() {
       },
     }),
     prisma.userAddress.findFirst({ where: { userId: user.id, isDefault: true } }),
+    prisma.userAddress.findMany({
+      where: { userId: user.id },
+      orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
+    }),
   ]);
 
   if (!cart || cart.items.length === 0) {
@@ -63,7 +67,18 @@ export default async function CheckoutPage() {
         </p>
       </header>
 
-      <CheckoutForm items={items} defaults={defaults} />
+  <CheckoutForm items={items} defaults={defaults} addresses={addresses.map((address) => ({
+    id: address.id,
+    label: address.label,
+    fullName: address.fullName,
+    phone: address.phone,
+    address1: address.address1,
+    address2: address.address2,
+    city: address.city,
+    province: address.province,
+    postalCode: address.postalCode,
+    isDefault: address.isDefault,
+  }))} />
     </div>
   );
 }

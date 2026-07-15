@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { ensureAdminAction, ensureNotSelf } from "@/lib/auth";
 import { deleteUserSafely, updateUserRole } from "@/services/admin/mutations";
 
-const allowedRoles = new Set(["ADMIN", "CUSTOMER"]);
+const allowedRoles = new Set(["ADMIN", "OPERATIONS_MANAGER", "CONTENT_MANAGER", "SUPPORT", "CUSTOMER"]);
 
 export async function updateUserRoleAction(formData: FormData): Promise<void> {
   const { userId: sessionUserId } = await ensureAdminAction();
@@ -23,7 +23,7 @@ export async function updateUserRoleAction(formData: FormData): Promise<void> {
 
   ensureNotSelf(userId, sessionUserId);
 
-  await updateUserRole(userId, role as "ADMIN" | "CUSTOMER");
+  await updateUserRole(userId, role as "ADMIN" | "OPERATIONS_MANAGER" | "CONTENT_MANAGER" | "SUPPORT" | "CUSTOMER");
 
   revalidatePath("/admin");
 }

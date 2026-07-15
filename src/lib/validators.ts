@@ -203,6 +203,7 @@ export const checkoutOrderSchema = z.object({
     .min(5, "کد پستی معتبر نیست.")
     .max(20, "کد پستی معتبر نیست."),
   shippingMethod: z.enum(["STANDARD", "EXPRESS", "PICKUP"]),
+  couponCode: z.preprocess(emptyToUndefined, z.string().trim().max(32, "کد تخفیف معتبر نیست.").optional()),
   notes: optionalString,
   otpCode: z
     .string()
@@ -213,4 +214,50 @@ export const checkoutOrderSchema = z.object({
     (value) => value === "on" || value === "true" || value === true,
     z.boolean().optional(),
   ).transform((value) => value ?? false),
+});
+
+export const productReviewSchema = z.object({
+  productId: z.string().cuid(),
+  rating: z.coerce.number().int().min(1, "حداقل امتیاز ۱ است.").max(5, "حداکثر امتیاز ۵ است."),
+  title: optionalString,
+  comment: z.preprocess(emptyToUndefined, z.string().trim().min(10, "متن نظر باید حداقل ۱۰ کاراکتر باشد.").max(1200, "نظر نمی‌تواند بیشتر از ۱۲۰۰ کاراکتر باشد.").optional()),
+});
+
+export const marketingBannerSchema = z.object({
+  id: z.string().cuid().optional(),
+  title: z.string().trim().min(2, "عنوان بنر الزامی است."),
+  subtitle: optionalString,
+  ctaLabel: optionalString,
+  ctaLink: optionalUrl,
+  imageUrl: optionalUrl,
+  position: z.string().trim().min(2, "جایگاه بنر معتبر نیست."),
+  isActive: z.boolean().optional(),
+});
+
+export const couponSchema = z.object({
+  id: z.string().cuid().optional(),
+  code: z.string().trim().min(3, "کد تخفیف باید حداقل ۳ کاراکتر باشد.").max(32, "کد تخفیف معتبر نیست."),
+  title: z.string().trim().min(2, "عنوان کمپین الزامی است."),
+  description: optionalString,
+  discountType: z.enum(["PERCENTAGE", "FIXED"]),
+  amount: z.number().positive("مقدار تخفیف باید بیشتر از صفر باشد."),
+  minOrderAmount: optionalNumber.pipe(z.number().min(0).optional()),
+  maxDiscountAmount: optionalNumber.pipe(z.number().min(0).optional()),
+  usageLimit: optionalNumber.pipe(z.number().int().positive().optional()),
+  startsAt: z.preprocess(emptyToUndefined, z.coerce.date().optional()),
+  endsAt: z.preprocess(emptyToUndefined, z.coerce.date().optional()),
+  isActive: z.boolean().optional(),
+});
+
+export const returnRequestSchema = z.object({
+  orderId: z.string().cuid(),
+  reason: z.string().trim().min(5, "دلیل مرجوعی را دقیق‌تر بنویسید.").max(160, "دلیل مرجوعی بیش از حد طولانی است."),
+  details: z.preprocess(emptyToUndefined, z.string().trim().min(10, "توضیحات باید حداقل ۱۰ کاراکتر باشد.").max(1200, "توضیحات بیش از حد طولانی است.").optional()),
+});
+
+export const returnRequestAdminSchema = z.object({
+  id: z.string().cuid(),
+  status: z.enum(["REQUESTED", "APPROVED", "REJECTED", "RECEIVED", "REFUNDED"]),
+  adminNotes: optionalString,
+  refundAmount: optionalNumber.pipe(z.number().min(0).optional()),
 });

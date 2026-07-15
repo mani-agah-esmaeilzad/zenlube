@@ -18,7 +18,6 @@ const sorts: { value: ProductSort; label: string }[] = [
 ];
 
 const quickFilters = ["0W-20", "5W-30", "5W-40", "10W-40", "تمام سنتتیک", "نیمه سنتتیک", "API SP", "ارسال فوری", "تخفیف‌دار"];
-const specFilters = ["ویسکوزیته", "نوع روغن", "حجم", "API", "ACEA", "مناسب برای خودرو", "موجودی", "تخفیف‌دار"];
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
@@ -26,16 +25,29 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const category = typeof params.category === "string" ? params.category : undefined;
   const brand = typeof params.brand === "string" ? params.brand : undefined;
   const car = typeof params.car === "string" ? params.car : undefined;
+  const minPrice = typeof params.minPrice === "string" ? Number(params.minPrice) || undefined : undefined;
+  const maxPrice = typeof params.maxPrice === "string" ? Number(params.maxPrice) || undefined : undefined;
+  const inStock = params.inStock === "1";
+  const minRating = typeof params.minRating === "string" ? Number(params.minRating) || undefined : undefined;
   const allowedSorts = sorts.map((s) => s.value);
   const sort = typeof params.sort === "string" && allowedSorts.includes(params.sort as ProductSort) ? (params.sort as ProductSort) : "latest";
   const page = Number(params.page ?? "1") || 1;
   const [categories, brands, productsResult] = await Promise.all([
     getHighlightedCategories(),
     getBrandsWithProductCount(),
-    getAllProductsWithFilters({ search, category, brand, car, sort, page }),
+    getAllProductsWithFilters({ search, category, brand, car, minPrice, maxPrice, inStock, minRating, sort, page }),
   ]);
   const { items, pageInfo } = productsResult;
-  const activeFilters = [search, category, brand, car].filter(Boolean) as string[];
+  const activeFilters = [
+    search,
+    category,
+    brand,
+    car,
+    minPrice ? `از ${minPrice.toLocaleString("fa-IR")} تومان` : null,
+    maxPrice ? `تا ${maxPrice.toLocaleString("fa-IR")} تومان` : null,
+    inStock ? "فقط موجود" : null,
+    minRating ? `${minRating} ستاره و بیشتر` : null,
+  ].filter(Boolean) as string[];
 
   return (
     <div className="container-zen py-6 md:py-8">
@@ -91,17 +103,30 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               <input name="car" defaultValue={car} className="input-zen mt-2" placeholder="اسلاگ خودرو" />
             </label>
 
-            <div>
-              <p className="mb-3 text-xs font-bold text-[#374151]">فیلترهای فنی</p>
-              <div className="space-y-2">
-                {specFilters.map((item) => (
-                  <label key={item} className="flex items-center justify-between rounded-xl border border-[#E7E8EE] px-3 py-2 text-xs font-medium text-[#6B7280]">
-                    {item}
-                    <input type="checkbox" className="size-4 accent-[#F59E0B]" />
-                  </label>
-                ))}
-              </div>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block text-xs font-bold text-[#374151]">
+                حداقل قیمت
+                <input name="minPrice" defaultValue={minPrice} className="input-zen mt-2" placeholder="مثلاً 500000" />
+              </label>
+              <label className="block text-xs font-bold text-[#374151]">
+                حداکثر قیمت
+                <input name="maxPrice" defaultValue={maxPrice} className="input-zen mt-2" placeholder="مثلاً 5000000" />
+              </label>
             </div>
+
+            <label className="flex items-center justify-between rounded-xl border border-[#E7E8EE] px-3 py-3 text-xs font-medium text-[#6B7280]">
+              فقط کالاهای موجود
+              <input type="checkbox" name="inStock" value="1" defaultChecked={inStock} className="size-4 accent-[#F59E0B]" />
+            </label>
+
+            <label className="block text-xs font-bold text-[#374151]">
+              حداقل امتیاز
+              <select name="minRating" defaultValue={minRating ?? ""} className="input-zen mt-2">
+                <option value="">همه امتیازها</option>
+                <option value="4">۴ ستاره و بیشتر</option>
+                <option value="3">۳ ستاره و بیشتر</option>
+              </select>
+            </label>
 
             <div>
               <p className="mb-2 text-xs font-bold text-[#374151]">فیلترهای سریع روغن</p>

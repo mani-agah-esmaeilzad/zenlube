@@ -25,14 +25,37 @@ type CheckoutDefaults = {
   province?: string | null;
   postalCode?: string | null;
 };
-type CheckoutFormProps = { items: CheckoutItem[]; defaults: CheckoutDefaults };
+type SavedAddress = {
+  id: string;
+  label: string;
+  fullName: string;
+  phone: string;
+  address1: string;
+  address2: string | null;
+  city: string;
+  province: string;
+  postalCode: string;
+  isDefault: boolean;
+};
+type CheckoutFormProps = { items: CheckoutItem[]; defaults: CheckoutDefaults; addresses: SavedAddress[] };
 
-export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
+export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) {
   const [state, formAction] = useActionState(createCheckoutOrderAction, initialState);
   const [shipping, setShipping] = useState<(typeof shippingOptions)[number]["value"]>("STANDARD");
   const [otpMessage, setOtpMessage] = useState<string | null>(null);
   const [otpError, setOtpError] = useState<string | null>(null);
   const [isOtpPending, startOtpTransition] = useTransition();
+  const [selectedAddressId, setSelectedAddressId] = useState<string>(addresses.find((address) => address.isDefault)?.id ?? "");
+  const [formValues, setFormValues] = useState({
+    fullName: defaults.fullName ?? "",
+    email: defaults.email ?? "",
+    phone: defaults.phone ?? "",
+    address1: defaults.address1 ?? "",
+    address2: defaults.address2 ?? "",
+    city: defaults.city ?? "",
+    province: defaults.province ?? "",
+    postalCode: defaults.postalCode ?? "",
+  });
 
   const subtotal = useMemo(() => items.reduce((total, item) => total + item.price * item.quantity, 0), [items]);
   const shippingCost = useMemo(() => shippingOptions.find((option) => option.value === shipping)?.cost ?? 0, [shipping]);
@@ -50,6 +73,29 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
       setOtpError(state.message);
     }
   }, [state.success, state.message]);
+
+  const handleAddressSelect = (addressId: string) => {
+    setSelectedAddressId(addressId);
+    const selectedAddress = addresses.find((address) => address.id === addressId);
+    if (!selectedAddress) {
+      return;
+    }
+
+    setFormValues((current) => ({
+      ...current,
+      fullName: selectedAddress.fullName,
+      phone: selectedAddress.phone,
+      address1: selectedAddress.address1,
+      address2: selectedAddress.address2 ?? "",
+      city: selectedAddress.city,
+      province: selectedAddress.province,
+      postalCode: selectedAddress.postalCode,
+    }));
+  };
+
+  const handleFieldChange = (field: keyof typeof formValues, value: string) => {
+    setFormValues((current) => ({ ...current, [field]: value }));
+  };
 
   const handleSendOtp = (form: HTMLFormElement) => {
     const phone = (new FormData(form).get("phone") ?? "").toString();
@@ -86,12 +132,12 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
         <section className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-6">
           <SectionTitle title="اطلاعات تماس" subtitle="کد تایید برای همین شماره ارسال می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <Field label="نام و نام خانوادگی" name="fullName" defaultValue={defaults.fullName ?? ""} errors={state.errors?.fullName} required />
-            <Field label="ایمیل" name="email" type="email" defaultValue={defaults.email ?? ""} errors={state.errors?.email} required />
+            <Field label="نام و نام خانوادگی" name="fullName" value={formValues.fullName} onChange={(value) => handleFieldChange("fullName", value)} errors={state.errors?.fullName} required />
+            <Field label="ایمیل" name="email" type="email" value={formValues.email} onChange={(value) => handleFieldChange("email", value)} errors={state.errors?.email} required />
             <label className="text-xs font-bold text-[#374151]">
               شماره موبایل
               <div className="mt-2 flex gap-2">
-                <input name="phone" type="tel" defaultValue={defaults.phone ?? ""} className="input-zen" required />
+                <input name="phone" type="tel" value={formValues.phone} onChange={(event) => handleFieldChange("phone", event.target.value)} className="input-zen" required />
                 <button type="button" onClick={(event) => handleSendOtp(event.currentTarget.form!)} className="btn-outline shrink-0 !min-h-11 border-[#F5C56B] text-xs text-[#D97706]" disabled={isOtpPending}>
                   {isOtpPending ? "در حال ارسال" : "ارسال کد"}
                 </button>
@@ -106,12 +152,31 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
 
         <section className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-6">
           <SectionTitle title="آدرس و ارسال" subtitle="آدرس دقیق باعث پردازش سریع‌تر سفارش می‌شود." />
+          {addresses.length ? (
+            <div className="mt-5 grid gap-3 md:grid-cols-2">
+              {addresses.map((address) => (
+                <button
+                  key={address.id}
+                  type="button"
+                  onClick={() => handleAddressSelect(address.id)}
+                  className={`rounded-2xl border p-4 text-right text-xs transition ${selectedAddressId === address.id ? "border-[#F5C56B] bg-[#FFF8E8]" : "border-[#E7E8EE] bg-[#F7F7F8]"}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-[#111827]">{address.label}</span>
+                    {address.isDefault ? <span className="rounded-full bg-white px-2 py-1 text-[10px] font-bold text-[#D97706]">پیش‌فرض</span> : null}
+                  </div>
+                  <p className="mt-2 leading-6 text-[#374151]">{address.fullName} · {address.phone}</p>
+                  <p className="leading-6 text-[#6B7280]">{address.province}، {address.city}، {address.address1}</p>
+                </button>
+              ))}
+            </div>
+          ) : null}
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <Field label="آدرس اصلی" name="address1" defaultValue={defaults.address1 ?? ""} errors={state.errors?.address1} required />
-            <Field label="آدرس تکمیلی" name="address2" defaultValue={defaults.address2 ?? ""} />
-            <Field label="شهر" name="city" defaultValue={defaults.city ?? ""} errors={state.errors?.city} required />
-            <Field label="استان" name="province" defaultValue={defaults.province ?? ""} errors={state.errors?.province} required />
-            <Field label="کد پستی" name="postalCode" defaultValue={defaults.postalCode ?? ""} errors={state.errors?.postalCode} required />
+            <Field label="آدرس اصلی" name="address1" value={formValues.address1} onChange={(value) => handleFieldChange("address1", value)} errors={state.errors?.address1} required />
+            <Field label="آدرس تکمیلی" name="address2" value={formValues.address2} onChange={(value) => handleFieldChange("address2", value)} />
+            <Field label="شهر" name="city" value={formValues.city} onChange={(value) => handleFieldChange("city", value)} errors={state.errors?.city} required />
+            <Field label="استان" name="province" value={formValues.province} onChange={(value) => handleFieldChange("province", value)} errors={state.errors?.province} required />
+            <Field label="کد پستی" name="postalCode" value={formValues.postalCode} onChange={(value) => handleFieldChange("postalCode", value)} errors={state.errors?.postalCode} required />
             <label className="flex items-center gap-2 self-end rounded-2xl border border-[#E7E8EE] px-4 py-3 text-xs font-bold text-[#374151]">
               <input type="checkbox" name="saveAddress" defaultChecked className="size-4 accent-[#F59E0B]" />
               ذخیره به عنوان آدرس پیش‌فرض
@@ -142,6 +207,11 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
           </div>
 
           <label className="mt-5 block text-xs font-bold text-[#374151]">
+            کد تخفیف
+            <input name="couponCode" className="input-zen mt-2" placeholder="مثلاً OILBAR10" />
+          </label>
+
+          <label className="mt-5 block text-xs font-bold text-[#374151]">
             توضیحات سفارش
             <textarea name="notes" rows={3} defaultValue="" className="input-zen mt-2 resize-none" />
           </label>
@@ -163,6 +233,16 @@ export function CheckoutForm({ items, defaults }: CheckoutFormProps) {
             ))}
             <SummaryRow label="جمع کالاها" value={formatPrice(subtotal)} />
             <SummaryRow label="هزینه ارسال" value={formatPrice(shippingCost)} />
+            <SummaryRow
+              label="تحویل تقریبی"
+              value={
+                shipping === "EXPRESS"
+                  ? "۱ تا ۲ روز کاری"
+                  : shipping === "PICKUP"
+                    ? "تحویل حضوری"
+                    : "۳ تا ۵ روز کاری"
+              }
+            />
             <div className="flex justify-between border-t border-[#E5E7EB] pt-3 text-base font-extrabold text-[#111827]">
               <span>مبلغ قابل پرداخت</span>
               <span>{formatPrice(total)}</span>
@@ -223,7 +303,8 @@ function Field({
   name,
   type = "text",
   inputMode,
-  defaultValue = "",
+  value = "",
+  onChange,
   errors,
   required,
 }: {
@@ -231,14 +312,23 @@ function Field({
   name: string;
   type?: string;
   inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
-  defaultValue?: string;
+  value?: string;
+  onChange?: (value: string) => void;
   errors?: string[];
   required?: boolean;
 }) {
   return (
     <label className="text-xs font-bold text-[#374151]">
       {label}
-      <input name={name} type={type} inputMode={inputMode} defaultValue={defaultValue} className="input-zen mt-2" required={required} />
+      <input
+        name={name}
+        type={type}
+        inputMode={inputMode}
+        value={value}
+        onChange={(event) => onChange?.(event.target.value)}
+        className="input-zen mt-2"
+        required={required}
+      />
       {errors?.map((error) => <ErrorText key={error} error={error} />)}
     </label>
   );

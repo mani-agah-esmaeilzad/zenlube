@@ -327,7 +327,10 @@ export async function deleteQuestion(questionId: string, type: "product" | "car"
   return { targetSlug: question?.car.slug };
 }
 
-export async function updateUserRole(userId: string, role: "ADMIN" | "CUSTOMER") {
+export async function updateUserRole(
+  userId: string,
+  role: "ADMIN" | "OPERATIONS_MANAGER" | "CONTENT_MANAGER" | "SUPPORT" | "CUSTOMER",
+) {
   await prisma.user.update({
     where: { id: userId },
     data: { role },
@@ -434,12 +437,17 @@ export async function resetDatabaseExceptAdmin(adminUserId: string) {
   await deletePaymentTransactionsIfTableExists();
 
   await prisma.$transaction([
+    prisma.adminAuditLog.deleteMany(),
+    prisma.returnRequest.deleteMany(),
     prisma.paymentEvent.deleteMany(),
     prisma.smsLog.deleteMany(),
     prisma.rateLimitHit.deleteMany(),
     prisma.otpRequest.deleteMany(),
     prisma.verificationToken.deleteMany(),
     prisma.engagementEvent.deleteMany(),
+    prisma.orderStatusEvent.deleteMany(),
+    prisma.wishlistItem.deleteMany(),
+    prisma.recentlyViewedProduct.deleteMany(),
 
     prisma.productQuestion.deleteMany(),
     prisma.carQuestion.deleteMany(),
@@ -455,6 +463,7 @@ export async function resetDatabaseExceptAdmin(adminUserId: string) {
     prisma.galleryImage.deleteMany(),
     prisma.marketingBanner.deleteMany(),
     prisma.blogPost.deleteMany(),
+    prisma.coupon.deleteMany(),
     prisma.product.deleteMany(),
     prisma.car.deleteMany(),
     prisma.category.deleteMany(),
@@ -469,5 +478,102 @@ export async function resetDatabaseExceptAdmin(adminUserId: string) {
   await prisma.user.update({
     where: { id: adminUserId },
     data: { role: "ADMIN" },
+  });
+}
+
+export async function saveMarketingBanner(data: {
+  id?: string;
+  title: string;
+  subtitle?: string | null;
+  ctaLabel?: string | null;
+  ctaLink?: string | null;
+  imageUrl?: string | null;
+  position: string;
+  isActive: boolean;
+}) {
+  const { id, ...payload } = data;
+  if (id) {
+    await prisma.marketingBanner.update({
+      where: { id },
+      data: payload,
+    });
+    return;
+  }
+
+  await prisma.marketingBanner.create({ data: payload });
+}
+
+export async function deleteMarketingBanner(id: string) {
+  await prisma.marketingBanner.delete({ where: { id } });
+}
+
+export async function saveCoupon(data: {
+  id?: string;
+  code: string;
+  title: string;
+  description?: string | null;
+  discountType: "PERCENTAGE" | "FIXED";
+  amount: number;
+  minOrderAmount?: number | null;
+  maxDiscountAmount?: number | null;
+  usageLimit?: number | null;
+  startsAt?: Date | null;
+  endsAt?: Date | null;
+  isActive: boolean;
+}) {
+  const { id, amount, minOrderAmount, maxDiscountAmount, ...payload } = data;
+  const couponData = {
+    ...payload,
+    code: payload.code.toUpperCase(),
+    amount: new Prisma.Decimal(amount),
+    minOrderAmount: minOrderAmount != null ? new Prisma.Decimal(minOrderAmount) : null,
+    maxDiscountAmount: maxDiscountAmount != null ? new Prisma.Decimal(maxDiscountAmount) : null,
+  };
+
+  if (id) {
+    await prisma.coupon.update({
+      where: { id },
+      data: couponData,
+    });
+    return;
+  }
+
+  await prisma.coupon.create({ data: couponData });
+}
+
+export async function deleteCoupon(id: string) {
+  await prisma.coupon.delete({ where: { id } });
+}
+
+export async function createReturnRequest(data: {
+  orderId: string;
+  userId: string;
+  reason: string;
+  details?: string | null;
+}) {
+  return prisma.returnRequest.create({
+    data,
+  });
+}
+
+export async function updateReturnRequest(data: {
+  id: string;
+  status: "REQUESTED" | "APPROVED" | "REJECTED" | "RECEIVED" | "REFUNDED";
+  adminNotes?: string | null;
+  refundAmount?: number | null;
+}) {
+  return prisma.returnRequest.update({
+    where: { id: data.id },
+    data: {
+      status: data.status,
+      adminNotes: data.adminNotes ?? null,
+      refundAmount: data.refundAmount != null ? new Prisma.Decimal(data.refundAmount) : null,
+      reviewedAt: ["APPROVED", "REJECTED", "RECEIVED", "REFUNDED"].includes(data.status) ? new Date() : null,
+      refundedAt: data.status === "REFUNDED" ? new Date() : null,
+    },
+    include: {
+      order: true,
+      user: true,
+    },
   });
 }

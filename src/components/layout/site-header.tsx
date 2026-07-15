@@ -5,6 +5,7 @@ import { SignInButton } from "@/components/auth/sign-in-button";
 import { CategoryDropdown } from "@/components/layout/category-dropdown";
 import { LOGO_SRC } from "@/components/layout/logo-mark";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { SearchAutocompleteForm } from "@/components/layout/search-autocomplete-form";
 import { getAllCategoriesLite } from "@/lib/data";
 
 type NavLink = {
@@ -90,29 +91,10 @@ export async function SiteHeader() {
           </nav>
         </div>
 
-        <form action="/products" className="group relative order-3 col-span-3 lg:order-none lg:col-span-1">
-          <SearchIcon className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
-          <input
-            aria-label="جستجوی محصول"
-            className="input-zen h-12 rounded-2xl border-[#E7E8EE] bg-white pr-11 text-sm font-medium shadow-[0_8px_24px_rgba(17,24,39,0.03)] lg:h-[52px]"
-            name="search"
-            placeholder="جستجو برای روغن، فیلتر، برند یا خودرو..."
-          />
-          <div className="invisible absolute inset-x-0 top-[calc(100%+8px)] z-50 rounded-[22px] border border-[#ECEEF2] bg-white p-4 opacity-0 shadow-[0_20px_60px_rgba(17,24,39,0.12)] transition group-focus-within:visible group-focus-within:opacity-100">
-            <p className="mb-3 text-xs font-bold text-[#667085]">جستجوهای پیشنهادی</p>
-            <div className="flex flex-wrap gap-2">
-              {searchSuggestions.map((item) => (
-                <Link
-                  key={item}
-                  className="rounded-full border border-[#E7E8EE] px-3 py-1.5 text-xs font-semibold text-[#344054] transition hover:border-[#F59E0B] hover:bg-[#FFF9EC] hover:text-[#D97706]"
-                  href={`/products?search=${encodeURIComponent(item)}`}
-                >
-                  {item}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </form>
+        <div className="relative order-3 col-span-3 lg:order-none lg:col-span-1">
+          <SearchIcon className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#667085]" />
+          <SearchAutocompleteForm quickSuggestions={searchSuggestions} />
+        </div>
 
         <div className="flex items-center justify-end gap-2">
           <div className="hidden lg:block">

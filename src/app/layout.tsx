@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AdminRouteBodyClass } from "@/components/layout/admin-route-body-class";
-import { SiteChromeShell } from "@/components/layout/site-chrome-shell";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
+import { ToastProvider } from "@/components/ui/toast-provider";
 
 export const metadata: Metadata = {
   title: "Oilbar | مرجع تخصصی روغن موتور و لوازم مصرفی خودرو",
@@ -12,23 +9,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://oilbar.ir"),
 };
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html dir="rtl" lang="fa">
       <body className="bg-surface text-[#1F2937] antialiased">
-        <AdminRouteBodyClass />
-        <div className="site-shell flex min-h-screen flex-col bg-surface">
-          <SiteChromeShell hideOnHome>
-            <SiteHeader />
-          </SiteChromeShell>
-          <main className="site-main flex-1 pb-20 lg:pb-0">{children}</main>
-          <SiteChromeShell hideOnHome>
-            <SiteFooter />
-          </SiteChromeShell>
-        </div>
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma";
 
 import prisma from "@/lib/prisma";
 import { appendOrderStatusEvent } from "@/lib/commerce";
@@ -37,6 +38,14 @@ export async function GET(request: NextRequest) {
   if (status !== "OK") {
     await prisma.$transaction(async (tx) => {
       await tx.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } });
+      await recordPaymentTransaction(tx, {
+        amount: order.total,
+        authority,
+        errorMessage: "پرداخت توسط کاربر یا درگاه نهایی نشد.",
+        orderId: order.id,
+        status: "cancelled",
+        verifyPayload: { query: Object.fromEntries(searchParams.entries()) },
+      });
       await tx.paymentEvent.create({
         data: {
           orderId: order.id,
@@ -91,6 +100,18 @@ export async function GET(request: NextRequest) {
         ),
       );
 
+      await recordPaymentTransaction(tx, {
+        amount: order.total,
+        authority,
+        cardPan: verification.cardPan,
+        orderId: order.id,
+        paidAt: new Date(),
+        refId: verification.refId,
+        status: "paid",
+        verifyPayload: { query: Object.fromEntries(searchParams.entries()) },
+        verifyResponse: verification,
+      });
+
       await tx.paymentEvent.create({
         data: {
           orderId: order.id,
@@ -129,6 +150,15 @@ export async function GET(request: NextRequest) {
     logger.error("Zarinpal verification failed", { error: message, orderId: order.id, authority });
     await prisma.$transaction(async (tx) => {
       await tx.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } });
+      await recordPaymentTransaction(tx, {
+        amount: order.total,
+        authority,
+        errorMessage: message,
+        orderId: order.id,
+        status: "failed",
+        verifyPayload: { query: Object.fromEntries(searchParams.entries()) },
+        verifyResponse: { error: message },
+      });
       await tx.paymentEvent.create({
         data: {
           orderId: order.id,
@@ -153,4 +183,62 @@ export async function GET(request: NextRequest) {
     );
     return NextResponse.redirect(new URL(`/cart/checkout/failure?reason=verify&orderId=${order.id}`, request.nextUrl.origin));
   }
+}
+
+async function recordPaymentTransaction(
+  tx: Prisma.TransactionClient,
+  input: {
+    amount: Prisma.Decimal | number;
+    authority?: string | null;
+    cardPan?: string;
+    errorMessage?: string;
+    orderId: string;
+    paidAt?: Date;
+    refId?: string;
+    status: string;
+    verifyPayload?: Prisma.InputJsonValue;
+    verifyResponse?: Prisma.InputJsonValue;
+  },
+) {
+  const existingTransaction = input.authority
+    ? await tx.paymentTransaction.findFirst({
+        where: {
+          OR: [
+            { authority: input.authority },
+            { orderId: input.orderId, authority: null },
+          ],
+        },
+        orderBy: { createdAt: "desc" },
+        select: { id: true },
+      })
+    : await tx.paymentTransaction.findFirst({
+        where: { orderId: input.orderId },
+        orderBy: { createdAt: "desc" },
+        select: { id: true },
+      });
+
+  const data = {
+    orderId: input.orderId,
+    gateway: "zarinpal",
+    amount: input.amount,
+    currency: "IRT",
+    authority: input.authority ?? null,
+    cardPan: input.cardPan,
+    errorMessage: input.errorMessage,
+    paidAt: input.paidAt,
+    refId: input.refId,
+    status: input.status,
+    verifyPayload: input.verifyPayload,
+    verifyResponse: input.verifyResponse,
+  };
+
+  if (existingTransaction) {
+    await tx.paymentTransaction.update({
+      where: { id: existingTransaction.id },
+      data,
+    });
+    return;
+  }
+
+  await tx.paymentTransaction.create({ data });
 }

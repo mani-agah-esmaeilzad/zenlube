@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { createPageInfo, getPaginationParams } from "@/lib/pagination";
+import { storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
   const inStock = searchParams.get("inStock") === "1";
   const { page, pageSize, skip } = getPaginationParams(Object.fromEntries(searchParams), { defaultPageSize: 24, maxPageSize: 100 });
 
-  const filters: Prisma.ProductWhereInput[] = [{ NOT: { slug: { startsWith: "deleted-" } } }];
+  const filters: Prisma.ProductWhereInput[] = [storefrontVisibleProductWhere()];
 
   if (search) {
     filters.push({

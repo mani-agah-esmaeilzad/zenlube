@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
 import { cartItemSchema } from "@/lib/validators";
 import { getAppSession } from "@/lib/session";
 
@@ -53,7 +54,7 @@ export async function addToCartAction(input: { productId: string; quantity?: num
       select: { slug: true, stock: true },
     });
 
-    if (!product || product.slug.startsWith("deleted-")) {
+    if (!isStorefrontVisibleProduct(product)) {
       return { success: false, message: "این محصول در فروشگاه پیدا نشد." };
     }
 

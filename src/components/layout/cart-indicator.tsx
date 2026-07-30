@@ -2,8 +2,14 @@ import type { SVGProps } from "react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { getAppSession } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
-export async function CartIndicator() {
+type CartIndicatorProps = {
+  compact?: boolean;
+  className?: string;
+};
+
+export async function CartIndicator({ compact = false, className }: CartIndicatorProps) {
   const rawSession = await getAppSession();
   const userId = (rawSession as { user?: { id?: string } } | null)?.user?.id;
 
@@ -20,14 +26,25 @@ export async function CartIndicator() {
   return (
     <Link
       href="/cart"
-      className="relative inline-flex h-11 items-center gap-2 rounded-2xl border border-[#E5E7EB] bg-white px-3 text-sm font-bold text-[#111827] shadow-sm transition hover:border-red-200 hover:text-red-600"
+      className={cn(
+        "btn-outline relative inline-flex h-11 items-center rounded-2xl text-sm font-bold text-text-strong",
+        compact ? "w-11 justify-center px-0" : "gap-2 px-3",
+        className,
+      )}
       aria-label={`سبد خرید با ${totalItems.toLocaleString("fa-IR")} کالا`}
     >
       <CartIcon className="h-5 w-5" />
-      <span className="hidden sm:inline">سبد خرید</span>
-      <span className="absolute -left-2 -top-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[#EF394E] px-1.5 text-[11px] font-bold text-white">
-        {totalItems.toLocaleString("fa-IR")}
-      </span>
+      {!compact ? <span className="hidden sm:inline">سبد خرید</span> : null}
+      {totalItems > 0 ? (
+        <span
+          className={cn(
+            "absolute inline-flex min-w-6 items-center justify-center rounded-full bg-[#EF394E] px-1.5 text-[11px] font-bold text-white shadow-[0_10px_20px_rgba(239,57,78,0.24)]",
+            compact ? "-left-1 -top-1 h-5" : "-left-2 -top-2 h-6",
+          )}
+        >
+          {totalItems.toLocaleString("fa-IR")}
+        </span>
+      ) : null}
     </Link>
   );
 }

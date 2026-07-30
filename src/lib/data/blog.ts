@@ -1,12 +1,17 @@
 import { Prisma } from "@/generated/prisma";
 import prisma from "../prisma";
 import { createPageInfo } from "../pagination";
+import { createEmptyPageResult, withStorefrontDataFallback } from "./storefront-fallback";
+
+type BlogPostItem = Awaited<ReturnType<typeof prisma.blogPost.findMany>>[number];
 
 export async function getLatestBlogPosts(limit = 6) {
-  return prisma.blogPost.findMany({
-    orderBy: { publishedAt: "desc" },
-    take: limit,
-  });
+  return withStorefrontDataFallback("getLatestBlogPosts", [], () =>
+    prisma.blogPost.findMany({
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+    }),
+  );
 }
 
 export async function getRelatedBlogPostsForCar(
@@ -32,38 +37,50 @@ export async function getRelatedBlogPostsForCar(
       }
     : undefined;
 
-  return prisma.blogPost.findMany({
-    where,
-    orderBy: { publishedAt: "desc" },
-    take: limit,
-  });
+  return withStorefrontDataFallback("getRelatedBlogPostsForCar", [], () =>
+    prisma.blogPost.findMany({
+      where,
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+    }),
+  );
 }
 
 export async function getAllBlogPosts() {
-  return prisma.blogPost.findMany({
-    orderBy: { publishedAt: "desc" },
-  });
+  return withStorefrontDataFallback("getAllBlogPosts", [], () =>
+    prisma.blogPost.findMany({
+      orderBy: { publishedAt: "desc" },
+    }),
+  );
 }
 
 export async function getPaginatedBlogPosts({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }) {
-  const skip = (page - 1) * pageSize;
-  const [items, total] = await prisma.$transaction([
-    prisma.blogPost.findMany({
-      orderBy: { publishedAt: "desc" },
-      skip,
-      take: pageSize,
-    }),
-    prisma.blogPost.count(),
-  ]);
+  return withStorefrontDataFallback(
+    "getPaginatedBlogPosts",
+    createEmptyPageResult<BlogPostItem>(page, pageSize),
+    async () => {
+    const skip = (page - 1) * pageSize;
+    const [items, total] = await prisma.$transaction([
+      prisma.blogPost.findMany({
+        orderBy: { publishedAt: "desc" },
+        skip,
+        take: pageSize,
+      }),
+      prisma.blogPost.count(),
+    ]);
 
-  return {
-    items,
-    pageInfo: createPageInfo(page, pageSize, total),
-  };
+    return {
+      items,
+      pageInfo: createPageInfo(page, pageSize, total),
+    };
+    },
+  );
 }
 
 export async function getBlogPostBySlug(slug: string) {
-  return prisma.blogPost.findUnique({
-    where: { slug },
-  });
+  return withStorefrontDataFallback("getBlogPostBySlug", null, () =>
+    prisma.blogPost.findUnique({
+      where: { slug },
+    }),
+  );
 }

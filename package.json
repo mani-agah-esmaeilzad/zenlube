@@ -23,7 +23,12 @@
     "vehicles:build:verified": "tsx scripts/build-verified-cars.ts",
     "vehicles:pipeline": "tsx scripts/run-vehicle-pipeline.ts",
     "vehicles:table:draft": "tsx scripts/import-vehicle-table.ts",
-    "seed:vehicles": "tsx prisma/seed-verified-cars.ts"
+    "seed:vehicles": "tsx prisma/seed-verified-cars.ts",
+    "vehicles:mycarlubs:hyundai": "tsx scripts/import-mycarlubs-brand.ts --brand-id=10068 --manufacturer=هیوندای",
+    "vehicles:mycarlubs:mg": "tsx scripts/import-mycarlubs-brand.ts --brand-id=31 --manufacturer='ام جی' --title-includes='ام جی' --title-excludes='رووی'",
+    "vehicles:mycarlubs:mvm": "tsx scripts/import-mycarlubs-brand.ts --brand-id=49 --manufacturer='ام وی ام' --title-includes='ام وی ام' --title-excludes='اکستریم'",
+    "vehicles:mycarlubs:ikco": "tsx scripts/import-mycarlubs-brand.ts --brand-id=32 --manufacturer='ایران خودرو'",
+    "vehicles:mycarlubs:brilliance": "tsx scripts/import-mycarlubs-brand.ts --brand-id=33 --manufacturer='برلیانس'"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.0",

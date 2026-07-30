@@ -14,15 +14,16 @@ export function ReviewForm({ productId }: ReviewFormProps) {
   const [state, formAction] = useActionState(createProductReviewAction, initialState);
 
   return (
-    <form action={formAction} className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
+    <form action={formAction} className="panel-zen rounded-[30px] p-5 md:p-6">
       <input type="hidden" name="productId" value={productId} />
-      <h3 className="text-lg font-black text-[#111827]">ثبت نظر و امتیاز</h3>
-      <p className="mt-2 text-xs leading-6 text-[#667085]">
+      <span className="chip-zen inline-flex">بازخورد خریداران</span>
+      <h3 className="mt-3 text-lg font-black text-text-strong">ثبت نظر و امتیاز</h3>
+      <p className="mt-2 text-xs leading-6 text-text-muted">
         فقط کاربران واردشده می‌توانند نظر ثبت کنند. اگر این محصول را خریده باشید، نظر شما به‌عنوان خرید تاییدشده نمایش داده می‌شود.
       </p>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <label className="text-xs font-bold text-[#374151]">
+        <label className="text-xs font-bold text-text-strong">
           امتیاز
           <select name="rating" defaultValue="5" className="input-zen mt-2">
             <option value="5">۵ از ۵</option>
@@ -34,31 +35,37 @@ export function ReviewForm({ productId }: ReviewFormProps) {
           {state.errors?.rating?.map((error) => <ErrorText key={error} error={error} />)}
         </label>
 
-        <label className="text-xs font-bold text-[#374151]">
+        <label className="text-xs font-bold text-text-strong">
           عنوان نظر
-          <input name="title" className="input-zen mt-2" placeholder="مثلاً عملکرد خوب در هوای گرم" />
+          <input name="title" className="input-zen mt-2" placeholder="مثلاً عملکرد خوب در هوای گرم" autoComplete="off" />
           {state.errors?.title?.map((error) => <ErrorText key={error} error={error} />)}
         </label>
       </div>
 
-      <label className="mt-4 block text-xs font-bold text-[#374151]">
+      <label className="mt-4 block text-xs font-bold text-text-strong">
         متن نظر
         <textarea
           name="comment"
           rows={5}
-          className="input-zen mt-2 resize-none"
+          className="input-zen mt-2 min-h-36 resize-y"
           placeholder="تجربه واقعی‌تان از کیفیت، صدا، مصرف یا بسته‌بندی را بنویسید."
         />
         {state.errors?.comment?.map((error) => <ErrorText key={error} error={error} />)}
       </label>
 
       {state.message ? (
-        <p className={`mt-4 rounded-2xl px-4 py-3 text-xs font-bold ${state.success ? "bg-green-50 text-[#027A48]" : "bg-red-50 text-[#B42318]"}`}>
+        <p
+          className={`mt-4 rounded-2xl border px-4 py-3 text-xs font-bold ${
+            state.success
+              ? "border-emerald-200 bg-[linear-gradient(180deg,#F4FFF7_0%,#ECFDF3_100%)] text-emerald-700"
+              : "border-red-200 bg-[linear-gradient(180deg,#FFF6F7_0%,#FEF3F2_100%)] text-[#B42318]"
+          }`}
+        >
           {state.message}
         </p>
       ) : null}
 
-      <button type="submit" className="btn-primary mt-5">
+      <button type="submit" className="btn-primary mt-5 w-full sm:w-auto">
         ثبت نظر
       </button>
     </form>

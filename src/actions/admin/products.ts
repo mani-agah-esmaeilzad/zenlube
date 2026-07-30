@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { ensureAdminAction } from "@/lib/auth";
+import { revalidateAdminSurface, revalidateStorefrontProduct } from "@/lib/storefront-revalidate";
 import { productCreateSchema, productUpdateSchema } from "@/lib/validators";
 import { deleteProduct, saveProduct } from "@/services/admin/mutations";
 
@@ -34,10 +33,8 @@ async function persistProduct<T extends typeof productCreateSchema | typeof prod
 
   await saveProduct(parsed.data);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/products");
-  revalidatePath("/cars");
+  revalidateAdminSurface();
+  revalidateStorefrontProduct({});
 
   return { success: true };
 }
@@ -55,9 +52,8 @@ export async function deleteProductAction(productId: string): Promise<ActionResu
 
   await deleteProduct(productId);
 
-  revalidatePath("/admin");
-  revalidatePath("/products");
-  revalidatePath("/");
+  revalidateAdminSurface();
+  revalidateStorefrontProduct({});
 
   return { success: true };
 }

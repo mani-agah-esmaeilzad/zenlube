@@ -15,6 +15,7 @@ import { sendOtpSms, sendTemplateSms, smsOrderNumber } from "@/lib/sms/service";
 import { config } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import { consumeRateLimit } from "@/lib/rate-limit";
+import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
 
 export type CheckoutState = {
   success: boolean;
@@ -59,6 +60,9 @@ export async function createCheckoutOrderAction(
   _prev: CheckoutState | undefined,
   formData: FormData,
 ): Promise<CheckoutState> {
+  let createdOrderId: string | null = null;
+  let createdOrderTotal = 0;
+
   try {
     const { userId } = await requireUserId();
     const raw = Object.fromEntries(formData);
@@ -97,7 +101,7 @@ export async function createCheckoutOrderAction(
 
     await verifyOtpCode(input.phone, input.otpCode, "checkout");
 
-    const deletedItem = cart.items.find((item) => item.product.slug.startsWith("deleted-"));
+    const deletedItem = cart.items.find((item) => !isStorefrontVisibleProduct(item.product));
     if (deletedItem) {
       return { success: false, message: "یکی از محصولات سبد خرید دیگر در فروشگاه فعال نیست." };
     }
@@ -238,6 +242,8 @@ export async function createCheckoutOrderAction(
 
       return createdOrder;
     });
+    createdOrderId = order.id;
+    createdOrderTotal = Number(order.total);
 
     logger.info("Order created", { orderId: order.id, userId, total });
     revalidatePath("/cart");
@@ -262,20 +268,39 @@ export async function createCheckoutOrderAction(
           metadata: { orderId: order.id },
         });
 
-    if (payment.authority) {
-      await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
+      if (payment.authority) {
         await tx.order.update({
           where: { id: order.id },
           data: { paymentAuthority: payment.authority },
         });
-        await appendOrderStatusEvent(tx, {
+      }
+
+      await tx.paymentTransaction.create({
+        data: {
           orderId: order.id,
-          status: "PAYMENT_STARTED",
-          title: "انتقال به درگاه پرداخت",
-          detail: "کاربر برای تکمیل پرداخت به درگاه منتقل شد.",
-        });
+          gateway: "zarinpal",
+          amount: order.total,
+          currency: "IRT",
+          authority: payment.authority ?? null,
+          status: payment.authority ? "initiated" : "redirected",
+          requestPayload: {
+            callbackUrl,
+            description: `پرداخت سفارش ${smsOrderNumber(order.id)} در Oilbar`,
+            email: input.email,
+            phone: normalizedPhone,
+          },
+          requestResponse: payment,
+        },
       });
-    }
+
+      await appendOrderStatusEvent(tx, {
+        orderId: order.id,
+        status: "PAYMENT_STARTED",
+        title: "انتقال به درگاه پرداخت",
+        detail: "کاربر برای تکمیل پرداخت به درگاه منتقل شد.",
+      });
+    });
 
     await sendTemplateSms(
       normalizedPhone,
@@ -290,7 +315,37 @@ export async function createCheckoutOrderAction(
       redirectUrl: payment.paymentUrl,
     };
   } catch (error) {
-    logger.error("Checkout order failed", { error: error instanceof Error ? error.message : "unknown" });
+    const message = error instanceof Error ? error.message : "unknown";
+    logger.error("Checkout order failed", { error: message, orderId: createdOrderId });
+
+    if (createdOrderId) {
+      const failedOrderId = createdOrderId;
+      const failedOrderTotal = createdOrderTotal;
+
+      await prisma.$transaction(async (tx) => {
+        await tx.order.update({
+          where: { id: failedOrderId },
+          data: { status: "CANCELLED" },
+        });
+        await tx.paymentTransaction.create({
+          data: {
+            orderId: failedOrderId,
+            gateway: "zarinpal",
+            amount: failedOrderTotal,
+            currency: "IRT",
+            status: "request_failed",
+            errorMessage: message,
+          },
+        });
+        await appendOrderStatusEvent(tx, {
+          orderId: failedOrderId,
+          status: "PAYMENT_REQUEST_FAILED",
+          title: "اتصال به درگاه ناموفق بود",
+          detail: "در آغاز تراکنش از سمت فروشگاه خطا رخ داد و سفارش لغو شد.",
+        });
+      });
+    }
+
     return {
       success: false,
       message: error instanceof Error ? error.message : "اتصال به درگاه پرداخت ناموفق بود. لطفا دوباره تلاش کنید.",

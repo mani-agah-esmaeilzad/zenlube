@@ -1,5 +1,6 @@
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
+import { storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
 import {
   mapBrand,
   mapCar,
@@ -50,7 +51,7 @@ const overviewSelect = {
     },
   }),
   products: prisma.product.findMany({
-    where: { NOT: { slug: { startsWith: "deleted-" } } },
+    where: storefrontVisibleProductWhere(),
     orderBy: { updatedAt: "desc" },
     include: {
       brand: true,
@@ -222,7 +223,7 @@ export async function getProductsTabData(options: ProductTabOptions = {}): Promi
     ? options.stockStatus
     : "all";
 
-  const where: Prisma.ProductWhereInput = { NOT: { slug: { startsWith: "deleted-" } } };
+  const where: Prisma.ProductWhereInput = storefrontVisibleProductWhere();
 
   if (search) {
     where.OR = [
@@ -252,9 +253,9 @@ export async function getProductsTabData(options: ProductTabOptions = {}): Promi
     overviewSelect.brands,
     overviewSelect.cars,
     prisma.product.count({ where }),
-    prisma.product.count({ where: { stock: { lt: LOW_STOCK_THRESHOLD }, NOT: { slug: { startsWith: "deleted-" } } } }),
+    prisma.product.count({ where: storefrontVisibleProductWhere({ stock: { lt: LOW_STOCK_THRESHOLD } }) }),
     prisma.product.findMany({
-      where: { stock: { lt: LOW_STOCK_THRESHOLD }, NOT: { slug: { startsWith: "deleted-" } } },
+      where: storefrontVisibleProductWhere({ stock: { lt: LOW_STOCK_THRESHOLD } }),
       orderBy: { stock: "asc" },
       take: 10,
       select: {

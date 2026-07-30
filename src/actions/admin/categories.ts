@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { ensureAdminAction } from "@/lib/auth";
+import { revalidateAdminSurface, revalidateStorefrontCategory } from "@/lib/storefront-revalidate";
 import { categorySchema, categoryUpdateSchema } from "@/lib/validators";
 import {
   countProductsByCategory,
@@ -24,10 +23,8 @@ export async function createCategoryAction(formData: FormData): Promise<ActionRe
 
   await saveCategory(parsed.data);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/categories");
-  revalidatePath("/products");
+  revalidateAdminSurface();
+  revalidateStorefrontCategory();
 
   return { success: true };
 }
@@ -44,10 +41,8 @@ export async function updateCategoryAction(formData: FormData): Promise<ActionRe
 
   await saveCategory(parsed.data);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/categories");
-  revalidatePath("/products");
+  revalidateAdminSurface();
+  revalidateStorefrontCategory();
 
   return { success: true };
 }
@@ -65,10 +60,8 @@ export async function deleteCategoryAction(categoryId: string): Promise<ActionRe
 
   await deleteCategory(categoryId);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/categories");
-  revalidatePath("/products");
+  revalidateAdminSurface();
+  revalidateStorefrontCategory();
 
   return { success: true };
 }

@@ -15,9 +15,9 @@ type ReviewCardProps = {
 
 export function ReviewCard({ review }: ReviewCardProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
+    <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 flex-col">
           <span className="text-base font-semibold text-slate-900">
             {review.customerName}
           </span>
@@ -27,7 +27,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
             }).format(new Date(review.createdAt))}
           </span>
         </div>
-        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-600">
+        <span className="w-fit rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-600">
           ⭐ {review.rating}/5
         </span>
       </div>
@@ -60,7 +60,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
               محصول
             </span>
           )}
-          <span>
+          <span className="min-w-0 break-words leading-6">
             {review.product.brand.name} – {review.product.name}
           </span>
         </Link>

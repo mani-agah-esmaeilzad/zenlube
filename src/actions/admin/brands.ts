@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { ensureAdminAction } from "@/lib/auth";
+import { revalidateAdminSurface, revalidateStorefrontBrand } from "@/lib/storefront-revalidate";
 import { brandSchema, brandUpdateSchema } from "@/lib/validators";
 import { countProductsByBrand, deleteBrand, saveBrand } from "@/services/admin/mutations";
 
@@ -20,10 +19,8 @@ export async function createBrandAction(formData: FormData): Promise<ActionResul
 
   await saveBrand(parsed.data);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/brands");
-  revalidatePath("/products");
+  revalidateAdminSurface();
+  revalidateStorefrontBrand();
 
   return { success: true };
 }
@@ -40,10 +37,8 @@ export async function updateBrandAction(formData: FormData): Promise<ActionResul
 
   await saveBrand(parsed.data);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/brands");
-  revalidatePath("/products");
+  revalidateAdminSurface();
+  revalidateStorefrontBrand();
 
   return { success: true };
 }
@@ -61,10 +56,8 @@ export async function deleteBrandAction(brandId: string): Promise<ActionResult> 
 
   await deleteBrand(brandId);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/brands");
-  revalidatePath("/products");
+  revalidateAdminSurface();
+  revalidateStorefrontBrand();
 
   return { success: true };
 }

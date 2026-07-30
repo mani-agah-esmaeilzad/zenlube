@@ -28,6 +28,51 @@ const highlightRows = [
   { key: "price", label: "قیمت" },
 ] as const;
 
+const comparisonRows = [
+  {
+    key: "viscosity",
+    label: "ویسکوزیته",
+    render: (product: ComparisonProduct) => product.viscosity ?? "نامشخص",
+  },
+  {
+    key: "approvals",
+    label: "استاندارد سازنده",
+    render: (product: ComparisonProduct) => product.approvals ?? "نامشخص",
+  },
+  {
+    key: "oilType",
+    label: "نوع پایه روغن",
+    render: (product: ComparisonProduct) => product.oilType ?? "نامشخص",
+  },
+  {
+    key: "price",
+    label: "قیمت",
+    render: (product: ComparisonProduct) =>
+      `${new Intl.NumberFormat("fa-IR").format(product.price)} تومان`,
+  },
+  {
+    key: "averageRating",
+    label: "میانگین امتیاز",
+    render: (product: ComparisonProduct) => formatNumeric(product.averageRating),
+  },
+  {
+    key: "reviewCount",
+    label: "تعداد بازخورد",
+    render: (product: ComparisonProduct) =>
+      new Intl.NumberFormat("fa-IR").format(product.reviewCount),
+  },
+  {
+    key: "category",
+    label: "دسته‌بندی",
+    render: (product: ComparisonProduct) => product.category.name,
+  },
+  {
+    key: "tags",
+    label: "ویژگی‌ها",
+    render: (product: ComparisonProduct) => (product.tags.length ? product.tags.join("، ") : "—"),
+  },
+] as const;
+
 const highlightTokens: Record<
   (typeof highlightRows)[number]["key"],
   { background: string; button: string }
@@ -49,6 +94,16 @@ const highlightTokens: Record<
   },
 };
 
+function formatNumeric(value: number | null | string) {
+  if (value == null) {
+    return "—";
+  }
+  if (typeof value === "number") {
+    return new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 1 }).format(value);
+  }
+  return value;
+}
+
 export function ProductComparisonBoard({ products }: ProductComparisonBoardProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
@@ -59,9 +114,12 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
     if (!search.trim()) {
       return products;
     }
+
     const term = search.trim().toLowerCase();
+
     return products.filter((product) => {
-      const haystack = `${product.brand.name} ${product.name} ${product.viscosity ?? ""} ${product.approvals ?? ""}`.toLowerCase();
+      const haystack =
+        `${product.brand.name} ${product.name} ${product.viscosity ?? ""} ${product.approvals ?? ""}`.toLowerCase();
       return haystack.includes(term);
     });
   }, [products, search]);
@@ -74,6 +132,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
     if (!pendingSelection || selectedIds.includes(pendingSelection)) {
       return;
     }
+
     if (selectedIds.length >= 3) {
       setSelectedIds((ids) => [...ids.slice(1), pendingSelection]);
     } else {
@@ -97,29 +156,19 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
     setSelectedIds((ids) => ids.filter((item) => item !== id));
   };
 
-  const formatNumeric = (value: number | null | string) => {
-    if (value == null) {
-      return "—";
-    }
-    if (typeof value === "number") {
-      return new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 1 }).format(value);
-    }
-    return value;
-  };
-
   return (
-    <div className="space-y-6 rounded-[36px] border border-[#E7E8EE] bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+    <div className="space-y-5 rounded-[30px] border border-[#E7E8EE] bg-white p-4 shadow-[0_20px_50px_rgba(15,23,42,0.08)] sm:space-y-6 sm:rounded-[36px] sm:p-6">
       <header className="space-y-4">
         <div className="flex flex-col gap-3 text-[#475467] lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-black text-[#171B23]">مقایسه تخصصی روغن موتور</h1>
+            <h1 className="text-[1.45rem] font-black text-[#171B23] sm:text-2xl">مقایسه تخصصی روغن موتور</h1>
             <p className="mt-2 text-sm leading-8 text-[#667085]">
               حداکثر سه محصول را انتخاب کنید تا مشخصات فنی، استانداردها و قیمت آن‌ها را در کنار هم
               بررسی کنید. برای برجسته‌سازی معیارها، یکی از گزینه‌های ویسکوزیته، استاندارد یا قیمت را
               انتخاب کنید.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap gap-2">
             {highlightRows.map((item) => (
               <button
                 key={item.key}
@@ -136,6 +185,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             ))}
           </div>
         </div>
+
         <div className="grid gap-3 md:grid-cols-[2fr,1fr]">
           <input
             value={search}
@@ -143,11 +193,11 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             placeholder="جستجو بر اساس برند، نام یا ویسکوزیته"
             className="input-zen rounded-full"
           />
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2 min-[390px]:flex-row">
             <select
               value={pendingSelection}
               onChange={(event) => setPendingSelection(event.target.value)}
-              className="input-zen flex-1 rounded-full"
+              className="input-zen min-w-0 flex-1 rounded-full"
             >
               <option value="">انتخاب محصول برای مقایسه</option>
               {filteredProducts.map((product) => (
@@ -159,12 +209,13 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             <button
               type="button"
               onClick={handleAddProduct}
-              className="btn-primary !min-h-10 rounded-full px-4 py-2 text-sm"
+              className="btn-primary w-full !min-h-11 rounded-full px-4 py-2 text-sm min-[390px]:w-auto"
             >
               افزودن
             </button>
           </div>
         </div>
+
         {selectedProducts.length ? (
           <div className="flex flex-wrap items-center gap-2 text-xs text-[#667085]">
             {selectedProducts.map((product) => (
@@ -187,88 +238,85 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
       </header>
 
       {selectedProducts.length ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#E7E8EE] text-sm text-[#475467]">
-            <thead className="text-xs uppercase text-[#667085]">
-              <tr>
-                <th className="px-4 py-3 text-right">پارامتر</th>
-                {selectedProducts.map((product) => (
-                  <th key={product.id} className="px-4 py-3 text-right">
+        <>
+          <div className="space-y-3 md:hidden">
+            {selectedProducts.map((product) => (
+              <article
+                key={product.id}
+                className="rounded-[24px] border border-[#E7E8EE] bg-[#F7F8FA] p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
                     <Link
                       href={`/products/${product.slug}`}
-                      className="text-[#D97706] hover:text-[#B45309]"
+                      className="line-clamp-2 text-sm font-extrabold leading-7 text-[#171B23] hover:text-[#D97706]"
                     >
                       {product.brand.name} · {product.name}
                     </Link>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E7E8EE]">
-              {[
-                {
-                  key: "viscosity",
-                  label: "ویسکوزیته",
-                  render: (product: ComparisonProduct) => product.viscosity ?? "نامشخص",
-                },
-                {
-                  key: "approvals",
-                  label: "استاندارد سازنده",
-                  render: (product: ComparisonProduct) => product.approvals ?? "نامشخص",
-                },
-                {
-                  key: "oilType",
-                  label: "نوع پایه روغن",
-                  render: (product: ComparisonProduct) => product.oilType ?? "نامشخص",
-                },
-                {
-                  key: "price",
-                  label: "قیمت",
-                  render: (product: ComparisonProduct) =>
-                    new Intl.NumberFormat("fa-IR").format(product.price),
-                },
-                {
-                  key: "averageRating",
-                  label: "میانگین امتیاز",
-                  render: (product: ComparisonProduct) => formatNumeric(product.averageRating),
-                },
-                {
-                  key: "reviewCount",
-                  label: "تعداد بازخورد",
-                  render: (product: ComparisonProduct) =>
-                    new Intl.NumberFormat("fa-IR").format(product.reviewCount),
-                },
-                {
-                  key: "category",
-                  label: "دسته‌بندی",
-                  render: (product: ComparisonProduct) => product.category.name,
-                },
-                {
-                  key: "tags",
-                  label: "ویژگی‌ها",
-                  render: (product: ComparisonProduct) =>
-                    product.tags.length ? product.tags.join("، ") : "—",
-                },
-              ].map((row) => (
-                <tr
-                  key={row.key}
-                  className={row.key === highlight ? highlightTokens[row.key].background : "bg-transparent"}
-                >
-                  <th className="px-4 py-3 text-right text-xs font-bold text-[#667085]">
-                    {row.label}
-                  </th>
+                    <p className="mt-1 text-xs text-[#667085]">{product.category.name}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(product.id)}
+                    className="shrink-0 rounded-full border border-[#E7E8EE] bg-white px-3 py-1.5 text-[11px] font-bold text-[#667085]"
+                  >
+                    حذف
+                  </button>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  {comparisonRows.map((row) => (
+                    <div
+                      key={row.key}
+                      className={`rounded-2xl border px-3 py-3 ${
+                        row.key === highlight ? "border-[#F5C56B] bg-white" : "border-[#E7E8EE] bg-white/80"
+                      }`}
+                    >
+                      <p className="text-[11px] font-bold text-[#667085]">{row.label}</p>
+                      <p className="mt-1 text-sm font-semibold leading-7 text-[#171B23]">{row.render(product)}</p>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto md:block">
+            <table className="min-w-full divide-y divide-[#E7E8EE] text-sm text-[#475467]">
+              <thead className="text-xs uppercase text-[#667085]">
+                <tr>
+                  <th className="px-4 py-3 text-right">پارامتر</th>
                   {selectedProducts.map((product) => (
-                    <td key={product.id} className="px-4 py-3 text-right text-sm">
-                      {row.render(product)}
-                    </td>
+                    <th key={product.id} className="px-4 py-3 text-right">
+                      <Link href={`/products/${product.slug}`} className="text-[#D97706] hover:text-[#B45309]">
+                        {product.brand.name} · {product.name}
+                      </Link>
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-[#E7E8EE]">
+                {comparisonRows.map((row) => (
+                  <tr
+                    key={row.key}
+                    className={row.key === highlight ? highlightTokens[highlight].background : "bg-transparent"}
+                  >
+                    <th className="px-4 py-3 text-right text-xs font-bold text-[#667085]">
+                      {row.label}
+                    </th>
+                    {selectedProducts.map((product) => (
+                      <td key={product.id} className="px-4 py-3 text-right text-sm">
+                        {row.render(product)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : (
-        <div className="rounded-[28px] border border-dashed border-[#D0D5DD] bg-[#F7F8FA] p-10 text-center text-sm text-[#667085]">
+        <div className="rounded-[28px] border border-dashed border-[#D0D5DD] bg-[#F7F8FA] p-8 text-center text-sm text-[#667085] sm:p-10">
           ابتدا محصولی را انتخاب کنید تا جدول مقایسه نمایش داده شود.
         </div>
       )}

@@ -81,9 +81,11 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
         <label htmlFor="phone" className="text-xs font-bold text-[#475467]">
           شماره موبایل
         </label>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 min-[360px]:flex-row">
           <input
             id="phone"
+            autoComplete="tel"
+            inputMode="tel"
             name="phone"
             type="tel"
             placeholder="09xxxxxxxxx"
@@ -93,7 +95,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
           <button
             type="button"
             onClick={(event) => handleSendOtp(event.currentTarget.form)}
-            className="shrink-0 rounded-2xl border border-[#F5C56B] px-4 py-2 text-xs font-bold text-[#D97706] transition hover:bg-[#FFF8E8] hover:text-[#171B23] disabled:opacity-60"
+            className="btn-outline shrink-0 rounded-2xl px-4 py-3 text-xs font-bold text-primary-accent-strong disabled:opacity-60"
             disabled={isOtpPending}
           >
             {isOtpPending ? "در حال ارسال" : "ارسال کد"}
@@ -106,6 +108,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
         </label>
         <input
           id="otpCode"
+          autoComplete="one-time-code"
           name="otpCode"
           inputMode="numeric"
           required
@@ -122,7 +125,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
       >
         {isPending ? "در حال ورود..." : "ورود"}
       </button>
-      <p className="text-center text-xs text-[#667085]">کد تایید به شماره وارد شده ارسال می‌شود.</p>
+      <p className="text-center text-xs text-text-muted">کد تایید به شماره وارد شده ارسال می‌شود.</p>
     </form>
   );
 }

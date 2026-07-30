@@ -4,6 +4,7 @@ import type { SVGProps } from "react";
 import { useState, useTransition } from "react";
 
 import { toggleWishlistAction } from "@/actions/catalog";
+import { useToast } from "@/components/ui/toast-provider";
 import { cn } from "@/lib/utils";
 
 type WishlistButtonProps = {
@@ -22,17 +23,23 @@ export function WishlistButton({
   const [isPending, startTransition] = useTransition();
   const [active, setActive] = useState(initialActive);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   const handleClick = () => {
     startTransition(async () => {
       const result = await toggleWishlistAction(productId);
       if (!result.success) {
-        setFeedback(result.message ?? "عملیات علاقه‌مندی انجام نشد.");
+        const message = result.message ?? "عملیات علاقه‌مندی انجام نشد.";
+        setFeedback(message);
+        showToast(message, "error");
         return;
       }
 
       setActive(Boolean(result.active));
       setFeedback(result.message ?? null);
+      if (result.message) {
+        showToast(result.message, "success");
+      }
     });
   };
 
@@ -44,8 +51,8 @@ export function WishlistButton({
         disabled={isPending}
         aria-label={active ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
         className={cn(
-          "inline-flex size-9 items-center justify-center rounded-full border border-[#E7E8EE] bg-white transition hover:border-[#F5C56B]",
-          active ? "text-[#DC2626]" : "text-[#667085]",
+          "inline-flex size-9 items-center justify-center rounded-full border border-border bg-white transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint",
+          active ? "border-[#FECACA] bg-[#FFF1F3] text-[#DC2626]" : "text-text-muted",
           className,
         )}
       >
@@ -64,14 +71,14 @@ export function WishlistButton({
           "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[16px] border px-5 py-2.5 text-sm font-extrabold transition",
           active
             ? "border-[#FECACA] bg-[#FFF1F3] text-[#B42318]"
-            : "border-[#E7E8EE] bg-white text-[#171B23] hover:border-[#F5C56B] hover:text-[#D97706]",
+            : "border-border bg-white text-text-strong hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong",
           className,
         )}
       >
         <HeartIcon className={cn("h-4 w-4", active ? "fill-current" : "")} />
         {isPending ? "در حال ثبت..." : active ? "در علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
       </button>
-      <span className="block text-center text-[11px] text-[#667085]" aria-live="polite">
+      <span className="block text-center text-[11px] text-text-muted" aria-live="polite">
         {feedback ?? " "}
       </span>
     </div>

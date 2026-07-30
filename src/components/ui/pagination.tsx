@@ -29,7 +29,7 @@ export function Pagination({ pageInfo, pathname, searchParams = {}, className = 
 
       {pages.map((page, index) =>
         page === "gap" ? (
-          <span key={`gap-${index}`} className="px-2 font-bold text-[#9CA3AF]">
+          <span key={`gap-${index}`} className="px-2 font-bold text-text-soft">
             ...
           </span>
         ) : (
@@ -39,8 +39,8 @@ export function Pagination({ pageInfo, pathname, searchParams = {}, className = 
             aria-current={page === pageInfo.page ? "page" : undefined}
             className={
               page === pageInfo.page
-                ? "inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl bg-[#111827] px-3 font-black text-white"
-                : "inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-3 font-bold text-[#374151] transition hover:border-red-200 hover:text-[#DC2626]"
+                ? "inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl bg-primary px-3 font-black text-white shadow-[0_14px_30px_rgba(17,24,39,0.16)]"
+                : "inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl border border-border bg-white px-3 font-bold text-[#374151] transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong"
             }
           >
             {page.toLocaleString("fa-IR")}

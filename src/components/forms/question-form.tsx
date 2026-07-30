@@ -70,55 +70,52 @@ export function QuestionForm({ type, slug, title }: QuestionFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-[28px] border border-[#E7E8EE] bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
+    <form onSubmit={handleSubmit} className="panel-zen space-y-4 rounded-[28px] p-5 sm:p-6">
       {title ? (
-        <h3 className="text-lg font-extrabold text-[#171B23]">{title}</h3>
+        <h3 className="text-lg font-extrabold text-text-strong">{title}</h3>
       ) : (
-        <h3 className="text-lg font-extrabold text-[#171B23]">پرسش خود را بپرسید</h3>
+        <h3 className="text-lg font-extrabold text-text-strong">پرسش خود را بپرسید</h3>
       )}
-      <p className="text-xs leading-6 text-[#667085]">
+      <p className="text-xs leading-6 text-text-muted">
         سوال شما برای کارشناسان ارسال می‌شود و پس از پاسخ در همین صفحه نمایش داده خواهد شد.
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="flex flex-col text-xs font-bold text-[#475467]">
+        <label className="flex flex-col text-xs font-bold text-text-strong">
           نام شما
           <input
             value={authorName}
             onChange={(event) => setAuthorName(event.target.value)}
             placeholder="مثال: علی رضایی"
+            autoComplete="name"
             className="input-zen mt-2"
           />
         </label>
-        <label className="flex flex-col text-xs font-bold text-[#475467]">
+        <label className="flex flex-col text-xs font-bold text-text-strong">
           نوع سوال
           <input
             value={type === "product" ? "سوال درباره محصول" : "سوال درباره خودرو"}
             readOnly
-            className="input-zen mt-2 cursor-not-allowed bg-[#F7F8FA] text-[#667085]"
+            className="input-zen mt-2 cursor-not-allowed bg-surface-muted text-text-subtle"
           />
         </label>
       </div>
-      <label className="flex flex-col text-xs font-bold text-[#475467]">
+      <label className="flex flex-col text-xs font-bold text-text-strong">
         متن سوال
         <textarea
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           rows={4}
           placeholder="سوال خود را با جزئیات بیان کنید..."
-          className="input-zen mt-2 resize-none rounded-[18px] py-3"
+          className="input-zen mt-2 min-h-32 resize-y rounded-[18px] py-3"
         />
       </label>
       {state.status === "error" && state.message ? (
-        <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-[#DC2626]">{state.message}</p>
+        <p className="rounded-xl border border-red-200 bg-[linear-gradient(180deg,#FFF6F7_0%,#FEF3F2_100%)] px-3 py-2 text-xs font-bold text-[#DC2626]">{state.message}</p>
       ) : null}
       {state.status === "success" && state.message ? (
-        <p className="rounded-xl bg-green-50 px-3 py-2 text-xs font-bold text-[#16A34A]">{state.message}</p>
+        <p className="rounded-xl border border-emerald-200 bg-[linear-gradient(180deg,#F4FFF7_0%,#ECFDF3_100%)] px-3 py-2 text-xs font-bold text-[#16A34A]">{state.message}</p>
       ) : null}
-      <button
-        type="submit"
-        disabled={isPending}
-        className="btn-primary"
-      >
+      <button type="submit" disabled={isPending} className="btn-primary w-full sm:w-auto">
         {isPending ? "در حال ارسال..." : "ثبت سوال"}
       </button>
     </form>

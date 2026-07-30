@@ -149,6 +149,7 @@ function MileageInput({ label, placeholder, onValue }: { label: string; placehol
       <input
         type="number"
         min={0}
+        inputMode="numeric"
         placeholder={placeholder}
         onChange={(event) => {
           const value = Number(event.target.value);

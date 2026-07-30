@@ -8,6 +8,7 @@ import prisma from "@/lib/prisma";
 import { getAppSession } from "@/lib/session";
 import { normalizeIranPhone, validateIranPhone } from "@/lib/phone";
 import { createAuditLog } from "@/lib/admin-audit";
+import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
 import { returnRequestSchema } from "@/lib/validators";
 import { createReturnRequest } from "@/services/admin/mutations";
 
@@ -287,7 +288,7 @@ export async function reorderOrderAction(formData: FormData): Promise<void> {
     });
 
     for (const item of order.items) {
-      if (item.product.slug.startsWith("deleted-") || item.product.stock <= 0) {
+      if (!isStorefrontVisibleProduct(item.product) || item.product.stock <= 0) {
         continue;
       }
 

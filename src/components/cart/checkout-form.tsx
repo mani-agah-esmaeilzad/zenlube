@@ -125,59 +125,59 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
   };
 
   return (
-    <form action={formAction} className="grid gap-6 lg:grid-cols-[1fr_380px]">
+    <form action={formAction} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
       <div className="space-y-6">
         <Stepper />
 
-        <section className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-6">
+        <section className="panel-zen rounded-[28px] p-5 md:p-6">
           <SectionTitle title="اطلاعات تماس" subtitle="کد تایید برای همین شماره ارسال می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <Field label="نام و نام خانوادگی" name="fullName" value={formValues.fullName} onChange={(value) => handleFieldChange("fullName", value)} errors={state.errors?.fullName} required />
-            <Field label="ایمیل" name="email" type="email" value={formValues.email} onChange={(value) => handleFieldChange("email", value)} errors={state.errors?.email} required />
+            <Field autoComplete="name" label="نام و نام خانوادگی" name="fullName" value={formValues.fullName} onChange={(value) => handleFieldChange("fullName", value)} errors={state.errors?.fullName} required />
+            <Field autoComplete="email" label="ایمیل" name="email" type="email" value={formValues.email} onChange={(value) => handleFieldChange("email", value)} errors={state.errors?.email} required />
             <label className="text-xs font-bold text-[#374151]">
               شماره موبایل
-              <div className="mt-2 flex gap-2">
-                <input name="phone" type="tel" value={formValues.phone} onChange={(event) => handleFieldChange("phone", event.target.value)} className="input-zen" required />
-                <button type="button" onClick={(event) => handleSendOtp(event.currentTarget.form!)} className="btn-outline shrink-0 !min-h-11 border-[#F5C56B] text-xs text-[#D97706]" disabled={isOtpPending}>
+              <div className="mt-2 flex flex-col gap-2 min-[360px]:flex-row">
+                <input autoComplete="tel" inputMode="tel" name="phone" type="tel" value={formValues.phone} onChange={(event) => handleFieldChange("phone", event.target.value)} className="input-zen" required />
+                <button type="button" onClick={(event) => handleSendOtp(event.currentTarget.form!)} className="btn-outline shrink-0 text-xs text-primary-accent-strong" disabled={isOtpPending}>
                   {isOtpPending ? "در حال ارسال" : "ارسال کد"}
                 </button>
               </div>
               {state.errors?.phone?.map((error) => <ErrorText key={error} error={error} />)}
             </label>
-            <Field label="کد تایید پیامکی" name="otpCode" inputMode="numeric" errors={state.errors?.otpCode} required />
+            <Field autoComplete="one-time-code" label="کد تایید پیامکی" name="otpCode" inputMode="numeric" errors={state.errors?.otpCode} required />
           </div>
           {otpMessage && <p className="mt-3 rounded-xl bg-green-50 px-3 py-2 text-xs font-bold text-[#16A34A]">{otpMessage}</p>}
           {otpError && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-[#DC2626]">{otpError}</p>}
         </section>
 
-        <section className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.07)] md:p-6">
+        <section className="panel-zen rounded-[28px] p-5 md:p-6">
           <SectionTitle title="آدرس و ارسال" subtitle="آدرس دقیق باعث پردازش سریع‌تر سفارش می‌شود." />
           {addresses.length ? (
-            <div className="mt-5 grid gap-3 md:grid-cols-2">
+            <div className="mt-5 grid gap-3 min-[360px]:grid-cols-2">
               {addresses.map((address) => (
                 <button
                   key={address.id}
                   type="button"
                   onClick={() => handleAddressSelect(address.id)}
-                  className={`rounded-2xl border p-4 text-right text-xs transition ${selectedAddressId === address.id ? "border-[#F5C56B] bg-[#FFF8E8]" : "border-[#E7E8EE] bg-[#F7F7F8]"}`}
+                  className={`rounded-2xl border p-4 text-right text-xs transition ${selectedAddressId === address.id ? "border-[rgba(245,158,11,0.28)] bg-surface-tint shadow-[0_14px_30px_rgba(245,158,11,0.1)]" : "border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#F7F8FA_100%)]"}`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-black text-[#111827]">{address.label}</span>
-                    {address.isDefault ? <span className="rounded-full bg-white px-2 py-1 text-[10px] font-bold text-[#D97706]">پیش‌فرض</span> : null}
+                    <span className="font-black text-text-strong">{address.label}</span>
+                    {address.isDefault ? <span className="chip-zen px-2 py-1 text-[10px]">پیش‌فرض</span> : null}
                   </div>
                   <p className="mt-2 leading-6 text-[#374151]">{address.fullName} · {address.phone}</p>
-                  <p className="leading-6 text-[#6B7280]">{address.province}، {address.city}، {address.address1}</p>
+                  <p className="leading-6 text-text-muted">{address.province}، {address.city}، {address.address1}</p>
                 </button>
               ))}
             </div>
           ) : null}
           <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <Field label="آدرس اصلی" name="address1" value={formValues.address1} onChange={(value) => handleFieldChange("address1", value)} errors={state.errors?.address1} required />
-            <Field label="آدرس تکمیلی" name="address2" value={formValues.address2} onChange={(value) => handleFieldChange("address2", value)} />
-            <Field label="شهر" name="city" value={formValues.city} onChange={(value) => handleFieldChange("city", value)} errors={state.errors?.city} required />
-            <Field label="استان" name="province" value={formValues.province} onChange={(value) => handleFieldChange("province", value)} errors={state.errors?.province} required />
-            <Field label="کد پستی" name="postalCode" value={formValues.postalCode} onChange={(value) => handleFieldChange("postalCode", value)} errors={state.errors?.postalCode} required />
-            <label className="flex items-center gap-2 self-end rounded-2xl border border-[#E7E8EE] px-4 py-3 text-xs font-bold text-[#374151]">
+            <Field autoComplete="street-address" label="آدرس اصلی" name="address1" value={formValues.address1} onChange={(value) => handleFieldChange("address1", value)} errors={state.errors?.address1} required />
+            <Field autoComplete="address-line2" label="آدرس تکمیلی" name="address2" value={formValues.address2} onChange={(value) => handleFieldChange("address2", value)} />
+            <Field autoComplete="address-level2" label="شهر" name="city" value={formValues.city} onChange={(value) => handleFieldChange("city", value)} errors={state.errors?.city} required />
+            <Field autoComplete="address-level1" label="استان" name="province" value={formValues.province} onChange={(value) => handleFieldChange("province", value)} errors={state.errors?.province} required />
+            <Field autoComplete="postal-code" inputMode="numeric" label="کد پستی" name="postalCode" value={formValues.postalCode} onChange={(value) => handleFieldChange("postalCode", value)} errors={state.errors?.postalCode} required />
+            <label className="panel-zen-muted flex items-center gap-2 self-end rounded-2xl px-4 py-3 text-xs font-bold text-[#374151]">
               <input type="checkbox" name="saveAddress" defaultChecked className="size-4 accent-[#F59E0B]" />
               ذخیره به عنوان آدرس پیش‌فرض
             </label>
@@ -188,7 +188,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
               <label
                 key={option.value}
                 className={`cursor-pointer rounded-2xl border p-4 text-xs transition ${
-                  shipping === option.value ? "border-[#F5C56B] bg-[#FFF8E8]" : "border-[#E7E8EE] bg-white hover:border-[#F5C56B]"
+                  shipping === option.value ? "border-[rgba(245,158,11,0.26)] bg-surface-tint shadow-[0_14px_28px_rgba(245,158,11,0.08)]" : "border-border bg-white hover:border-[rgba(245,158,11,0.24)]"
                 }`}
               >
                 <input
@@ -199,16 +199,16 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
                   onChange={() => setShipping(option.value)}
                   className="sr-only"
                 />
-                <span className="block font-black text-[#111827]">{option.label}</span>
-                <span className="mt-1 block text-[#6B7280]">{option.detail}</span>
-                <span className="mt-3 block font-bold text-[#D97706]">{formatPrice(option.cost)}</span>
+                <span className="block font-black text-text-strong">{option.label}</span>
+                <span className="mt-1 block text-text-muted">{option.detail}</span>
+                <span className="mt-3 block font-bold text-primary-accent-strong">{formatPrice(option.cost)}</span>
               </label>
             ))}
           </div>
 
           <label className="mt-5 block text-xs font-bold text-[#374151]">
             کد تخفیف
-            <input name="couponCode" className="input-zen mt-2" placeholder="مثلاً OILBAR10" />
+            <input autoComplete="off" name="couponCode" className="input-zen mt-2" placeholder="مثلاً OILBAR10" />
           </label>
 
           <label className="mt-5 block text-xs font-bold text-[#374151]">
@@ -219,14 +219,14 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
       </div>
 
       <aside className="space-y-4">
-        <section className="rounded-[28px] border border-[#E7E8EE] bg-white p-5 text-sm shadow-[0_16px_40px_rgba(15,23,42,0.07)] lg:sticky lg:top-40">
-          <h2 className="text-lg font-extrabold text-[#111827]">خلاصه سفارش</h2>
+        <section className="panel-zen-tint rounded-[28px] p-5 text-sm lg:sticky lg:top-40">
+          <h2 className="text-lg font-extrabold text-text-strong">خلاصه سفارش</h2>
           <div className="mt-4 space-y-3">
             {items.map((item) => (
-              <div key={item.id} className="flex items-start justify-between gap-3 text-xs text-[#6B7280]">
-                <span className="line-clamp-2">
+              <div key={item.id} className="flex items-start justify-between gap-3 text-xs text-text-muted">
+                <span className="line-clamp-2 min-w-0">
                   {item.name}
-                  <span className="mr-1 text-[#9CA3AF]">×{item.quantity.toLocaleString("fa-IR")}</span>
+                  <span className="mr-1 text-text-soft">×{item.quantity.toLocaleString("fa-IR")}</span>
                 </span>
                 <span className="shrink-0 font-bold text-[#374151]">{formatPrice(item.price * item.quantity)}</span>
               </div>
@@ -243,7 +243,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
                     : "۳ تا ۵ روز کاری"
               }
             />
-            <div className="flex justify-between border-t border-[#E5E7EB] pt-3 text-base font-extrabold text-[#111827]">
+            <div className="flex justify-between border-t border-[rgba(245,158,11,0.16)] pt-3 text-base font-extrabold text-text-strong">
               <span>مبلغ قابل پرداخت</span>
               <span>{formatPrice(total)}</span>
             </div>
@@ -251,7 +251,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
           {!state.success && state.message && <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-[#DC2626]">{state.message}</p>}
           {state.success && state.message && <p className="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">{state.message}</p>}
           <SubmitButton />
-          <p className="mt-3 text-xs leading-6 text-[#6B7280]">پرداخت از طریق درگاه امن زرین‌پال انجام می‌شود. بعد از پرداخت، وضعیت سفارش در حساب کاربری شما ثبت می‌شود.</p>
+          <p className="mt-3 text-xs leading-6 text-text-muted">پرداخت از طریق درگاه امن زرین‌پال انجام می‌شود. بعد از پرداخت، وضعیت سفارش در حساب کاربری شما ثبت می‌شود.</p>
         </section>
       </aside>
     </form>
@@ -261,9 +261,9 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
 function Stepper() {
   const steps = ["سبد خرید", "آدرس و ارسال", "پرداخت", "تکمیل سفارش"];
   return (
-    <div className="grid grid-cols-4 gap-2 rounded-[24px] border border-[#E7E8EE] bg-white p-3 text-center text-[11px] font-bold text-[#6B7280]">
+    <div className="panel-zen-muted grid grid-cols-2 gap-2 rounded-[24px] p-3 text-center text-[11px] font-bold text-text-muted sm:grid-cols-4">
       {steps.map((step, index) => (
-        <div key={step} className={`rounded-2xl px-2 py-3 ${index === 1 || index === 2 ? "bg-[#FFF8E8] text-[#D97706]" : "bg-[#F7F7F8]"}`}>
+        <div key={step} className={`rounded-2xl px-2 py-3 ${index === 1 || index === 2 ? "bg-surface-tint text-primary-accent-strong" : "bg-white"}`}>
           {step}
         </div>
       ))}
@@ -274,15 +274,15 @@ function Stepper() {
 function SectionTitle({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div>
-      <h2 className="text-lg font-extrabold text-[#111827]">{title}</h2>
-      <p className="mt-1 text-xs leading-6 text-[#6B7280]">{subtitle}</p>
+      <h2 className="text-lg font-extrabold text-text-strong">{title}</h2>
+      <p className="mt-1 text-xs leading-6 text-text-muted">{subtitle}</p>
     </div>
   );
 }
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between border-t border-[#E5E7EB] pt-3 text-[#6B7280]">
+    <div className="flex justify-between border-t border-[rgba(245,158,11,0.12)] pt-3 text-text-muted">
       <span>{label}</span>
       <span>{value}</span>
     </div>
@@ -303,6 +303,7 @@ function Field({
   name,
   type = "text",
   inputMode,
+  autoComplete,
   value = "",
   onChange,
   errors,
@@ -312,6 +313,7 @@ function Field({
   name: string;
   type?: string;
   inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
+  autoComplete?: InputHTMLAttributes<HTMLInputElement>["autoComplete"];
   value?: string;
   onChange?: (value: string) => void;
   errors?: string[];
@@ -323,6 +325,7 @@ function Field({
       <input
         name={name}
         type={type}
+        autoComplete={autoComplete}
         inputMode={inputMode}
         value={value}
         onChange={(event) => onChange?.(event.target.value)}

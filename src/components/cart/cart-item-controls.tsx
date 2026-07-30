@@ -22,18 +22,18 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex items-center overflow-hidden rounded-xl border border-[#E5E7EB] bg-white">
+    <div className="flex flex-wrap items-center gap-3">
+      <div className="flex items-center overflow-hidden rounded-2xl border border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#FCFCFD_100%)] shadow-[0_10px_24px_rgba(17,24,39,0.04)]">
         <button
           type="button"
           aria-label="کم کردن تعداد"
           onClick={() => updateQuantity(quantity - 1)}
           disabled={isPending || quantity <= 1}
-          className={cn("flex h-9 w-9 items-center justify-center text-lg font-bold text-[#6B7280] hover:bg-[#F7F7F8]", isPending && "opacity-50")}
+          className={cn("flex h-11 w-11 items-center justify-center text-lg font-bold text-text-muted hover:bg-surface-elevated", isPending && "opacity-50")}
         >
           -
         </button>
-        <span className="flex h-9 min-w-9 items-center justify-center border-x border-[#E5E7EB] text-sm font-bold text-[#111827]">
+        <span className="flex h-11 min-w-10 items-center justify-center border-x border-border px-2 text-sm font-bold text-text-strong">
           {quantity.toLocaleString("fa-IR")}
         </span>
         <button
@@ -41,7 +41,7 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
           aria-label="زیاد کردن تعداد"
           onClick={() => updateQuantity(quantity + 1)}
           disabled={isPending}
-          className={cn("flex h-9 w-9 items-center justify-center text-lg font-bold text-[#6B7280] hover:bg-[#F7F7F8]", isPending && "opacity-50")}
+          className={cn("flex h-11 w-11 items-center justify-center text-lg font-bold text-text-muted hover:bg-surface-elevated", isPending && "opacity-50")}
         >
           +
         </button>
@@ -54,7 +54,7 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
             router.refresh();
           })
         }
-        className="text-xs font-bold text-[#DC2626] hover:text-[#EF394E]"
+        className="rounded-full border border-[#FECACA] px-3 py-2 text-xs font-bold text-[#DC2626] hover:border-[#FCA5A5] hover:text-[#EF394E]"
         disabled={isPending}
       >
         حذف
@@ -76,7 +76,7 @@ export function ClearCartButton() {
           router.refresh();
         })
       }
-      className="btn-outline !min-h-10 text-xs disabled:opacity-60"
+      className="btn-outline !min-h-11 rounded-2xl text-xs disabled:opacity-60"
       disabled={isPending}
     >
       خالی کردن سبد

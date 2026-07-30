@@ -11,6 +11,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "aidlube.ir",
+      },
+      {
+        protocol: "https",
+        hostname: "www.aidlube.ir",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn-sth1.bama.ir",
+      },
     ],
   },
 };

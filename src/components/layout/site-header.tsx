@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import type { SVGProps } from "react";
 import { SignInButton } from "@/components/auth/sign-in-button";
+import { CartIndicator } from "@/components/layout/cart-indicator";
 import { CategoryDropdown } from "@/components/layout/category-dropdown";
 import { LOGO_SRC } from "@/components/layout/logo-mark";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { SearchAutocompleteForm } from "@/components/layout/search-autocomplete-form";
 import { getAllCategoriesLite } from "@/lib/data";
+import { getAppSession } from "@/lib/session";
 
 type NavLink = {
   href: string;
@@ -14,26 +16,11 @@ type NavLink = {
   highlight?: boolean;
 };
 
-function SearchIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.9}
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <circle cx={11} cy={11} r={7} />
-      <path d="m20 20-3.5-3.5" />
-    </svg>
-  );
-}
-
 export async function SiteHeader() {
   const categories = await getAllCategoriesLite().catch(() => []);
+  const rawSession = await getAppSession();
+  const isAuthenticated = Boolean((rawSession as { user?: { id?: string } } | null)?.user?.id);
+  const accountHref = isAuthenticated ? "/account" : "/sign-in";
 
   const links: NavLink[] = [
     { href: "/products", label: "محصولات" },
@@ -46,8 +33,8 @@ export async function SiteHeader() {
   const searchSuggestions = categories.slice(0, 4).map((category) => category.name);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#E7E8EE] bg-white/96 shadow-[0_6px_24px_rgba(17,24,39,0.04)] backdrop-blur">
-      <div className="hidden bg-[#171B23] text-white lg:block">
+    <header className="z-50 border-b border-border/80 bg-white/88 shadow-[0_8px_26px_rgba(17,24,39,0.04)] backdrop-blur-xl lg:sticky lg:top-0">
+      <div className="hidden bg-[linear-gradient(90deg,#171B23_0%,#202734_58%,#171B23_100%)] text-white lg:block">
         <div className="container-zen flex items-center justify-between py-2 text-[11px]">
           <div className="flex items-center gap-3 text-white/90">
             <ShieldIcon className="h-4 w-4 text-[#F59E0B]" />
@@ -62,50 +49,65 @@ export async function SiteHeader() {
         </div>
       </div>
 
-      <div className="container-zen grid grid-cols-[auto_1fr_auto] items-center gap-2 py-2.5 lg:grid-cols-[auto_minmax(360px,1fr)_auto] lg:gap-4">
-        <div className="flex items-center gap-3 lg:hidden">
-          <MobileNav categories={categories} isAuthenticated={false} links={links} />
-          <Link aria-label="صفحه اصلی Oilbar" href="/" className="flex items-center">
-            <Image alt="لوگوی Oilbar" className="h-auto w-[108px]" height={46} priority src={LOGO_SRC} unoptimized width={172} />
-          </Link>
-        </div>
-
-        <div className="hidden min-w-0 items-center gap-5 lg:flex">
-          <Link aria-label="صفحه اصلی Oilbar" href="/" className="shrink-0">
-            <Image alt="لوگوی Oilbar" className="h-auto w-[136px]" height={52} priority src={LOGO_SRC} unoptimized width={224} />
-          </Link>
-
-          <nav className="flex min-w-0 flex-1 items-center justify-end gap-0.5 text-[13px] font-bold text-[#344054]">
-            <CategoryDropdown categories={categories} />
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`rounded-lg px-2.5 py-1.5 transition hover:bg-[#FFF7E8] hover:text-[#D97706] ${
-                  link.highlight ? "bg-[#FFF7E8] text-[#D97706]" : ""
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="relative order-3 col-span-3 lg:order-none lg:col-span-1">
-          <SearchIcon className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#667085]" />
-          <SearchAutocompleteForm quickSuggestions={searchSuggestions} />
-        </div>
-
-        <div className="flex items-center justify-end gap-2">
-          <div className="hidden lg:block">
-            <SignInButton />
+      <div className="container-zen py-3 lg:py-3.5">
+        <div className="space-y-3 lg:hidden">
+          <div className="flex items-center gap-2">
+            <MobileNav accountHref={accountHref} categories={categories} isAuthenticated={isAuthenticated} links={links} />
+            <div className="min-w-0 flex-1">
+              <SearchAutocompleteForm placeholder="جستجو در روغن، فیلتر، برند یا خودرو..." quickSuggestions={searchSuggestions} />
+            </div>
           </div>
-          <Link
-            className="inline-flex h-10 min-w-10 items-center justify-center rounded-xl border border-[#E7E8EE] bg-white px-3 text-sm font-bold text-[#171B23] shadow-sm transition hover:border-[#F5C56B] hover:text-[#D97706]"
-            href="/cart"
-          >
-            <CartIcon className="h-5 w-5" />
-          </Link>
+
+          <div className="flex items-center justify-between gap-3">
+            <Link aria-label="صفحه اصلی Oilbar" href="/" className="flex shrink-0 items-center">
+              <Image alt="لوگوی Oilbar" className="h-auto w-[102px] sm:w-[108px]" height={44} priority src={LOGO_SRC} unoptimized width={166} />
+            </Link>
+
+            <div className="flex items-center gap-2">
+              <span className="chip-zen-muted px-3 py-2 text-[11px] text-[#344054]">
+                <ShieldIcon className="h-4 w-4 text-[#D97706]" />
+                ضمانت اصالت
+              </span>
+              <Link
+                className="chip-zen px-3 py-2 text-[11px]"
+                href="/products"
+              >
+                همه محصولات
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="hidden items-center gap-4 lg:grid lg:grid-cols-[auto_minmax(0,1fr)_auto]">
+          <div className="flex min-w-0 items-center gap-5">
+            <Link aria-label="صفحه اصلی Oilbar" href="/" className="shrink-0">
+              <Image alt="لوگوی Oilbar" className="h-auto w-[136px]" height={52} priority src={LOGO_SRC} unoptimized width={224} />
+            </Link>
+
+            <nav className="flex min-w-0 flex-1 items-center justify-end gap-1 text-[13px] font-bold text-[#344054]">
+              <CategoryDropdown categories={categories} />
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`rounded-full px-3 py-2 transition hover:bg-surface-tint hover:text-primary-accent-strong ${
+                    link.highlight ? "bg-surface-tint text-primary-accent-strong" : ""
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="min-w-0">
+            <SearchAutocompleteForm quickSuggestions={searchSuggestions} />
+          </div>
+
+          <div className="flex items-center justify-end gap-2">
+            <SignInButton />
+            <CartIndicator />
+          </div>
         </div>
       </div>
     </header>
@@ -146,25 +148,6 @@ function ShieldIcon(props: SVGProps<SVGSVGElement>) {
     >
       <path d="M12 3 5 6v6c0 4.5 2.8 7.9 7 9 4.2-1.1 7-4.5 7-9V6l-7-3Z" />
       <path d="m9.5 12.5 1.8 1.8 3.7-4.3" />
-    </svg>
-  );
-}
-
-function CartIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.8}
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <circle cx={9} cy={20} r={1} />
-      <circle cx={17} cy={20} r={1} />
-      <path d="M3 4h2l2.4 12.2a1 1 0 0 0 1 .8h9.5a1 1 0 0 0 1-.8L21 8H7" />
     </svg>
   );
 }

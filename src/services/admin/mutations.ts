@@ -1,5 +1,6 @@
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
+import { buildArchivedProductSlug } from "@/lib/storefront-visibility";
 import type { AdminCarQuestion, AdminProductQuestion } from "./types";
 
 export type AnswerQuestionPayload = {
@@ -47,10 +48,12 @@ export async function saveBrand(data: {
   await prisma.brand.create({ data: payload });
 }
 
-export async function upsertCar(data: {
+export async function saveCar(data: {
+  id?: string;
   slug: string;
   manufacturer: string;
   model: string;
+  isActive: boolean;
   generation?: string | null;
   engineCode?: string | null;
   engineType?: string | null;
@@ -65,17 +68,36 @@ export async function upsertCar(data: {
   gearboxDetails?: string | null;
   maintenanceInfo?: string | null;
 }) {
-  await prisma.car.upsert({
-    where: { slug: data.slug },
-    update: {
-      ...data,
-      oilCapacityLit: data.oilCapacityLit != null ? new Prisma.Decimal(data.oilCapacityLit) : undefined,
-    },
-    create: {
-      ...data,
-      oilCapacityLit: data.oilCapacityLit != null ? new Prisma.Decimal(data.oilCapacityLit) : undefined,
-    },
-  });
+  const { id, ...payload } = data;
+  const sharedData = {
+    slug: payload.slug,
+    manufacturer: payload.manufacturer,
+    model: payload.model,
+    isActive: payload.isActive,
+    generation: payload.generation ?? null,
+    engineCode: payload.engineCode ?? null,
+    engineType: payload.engineType ?? null,
+    yearFrom: payload.yearFrom ?? null,
+    yearTo: payload.yearTo ?? null,
+    oilCapacityLit: payload.oilCapacityLit != null ? new Prisma.Decimal(payload.oilCapacityLit) : null,
+    viscosity: payload.viscosity ?? null,
+    specification: payload.specification ?? null,
+    imageUrl: payload.imageUrl ?? null,
+    overviewDetails: payload.overviewDetails ?? null,
+    engineDetails: payload.engineDetails ?? null,
+    gearboxDetails: payload.gearboxDetails ?? null,
+    maintenanceInfo: payload.maintenanceInfo ?? null,
+  } satisfies Prisma.CarUncheckedCreateInput;
+
+  if (id) {
+    await prisma.car.update({
+      where: { id },
+      data: sharedData,
+    });
+    return;
+  }
+
+  await prisma.car.create({ data: sharedData });
 }
 
 export async function saveProduct(data: {
@@ -130,7 +152,7 @@ export async function deleteProduct(productId: string) {
       prisma.product.updateMany({
         where: { id: productId },
         data: {
-          slug: `deleted-${productId}`,
+          slug: buildArchivedProductSlug(productId),
           sku: null,
           name: `حذف‌شده ${productId.slice(-6)}`,
           description: null,
@@ -205,6 +227,13 @@ export async function deleteMaintenanceTask(taskId: string) {
 
 export async function deleteCar(carId: string) {
   await prisma.car.deleteMany({ where: { id: carId } });
+}
+
+export async function setCarActiveState(carId: string, isActive: boolean) {
+  await prisma.car.update({
+    where: { id: carId },
+    data: { isActive },
+  });
 }
 
 export async function answerQuestion(

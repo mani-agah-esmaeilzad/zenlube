@@ -3,17 +3,34 @@
 import type { SVGProps } from "react";
 import { useState, useTransition } from "react";
 import { addToCartAction } from "@/actions/cart";
+import { useToast } from "@/components/ui/toast-provider";
 import { cn } from "@/lib/utils";
 
 type AddToCartButtonProps = {
   productId: string;
   className?: string;
   disabled?: boolean;
+  quantity?: number;
+  size?: "sm" | "md" | "lg";
 };
 
-export function AddToCartButton({ productId, className, disabled = false }: AddToCartButtonProps) {
+const sizeStyles = {
+  sm: "min-h-10 rounded-[14px] px-4 py-2 text-[13px]",
+  md: "min-h-11 rounded-[16px] px-5 py-2.5 text-sm",
+  lg: "min-h-[50px] rounded-[18px] px-6 py-3 text-sm sm:text-base",
+} as const;
+
+export function AddToCartButton({
+  productId,
+  className,
+  disabled = false,
+  quantity = 1,
+  size = "md",
+}: AddToCartButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedbackTone, setFeedbackTone] = useState<"success" | "error">("success");
+  const { showToast } = useToast();
   const isDisabled = disabled || isPending;
 
   const handleAdd = () => {
@@ -22,11 +39,17 @@ export function AddToCartButton({ productId, className, disabled = false }: AddT
     }
     startTransition(async () => {
       setFeedback(null);
-      const result = await addToCartAction({ productId, quantity: 1 });
+      const result = await addToCartAction({ productId, quantity });
       if (!result?.success) {
-        setFeedback(result?.message ?? "افزودن به سبد با خطا مواجه شد.");
+        const message = result?.message ?? "افزودن به سبد با خطا مواجه شد.";
+        setFeedbackTone("error");
+        setFeedback(message);
+        showToast(message, "error");
       } else {
-        setFeedback("محصول به سبد اضافه شد.");
+        const message = quantity > 1 ? `${quantity.toLocaleString("fa-IR")} عدد به سبد اضافه شد.` : "محصول به سبد اضافه شد.";
+        setFeedbackTone("success");
+        setFeedback(message);
+        showToast(message, "success");
       }
     });
   };
@@ -37,7 +60,8 @@ export function AddToCartButton({ productId, className, disabled = false }: AddT
         type="button"
         onClick={handleAdd}
         className={cn(
-          "inline-flex min-h-11 items-center justify-center gap-2 rounded-[16px] border border-[#F59E0B] bg-[linear-gradient(180deg,#FFB52F_0%,#F59E0B_100%)] px-5 py-2.5 text-sm font-extrabold text-white shadow-[0_14px_28px_rgba(245,158,11,0.24)] transition hover:border-[#E78A00] hover:bg-[linear-gradient(180deg,#FFC14A_0%,#E78A00_100%)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0] disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#EAECF0] disabled:text-[#98A2B3] disabled:shadow-none",
+          "btn-primary inline-flex items-center justify-center gap-2 font-extrabold disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#EAECF0] disabled:text-[#98A2B3] disabled:shadow-none",
+          sizeStyles[size],
           className,
         )}
         disabled={isDisabled}
@@ -58,8 +82,8 @@ export function AddToCartButton({ productId, className, disabled = false }: AddT
       </button>
       <span
         className={cn(
-          "text-center text-[11px]",
-          feedback ? "text-[#16A34A]" : "text-transparent",
+          "text-center text-[11px] leading-5",
+          feedback ? (feedbackTone === "success" ? "text-success" : "text-danger") : "text-transparent",
         )}
         aria-live="polite"
       >

@@ -1,9 +1,11 @@
 import type { SVGProps } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { WishlistButton } from "@/components/product/wishlist-button";
-import { formatPrice } from "@/lib/utils";
+import { PriceBlock } from "@/components/ui/price-block";
+import { StatusPill } from "@/components/ui/status-pill";
 import type { ProductWithRelations } from "@/types/catalog";
 
 type ProductCardProps = {
@@ -13,99 +15,82 @@ type ProductCardProps = {
 export function ProductCard({ product }: ProductCardProps) {
   const specs = [
     product.viscosity,
-    product.oilType,
     product.packagingSizeLit ? `${Number(product.packagingSizeLit).toLocaleString("fa-IR")} لیتر` : null,
+    product.oilType,
   ].filter(Boolean);
 
   const rating = product.averageRating ? Number(product.averageRating).toFixed(1) : null;
   const isAvailable = product.stock > 0;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-[#E7E8EE] bg-white transition hover:-translate-y-1 hover:border-[#F5C56B] hover:shadow-[0_18px_44px_rgba(17,24,39,0.12)]">
-      <Link aria-label={product.name} className="relative block bg-[#F7F8FA] p-4" href={`/products/${product.slug}`}>
-        <div className="relative aspect-square overflow-hidden rounded-[18px] bg-white">
+    <article className="panel-zen interactive-lift group flex h-full min-w-0 flex-col overflow-hidden rounded-[24px]">
+      <div className="relative flex h-full min-w-0 flex-col p-2.5 sm:p-3">
+        <div className="absolute left-2.5 top-2.5 z-10 sm:left-3 sm:top-3">
+          <WishlistButton compact productId={product.id} />
+        </div>
+
+        <div className="absolute right-2.5 top-2.5 z-10 flex max-w-[74%] flex-wrap justify-end gap-1.5 sm:right-3 sm:top-3">
+          {product.isBestseller ? (
+            <StatusPill className="px-2 py-0.5 text-[10px]" tone="dark">
+              پرفروش
+            </StatusPill>
+          ) : null}
+          {product.isFeatured ? (
+            <StatusPill className="px-2 py-0.5 text-[10px]" tone="warning">
+              ویژه
+            </StatusPill>
+          ) : null}
+        </div>
+
+        <Link aria-label={product.name} className="block rounded-[20px] bg-[linear-gradient(180deg,#F8FAFC_0%,#F3F6F9_100%)] p-2.5" href={`/products/${product.slug}`}>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[18px] bg-[radial-gradient(circle_at_50%_22%,rgba(255,255,255,0.9),rgba(255,255,255,0.55)_38%,rgba(243,246,249,0.8)_100%)] sm:aspect-[10/9]">
           {product.imageUrl ? (
             <Image
               alt={`تصویر ${product.name}`}
-              className="object-contain p-3 transition duration-500 group-hover:scale-105"
+              className="object-contain p-3 transition duration-300 group-hover:scale-[1.035] sm:p-4"
               fill
-              sizes="(max-width:768px) 50vw, 25vw"
+              sizes="(max-width:767px) 50vw, (max-width:1023px) 33vw, (max-width:1535px) 25vw, 220px"
               src={product.imageUrl}
             />
-          ) : (
-            <div className="flex h-full items-center justify-center text-xs font-medium text-[#98A2B3]">بدون تصویر</div>
-          )}
+          ) : <div className="flex h-full items-center justify-center text-xs font-medium text-text-soft">بدون تصویر</div>}
         </div>
-
-        <div className="absolute right-3 top-3 flex flex-col gap-2">
-          {product.isBestseller ? (
-            <span className="rounded-full bg-[#171B23] px-2.5 py-1 text-[11px] font-bold text-white">پرفروش</span>
-          ) : null}
-          {product.isFeatured ? (
-            <span className="rounded-full bg-[#F59E0B] px-2.5 py-1 text-[11px] font-bold text-white">پیشنهاد ویژه</span>
-          ) : null}
-        </div>
-
-        <div className="absolute left-3 top-3">
-          <WishlistButton compact productId={product.id} />
-        </div>
-      </Link>
-
-      <div className="flex flex-1 flex-col p-4">
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <Link
-            className="rounded-full bg-[#FFF8E8] px-2.5 py-1 text-[11px] font-bold text-[#D97706] transition hover:text-[#B45309]"
-            href={`/products?brand=${product.brand.slug}`}
-          >
-            {product.brand.name}
-          </Link>
-
-          {rating ? (
-            <span className="inline-flex items-center gap-1 text-xs font-bold text-[#F59E0B]">
-              <StarIcon className="h-4 w-4 fill-current" />
-              {Number(rating).toLocaleString("fa-IR")}
-              {product.reviewCount ? (
-                <span className="font-medium text-[#98A2B3]">({product.reviewCount.toLocaleString("fa-IR")})</span>
-              ) : null}
-            </span>
-          ) : (
-            <span className="text-[11px] font-medium text-[#667085]">تازه اضافه شده</span>
-          )}
-        </div>
+        </Link>
 
         <Link
-          className="line-clamp-2 min-h-11 text-sm font-semibold leading-6 text-[#1F2937] transition hover:text-[#D97706]"
+          className="mt-3 text-[11px] font-bold tracking-[0.01em] text-text-soft transition hover:text-primary-accent-strong"
+          href={`/products?brand=${product.brand.slug}`}
+        >
+          {product.brand.name}
+        </Link>
+
+        <Link
+          className="mt-1 line-clamp-2 min-h-12 text-[13px] font-bold leading-6 text-text-strong transition hover:text-primary-accent-strong sm:text-sm"
           href={`/products/${product.slug}`}
         >
           {product.name}
         </Link>
 
-        <div className="mt-3 flex min-h-7 flex-wrap gap-1.5">
-          {specs.slice(0, 3).map((spec) => (
-            <span key={String(spec)} className="rounded-full border border-[#E7E8EE] px-2 py-1 text-[11px] font-medium text-[#667085]">
-              {spec}
-            </span>
-          ))}
+        <div className="mt-2 min-h-5 text-[11px] font-medium leading-5 text-text-muted">
+          {specs.length ? <span className="line-clamp-1">{specs.join(" • ")}</span> : null}
         </div>
 
-        <div className="mt-3 flex items-center justify-between text-xs">
-          <span className={isAvailable ? "font-bold text-[#16A34A]" : "font-bold text-[#DC2626]"}>
-            {isAvailable ? "موجود" : "ناموجود"}
+        <div className="mt-3 flex items-center justify-between gap-2 text-[11px]">
+          <span className={`inline-flex items-center gap-1 font-bold ${isAvailable ? "text-emerald-700" : "text-[#D92D20]"}`}>
+            <span className={`h-2 w-2 rounded-full shadow-[0_0_0_4px_rgba(255,255,255,0.75)] ${isAvailable ? "bg-emerald-500" : "bg-[#D92D20]"}`} />
+            {isAvailable ? "موجود در انبار" : "ناموجود"}
           </span>
-          <span className="text-[#667085]">ضمانت اصالت</span>
+
+          {rating && product.reviewCount > 0 ? (
+            <span className="shrink-0 inline-flex items-center gap-1 font-bold text-[#F59E0B]">
+              <StarIcon className="h-3.5 w-3.5 fill-current" />
+              {Number(rating).toLocaleString("fa-IR")}
+            </span>
+          ) : null}
         </div>
 
-        <div className="mt-auto pt-4">
-          <div className="mb-3 flex items-end justify-between gap-2">
-            <span className="text-xs font-medium text-[#667085]">قیمت</span>
-            <div className="text-left">
-              {product.isFeatured ? (
-                <div className="mb-1 text-xs text-[#98A2B3] line-through">{formatPrice(Number(product.price) * 1.08)}</div>
-              ) : null}
-              <div className="text-lg font-extrabold text-[#171B23]">{formatPrice(product.price)}</div>
-            </div>
-          </div>
-          <AddToCartButton className="w-full" disabled={!isAvailable} productId={product.id} />
+        <div className="mt-auto pt-3">
+          <PriceBlock amount={product.price} align="start" className="mb-2" label="قیمت" size="sm" />
+          <AddToCartButton className="w-full" disabled={!isAvailable} productId={product.id} size="sm" />
         </div>
       </div>
     </article>

@@ -41,7 +41,7 @@ function SelectField({ ariaLabel, disabled = false, onChange, options, placehold
     <label className="relative block">
       <select
         aria-label={ariaLabel}
-        className="input-zen h-14 appearance-none rounded-2xl border-[#E5E7EB] bg-white pl-11 pr-4 text-sm font-semibold text-[#374151] disabled:cursor-not-allowed disabled:bg-[#F9FAFB] disabled:text-[#98A2B3]"
+        className="input-zen h-14 appearance-none rounded-2xl border-transparent bg-white/95 pl-11 pr-4 text-sm font-semibold text-text-strong shadow-none disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-subtle"
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
         value={value}
@@ -55,7 +55,7 @@ function SelectField({ ariaLabel, disabled = false, onChange, options, placehold
       </select>
       <svg
         aria-hidden="true"
-        className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]"
+        className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-subtle"
         fill="none"
         stroke="currentColor"
         strokeLinecap="round"
@@ -123,13 +123,15 @@ export function HeroVehicleFinder({ cars }: HeroVehicleFinderProps) {
   };
 
   return (
-    <div className="rounded-[30px] border border-[#ECEEF2] bg-white p-5 shadow-[0_22px_60px_rgba(17,24,39,0.12)] md:p-6">
-      <div className="space-y-2">
-        <h2 className="text-[1.55rem] font-extrabold tracking-[-0.02em] text-[#171B23]">خودروت را انتخاب کن</h2>
-        <p className="text-sm leading-7 text-[#667085]">{helperText}</p>
+    <div className="panel-zen relative overflow-hidden rounded-[32px] p-5 md:p-6">
+      <div className="pointer-events-none absolute inset-x-6 top-0 h-24 rounded-b-[28px] bg-[radial-gradient(circle_at_top,rgba(245,197,107,0.18),transparent_72%)]" />
+      <div className="relative space-y-2">
+        <span className="chip-zen inline-flex">جستجوی سریع خودرو</span>
+        <h2 className="text-[1.55rem] font-extrabold tracking-[-0.02em] text-text-strong">خودروت را انتخاب کن</h2>
+        <p className="text-sm leading-7 text-text-muted">{helperText}</p>
       </div>
 
-      <div className="mt-5 grid gap-3">
+      <div className="relative mt-5 grid gap-3">
         <SelectField
           ariaLabel="برند خودرو"
           onChange={(value) => {

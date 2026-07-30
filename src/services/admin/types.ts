@@ -24,6 +24,7 @@ export type AdminCar = {
   slug: string;
   manufacturer: string;
   model: string;
+  isActive: boolean;
   generation?: string | null;
   imageUrl?: string | null;
   yearFrom?: number | null;

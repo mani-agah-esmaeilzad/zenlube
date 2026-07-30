@@ -51,6 +51,7 @@ export function mapCar(car: Prisma.CarGetPayload<{
     slug: car.slug,
     manufacturer: car.manufacturer,
     model: car.model,
+    isActive: car.isActive,
     generation: car.generation,
     imageUrl: car.imageUrl,
     yearFrom: car.yearFrom,

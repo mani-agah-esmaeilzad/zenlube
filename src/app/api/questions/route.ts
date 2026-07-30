@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { publicQuestionPayloadSchema } from "@/lib/validators";
+import { storefrontVisibleCarWhere } from "@/lib/storefront-visibility";
 import { config } from "@/lib/config";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
@@ -111,8 +112,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    const car = await prisma.car.findUnique({
-      where: { slug },
+    const car = await prisma.car.findFirst({
+      where: storefrontVisibleCarWhere({ slug }),
       select: { id: true },
     });
 

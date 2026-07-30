@@ -63,10 +63,11 @@ export const brandUpdateSchema = z.object({
   ...brandFields,
 });
 
-export const carSchema = z.object({
+const carFields = {
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "اسلاگ معتبر نیست."),
-  manufacturer: z.string().min(2),
-  model: z.string().min(1),
+  manufacturer: z.string().trim().min(2, "نام سازنده باید حداقل ۲ کاراکتر باشد."),
+  model: z.string().trim().min(1, "مدل خودرو الزامی است."),
+  isActive: z.boolean(),
   generation: optionalString,
   engineCode: optionalString,
   engineType: optionalString,
@@ -80,6 +81,13 @@ export const carSchema = z.object({
   engineDetails: optionalString,
   gearboxDetails: optionalString,
   maintenanceInfo: optionalString,
+};
+
+export const carSchema = z.object(carFields);
+
+export const carUpdateSchema = z.object({
+  id: z.string().cuid(),
+  ...carFields,
 });
 
 export const maintenanceTaskSchema = z.object({

@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { ensureAdminAction } from "@/lib/auth";
+import { revalidateAdminSurface, revalidateStorefrontContent, revalidateStorefrontProduct } from "@/lib/storefront-revalidate";
 import { resetDatabaseExceptAdmin } from "@/services/admin/mutations";
 
 export async function resetDatabaseExceptAdminFormAction(): Promise<void> {
@@ -13,12 +12,7 @@ export async function resetDatabaseExceptAdminFormAction(): Promise<void> {
 
   await resetDatabaseExceptAdmin(userId);
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/products");
-  revalidatePath("/categories");
-  revalidatePath("/brands");
-  revalidatePath("/cars");
-  revalidatePath("/blog");
-  revalidatePath("/cart");
+  revalidateAdminSurface();
+  revalidateStorefrontContent();
+  revalidateStorefrontProduct({});
 }

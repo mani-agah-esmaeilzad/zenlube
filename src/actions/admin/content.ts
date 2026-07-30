@@ -1,9 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { createAuditLog } from "@/lib/admin-audit";
 import { ensureAdminAction, ensureRoleAccess } from "@/lib/auth";
+import { revalidateAdminSurface, revalidateStorefrontContent, revalidateStorefrontProduct } from "@/lib/storefront-revalidate";
 import { couponSchema, marketingBannerSchema } from "@/lib/validators";
 import { deleteCoupon, deleteMarketingBanner, saveCoupon, saveMarketingBanner } from "@/services/admin/mutations";
 
@@ -41,8 +40,8 @@ export async function saveMarketingBannerAction(formData: FormData): Promise<Act
     summary: `بنر «${parsed.data.title}» ذخیره شد.`,
   });
 
-  revalidatePath("/admin");
-  revalidatePath("/");
+  revalidateAdminSurface();
+  revalidateStorefrontContent();
   return { success: true };
 }
 
@@ -64,8 +63,8 @@ export async function deleteMarketingBannerAction(formData: FormData): Promise<v
     action: "delete",
     summary: "یک بنر مارکتینگ حذف شد.",
   });
-  revalidatePath("/admin");
-  revalidatePath("/");
+  revalidateAdminSurface();
+  revalidateStorefrontContent();
 }
 
 export async function saveCouponAction(formData: FormData): Promise<ActionResult> {
@@ -100,7 +99,8 @@ export async function saveCouponAction(formData: FormData): Promise<ActionResult
     summary: `کد تخفیف «${parsed.data.code.toUpperCase()}» ذخیره شد.`,
   });
 
-  revalidatePath("/admin");
+  revalidateAdminSurface();
+  revalidateStorefrontProduct({});
   return { success: true };
 }
 
@@ -122,5 +122,6 @@ export async function deleteCouponAction(formData: FormData): Promise<void> {
     action: "delete",
     summary: "یک کد تخفیف حذف شد.",
   });
-  revalidatePath("/admin");
+  revalidateAdminSurface();
+  revalidateStorefrontProduct({});
 }

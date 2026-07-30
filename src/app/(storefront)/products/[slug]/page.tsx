@@ -1,0 +1,321 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { EngagementTracker } from "@/components/analytics/engagement-tracker";
+import { QuestionForm } from "@/components/forms/question-form";
+import { ProductDetailSections } from "@/components/product/product-detail-sections";
+import { ProductGallery } from "@/components/product/product-gallery";
+import { ProductCard } from "@/components/product/product-card";
+import { ProductPurchasePanel } from "@/components/product/product-purchase-panel";
+import { RecentlyViewedTracker } from "@/components/product/recently-viewed-tracker";
+import { QuestionList } from "@/components/questions/question-list";
+import { ReviewCard } from "@/components/review/review-card";
+import { ReviewForm } from "@/components/review/review-form";
+import { EmptyState } from "@/components/ui/empty-state";
+import { getShippingEstimateLabel } from "@/lib/commerce";
+import {
+  buildCompatibilityItems,
+  buildProductFaqs,
+  buildProductGalleryItems,
+  buildProductImportantNotes,
+  buildProductQuickFacts,
+  buildProductSpecRows,
+  extractEnglishProductLabel,
+} from "@/lib/product-detail";
+import prisma from "@/lib/prisma";
+import { buildBreadcrumbStructuredData, buildProductStructuredData } from "@/lib/seo";
+import { getAppSession } from "@/lib/session";
+import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
+
+type ProductPageProps = { params: Promise<{ slug: string }> };
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export async function generateMetadata({ params }: ProductPageProps) {
+  const { slug } = await params;
+  const product = await prisma.product.findFirst({
+    where: storefrontVisibleProductWhere({ slug }),
+    select: { name: true, description: true },
+  });
+
+  return product
+    ? { title: `${product.name} | Oilbar`, description: product.description ?? undefined }
+    : { title: "محصول یافت نشد" };
+}
+
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { slug } = await params;
+  const session = await getAppSession();
+  const userId = (session as { user?: { id?: string } } | null)?.user?.id;
+
+  const product = await prisma.product.findFirst({
+    where: storefrontVisibleProductWhere({ slug }),
+    include: {
+      brand: true,
+      category: true,
+      carMappings: {
+        where: { car: storefrontVisibleCarWhere() },
+        include: { car: true },
+      },
+      reviews: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              imageUrl: true,
+              brand: { select: { name: true } },
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 8,
+      },
+      questions: {
+        where: { status: { not: "ARCHIVED" } },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  if (!product) notFound();
+
+  const wishlistItem = userId
+    ? await prisma.wishlistItem.findUnique({
+        where: { userId_productId: { userId, productId: product.id } },
+        select: { id: true },
+      })
+    : null;
+
+  const relatedProducts = await prisma.product.findMany({
+    where: storefrontVisibleProductWhere({
+      id: { not: product.id },
+      OR: [
+        { categoryId: product.categoryId },
+        { brandId: product.brandId },
+        { tags: { hasSome: product.tags.slice(0, 4) } },
+      ],
+    }),
+    take: 5,
+    include: {
+      brand: true,
+      category: true,
+      carMappings: {
+        where: { car: storefrontVisibleCarWhere() },
+        include: { car: true },
+      },
+    },
+    orderBy: [{ isFeatured: "desc" }, { reviewCount: "desc" }, { updatedAt: "desc" }],
+  });
+
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.oilbar.ir").replace(/\/$/, "");
+  const shippingEstimate = getShippingEstimateLabel("STANDARD");
+  const isAvailable = product.stock > 0;
+  const galleryItems = buildProductGalleryItems(product);
+  const specRows = buildProductSpecRows(product);
+  const quickFacts = buildProductQuickFacts(product);
+  const compatibleCars = buildCompatibilityItems(product);
+  const importantNotes = buildProductImportantNotes(product);
+  const faqs = buildProductFaqs(product);
+  const englishTitle = extractEnglishProductLabel(product.name);
+  const hasReviewData = product.reviewCount > 0 && product.averageRating != null;
+  const descriptionPreview = product.description?.trim();
+
+  const breadcrumbStructuredData = buildBreadcrumbStructuredData([
+    { name: "خانه", url: baseUrl },
+    { name: product.category.name, url: `${baseUrl}/categories/${product.category.slug}` },
+    { name: product.brand.name, url: `${baseUrl}/products?brand=${product.brand.slug}` },
+    { name: product.name, url: `${baseUrl}/products/${product.slug}` },
+  ]);
+
+  const productStructuredData = buildProductStructuredData({
+    averageRating: product.averageRating ? Number(product.averageRating) : null,
+    baseUrl,
+    brandName: product.brand.name,
+    categoryName: product.category.name,
+    description: product.description,
+    imageUrl: product.imageUrl,
+    inStock: isAvailable,
+    name: product.name,
+    price: Number(product.price),
+    reviewCount: product.reviewCount,
+    sku: product.sku,
+    slug: product.slug,
+  });
+
+  const questionItems = (product.questions ?? []).map((question) => ({
+    id: question.id,
+    authorName: question.authorName,
+    question: question.question,
+    answer: question.answer,
+    status: question.status,
+    createdAt: question.createdAt,
+    answeredAt: question.answeredAt,
+  }));
+
+  return (
+    <div className="container-zen pb-[calc(11.5rem+env(safe-area-inset-bottom,0px))] pt-6 md:pt-8 lg:pb-8">
+      <script dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }} type="application/ld+json" />
+      <script dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }} type="application/ld+json" />
+
+      <EngagementTracker entityType="product" entityId={product.id} eventType="product_view" metadata={{ slug: product.slug }} />
+      <RecentlyViewedTracker productId={product.id} />
+
+      <nav className="mb-5 overflow-x-auto whitespace-nowrap border-b border-border/70 pb-3 text-xs font-bold text-text-muted scrollbar-none">
+        <div className="flex min-w-max items-center gap-2">
+          <Link className="hover:text-primary-accent-strong" href="/">
+            خانه
+          </Link>
+          <span>/</span>
+          <Link className="hover:text-primary-accent-strong" href={`/categories/${product.category.slug}`}>
+            {product.category.name}
+          </Link>
+          <span>/</span>
+          <Link className="hover:text-primary-accent-strong" href={`/products?brand=${product.brand.slug}`}>
+            {product.brand.name}
+          </Link>
+          <span>/</span>
+          <span className="text-[#344054]">{product.name}</span>
+        </div>
+      </nav>
+
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start">
+        <div className="min-w-0">
+          <ProductGallery items={galleryItems} title={product.name} />
+        </div>
+
+        <div className="panel-zen min-w-0 rounded-[32px] p-4 sm:p-5 lg:p-6">
+          <div className="flex flex-wrap items-center gap-2 text-sm font-bold">
+            <Link className="text-primary-accent-strong hover:text-[#B45309]" href={`/products?brand=${product.brand.slug}`}>
+              {product.brand.name}
+            </Link>
+            <span className="text-[#D0D5DD]">•</span>
+            <Link className="text-text-muted hover:text-text-strong" href={`/categories/${product.category.slug}`}>
+              {product.category.name}
+            </Link>
+          </div>
+
+          <h1 className="mt-3 text-[1.5rem] font-black leading-[1.8] text-text-strong sm:text-[1.7rem] lg:text-[1.95rem]">
+            {product.name}
+          </h1>
+
+          {englishTitle ? (
+            <p className="mt-2 text-sm font-medium tracking-[0.01em] text-text-muted sm:text-base">{englishTitle}</p>
+          ) : null}
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-text-muted">
+            {product.sku ? <span>SKU: {product.sku}</span> : null}
+            {product.sku && hasReviewData ? <span className="h-1 w-1 rounded-full bg-[#D0D5DD]" /> : null}
+            {hasReviewData ? (
+              <span className="inline-flex items-center gap-1.5">
+                <span className="text-[#F59E0B]">★★★★★</span>
+                <span className="font-bold text-text-strong">{Number(product.averageRating).toLocaleString("fa-IR")}</span>
+                <span>({product.reviewCount.toLocaleString("fa-IR")} نظر)</span>
+              </span>
+            ) : null}
+          </div>
+
+          <div className="chip-zen-success mt-4 inline-flex px-3 py-1.5 text-xs font-extrabold">
+            {isAvailable ? "موجود در انبار" : "ناموجود"}
+          </div>
+
+          {descriptionPreview ? (
+            <p className="mt-5 line-clamp-3 text-sm leading-8 text-[#475467]">{descriptionPreview}</p>
+          ) : null}
+
+          {quickFacts.length ? (
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {quickFacts.map((item) => (
+                <div key={item.label} className="panel-zen-muted rounded-[22px] px-4 py-3">
+                  <p className="text-xs font-bold text-text-muted">{item.label}</p>
+                  <p className="mt-1 text-sm font-extrabold text-text-strong">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="mt-6">
+            <ProductPurchasePanel
+              compareHref="/products/compare"
+              estimatedDeliveryLabel={shippingEstimate}
+              isAvailable={isAvailable}
+              price={product.price}
+              productId={product.id}
+              stock={product.stock}
+              wishlistActive={Boolean(wishlistItem)}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-8">
+        <ProductDetailSections
+          compatibleCars={compatibleCars}
+          description={product.description}
+          faqs={faqs}
+          importantNotes={importantNotes}
+          specRows={specRows}
+        />
+      </section>
+
+      <section className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_.9fr]" id="product-reviews">
+        <div className="panel-zen rounded-[32px] p-5 md:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
+            <div>
+              <h2 className="text-xl font-black text-text-strong">دیدگاه کاربران</h2>
+              {hasReviewData ? (
+                <p className="mt-2 text-sm text-text-muted">
+                  میانگین امتیاز {Number(product.averageRating).toLocaleString("fa-IR")} از ۵ بر اساس {product.reviewCount.toLocaleString("fa-IR")} نظر
+                </p>
+              ) : (
+                <p className="mt-2 text-sm text-text-muted">هنوز امتیاز ثبت‌شده‌ای برای این کالا وجود ندارد.</p>
+              )}
+            </div>
+            {product.reviewCount > 0 ? (
+              <span className="chip-zen px-3 py-1.5 text-xs font-extrabold">
+                {product.reviewCount.toLocaleString("fa-IR")} نظر
+              </span>
+            ) : null}
+          </div>
+
+          <div className="mt-5 space-y-4">
+            {product.reviews.length ? (
+              product.reviews.map((review) => <ReviewCard key={review.id} review={review} />)
+            ) : (
+              <EmptyState compact description="اولین تجربه خرید و استفاده از این کالا را با بقیه کاربران به اشتراک بگذارید." title="هنوز نظری برای این محصول ثبت نشده است" />
+            )}
+          </div>
+        </div>
+
+        <ReviewForm productId={product.id} />
+      </section>
+
+      <section className="mt-8 grid gap-6 lg:grid-cols-2" id="product-questions">
+        <QuestionForm type="product" slug={product.slug} title={`پرسش درباره ${product.brand.name} ${product.name}`} />
+        <QuestionList items={questionItems} emptyMessage="هنوز پرسشی برای این محصول ثبت نشده است." />
+      </section>
+
+      {relatedProducts.length > 0 ? (
+        <section className="mt-8 space-y-4">
+          <div className="section-heading">
+            <div>
+              <h2 className="section-title">محصولات مرتبط</h2>
+              <p className="section-subtitle">کالاهای هم‌دسته یا هم‌برند برای تصمیم‌گیری سریع‌تر</p>
+            </div>
+            <Link className="text-sm font-bold text-primary-accent-strong" href="/products">
+              مشاهده همه
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+            {relatedProducts.map((item) => (
+              <ProductCard key={item.id} product={item} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </div>
+  );
+}

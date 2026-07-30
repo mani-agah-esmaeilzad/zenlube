@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import prisma from "@/lib/prisma";
 import { getAppSession } from "@/lib/session";
+import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
 import { productReviewSchema } from "@/lib/validators";
 
 type ActionResult = {
@@ -39,7 +40,7 @@ export async function toggleWishlistAction(productId: string): Promise<ActionRes
       select: { id: true, slug: true },
     });
 
-    if (!product || product.slug.startsWith("deleted-")) {
+    if (!isStorefrontVisibleProduct(product)) {
       return { success: false, message: "محصول انتخاب‌شده معتبر نیست." };
     }
 
@@ -144,7 +145,7 @@ export async function createProductReviewAction(
       }),
     ]);
 
-    if (!product || product.slug.startsWith("deleted-")) {
+    if (!isStorefrontVisibleProduct(product)) {
       return { success: false, message: "محصول موردنظر پیدا نشد." };
     }
 

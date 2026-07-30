@@ -1,108 +1,50 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useMemo, useState } from "react";
+
+import { CarEditorForm } from "@/components/admin/forms/CarForm";
 import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
 import type { CarsTabData } from "@/services/admin/types";
-import { createCarAction, deleteCarFormAction } from "@/actions/admin";
+import { deleteCarFormAction, toggleCarVisibilityFormAction } from "@/actions/admin";
 
 export function CarsTab({ data }: { data: CarsTabData }) {
   const { cars } = data;
+  const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
+  const selectedCar = useMemo(
+    () => cars.find((car) => car.id === selectedCarId) ?? null,
+    [cars, selectedCarId],
+  );
+  const activeCarsCount = cars.filter((car) => car.isActive).length;
+  const inactiveCarsCount = cars.length - activeCarsCount;
 
   return (
     <div className="space-y-10">
       <section className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
         <div className="rounded-3xl border border-slate-200 bg-white p-6">
-          <h2 className="text-xl font-semibold text-slate-900">ثبت یا ویرایش خودرو</h2>
-          <p className="mt-2 text-xs text-slate-500">
-            خودرو جدید را با دیتاشیت کامل ثبت کنید. برای ویرایش، فرم را با همان اسلاگ ارسال کنید تا اطلاعات دفترچه‌ای به‌روزرسانی شود.
-          </p>
-          <form action={createCarAction} className="mt-6 grid gap-4 sm:grid-cols-2">
-            <input
-              name="slug"
-              placeholder="اسلاگ خودرو (مثال: bmw-320i-f30)"
-              className="sm:col-span-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="manufacturer"
-              placeholder="سازنده"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="model"
-              placeholder="مدل"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="generation"
-              placeholder="نسل / تیپ (اختیاری)"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="imageUrl"
-              placeholder="آدرس تصویر یا جلد دفترچه (اختیاری)"
-              className="sm:col-span-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="engineType"
-              placeholder="نوع موتور"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="engineCode"
-              placeholder="کد موتور (اختیاری)"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="viscosity"
-              placeholder="ویسکوزیته پیشنهادی (SAE)"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="oilCapacityLit"
-              placeholder="ظرفیت روغن موتور (لیتر)"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="specification"
-              placeholder="استاندارد سازنده (مثال: VW 504.00)"
-              className="sm:col-span-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="yearFrom"
-              placeholder="سال شروع تولید"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <input
-              name="yearTo"
-              placeholder="سال پایان تولید"
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <textarea
-              name="overviewDetails"
-              placeholder="صفحه مقدمه دفترچه: معرفی کلی خودرو"
-              className="sm:col-span-2 h-28 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <textarea
-              name="engineDetails"
-              placeholder="صفحه موتور: ساختار فنی، ظرفیت، روغن و توصیه‌های سرویس"
-              className="sm:col-span-2 h-32 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <textarea
-              name="gearboxDetails"
-              placeholder="صفحه گیربکس: نوع جعبه‌دنده، روغن مناسب، ظرفیت و دوره‌های سرویس"
-              className="sm:col-span-2 h-32 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <textarea
-              name="maintenanceInfo"
-              placeholder="صفحه نگهداری: برنامه بازدیدها، سیالات مصرفی و نکات تخصصی"
-              className="sm:col-span-2 h-32 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
-            />
-            <button
-              type="submit"
-              className="sm:col-span-2 rounded-full bg-sky-500 px-6 py-2 text-sm font-semibold text-slate-900 transition hover:bg-sky-600"
-            >
-              ذخیره خودرو
-            </button>
-          </form>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900">مدیریت نمایش و اطلاعات خودرو</h2>
+              <p className="mt-2 text-xs leading-6 text-slate-500">
+                از این بخش می‌توانید خودرو را ویرایش کنید، در سایت فعال یا غیرفعال نگه دارید و نمایش آن را کنترل کنید.
+              </p>
+            </div>
+            {selectedCar ? (
+              <button
+                type="button"
+                onClick={() => setSelectedCarId(null)}
+                className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+              >
+                ثبت خودروی جدید
+              </button>
+            ) : null}
+          </div>
+
+          <CarEditorForm
+            key={selectedCar?.id ?? "create"}
+            car={selectedCar}
+            onReset={() => setSelectedCarId(null)}
+          />
         </div>
 
         <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-6">
@@ -113,22 +55,28 @@ export function CarsTab({ data }: { data: CarsTabData }) {
                 {faNumberFormatter.format(cars.length)} خودرو در پایگاه داده موجود است.
               </p>
             </div>
-            <span className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500">
-              مرتب‌سازی بر اساس سازنده
-            </span>
+            <div className="flex flex-wrap justify-end gap-2 text-xs">
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">
+                {faNumberFormatter.format(activeCarsCount)} فعال
+              </span>
+              <span className="rounded-full border border-slate-200 px-3 py-1 text-slate-500">
+                {faNumberFormatter.format(inactiveCarsCount)} غیرفعال
+              </span>
+            </div>
           </div>
-          <div className="rounded-3xl border border-slate-200 bg-white">
+          <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
             {cars.length ? (
               <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
                 <thead className="bg-slate-100 text-xs uppercase text-slate-400">
                   <tr>
                     <th className="px-4 py-3 text-right">خودرو</th>
+                    <th className="px-4 py-3 text-right">وضعیت</th>
                     <th className="px-4 py-3 text-right">سال‌های تولید</th>
                     <th className="px-4 py-3 text-right">موتور</th>
                     <th className="px-4 py-3 text-right">روغن پیشنهادی</th>
                     <th className="px-4 py-3 text-right">محصولات مرتبط</th>
                     <th className="px-4 py-3 text-right">آخرین بروزرسانی</th>
-                    <th className="px-4 py-3 text-right">حذف</th>
+                    <th className="px-4 py-3 text-right">عملیات</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 bg-slate-50">
@@ -139,13 +87,29 @@ export function CarsTab({ data }: { data: CarsTabData }) {
                           <span className="text-slate-900">
                             {car.manufacturer} {car.model} {car.generation ?? ""}
                           </span>
-                          <Link
-                            href={`/cars/${car.slug}`}
-                            className="text-xs text-purple-300 hover:text-sky-600"
-                          >
-                            مشاهده صفحه
-                          </Link>
+                          <span className="text-[11px] text-slate-400">{car.slug}</span>
+                          {car.isActive ? (
+                            <Link
+                              href={`/cars/${car.slug}`}
+                              className="text-xs text-purple-300 hover:text-sky-600"
+                            >
+                              مشاهده صفحه
+                            </Link>
+                          ) : (
+                            <span className="text-xs text-slate-400">در سایت نمایش داده نمی‌شود</span>
+                          )}
                         </div>
+                      </td>
+                      <td className="px-4 py-3 text-xs">
+                        <span
+                          className={`inline-flex rounded-full px-3 py-1 font-bold ${
+                            car.isActive
+                              ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                              : "border border-slate-200 bg-white text-slate-500"
+                          }`}
+                        >
+                          {car.isActive ? "فعال" : "غیرفعال"}
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-xs">
                         {car.yearFrom ?? "—"} تا {car.yearTo ?? "—"}
@@ -173,12 +137,37 @@ export function CarsTab({ data }: { data: CarsTabData }) {
                         {faDateFormatter.format(car.updatedAt)}
                       </td>
                       <td className="px-4 py-3">
-                        <form action={deleteCarFormAction}>
-                          <input type="hidden" name="carId" value={car.id} />
-                          <button type="submit" className="rounded-full border border-red-200 px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50">
-                            حذف
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCarId(car.id)}
+                            className="rounded-full border border-slate-200 px-3 py-1 text-xs font-bold text-slate-700 transition hover:bg-white"
+                          >
+                            ویرایش
                           </button>
-                        </form>
+                          <form action={toggleCarVisibilityFormAction}>
+                            <input type="hidden" name="carId" value={car.id} />
+                            <input type="hidden" name="carSlug" value={car.slug} />
+                            <input type="hidden" name="nextIsActive" value={car.isActive ? "false" : "true"} />
+                            <button
+                              type="submit"
+                              className={`rounded-full px-3 py-1 text-xs font-bold transition ${
+                                car.isActive
+                                  ? "border border-amber-200 text-amber-700 hover:bg-amber-50"
+                                  : "border border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                              }`}
+                            >
+                              {car.isActive ? "غیرفعال‌سازی" : "فعال‌سازی"}
+                            </button>
+                          </form>
+                          <form action={deleteCarFormAction}>
+                            <input type="hidden" name="carId" value={car.id} />
+                            <input type="hidden" name="carSlug" value={car.slug} />
+                            <button type="submit" className="rounded-full border border-red-200 px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50">
+                              حذف
+                            </button>
+                          </form>
+                        </div>
                       </td>
                     </tr>
                   ))}

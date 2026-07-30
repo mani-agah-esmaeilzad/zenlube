@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { ensureAdminAction } from "@/lib/auth";
+import { revalidateAdminSurface, revalidateStorefrontCatalog } from "@/lib/storefront-revalidate";
 import { maintenanceTaskSchema } from "@/lib/validators";
 import { deleteMaintenanceTask, upsertMaintenanceTask } from "@/services/admin/mutations";
 
@@ -25,9 +24,8 @@ export async function createMaintenanceTaskAction(formData: FormData): Promise<v
 
   await upsertMaintenanceTask(parsed.data);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/cars");
+  revalidateAdminSurface();
+  revalidateStorefrontCatalog();
 }
 
 export async function deleteMaintenanceTaskAction(taskId: string): Promise<ActionResult> {
@@ -35,9 +33,8 @@ export async function deleteMaintenanceTaskAction(taskId: string): Promise<Actio
 
   await deleteMaintenanceTask(taskId);
 
-  revalidatePath("/admin");
-  revalidatePath("/");
-  revalidatePath("/cars");
+  revalidateAdminSurface();
+  revalidateStorefrontCatalog();
 
   return { success: true };
 }

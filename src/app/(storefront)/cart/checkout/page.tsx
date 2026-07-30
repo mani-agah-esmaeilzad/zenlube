@@ -1,0 +1,85 @@
+import { redirect } from "next/navigation";
+
+import { CheckoutForm } from "@/components/cart/checkout-form";
+import prisma from "@/lib/prisma";
+import { formatPrice } from "@/lib/utils";
+import { getAppSession } from "@/lib/session";
+
+export const revalidate = 0;
+
+export default async function CheckoutPage() {
+  const session = await getAppSession();
+  const user = (session as { user?: { id?: string; email?: string | null; name?: string | null; phone?: string | null } } | null)?.user;
+
+  if (!user?.id) {
+    redirect("/sign-in?callbackUrl=/cart/checkout");
+  }
+
+  const [cart, defaultAddress, addresses] = await Promise.all([
+    prisma.cart.findUnique({
+      where: { userId: user.id },
+      include: {
+        items: {
+          include: {
+            product: { select: { id: true, name: true, price: true } },
+          },
+        },
+      },
+    }),
+    prisma.userAddress.findFirst({ where: { userId: user.id, isDefault: true } }),
+    prisma.userAddress.findMany({
+      where: { userId: user.id },
+      orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
+    }),
+  ]);
+
+  if (!cart || cart.items.length === 0) {
+    redirect("/cart");
+  }
+
+  const defaults = {
+    fullName: defaultAddress?.fullName ?? user.name ?? "",
+    email: user.email ?? "",
+    phone: defaultAddress?.phone ?? user.phone ?? "",
+    address1: defaultAddress?.address1 ?? "",
+    address2: defaultAddress?.address2 ?? "",
+    city: defaultAddress?.city ?? "",
+    province: defaultAddress?.province ?? "",
+    postalCode: defaultAddress?.postalCode ?? "",
+  };
+
+  const items = cart.items.map((item) => ({
+    id: item.id,
+    name: item.product.name,
+    quantity: item.quantity,
+    price: Number(item.product.price),
+  }));
+
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  return (
+    <div className="container-zen space-y-6 py-6 md:py-8">
+      <header className="panel-zen relative overflow-hidden rounded-3xl p-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_12%,rgba(245,158,11,0.12),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(251,252,254,0.86)_100%)]" />
+        <p className="relative z-10 text-sm font-bold text-[#DC2626]">مرحله پایانی خرید</p>
+        <h1 className="relative z-10 mt-2 text-2xl font-extrabold text-text-strong md:text-3xl">تایید و پرداخت سفارش</h1>
+        <p className="relative z-10 mt-2 text-sm leading-7 text-text-muted">
+          جمع کالاهای سبد خرید شما {formatPrice(subtotal)} است. اطلاعات ارسال را تکمیل کنید تا به درگاه پرداخت منتقل شوید.
+        </p>
+      </header>
+
+  <CheckoutForm items={items} defaults={defaults} addresses={addresses.map((address) => ({
+    id: address.id,
+    label: address.label,
+    fullName: address.fullName,
+    phone: address.phone,
+    address1: address.address1,
+    address2: address.address2,
+    city: address.city,
+    province: address.province,
+    postalCode: address.postalCode,
+    isDefault: address.isDefault,
+  }))} />
+    </div>
+  );
+}

@@ -39,8 +39,8 @@ export function Pagination({ pageInfo, pathname, searchParams = {}, className = 
             aria-current={page === pageInfo.page ? "page" : undefined}
             className={
               page === pageInfo.page
-                ? "inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl bg-primary px-3 font-black text-white shadow-[0_14px_30px_rgba(17,24,39,0.16)]"
-                : "inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl border border-border bg-white px-3 font-bold text-[#374151] transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong"
+                ? "inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg bg-primary px-3 font-black text-white"
+                : "inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-border bg-white px-3 font-bold text-text transition hover:border-[rgba(217,119,6,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong"
             }
           >
             {page.toLocaleString("fa-IR")}

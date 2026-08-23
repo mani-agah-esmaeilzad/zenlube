@@ -27,7 +27,7 @@ export function QuantitySelector({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-[20px] border border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#FCFCFD_100%)] shadow-[0_10px_24px_rgba(17,24,39,0.04)]",
+        "inline-flex items-center rounded-xl border border-border bg-white",
         size === "sm" ? "min-h-10" : "min-h-12",
         className,
       )}

@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+import { cn } from "@/lib/utils";
+
 type HeroVehicleFinderProps = {
   cars: Array<{
     id: string;
@@ -14,6 +16,7 @@ type HeroVehicleFinderProps = {
     yearTo: number | null;
     viscosity: string | null;
   }>;
+  variant?: "default" | "compact";
 };
 
 type SelectFieldProps = {
@@ -38,10 +41,10 @@ function getYearLabel(car: HeroVehicleFinderProps["cars"][number]) {
 
 function SelectField({ ariaLabel, disabled = false, onChange, options, placeholder, value }: SelectFieldProps) {
   return (
-    <label className="relative block">
+    <label className="relative block min-w-0">
       <select
         aria-label={ariaLabel}
-        className="input-zen h-14 appearance-none rounded-2xl border-transparent bg-white/95 pl-11 pr-4 text-sm font-semibold text-text-strong shadow-none disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-subtle"
+        className="input-zen appearance-none pl-10 pr-4 text-sm font-semibold disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-subtle"
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
         value={value}
@@ -55,7 +58,7 @@ function SelectField({ ariaLabel, disabled = false, onChange, options, placehold
       </select>
       <svg
         aria-hidden="true"
-        className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-subtle"
+        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-subtle"
         fill="none"
         stroke="currentColor"
         strokeLinecap="round"
@@ -69,7 +72,7 @@ function SelectField({ ariaLabel, disabled = false, onChange, options, placehold
   );
 }
 
-export function HeroVehicleFinder({ cars }: HeroVehicleFinderProps) {
+export function HeroVehicleFinder({ cars, variant = "default" }: HeroVehicleFinderProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [manufacturer, setManufacturer] = useState("");
@@ -91,22 +94,20 @@ export function HeroVehicleFinder({ cars }: HeroVehicleFinderProps) {
   const engines = Array.from(new Set(modelCars.map((car) => car.engineType).filter(Boolean))) as string[];
   const hasSelection = Boolean(manufacturer || model || year || engine);
 
-  const exactMatch =
-    hasSelection
-      ? modelCars.find((car) => {
-          const yearLabel = getYearLabel(car);
-
-          return (!year || yearLabel === year) && (!engine || car.engineType === engine);
-        }) ?? null
-      : null;
+  const exactMatch = hasSelection
+    ? modelCars.find((car) => {
+        const yearLabel = getYearLabel(car);
+        return (!year || yearLabel === year) && (!engine || car.engineType === engine);
+      }) ?? null
+    : null;
 
   const helperText = !cars.length
     ? "هنوز دیتای خودرو برای پیشنهاد سریع ثبت نشده است."
     : exactMatch?.viscosity
-      ? `ویسکوزیته پیشنهادی برای این خودرو: ${exactMatch.viscosity}`
+      ? `ویسکوزیته پیشنهادی: ${exactMatch.viscosity}`
       : exactMatch
-        ? "خودرو پیدا شد. برای دیدن محصولات سازگار ادامه بده."
-        : "تا روغن و فیلتر سازگار را پیشنهاد کنیم.";
+        ? "خودرو پیدا شد. محصولات سازگار را ببینید."
+        : "برند و مدل خودرو را انتخاب کنید تا محصول سازگار نمایش داده شود.";
 
   const handleSubmit = () => {
     startTransition(() => {
@@ -123,65 +124,52 @@ export function HeroVehicleFinder({ cars }: HeroVehicleFinderProps) {
   };
 
   return (
-    <div className="panel-zen relative overflow-hidden rounded-[32px] p-5 md:p-6">
-      <div className="pointer-events-none absolute inset-x-6 top-0 h-24 rounded-b-[28px] bg-[radial-gradient(circle_at_top,rgba(245,197,107,0.18),transparent_72%)]" />
-      <div className="relative space-y-2">
-        <span className="chip-zen inline-flex">جستجوی سریع خودرو</span>
-        <h2 className="text-[1.55rem] font-extrabold tracking-[-0.02em] text-text-strong">خودروت را انتخاب کن</h2>
-        <p className="text-sm leading-7 text-text-muted">{helperText}</p>
-      </div>
+    <div className={cn(variant === "compact" ? "border-y border-border bg-surface-secondary py-5" : "panel-zen rounded-2xl p-5")}>
+      <div className={cn(variant === "compact" ? "container-zen" : "space-y-4")}>
+        <div className={cn(variant === "compact" ? "mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between" : "space-y-1")}>
+          <div>
+            <h2 className="text-base font-extrabold text-text-strong sm:text-lg">انتخاب روغن بر اساس خودرو</h2>
+            <p className="mt-1 text-sm leading-7 text-text-muted">{helperText}</p>
+          </div>
+        </div>
 
-      <div className="relative mt-5 grid gap-3">
-        <SelectField
-          ariaLabel="برند خودرو"
-          onChange={(value) => {
-            setManufacturer(value);
-            setModel("");
-            setYear("");
-            setEngine("");
-          }}
-          options={manufacturers}
-          placeholder="برند خودرو"
-          value={manufacturer}
-        />
-        <SelectField
-          ariaLabel="مدل"
-          disabled={!models.length}
-          onChange={(value) => {
-            setModel(value);
-            setYear("");
-            setEngine("");
-          }}
-          options={models}
-          placeholder="مدل"
-          value={model}
-        />
-        <SelectField
-          ariaLabel="سال"
-          disabled={!years.length}
-          onChange={setYear}
-          options={years}
-          placeholder="سال"
-          value={year}
-        />
-        <SelectField
-          ariaLabel="نوع موتور"
-          disabled={!engines.length}
-          onChange={setEngine}
-          options={engines}
-          placeholder="نوع موتور"
-          value={engine}
-        />
+        <div className={cn(variant === "compact" ? "grid gap-3 md:grid-cols-[repeat(4,minmax(0,1fr))_auto]" : "grid gap-3")}>
+          <SelectField
+            ariaLabel="برند خودرو"
+            onChange={(value) => {
+              setManufacturer(value);
+              setModel("");
+              setYear("");
+              setEngine("");
+            }}
+            options={manufacturers}
+            placeholder="برند خودرو"
+            value={manufacturer}
+          />
+          <SelectField
+            ariaLabel="مدل"
+            disabled={!models.length}
+            onChange={(value) => {
+              setModel(value);
+              setYear("");
+              setEngine("");
+            }}
+            options={models}
+            placeholder="مدل"
+            value={model}
+          />
+          <SelectField ariaLabel="سال" disabled={!years.length} onChange={setYear} options={years} placeholder="سال" value={year} />
+          <SelectField ariaLabel="نوع موتور" disabled={!engines.length} onChange={setEngine} options={engines} placeholder="نوع موتور" value={engine} />
+          <button
+            className="btn-primary md:min-w-[168px]"
+            disabled={isPending || !cars.length}
+            onClick={handleSubmit}
+            type="button"
+          >
+            {isPending ? "در حال انتقال..." : "یافتن محصول سازگار"}
+          </button>
+        </div>
       </div>
-
-      <button
-        className="btn-primary mt-4 flex h-14 w-full items-center justify-center rounded-2xl text-base"
-        disabled={isPending || !cars.length}
-        onClick={handleSubmit}
-        type="button"
-      >
-        {isPending ? "در حال انتقال..." : "یافتن محصولات سازگار"}
-      </button>
     </div>
   );
 }

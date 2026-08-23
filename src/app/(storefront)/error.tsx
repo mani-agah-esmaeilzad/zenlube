@@ -11,7 +11,7 @@ export default function StorefrontError({
 }) {
   return (
     <div className="container-zen py-12 md:py-16">
-      <div className="panel-zen mx-auto max-w-2xl rounded-[32px] border-[rgba(245,158,11,0.2)] p-6 text-center md:p-8">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-6 text-center md:p-8">
         <div className="icon-shell mx-auto grid size-16 place-items-center rounded-full text-3xl font-black text-[#D97706]">
           !
         </div>

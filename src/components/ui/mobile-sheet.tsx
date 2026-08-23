@@ -125,10 +125,10 @@ export function MobileSheet({
         aria-labelledby={titleId}
         aria-modal="true"
         className={cn(
-          "absolute flex max-w-full flex-col overflow-hidden border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,#FCFCFD_100%)] shadow-[0_30px_80px_rgba(17,24,39,0.24)] transition duration-200 ease-out",
+          "absolute flex max-w-full flex-col overflow-hidden border border-border bg-white shadow-[0_24px_64px_rgba(17,24,39,0.18)] transition duration-200 ease-out",
           side === "right"
-            ? "inset-y-0 right-0 h-full w-[min(92vw,390px)] rounded-l-[28px]"
-            : "inset-x-0 bottom-0 max-h-[min(88dvh,calc(100dvh-12px))] rounded-t-[28px]",
+            ? "inset-y-0 right-0 h-full w-[min(92vw,390px)] rounded-l-2xl"
+            : "inset-x-0 bottom-0 max-h-[min(88dvh,calc(100dvh-12px))] rounded-t-2xl",
           open
             ? "visible translate-x-0 translate-y-0 opacity-100"
             : side === "right"
@@ -148,7 +148,7 @@ export function MobileSheet({
           <button
             ref={closeButtonRef}
             aria-label="بستن"
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border bg-white text-text-muted transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgba(245,158,11,0.18)]"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-white text-text-muted transition hover:border-[rgba(217,119,6,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong"
             onClick={onClose}
             type="button"
           >
@@ -159,7 +159,7 @@ export function MobileSheet({
         <div className={cn("min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5", contentClassName)}>{children}</div>
 
         {footer ? (
-          <div className="border-t border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#FCFCFD_100%)] px-4 py-4 mobile-bottom-safe sm:px-5">{footer}</div>
+          <div className="border-t border-border bg-white px-4 py-4 mobile-bottom-safe sm:px-5">{footer}</div>
         ) : null}
       </section>
     </div>,

@@ -19,14 +19,14 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   return (
     <div className="container-zen py-6 md:py-10 lg:flex lg:min-h-[70vh] lg:items-center">
       <div className="grid w-full gap-6 lg:grid-cols-[1.05fr_480px]">
-        <section className="panel-zen-tint hidden rounded-[34px] p-10 lg:block">
-          <p className="text-sm font-bold text-primary-accent-strong">شروع خرید هوشمند</p>
-          <h1 className="mt-4 text-4xl font-black leading-[1.5] text-text-strong">حساب بسازید تا خرید، پیگیری سفارش و انتخاب روغن ساده‌تر شود</h1>
+        <section className="hidden rounded-2xl bg-surface-secondary p-10 lg:block">
+          <p className="text-sm font-bold text-primary-accent-strong">شروع خرید</p>
+          <h1 className="mt-4 text-4xl font-black leading-[1.5] text-text-strong">حساب بسازید تا خرید و پیگیری سفارش ساده‌تر شود</h1>
           <p className="mt-4 max-w-xl text-sm leading-8 text-text-muted">
-            با ثبت‌نام در Oilbar، اطلاعات تماس و آدرس شما ذخیره می‌شود و برای سفارش‌های بعدی سریع‌تر به مرحله پرداخت می‌رسید.
+            با ثبت‌نام در Oilbar، اطلاعات تماس و آدرس شما ذخیره می‌شود و برای سفارش‌های بعدی سریع‌تر به پرداخت می‌رسید.
           </p>
         </section>
-        <div className="panel-zen mx-auto w-full max-w-[34rem] rounded-[30px] p-5 sm:p-8 lg:max-w-none">
+        <div className="mx-auto w-full max-w-[34rem] rounded-2xl border border-border bg-white p-5 sm:p-8 lg:max-w-none">
         <div className="mb-6">
           <p className="text-sm font-bold text-primary-accent-strong">Oilbar</p>
           <h1 className="mt-2 text-2xl font-extrabold text-text-strong">ساخت حساب کاربری</h1>

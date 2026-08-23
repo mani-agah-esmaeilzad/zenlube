@@ -15,9 +15,9 @@ type AddToCartButtonProps = {
 };
 
 const sizeStyles = {
-  sm: "min-h-10 rounded-[14px] px-4 py-2 text-[13px]",
-  md: "min-h-11 rounded-[16px] px-5 py-2.5 text-sm",
-  lg: "min-h-[50px] rounded-[18px] px-6 py-3 text-sm sm:text-base",
+  sm: "min-h-10 rounded-xl px-4 py-2 text-[13px]",
+  md: "min-h-11 rounded-xl px-5 py-2.5 text-sm",
+  lg: "min-h-[48px] rounded-xl px-6 py-3 text-sm sm:text-base",
 } as const;
 
 export function AddToCartButton({
@@ -60,7 +60,7 @@ export function AddToCartButton({
         type="button"
         onClick={handleAdd}
         className={cn(
-          "btn-primary inline-flex items-center justify-center gap-2 font-extrabold disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#EAECF0] disabled:text-[#98A2B3] disabled:shadow-none",
+          "btn-primary inline-flex items-center justify-center gap-2 font-extrabold",
           sizeStyles[size],
           className,
         )}
@@ -81,13 +81,13 @@ export function AddToCartButton({
         )}
       </button>
       <span
+        aria-live="polite"
         className={cn(
-          "text-center text-[11px] leading-5",
+          "sr-only",
           feedback ? (feedbackTone === "success" ? "text-success" : "text-danger") : "text-transparent",
         )}
-        aria-live="polite"
       >
-        {feedback ? feedback : " "}
+        {feedback ?? ""}
       </span>
     </div>
   );

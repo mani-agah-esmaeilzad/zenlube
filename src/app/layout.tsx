@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html dir="rtl" lang="fa">
-      <body className="bg-surface text-[#1F2937] antialiased">
+      <body className="bg-background text-foreground antialiased">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

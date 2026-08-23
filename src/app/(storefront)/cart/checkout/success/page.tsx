@@ -29,7 +29,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
   return (
     <div className="container-zen py-10">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-emerald-200 bg-white p-6 shadow-sm md:p-8">
+      <div className="mx-auto max-w-3xl rounded-2xl border border-emerald-200 bg-white p-6 md:p-8">
         <div className="flex flex-col gap-4 text-center md:items-center">
           <div className="mx-auto grid size-16 place-items-center rounded-full bg-emerald-50 text-3xl font-black text-[#16A34A]">✓</div>
           <div>
@@ -51,7 +51,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
           {latestTransaction?.cardPan ? <StatusPill tone="neutral">{latestTransaction.cardPan}</StatusPill> : null}
         </div>
 
-        <div className="mt-8 rounded-3xl border border-[#E5E7EB] p-5">
+        <div className="mt-8 rounded-2xl border border-border p-5">
           <h2 className="text-sm font-black text-[#111827]">اقلام سفارش</h2>
           <div className="mt-3 space-y-2">
             {order.items.map((item) => (

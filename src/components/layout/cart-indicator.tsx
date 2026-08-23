@@ -27,7 +27,7 @@ export async function CartIndicator({ compact = false, className }: CartIndicato
     <Link
       href="/cart"
       className={cn(
-        "btn-outline relative inline-flex h-11 items-center rounded-2xl text-sm font-bold text-text-strong",
+        "btn-outline relative inline-flex h-11 items-center rounded-xl text-sm font-bold text-text-strong",
         compact ? "w-11 justify-center px-0" : "gap-2 px-3",
         className,
       )}
@@ -38,7 +38,7 @@ export async function CartIndicator({ compact = false, className }: CartIndicato
       {totalItems > 0 ? (
         <span
           className={cn(
-            "absolute inline-flex min-w-6 items-center justify-center rounded-full bg-[#EF394E] px-1.5 text-[11px] font-bold text-white shadow-[0_10px_20px_rgba(239,57,78,0.24)]",
+            "absolute inline-flex min-w-5 items-center justify-center rounded-full bg-error px-1.5 text-[11px] font-bold text-white",
             compact ? "-left-1 -top-1 h-5" : "-left-2 -top-2 h-6",
           )}
         >

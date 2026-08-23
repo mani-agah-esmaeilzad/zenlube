@@ -16,9 +16,9 @@ export function CarCard({ car, showDetailLink = true, showOverview = true }: Car
   const oilCapacity = resolveCarOilCapacityLabel(car);
 
   return (
-    <article className="panel-zen interactive-lift group overflow-hidden rounded-3xl">
+    <article className="group overflow-hidden rounded-2xl border border-border bg-white">
       <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-[160px_minmax(0,1fr)]">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[linear-gradient(180deg,#F7F8FA_0%,#F2F5F8_100%)]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-surface-secondary">
           {car.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={car.imageUrl} alt={`${car.manufacturer} ${car.model}`} className="h-full w-full object-cover" loading="lazy" />
@@ -44,14 +44,14 @@ export function CarCard({ car, showDetailLink = true, showOverview = true }: Car
         </div>
       </div>
 
-      <div className="border-t border-border bg-[linear-gradient(180deg,#FCFCFD_0%,#F7F8FA_100%)] p-4 sm:p-5">
+      <div className="border-t border-border bg-surface-secondary p-4 sm:p-5">
         {car.productMappings.length > 0 ? (
           <div>
             <p className="mb-3 text-sm font-bold text-text-strong">محصولات سازگار</p>
             <ul className="space-y-2">
               {car.productMappings.slice(0, 2).map(({ product }) => (
                 <li key={product.id} className="flex items-center justify-between gap-3 text-sm">
-                  <Link href={`/products/${product.slug}`} className="line-clamp-2 min-w-0 font-semibold leading-6 text-[#374151] hover:text-primary-accent-strong">
+                  <Link href={`/products/${product.slug}`} className="line-clamp-2 min-w-0 font-semibold leading-6 text-text hover:text-primary-accent-strong">
                     {product.brand.name} - {product.name}
                   </Link>
                   <span className="shrink-0 text-xs font-bold text-text-strong">{formatPrice(product.price)}</span>
@@ -75,7 +75,7 @@ export function CarCard({ car, showDetailLink = true, showOverview = true }: Car
 
 function Spec({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-2xl border px-3 py-2 ${highlight ? "border-[rgba(245,158,11,0.2)] bg-surface-tint text-primary-accent-strong" : "border-border bg-white"}`}>
+    <div className={`rounded-xl border px-3 py-2 ${highlight ? "border-[rgba(217,119,6,0.2)] bg-surface-tint text-primary-accent-strong" : "border-border bg-white"}`}>
       <span className="block text-[11px] font-medium opacity-75">{label}</span>
       <span className="mt-1 block font-bold">{value}</span>
     </div>

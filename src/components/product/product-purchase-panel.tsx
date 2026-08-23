@@ -39,7 +39,7 @@ export function ProductPurchasePanel({
 
   return (
     <>
-      <section className="panel-zen-tint rounded-[28px] p-4 sm:p-5">
+      <section className="rounded-2xl border border-[rgba(217,119,6,0.16)] bg-surface-tint p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-xs font-bold text-text-muted">قیمت نهایی</p>
@@ -72,7 +72,7 @@ export function ProductPurchasePanel({
         <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto_auto] gap-2">
           <Link
             aria-label="افزودن این محصول به مقایسه"
-            className="btn-outline inline-flex min-h-12 items-center justify-center gap-2 rounded-[18px] px-4 text-sm font-bold text-[#344054]"
+            className="btn-outline inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-text"
             href={compareHref}
           >
             مقایسه
@@ -80,7 +80,7 @@ export function ProductPurchasePanel({
           <WishlistButton compact productId={productId} initialActive={wishlistActive} className="!size-12 !rounded-[18px]" />
           <button
             aria-label="اشتراک‌گذاری محصول"
-            className="btn-outline inline-flex h-12 w-12 items-center justify-center rounded-[18px] text-[#344054]"
+            className="btn-outline inline-flex h-12 w-12 items-center justify-center rounded-xl text-text"
             onClick={() => {
               if (typeof navigator !== "undefined" && navigator.share) {
                 navigator.share({ url: window.location.href }).catch(() => undefined);
@@ -92,7 +92,7 @@ export function ProductPurchasePanel({
           </button>
         </div>
 
-        <div className="mt-5 grid gap-2 border-t border-[rgba(245,158,11,0.12)] pt-4 text-sm text-[#344054]">
+        <div className="mt-5 grid gap-2 border-t border-[rgba(217,119,6,0.12)] pt-4 text-sm text-text">
           {benefits.map((benefit) => (
             <div key={benefit} className="flex items-center gap-2">
               <span className="icon-shell inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
@@ -105,7 +105,7 @@ export function ProductPurchasePanel({
       </section>
 
       <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom,0px)+4.9rem)] z-40 lg:hidden">
-        <div className="rounded-[22px] border border-border bg-[rgba(255,255,255,0.96)] px-3 py-3 shadow-[0_18px_44px_rgba(17,24,39,0.16)] backdrop-blur">
+        <div className="rounded-xl border border-border bg-white/96 px-3 py-3 shadow-[0_16px_36px_rgba(17,24,39,0.12)]">
           <div className="flex items-center gap-3">
             <div className="min-w-0 shrink-0">
               <p className="text-[11px] font-bold text-text-muted">قیمت</p>

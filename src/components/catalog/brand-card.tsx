@@ -7,31 +7,32 @@ type BrandCardProps = {
 
 export function BrandCard({ brand }: BrandCardProps) {
   return (
-    <div className="panel-zen interactive-lift flex h-full min-w-0 flex-col gap-4 rounded-[28px] p-5 sm:p-6">
+    <div className="flex h-full min-w-0 flex-col gap-4 rounded-2xl border border-border bg-white p-5">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="line-clamp-2 min-w-0 text-base font-extrabold text-text-strong sm:text-lg">{brand.name}</h3>
-        <span className="chip-zen shrink-0 px-3 py-1 text-xs">
-          {brand._count.products} محصول
-        </span>
+        <div className="flex min-w-0 items-center gap-3">
+          {brand.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img alt={brand.name} className="h-10 w-auto max-w-[80px] object-contain" src={brand.imageUrl} />
+          ) : null}
+          <h3 className="line-clamp-2 min-w-0 text-base font-extrabold text-text-strong">{brand.name}</h3>
+        </div>
+        <span className="chip-zen shrink-0 px-3 py-1 text-xs">{brand._count.products.toLocaleString("fa-IR")} محصول</span>
       </div>
-      {brand.description && <p className="text-sm leading-7 text-text-muted">{brand.description}</p>}
+      {brand.description ? <p className="text-sm leading-7 text-text-muted">{brand.description}</p> : null}
       <div className="mt-auto flex flex-col gap-2 text-xs text-text-muted sm:flex-row sm:flex-wrap sm:gap-3">
-        <Link
-          href={`/products?brand=${brand.slug}`}
-          className="chip-zen-muted interactive-lift rounded-full border px-3 py-1.5 font-bold"
-        >
+        <Link className="btn-outline !min-h-10 rounded-xl px-3 text-xs font-bold" href={`/products?brand=${brand.slug}`}>
           محصولات این برند
         </Link>
-        {brand.website && (
+        {brand.website ? (
           <a
+            className="btn-ghost !min-h-10 rounded-xl px-3 text-xs font-bold"
             href={brand.website}
-            target="_blank"
             rel="noreferrer"
-            className="chip-zen-muted interactive-lift rounded-full border px-3 py-1.5 font-bold"
+            target="_blank"
           >
             وب‌سایت رسمی
           </a>
-        )}
+        ) : null}
       </div>
     </div>
   );

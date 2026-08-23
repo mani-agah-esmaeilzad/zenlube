@@ -22,7 +22,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "panel-zen-muted rounded-[28px] border-dashed text-center",
+        "panel-zen-muted rounded-2xl border-dashed text-center",
         compact ? "p-6 sm:p-7" : "p-8 sm:p-10",
         className,
       )}

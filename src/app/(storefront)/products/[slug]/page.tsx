@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { EngagementTracker } from "@/components/analytics/engagement-tracker";
 import { QuestionForm } from "@/components/forms/question-form";
+import { CopySkuButton } from "@/components/product/copy-sku-button";
 import { ProductDetailSections } from "@/components/product/product-detail-sections";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductCard } from "@/components/product/product-card";
@@ -11,6 +12,7 @@ import { RecentlyViewedTracker } from "@/components/product/recently-viewed-trac
 import { QuestionList } from "@/components/questions/question-list";
 import { ReviewCard } from "@/components/review/review-card";
 import { ReviewForm } from "@/components/review/review-form";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getShippingEstimateLabel } from "@/lib/commerce";
 import {
@@ -163,41 +165,34 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <EngagementTracker entityType="product" entityId={product.id} eventType="product_view" metadata={{ slug: product.slug }} />
       <RecentlyViewedTracker productId={product.id} />
 
-      <nav className="mb-5 overflow-x-auto whitespace-nowrap border-b border-border/70 pb-3 text-xs font-bold text-text-muted scrollbar-none">
-        <div className="flex min-w-max items-center gap-2">
-          <Link className="hover:text-primary-accent-strong" href="/">
-            خانه
-          </Link>
-          <span>/</span>
-          <Link className="hover:text-primary-accent-strong" href={`/categories/${product.category.slug}`}>
-            {product.category.name}
-          </Link>
-          <span>/</span>
-          <Link className="hover:text-primary-accent-strong" href={`/products?brand=${product.brand.slug}`}>
-            {product.brand.name}
-          </Link>
-          <span>/</span>
-          <span className="text-[#344054]">{product.name}</span>
-        </div>
-      </nav>
+      <div className="mb-5 border-b border-border/70 pb-3">
+        <Breadcrumb
+          items={[
+            { href: "/", label: "خانه" },
+            { href: `/categories/${product.category.slug}`, label: product.category.name },
+            { href: `/products?brand=${product.brand.slug}`, label: product.brand.name },
+            { label: product.name },
+          ]}
+        />
+      </div>
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start">
         <div className="min-w-0">
           <ProductGallery items={galleryItems} title={product.name} />
         </div>
 
-        <div className="panel-zen min-w-0 rounded-[32px] p-4 sm:p-5 lg:p-6">
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2 text-sm font-bold">
             <Link className="text-primary-accent-strong hover:text-[#B45309]" href={`/products?brand=${product.brand.slug}`}>
               {product.brand.name}
             </Link>
-            <span className="text-[#D0D5DD]">•</span>
+            <span className="text-text-soft">•</span>
             <Link className="text-text-muted hover:text-text-strong" href={`/categories/${product.category.slug}`}>
               {product.category.name}
             </Link>
           </div>
 
-          <h1 className="mt-3 text-[1.5rem] font-black leading-[1.8] text-text-strong sm:text-[1.7rem] lg:text-[1.95rem]">
+          <h1 className="t-h1 mt-3">
             {product.name}
           </h1>
 
@@ -205,30 +200,29 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <p className="mt-2 text-sm font-medium tracking-[0.01em] text-text-muted sm:text-base">{englishTitle}</p>
           ) : null}
 
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-text-muted">
-            {product.sku ? <span>SKU: {product.sku}</span> : null}
-            {product.sku && hasReviewData ? <span className="h-1 w-1 rounded-full bg-[#D0D5DD]" /> : null}
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-text-muted">
+            {product.sku ? <CopySkuButton sku={product.sku} /> : null}
             {hasReviewData ? (
               <span className="inline-flex items-center gap-1.5">
-                <span className="text-[#F59E0B]">★★★★★</span>
+                <span className="text-primary-accent-strong">★</span>
                 <span className="font-bold text-text-strong">{Number(product.averageRating).toLocaleString("fa-IR")}</span>
                 <span>({product.reviewCount.toLocaleString("fa-IR")} نظر)</span>
               </span>
             ) : null}
           </div>
 
-          <div className="chip-zen-success mt-4 inline-flex px-3 py-1.5 text-xs font-extrabold">
+          <div className={`mt-4 inline-flex px-3 py-1.5 text-xs font-extrabold ${isAvailable ? "chip-zen-success" : "rounded-full bg-[#FEF3F2] text-error"}`}>
             {isAvailable ? "موجود در انبار" : "ناموجود"}
           </div>
 
           {descriptionPreview ? (
-            <p className="mt-5 line-clamp-3 text-sm leading-8 text-[#475467]">{descriptionPreview}</p>
+            <p className="mt-5 line-clamp-3 text-sm leading-8 text-text-muted">{descriptionPreview}</p>
           ) : null}
 
           {quickFacts.length ? (
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {quickFacts.map((item) => (
-                <div key={item.label} className="panel-zen-muted rounded-[22px] px-4 py-3">
+                <div key={item.label} className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
                   <p className="text-xs font-bold text-text-muted">{item.label}</p>
                   <p className="mt-1 text-sm font-extrabold text-text-strong">{item.value}</p>
                 </div>
@@ -261,7 +255,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_.9fr]" id="product-reviews">
-        <div className="panel-zen rounded-[32px] p-5 md:p-6">
+        <div className="rounded-2xl border border-border bg-white p-5 md:p-6">
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
             <div>
               <h2 className="text-xl font-black text-text-strong">دیدگاه کاربران</h2>

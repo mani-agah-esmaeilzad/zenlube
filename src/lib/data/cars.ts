@@ -66,10 +66,14 @@ export async function getCarsWithProducts() {
 
 export async function getPaginatedCarsWithProducts({
   search,
+  manufacturer,
+  model,
   page = 1,
   pageSize = 12,
 }: {
   search?: string;
+  manufacturer?: string;
+  model?: string;
   page?: number;
   pageSize?: number;
 }) {
@@ -77,17 +81,21 @@ export async function getPaginatedCarsWithProducts({
     "getPaginatedCarsWithProducts",
     createEmptyPageResult<StorefrontCarItem>(page, pageSize),
     async () => {
-    const where = search
-      ? storefrontVisibleCarWhere({
-          OR: [
-            { manufacturer: { contains: search, mode: "insensitive" as const } },
-            { model: { contains: search, mode: "insensitive" as const } },
-            { generation: { contains: search, mode: "insensitive" as const } },
-            { engineCode: { contains: search, mode: "insensitive" as const } },
-            { engineType: { contains: search, mode: "insensitive" as const } },
-          ],
-        })
-      : storefrontVisibleCarWhere();
+    const where = storefrontVisibleCarWhere({
+      ...(manufacturer ? { manufacturer } : {}),
+      ...(model ? { model } : {}),
+      ...(search
+        ? {
+            OR: [
+              { manufacturer: { contains: search, mode: "insensitive" as const } },
+              { model: { contains: search, mode: "insensitive" as const } },
+              { generation: { contains: search, mode: "insensitive" as const } },
+              { engineCode: { contains: search, mode: "insensitive" as const } },
+              { engineType: { contains: search, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
+    });
 
     const skip = (page - 1) * pageSize;
     const [items, total] = await prisma.$transaction([

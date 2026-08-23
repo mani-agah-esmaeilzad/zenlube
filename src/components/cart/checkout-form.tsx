@@ -129,12 +129,12 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
       <div className="space-y-6">
         <Stepper />
 
-        <section className="panel-zen rounded-[28px] p-5 md:p-6">
+        <section className="rounded-2xl border border-border bg-white p-5 md:p-6">
           <SectionTitle title="اطلاعات تماس" subtitle="کد تایید برای همین شماره ارسال می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field autoComplete="name" label="نام و نام خانوادگی" name="fullName" value={formValues.fullName} onChange={(value) => handleFieldChange("fullName", value)} errors={state.errors?.fullName} required />
             <Field autoComplete="email" label="ایمیل" name="email" type="email" value={formValues.email} onChange={(value) => handleFieldChange("email", value)} errors={state.errors?.email} required />
-            <label className="text-xs font-bold text-[#374151]">
+            <label className="text-xs font-bold text-text">
               شماره موبایل
               <div className="mt-2 flex flex-col gap-2 min-[360px]:flex-row">
                 <input autoComplete="tel" inputMode="tel" name="phone" type="tel" value={formValues.phone} onChange={(event) => handleFieldChange("phone", event.target.value)} className="input-zen" required />
@@ -150,7 +150,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
           {otpError && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-[#DC2626]">{otpError}</p>}
         </section>
 
-        <section className="panel-zen rounded-[28px] p-5 md:p-6">
+        <section className="rounded-2xl border border-border bg-white p-5 md:p-6">
           <SectionTitle title="آدرس و ارسال" subtitle="آدرس دقیق باعث پردازش سریع‌تر سفارش می‌شود." />
           {addresses.length ? (
             <div className="mt-5 grid gap-3 min-[360px]:grid-cols-2">
@@ -159,7 +159,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
                   key={address.id}
                   type="button"
                   onClick={() => handleAddressSelect(address.id)}
-                  className={`rounded-2xl border p-4 text-right text-xs transition ${selectedAddressId === address.id ? "border-[rgba(245,158,11,0.28)] bg-surface-tint shadow-[0_14px_30px_rgba(245,158,11,0.1)]" : "border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#F7F8FA_100%)]"}`}
+                  className={`rounded-xl border p-4 text-right text-xs transition ${selectedAddressId === address.id ? "border-[rgba(217,119,6,0.28)] bg-surface-tint" : "border-border bg-white"}`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-black text-text-strong">{address.label}</span>
@@ -177,7 +177,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
             <Field autoComplete="address-level2" label="شهر" name="city" value={formValues.city} onChange={(value) => handleFieldChange("city", value)} errors={state.errors?.city} required />
             <Field autoComplete="address-level1" label="استان" name="province" value={formValues.province} onChange={(value) => handleFieldChange("province", value)} errors={state.errors?.province} required />
             <Field autoComplete="postal-code" inputMode="numeric" label="کد پستی" name="postalCode" value={formValues.postalCode} onChange={(value) => handleFieldChange("postalCode", value)} errors={state.errors?.postalCode} required />
-            <label className="panel-zen-muted flex items-center gap-2 self-end rounded-2xl px-4 py-3 text-xs font-bold text-[#374151]">
+            <label className="flex items-center gap-2 self-end rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs font-bold text-text">
               <input type="checkbox" name="saveAddress" defaultChecked className="size-4 accent-[#F59E0B]" />
               ذخیره به عنوان آدرس پیش‌فرض
             </label>
@@ -187,8 +187,8 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
             {shippingOptions.map((option) => (
               <label
                 key={option.value}
-                className={`cursor-pointer rounded-2xl border p-4 text-xs transition ${
-                  shipping === option.value ? "border-[rgba(245,158,11,0.26)] bg-surface-tint shadow-[0_14px_28px_rgba(245,158,11,0.08)]" : "border-border bg-white hover:border-[rgba(245,158,11,0.24)]"
+                className={`cursor-pointer rounded-xl border p-4 text-xs transition ${
+                  shipping === option.value ? "border-[rgba(217,119,6,0.26)] bg-surface-tint" : "border-border bg-white hover:border-[rgba(217,119,6,0.24)]"
                 }`}
               >
                 <input
@@ -206,12 +206,12 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
             ))}
           </div>
 
-          <label className="mt-5 block text-xs font-bold text-[#374151]">
+          <label className="mt-5 block text-xs font-bold text-text">
             کد تخفیف
             <input autoComplete="off" name="couponCode" className="input-zen mt-2" placeholder="مثلاً OILBAR10" />
           </label>
 
-          <label className="mt-5 block text-xs font-bold text-[#374151]">
+          <label className="mt-5 block text-xs font-bold text-text">
             توضیحات سفارش
             <textarea name="notes" rows={3} defaultValue="" className="input-zen mt-2 resize-none" />
           </label>
@@ -219,7 +219,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
       </div>
 
       <aside className="space-y-4">
-        <section className="panel-zen-tint rounded-[28px] p-5 text-sm lg:sticky lg:top-40">
+        <section className="rounded-2xl border border-border bg-surface-secondary p-5 text-sm lg:sticky lg:top-28">
           <h2 className="text-lg font-extrabold text-text-strong">خلاصه سفارش</h2>
           <div className="mt-4 space-y-3">
             {items.map((item) => (
@@ -261,9 +261,9 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
 function Stepper() {
   const steps = ["سبد خرید", "آدرس و ارسال", "پرداخت", "تکمیل سفارش"];
   return (
-    <div className="panel-zen-muted grid grid-cols-2 gap-2 rounded-[24px] p-3 text-center text-[11px] font-bold text-text-muted sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2 rounded-2xl border border-border bg-surface-secondary p-3 text-center text-[11px] font-bold text-text-muted sm:grid-cols-4">
       {steps.map((step, index) => (
-        <div key={step} className={`rounded-2xl px-2 py-3 ${index === 1 || index === 2 ? "bg-surface-tint text-primary-accent-strong" : "bg-white"}`}>
+        <div key={step} className={`rounded-xl px-2 py-3 ${index === 1 || index === 2 ? "bg-white text-primary-accent-strong" : "bg-white/70"}`}>
           {step}
         </div>
       ))}
@@ -320,7 +320,7 @@ function Field({
   required?: boolean;
 }) {
   return (
-    <label className="text-xs font-bold text-[#374151]">
+    <label className="text-xs font-bold text-text">
       {label}
       <input
         name={name}

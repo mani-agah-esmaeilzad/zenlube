@@ -17,11 +17,11 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
 
   return (
     <div className="container-zen space-y-8 py-6 md:py-8">
-      <header className="panel-zen-dark rounded-[32px] p-6 md:p-8">
-        <p className="text-sm font-bold text-[#F5C56B]">مسیریابی سریع خرید</p>
-        <h1 className="mt-3 text-2xl font-black md:text-4xl">دسته‌بندی‌های فروشگاه</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-8 text-white/72">
-          روغن‌های موتور را بر اساس نوع فرمولاسیون و کاربرد تفکیک کرده‌ایم تا سریعا به محصول مورد نیاز برسید.
+      <header>
+        <p className="text-sm font-bold text-primary-accent-strong">مسیریابی سریع خرید</p>
+        <h1 className="t-h1 mt-2">دسته‌بندی‌های فروشگاه</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-8 text-text-muted">
+          روغن موتور، فیلتر و لوازم مصرفی را بر اساس نوع محصول انتخاب کنید.
         </p>
       </header>
       {categories.length > 0 ? (
@@ -31,7 +31,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
           ))}
         </div>
       ) : (
-        <div className="panel-zen-muted rounded-[28px] border-dashed p-10 text-center text-sm font-semibold text-text-muted">
+        <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-10 text-center text-sm font-semibold text-text-muted">
           هنوز دسته‌بندی‌ای ثبت نشده است.
         </div>
       )}

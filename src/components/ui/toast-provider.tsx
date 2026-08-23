@@ -49,12 +49,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className={`w-full max-w-sm rounded-[22px] border px-4 py-3 text-sm font-bold shadow-[0_18px_40px_rgba(17,24,39,0.16)] backdrop-blur ${
+                  className={`w-full max-w-sm rounded-xl border px-4 py-3 text-sm font-bold shadow-[0_16px_36px_rgba(17,24,39,0.12)] ${
                     item.tone === "success"
-                      ? "border-emerald-200 bg-[linear-gradient(180deg,#F4FFF7_0%,#ECFDF3_100%)] text-emerald-700"
+                      ? "border-emerald-200 bg-[#ECFDF3] text-emerald-700"
                       : item.tone === "error"
-                        ? "border-red-200 bg-[linear-gradient(180deg,#FFF6F7_0%,#FEF3F2_100%)] text-red-700"
-                        : "border-[rgba(245,197,107,0.45)] bg-[linear-gradient(180deg,#FFFFFF_0%,#FFFBF2_100%)] text-text-strong"
+                        ? "border-red-200 bg-[#FEF3F2] text-red-700"
+                        : "border-[rgba(217,119,6,0.22)] bg-white text-text-strong"
                   }`}
                 >
                   <div className="flex items-center gap-2">

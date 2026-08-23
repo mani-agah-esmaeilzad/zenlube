@@ -139,12 +139,12 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     <div className="container-zen py-6 md:py-8">
       <div className="grid gap-4 lg:grid-cols-[280px_1fr] lg:gap-6">
         <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
-          <section className="panel-zen-dark rounded-3xl p-5">
+          <section className="rounded-2xl bg-primary p-5 text-white">
             <p className="text-xs font-bold text-[#F5C56B]">حساب کاربری Oilbar</p>
             <h1 className="mt-2 text-xl font-black">{dbUser?.name ?? "کاربر اویل‌بار"}</h1>
             <p className="mt-2 text-xs text-slate-300">{dbUser?.phone ?? dbUser?.email}</p>
           </section>
-          <nav className="panel-zen grid grid-cols-2 gap-2 rounded-3xl p-3 text-xs font-bold text-text-muted lg:grid-cols-1">
+          <nav className="grid grid-cols-2 gap-2 rounded-2xl border border-border bg-white p-3 text-xs font-bold text-text-muted lg:grid-cols-1">
             {[
               ["داشبورد", "#overview"],
               ["سفارش‌ها", "#orders"],
@@ -161,7 +161,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         </aside>
 
         <main className="space-y-6">
-          <section id="overview" className="panel-zen rounded-3xl p-5 md:p-6">
+          <section id="overview" className="rounded-2xl border border-border bg-white p-5 md:p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-sm font-bold text-primary-accent-strong">خوش آمدید</p>
@@ -184,7 +184,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
           {selectedOrder ? <OrderDetail order={selectedOrder} /> : null}
 
-          <section id="orders" className="panel-zen rounded-3xl p-5 md:p-6">
+          <section id="orders" className="rounded-2xl border border-border bg-white p-5 md:p-6">
             <SectionHeader title="سفارش‌های من" subtitle="تاریخچه سفارش‌ها و وضعیت پرداخت و ارسال" />
             {orders.length ? (
               <>
@@ -216,7 +216,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             )}
           </section>
 
-          <section id="addresses" className="panel-zen rounded-3xl p-5 md:p-6">
+          <section id="addresses" className="rounded-2xl border border-border bg-white p-5 md:p-6">
             <SectionHeader title="آدرس پیش‌فرض" subtitle="این آدرس در checkout به صورت خودکار پیشنهاد می‌شود." />
             <div className="mt-5">
               <AddressForm
@@ -231,7 +231,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             </div>
           </section>
 
-          <section className="panel-zen rounded-3xl p-5 md:p-6">
+          <section className="rounded-2xl border border-border bg-white p-5 md:p-6">
             <SectionHeader title="دفترچه آدرس‌ها" subtitle="چند آدرس مختلف ذخیره کنید و آدرس پیش‌فرض را هر زمان تغییر دهید." />
             <div className="mt-5">
               <AddressBookForm addresses={dbUser?.addresses ?? []} />
@@ -265,7 +265,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 price: Number(item.product.price),
               }))}
             />
-            <div className="panel-zen rounded-3xl p-5">
+            <div className="rounded-2xl border border-border bg-white p-5">
               <p className="text-sm font-black text-text-strong">سفارش مجدد سریع</p>
               <p className="mt-2 text-xs leading-6 text-text-muted">
                 از بین محصولات علاقه‌مندی و اخیراً دیده‌شده می‌توانید سریع‌تر به خرید بعدی برگردید.
@@ -280,7 +280,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             </div>
           </section>
 
-          <section id="profile" className="panel-zen rounded-3xl p-5 md:p-6">
+          <section id="profile" className="rounded-2xl border border-border bg-white p-5 md:p-6">
             <SectionHeader title="اطلاعات حساب" subtitle="اطلاعات تماس و هویت حساب کاربری" />
             <div className="mt-5">
               <ProfileForm name={dbUser?.name} email={dbUser?.email} phone={dbUser?.phone} />
@@ -316,7 +316,7 @@ function OrderDetail({ order }: { order: AccountOrder }) {
   const canRequestReturn = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
 
   return (
-    <section id="order-detail" className="panel-zen rounded-3xl p-5 md:p-6">
+    <section id="order-detail" className="rounded-2xl border border-border bg-white p-5 md:p-6">
       <SectionHeader title={`جزئیات سفارش #${order.id.slice(0, 10).toUpperCase()}`} subtitle={new Date(order.createdAt).toLocaleString("fa-IR")} />
       <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-5">
         {timeline.map((step, index) => (

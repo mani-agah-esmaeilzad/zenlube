@@ -4,10 +4,21 @@ import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Fragment, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
+
+type SuggestionProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  brandName: string;
+  imageUrl?: string | null;
+  price?: number;
+  stock?: number;
+  viscosity?: string | null;
+};
 
 type SuggestionGroup = {
-  products: Array<{ id: string; name: string; slug: string; brandName: string }>;
+  products: SuggestionProduct[];
   brands: Array<{ id: string; name: string; slug: string }>;
   categories: Array<{ id: string; name: string; slug: string }>;
   cars: Array<{ id: string; name: string; slug: string }>;
@@ -223,7 +234,7 @@ export function SearchAutocompleteForm({
           aria-expanded={open}
           aria-label="جستجوی محصول"
           autoComplete="off"
-          className="input-zen h-12 rounded-[20px] border-border bg-white pl-11 pr-11 text-sm font-semibold lg:h-[54px]"
+          className="input-zen h-11 rounded-xl border-border bg-white pl-11 pr-11 text-sm font-semibold lg:h-12"
           name="search"
           onChange={(event) => {
             setQuery(event.target.value);
@@ -258,7 +269,7 @@ export function SearchAutocompleteForm({
 
       {open ? (
         <div
-          className="panel-zen absolute inset-x-0 top-[calc(100%+10px)] z-50 max-h-[min(70dvh,32rem)] overflow-y-auto rounded-[24px] p-3 sm:p-4"
+          className="absolute inset-x-0 top-[calc(100%+8px)] z-50 max-h-[min(70dvh,32rem)] overflow-y-auto rounded-2xl border border-border bg-white p-3 shadow-[0_16px_40px_rgba(17,24,39,0.08)] sm:p-4"
           id={listboxId}
           role="listbox"
         >
@@ -282,7 +293,7 @@ export function SearchAutocompleteForm({
                 {recentOrQuickSuggestions.map((item) => (
                   <button
                     key={item}
-                    className="chip-zen-muted interactive-lift rounded-full border px-3 py-1.5 text-xs font-semibold text-[#344054]"
+                    className="chip-zen-muted interactive-lift rounded-full border px-3 py-1.5 text-xs font-semibold text-text"
                     onClick={() => handleSuggestionSelect(`/products?search=${encodeURIComponent(item)}`, item)}
                     type="button"
                   >
@@ -292,7 +303,11 @@ export function SearchAutocompleteForm({
               </div>
             </>
           ) : loading ? (
-            <p className="text-xs font-bold text-text-muted">در حال جستجو...</p>
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-text-muted">در حال جستجو...</p>
+              <div className="h-10 animate-pulse rounded-xl bg-surface-secondary" />
+              <div className="h-10 animate-pulse rounded-xl bg-surface-secondary" />
+            </div>
           ) : error ? (
             <p className="text-xs font-bold text-danger">{error}</p>
           ) : hasResults && results ? (
@@ -300,7 +315,15 @@ export function SearchAutocompleteForm({
               <SuggestionSection
                 activeIndex={activeIndex}
                 baseIndex={0}
-                items={results.products.map((item) => ({ key: item.id, href: `/products/${item.slug}`, label: item.name, meta: item.brandName }))}
+                items={results.products.map((item) => ({
+                  key: item.id,
+                  href: `/products/${item.slug}`,
+                  label: item.name,
+                  meta: [item.brandName, item.viscosity].filter(Boolean).join(" • "),
+                  imageUrl: item.imageUrl,
+                  price: item.price,
+                  available: typeof item.stock === "number" ? item.stock > 0 : undefined,
+                }))}
                 listboxId={listboxId}
                 onHover={setActiveIndex}
                 onSelect={(href) => handleSuggestionSelect(href)}
@@ -350,7 +373,7 @@ export function SearchAutocompleteForm({
               </button>
             </div>
           ) : (
-            <p className="text-xs font-bold text-text-muted">نتیجه‌ای پیدا نشد.</p>
+            <p className="text-xs font-bold text-text-muted">نتیجه‌ای برای «{query.trim()}» پیدا نشد. نام، برند، ویسکوزیته یا کد کالا را تغییر دهید.</p>
           )}
         </div>
       ) : null}
@@ -371,7 +394,15 @@ function SuggestionSection({
   activeIndex: number;
   baseIndex: number;
   title: string;
-  items: Array<{ key: string; href: string; label: string; meta?: string }>;
+  items: Array<{
+    key: string;
+    href: string;
+    label: string;
+    meta?: string;
+    imageUrl?: string | null;
+    price?: number;
+    available?: boolean;
+  }>;
   listboxId: string;
   onHover: (index: number) => void;
   onSelect: (href: string) => void;
@@ -391,10 +422,10 @@ function SuggestionSection({
             <button
               aria-selected={isActive}
               className={cn(
-                "min-w-0 rounded-2xl border px-3 py-2 text-right text-xs transition",
+                "flex min-w-0 items-center gap-3 rounded-xl border px-3 py-2 text-right text-xs transition",
                 isActive
-                  ? "border-[rgba(245,158,11,0.34)] bg-surface-tint text-primary-accent-strong shadow-[0_12px_24px_rgba(245,158,11,0.12)]"
-                  : "border-border bg-white text-[#344054] hover:border-[rgba(245,158,11,0.28)] hover:bg-surface-tint hover:text-primary-accent-strong",
+                  ? "border-[rgba(217,119,6,0.34)] bg-surface-tint text-primary-accent-strong"
+                  : "border-border bg-white text-text hover:border-[rgba(217,119,6,0.28)] hover:bg-surface-tint hover:text-primary-accent-strong",
               )}
               id={`${listboxId}-option-${absoluteIndex}`}
               key={item.key}
@@ -403,8 +434,24 @@ function SuggestionSection({
               role="option"
               type="button"
             >
-              <span className="line-clamp-2 block font-bold leading-6">{highlightQuery(item.label, query)}</span>
-              {item.meta ? <span className="mt-1 block text-text-soft">{highlightQuery(item.meta, query)}</span> : null}
+              {item.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img alt="" className="h-12 w-12 shrink-0 rounded-lg bg-surface-secondary object-contain p-1" src={item.imageUrl} />
+              ) : null}
+              <span className="min-w-0 flex-1">
+                <span className="line-clamp-2 block font-bold leading-6">{highlightQuery(item.label, query)}</span>
+                {item.meta ? <span className="mt-1 block text-text-soft">{highlightQuery(item.meta, query)}</span> : null}
+              </span>
+              {typeof item.price === "number" ? (
+                <span className="shrink-0 text-left">
+                  <span className="block font-black text-text-strong">{formatPrice(item.price)}</span>
+                  {typeof item.available === "boolean" ? (
+                    <span className={cn("mt-1 block text-[10px] font-bold", item.available ? "text-success" : "text-error")}>
+                      {item.available ? "موجود" : "ناموجود"}
+                    </span>
+                  ) : null}
+                </span>
+              ) : null}
             </button>
           );
         })}

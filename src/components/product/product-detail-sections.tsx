@@ -69,7 +69,7 @@ export function ProductDetailSections({
   }
 
   return (
-    <section className="panel-zen rounded-[32px] p-4 sm:p-5 lg:p-6">
+    <section className="rounded-2xl border border-border bg-white p-4 sm:p-5 lg:p-6">
       <div className="hidden border-b border-border md:block">
         <div className="flex flex-wrap items-center gap-6 overflow-x-auto pb-1 scrollbar-none">
           {sections.map((section) => (
@@ -101,7 +101,7 @@ export function ProductDetailSections({
           const isOpen = activeSection === section.id;
 
           return (
-            <section key={section.id} className="overflow-hidden rounded-[22px] border border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#FCFCFD_100%)]">
+            <section key={section.id} className="overflow-hidden rounded-xl border border-border bg-white">
               <button
                 aria-expanded={isOpen}
                 className="flex w-full items-center justify-between gap-3 px-4 py-4 text-right text-sm font-extrabold text-text-strong"
@@ -144,7 +144,7 @@ function renderSectionBody(
 
     case "notes":
       return (
-        <ul className="space-y-3 text-sm leading-7 text-[#475467]">
+        <ul className="space-y-3 text-sm leading-7 text-text-muted">
           {data.importantNotes.map((note) => (
             <li key={note} className="flex gap-3">
               <span className="mt-2 inline-flex h-2.5 w-2.5 shrink-0 rounded-full bg-primary-accent shadow-[0_0_0_6px_rgba(245,158,11,0.12)]" />
@@ -158,7 +158,7 @@ function renderSectionBody(
       return (
         <div className="space-y-3">
           {data.faqs.map((faq) => (
-            <details key={faq.question} className="rounded-[20px] border border-border bg-white px-4 py-4">
+            <details key={faq.question} className="rounded-xl border border-border bg-white px-4 py-4">
               <summary className="cursor-pointer list-none text-sm font-extrabold text-text-strong">{faq.question}</summary>
               <p className="mt-3 text-sm leading-7 text-[#475467]">{faq.answer}</p>
             </details>
@@ -178,7 +178,7 @@ function SectionText({ text }: { text: string }) {
     .filter(Boolean);
 
   return (
-    <div className="space-y-4 text-sm leading-8 text-[#475467]">
+    <div className="space-y-4 text-sm leading-8 text-text-muted">
       {blocks.map((block) => (
         <p key={block} className="whitespace-pre-line">
           {block}
@@ -190,17 +190,17 @@ function SectionText({ text }: { text: string }) {
 
 function SpecsTable({ rows }: { rows: ProductSpecRow[] }) {
   return (
-    <div className="overflow-hidden rounded-[24px] border border-border">
+    <div className="overflow-hidden rounded-xl border border-border">
       {rows.map((row, index) => (
         <div
           key={`${row.label}-${index}`}
           className={cn(
             "grid gap-2 px-4 py-3 text-sm sm:grid-cols-[200px_minmax(0,1fr)] sm:items-center sm:px-5",
-            index % 2 === 0 ? "bg-white" : "bg-[#FAFBFC]",
+            index % 2 === 0 ? "bg-white" : "bg-surface-secondary",
           )}
         >
-          <span className="font-bold text-[#667085]">{row.label}</span>
-          <span className="min-w-0 break-words font-semibold text-[#171B23]">{row.value}</span>
+          <span className="font-bold text-text-muted">{row.label}</span>
+          <span className="min-w-0 break-words font-semibold text-text-strong">{row.value}</span>
         </div>
       ))}
     </div>
@@ -241,7 +241,7 @@ function CompatibleCarsList({ items }: { items: ProductCompatibilityItem[] }) {
         {visibleItems.map((item) => (
           <Link
             key={item.id}
-            className="interactive-lift rounded-[24px] border border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#FCFCFD_100%)] p-4"
+            className="interactive-lift rounded-xl border border-border bg-white p-4"
             href={`/cars/${item.slug}`}
           >
             <p className="text-sm font-extrabold text-text-strong">{item.title}</p>
@@ -261,7 +261,7 @@ function CompatibleCarsList({ items }: { items: ProductCompatibilityItem[] }) {
 
       {filteredItems.length > 6 ? (
         <button
-          className="btn-outline inline-flex min-h-11 items-center justify-center rounded-[18px] px-5 text-sm font-bold text-[#344054]"
+          className="btn-outline inline-flex min-h-11 items-center justify-center rounded-xl px-5 text-sm font-bold text-text"
           onClick={() => setExpanded((value) => !value)}
           type="button"
         >

@@ -1,7 +1,7 @@
 export default function TermsPage() {
   return (
     <div className="container-zen space-y-6 py-6 md:py-8">
-      <section className="panel-zen rounded-[32px] p-6 md:p-8">
+      <section className="rounded-2xl border border-border bg-white p-6 md:p-8">
         <span className="chip-zen inline-flex">شفاف و کوتاه</span>
         <h1 className="mt-3 text-3xl font-black text-text-strong">قوانین و شرایط استفاده</h1>
         <p className="mt-4 max-w-3xl text-sm leading-8 text-text-muted">
@@ -9,7 +9,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="panel-zen rounded-[30px] p-6 text-sm leading-8 text-text-muted md:p-8">
+      <section className="rounded-2xl border border-border bg-surface-secondary p-6 text-sm leading-8 text-text-muted md:p-8">
         <p>
           استفاده از خدمات Oilbar به معنای پذیرش قوانین زیر است: صحت اطلاعات وارد شده، عدم استفاده از محتوای سایت بدون ذکر منبع و رعایت قوانین مرتبط با پرداخت و تحویل سفارش.
         </p>

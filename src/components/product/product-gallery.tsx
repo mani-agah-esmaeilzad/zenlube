@@ -79,7 +79,7 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
     const touchEndX = event.changedTouches[0]?.clientX ?? touchStartX;
     const deltaX = touchEndX - touchStartX;
     if (Math.abs(deltaX) < 42) return;
-    if (deltaX < 0) {
+    if (deltaX > 0) {
       goNext();
     } else {
       goPrevious();
@@ -89,9 +89,9 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
 
   return (
     <>
-      <section className="panel-zen rounded-[30px] p-3 sm:p-4">
+      <section className="rounded-2xl border border-border bg-white p-3 sm:p-4">
         <div
-          className="relative overflow-hidden rounded-[26px] border border-[rgba(231,232,238,0.7)] bg-[linear-gradient(180deg,#F7F8FA_0%,#F2F5F8_100%)]"
+          className="relative overflow-hidden rounded-xl bg-surface-secondary"
           onTouchEnd={handleTouchEnd}
           onTouchStart={handleTouchStart}
         >
@@ -160,7 +160,7 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
                 aria-label={`انتخاب تصویر ${index + 1}`}
                 aria-pressed={index === activeIndex}
                 className={cn(
-                  "relative h-20 w-20 shrink-0 overflow-hidden rounded-[18px] border bg-[linear-gradient(180deg,#F7F8FA_0%,#F2F5F8_100%)] transition sm:h-24 sm:w-24",
+                  "relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border bg-surface-secondary transition sm:h-24 sm:w-24",
                   index === activeIndex ? "border-[rgba(245,158,11,0.4)] ring-2 ring-[rgba(245,158,11,0.15)]" : "border-border",
                 )}
                 onClick={() => setActiveIndex(index)}
@@ -182,8 +182,8 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
                 onClick={() => setLightboxOpen(false)}
                 type="button"
               />
-              <div className="relative z-10 w-full max-w-5xl rounded-[28px] border border-white/10 bg-[#171B23] p-3 sm:p-5">
-                <div className="relative min-h-[72dvh] overflow-hidden rounded-[24px] bg-white">
+              <div className="relative z-10 w-full max-w-5xl rounded-2xl border border-white/10 bg-primary p-3 sm:p-5">
+                <div className="relative min-h-[72dvh] overflow-hidden rounded-xl bg-white">
                   <Image alt={activeItem.alt} className="object-contain p-4 sm:p-6" fill sizes="90vw" src={activeItem.src} />
                 </div>
                 <button

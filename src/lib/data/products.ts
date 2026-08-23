@@ -98,6 +98,8 @@ type ProductFilters = {
   category?: string;
   brand?: string;
   car?: string;
+  viscosity?: string;
+  oilType?: string;
   tags?: string[];
   minPrice?: number;
   maxPrice?: number;
@@ -108,11 +110,41 @@ type ProductFilters = {
   sort?: ProductSort;
 };
 
+export async function getProductFilterFacets() {
+  return withStorefrontDataFallback(
+    "getProductFilterFacets",
+    { viscosities: [] as string[], oilTypes: [] as string[] },
+    async () => {
+      const [viscosityRows, oilTypeRows] = await Promise.all([
+        prisma.product.findMany({
+          where: storefrontVisibleProductWhere({ viscosity: { not: null } }),
+          distinct: ["viscosity"],
+          select: { viscosity: true },
+          orderBy: { viscosity: "asc" },
+        }),
+        prisma.product.findMany({
+          where: storefrontVisibleProductWhere({ oilType: { not: null } }),
+          distinct: ["oilType"],
+          select: { oilType: true },
+          orderBy: { oilType: "asc" },
+        }),
+      ]);
+
+      return {
+        viscosities: viscosityRows.map((item) => item.viscosity).filter((value): value is string => Boolean(value)),
+        oilTypes: oilTypeRows.map((item) => item.oilType).filter((value): value is string => Boolean(value)),
+      };
+    },
+  );
+}
+
 export async function getAllProductsWithFilters({
   search,
   category,
   brand,
   car,
+  viscosity,
+  oilType,
   tags,
   minPrice,
   maxPrice,
@@ -134,11 +166,28 @@ export async function getAllProductsWithFilters({
               { description: { contains: search, mode: "insensitive" } },
               { sku: { contains: search, mode: "insensitive" } },
               { approvals: { contains: search, mode: "insensitive" } },
+              { viscosity: { contains: search, mode: "insensitive" } },
+              { oilType: { contains: search, mode: "insensitive" } },
+              { brand: { name: { contains: search, mode: "insensitive" } } },
+              {
+                carMappings: {
+                  some: {
+                    car: storefrontVisibleCarWhere({
+                      OR: [
+                        { manufacturer: { contains: search, mode: "insensitive" } },
+                        { model: { contains: search, mode: "insensitive" } },
+                      ],
+                    }),
+                  },
+                },
+              },
             ],
           }
         : {}),
       ...(category ? { category: { slug: category } } : {}),
       ...(brand ? { brand: { slug: brand } } : {}),
+      ...(viscosity ? { viscosity } : {}),
+      ...(oilType ? { oilType } : {}),
       ...(car
         ? {
             carMappings: {
@@ -335,6 +384,8 @@ export async function getSearchSuggestions(query: string) {
             OR: [
               { name: { contains: term, mode: "insensitive" } },
               { sku: { contains: term, mode: "insensitive" } },
+              { viscosity: { contains: term, mode: "insensitive" } },
+              { oilType: { contains: term, mode: "insensitive" } },
               { brand: { name: { contains: term, mode: "insensitive" } } },
             ],
           }),
@@ -342,6 +393,10 @@ export async function getSearchSuggestions(query: string) {
             id: true,
             name: true,
             slug: true,
+            imageUrl: true,
+            price: true,
+            stock: true,
+            viscosity: true,
             brand: { select: { name: true } },
           },
           take: 6,
@@ -385,6 +440,10 @@ export async function getSearchSuggestions(query: string) {
           name: item.name,
           slug: item.slug,
           brandName: item.brand.name,
+          imageUrl: item.imageUrl,
+          price: Number(item.price),
+          stock: item.stock,
+          viscosity: item.viscosity,
         })),
         brands,
         categories,

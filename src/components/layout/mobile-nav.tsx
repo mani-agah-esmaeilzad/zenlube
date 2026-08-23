@@ -30,7 +30,6 @@ type MobileNavProps = {
 };
 
 const drawerLinks: MobileNavLink[] = [
-  { href: "/account", label: "حساب کاربری" },
   { href: "/products/compare", label: "مقایسه محصولات" },
   { href: "/support", label: "تماس با ما" },
 ];
@@ -56,7 +55,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
         aria-label="باز کردن منوی موبایل"
         aria-controls="mobile-site-drawer"
         aria-expanded={open}
-        className="btn-outline inline-flex h-11 w-11 items-center justify-center rounded-2xl text-text-strong"
+        className="btn-outline inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-strong"
         onClick={() => setOpen(true)}
         type="button"
       >
@@ -78,7 +77,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
                 <Image alt="لوگوی Oilbar" className="h-auto w-[112px]" height={44} src={LOGO_SRC} unoptimized width={176} />
               </Link>
               <Link
-                className="chip-zen-muted rounded-2xl px-3 py-2 text-xs font-bold text-text-muted"
+                className="chip-zen-muted rounded-xl px-3 py-2 text-xs font-bold text-text-muted"
                 href={accountHref}
                 onClick={() => setOpen(false)}
               >
@@ -87,7 +86,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
             </div>
 
             <form action="/products" className="relative mt-4">
-              <SearchIcon className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#667085]" />
+              <SearchIcon className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <input className="input-zen pr-11" name="search" placeholder="جستجو در روغن، فیلتر یا خودرو" type="search" />
             </form>
           </div>
@@ -95,7 +94,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
             <button
               aria-expanded={categoriesOpen}
-              className="panel-zen-muted flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-bold text-text-strong"
+              className="panel-zen-muted flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-text-strong"
               onClick={() => setCategoriesOpen((value) => !value)}
               type="button"
             >
@@ -109,7 +108,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
                   categories.slice(0, 10).map((category) => (
                     <Link
                       key={category.id}
-                      className="interactive-lift rounded-2xl border border-border bg-white px-3 py-3 text-xs font-semibold text-[#344054]"
+                      className="interactive-lift rounded-xl border border-border bg-white px-3 py-3 text-xs font-semibold text-text"
                       href={`/categories/${category.slug}`}
                       onClick={() => setOpen(false)}
                     >
@@ -124,18 +123,18 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
               </div>
             ) : null}
 
-            <nav className="mt-5 space-y-2 text-sm font-semibold text-[#344054]">
+            <nav className="mt-5 space-y-2 text-sm font-semibold text-text">
               {drawerNavLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
 
                 return (
                   <Link
-                    key={link.href}
+                    key={`${link.href}-${link.label}`}
                     className={cn(
-                      "block rounded-2xl border px-4 py-3 transition",
+                      "block rounded-xl border px-4 py-3 transition",
                       isActive || link.highlight
-                        ? "border-[rgba(245,158,11,0.26)] bg-surface-tint text-primary-accent-strong"
-                        : "border-border bg-white text-[#344054] hover:border-[rgba(245,158,11,0.28)] hover:bg-surface-tint hover:text-primary-accent-strong",
+                        ? "border-[rgba(217,119,6,0.26)] bg-surface-tint text-primary-accent-strong"
+                        : "border-border bg-white text-text hover:border-[rgba(217,119,6,0.28)] hover:bg-surface-tint hover:text-primary-accent-strong",
                     )}
                     href={link.href}
                     onClick={() => setOpen(false)}
@@ -155,7 +154,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
 
       {mounted && !open
         ? createPortal(
-            <nav className="fixed inset-x-0 bottom-0 z-[90] grid grid-cols-4 border-t border-border bg-[rgba(255,255,255,0.96)] px-1 pt-1 text-[11px] font-bold text-text-muted shadow-[0_-10px_30px_rgba(17,24,39,0.08)] backdrop-blur mobile-bottom-safe lg:hidden">
+            <nav className="fixed inset-x-0 bottom-0 z-[90] grid grid-cols-4 border-t border-border bg-white/96 px-1 pt-1 text-[11px] font-bold text-text-muted mobile-bottom-safe lg:hidden">
               <BottomLink active={pathname === "/"} href="/" icon={<HomeIcon className="h-5 w-5" />} label="خانه" />
               <BottomLink active={pathname?.startsWith("/products") ?? false} href="/products" icon={<StoreIcon className="h-5 w-5" />} label="فروشگاه" />
               <BottomLink active={pathname === "/cart"} href="/cart" icon={<CartIcon className="h-5 w-5" />} label="سبد خرید" />

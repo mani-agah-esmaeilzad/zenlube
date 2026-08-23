@@ -148,8 +148,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
         <span className="line-clamp-1 min-w-0">{title}</span>
       </nav>
 
-      <section className="panel-zen-dark relative grid gap-5 overflow-hidden rounded-[36px] p-5 sm:p-6 md:p-8 lg:grid-cols-[1fr_360px]">
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-48 bg-[radial-gradient(circle_at_left,rgba(245,197,107,0.2),transparent_72%)]" />
+      <section className="relative grid gap-5 overflow-hidden rounded-2xl bg-primary p-5 text-white sm:p-6 md:p-8 lg:grid-cols-[1fr_360px]">
         <div className="min-w-0">
           <span className="chip-zen-dark inline-flex">دفترچه راهنمای خودرو</span>
           <h1 className="mt-3 text-[1.65rem] font-extrabold leading-[1.6] md:text-4xl">{title}</h1>
@@ -161,7 +160,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
             <Link href="/support" className="btn-outline w-full !border-white/20 !bg-white/10 !text-white min-[390px]:w-auto">مشاوره تخصصی</Link>
           </div>
         </div>
-        <div className="relative aspect-[4/3] overflow-hidden rounded-[30px] border border-white/10 bg-white/10 shadow-[0_24px_60px_rgba(15,23,42,0.2)]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-white/10">
           {car.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={car.imageUrl} alt={title} className="h-full w-full object-cover" loading="lazy" />
@@ -172,7 +171,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
       </section>
 
       <section className="space-y-5">
-        <div className="panel-zen rounded-[30px] p-4 sm:p-5 lg:p-6">
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 lg:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <span className="chip-zen-warning inline-flex">

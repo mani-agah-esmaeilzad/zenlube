@@ -59,11 +59,10 @@ export default async function CheckoutPage() {
 
   return (
     <div className="container-zen space-y-6 py-6 md:py-8">
-      <header className="panel-zen relative overflow-hidden rounded-3xl p-6">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_12%,rgba(245,158,11,0.12),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(251,252,254,0.86)_100%)]" />
-        <p className="relative z-10 text-sm font-bold text-[#DC2626]">مرحله پایانی خرید</p>
-        <h1 className="relative z-10 mt-2 text-2xl font-extrabold text-text-strong md:text-3xl">تایید و پرداخت سفارش</h1>
-        <p className="relative z-10 mt-2 text-sm leading-7 text-text-muted">
+      <header>
+        <p className="text-sm font-bold text-primary-accent-strong">مرحله پایانی خرید</p>
+        <h1 className="t-h1 mt-2">تایید و پرداخت سفارش</h1>
+        <p className="mt-2 text-sm leading-7 text-text-muted">
           جمع کالاهای سبد خرید شما {formatPrice(subtotal)} است. اطلاعات ارسال را تکمیل کنید تا به درگاه پرداخت منتقل شوید.
         </p>
       </header>

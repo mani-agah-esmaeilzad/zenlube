@@ -1,7 +1,7 @@
 export default function PolicyPage() {
   return (
     <div className="container-zen py-6 md:py-8">
-      <div className="panel-zen rounded-[28px] p-6 text-sm leading-8 text-text-muted md:p-8">
+      <div className="rounded-2xl border border-border bg-white p-6 text-sm leading-8 text-text-muted md:p-8">
         <h1 className="text-3xl font-black text-text-strong">سیاست حریم خصوصی Oilbar</h1>
         <p className="mt-4">
           داده‌های کاربران صرفا برای پردازش سفارش و پیشنهاد محصولات نگهداری می‌شود. اطلاعات حساس مانند رمز عبور با الگوریتم‌های امن رمزنگاری ذخیره می‌شود و هیچ‌گاه در اختیار اشخاص ثالث قرار نمی‌گیرد.

@@ -14,7 +14,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
   const [state, formAction] = useActionState(createProductReviewAction, initialState);
 
   return (
-    <form action={formAction} className="panel-zen rounded-[30px] p-5 md:p-6">
+    <form action={formAction} className="rounded-2xl border border-border bg-white p-5 md:p-6">
       <input type="hidden" name="productId" value={productId} />
       <span className="chip-zen inline-flex">بازخورد خریداران</span>
       <h3 className="mt-3 text-lg font-black text-text-strong">ثبت نظر و امتیاز</h3>

@@ -16,22 +16,21 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
   const { items: categories, pageInfo } = await getPaginatedCategoriesWithProductCount({ page, pageSize });
 
   return (
-    <div className="container-zen space-y-8 py-6 md:py-8">
+    <div className="container-zen space-y-6 py-5 sm:py-6 md:space-y-8 md:py-8">
       <header>
-        <p className="text-sm font-bold text-primary-accent-strong">مسیریابی سریع خرید</p>
-        <h1 className="t-h1 mt-2">دسته‌بندی‌های فروشگاه</h1>
+        <h1 className="t-h1">دسته‌بندی‌های فروشگاه</h1>
         <p className="mt-3 max-w-3xl text-sm leading-8 text-text-muted">
           روغن موتور، فیلتر و لوازم مصرفی را بر اساس نوع محصول انتخاب کنید.
         </p>
       </header>
       {categories.length > 0 ? (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           {categories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-10 text-center text-sm font-semibold text-text-muted">
+        <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-6 text-center text-sm font-semibold text-text-muted sm:p-10">
           هنوز دسته‌بندی‌ای ثبت نشده است.
         </div>
       )}

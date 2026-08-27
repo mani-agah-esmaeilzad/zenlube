@@ -17,7 +17,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   }
 
   return (
-    <div className="container-zen py-6 md:py-10 lg:flex lg:min-h-[70vh] lg:items-center">
+    <div className="container-zen py-5 sm:py-8 md:py-10 lg:flex lg:min-h-[70vh] lg:items-center">
       <div className="grid w-full gap-6 lg:grid-cols-[1.05fr_480px]">
         <section className="hidden rounded-2xl bg-surface-secondary p-10 lg:block">
           <p className="text-sm font-bold text-primary-accent-strong">شروع خرید</p>
@@ -26,10 +26,9 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
             با ثبت‌نام در Oilbar، اطلاعات تماس و آدرس شما ذخیره می‌شود و برای سفارش‌های بعدی سریع‌تر به پرداخت می‌رسید.
           </p>
         </section>
-        <div className="mx-auto w-full max-w-[34rem] rounded-2xl border border-border bg-white p-5 sm:p-8 lg:max-w-none">
+        <div className="mx-auto w-full max-w-[34rem] bg-white py-2 sm:rounded-2xl sm:border sm:border-border sm:p-8 lg:max-w-none">
         <div className="mb-6">
-          <p className="text-sm font-bold text-primary-accent-strong">Oilbar</p>
-          <h1 className="mt-2 text-2xl font-extrabold text-text-strong">ساخت حساب کاربری</h1>
+          <h1 className="text-2xl font-extrabold text-text-strong">ساخت حساب کاربری</h1>
           <p className="mt-2 text-sm leading-8 text-text-muted">
             با ثبت‌نام در Oilbar، سبد خرید، سفارش‌ها و پیشنهادهای مناسب خودروی خود را مدیریت کنید.
           </p>
@@ -44,7 +43,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
             وارد شوید
           </Link>
         </p>
-      </div>
+        </div>
       </div>
     </div>
   );

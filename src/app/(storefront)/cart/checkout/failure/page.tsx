@@ -28,8 +28,8 @@ export default async function CheckoutFailurePage({ searchParams }: FailurePageP
   const latestTransaction = order?.paymentTransactions[0] ?? null;
 
   return (
-    <div className="container-zen py-10">
-      <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-6 text-center md:p-8">
+    <div className="container-zen py-8 sm:py-10">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-5 text-center sm:p-6 md:p-8">
         <div className="icon-shell mx-auto grid size-16 place-items-center rounded-full text-3xl font-black text-[#D97706]">!</div>
         <h1 className="mt-5 text-2xl font-extrabold text-text-strong md:text-3xl">پرداخت ناموفق بود</h1>
         <p className="mt-3 text-sm leading-7 text-text-muted">{message}</p>
@@ -43,7 +43,7 @@ export default async function CheckoutFailurePage({ searchParams }: FailurePageP
             {latestTransaction.errorMessage}
           </p>
         ) : null}
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <div className="mt-6 flex flex-col justify-center gap-2 sm:mt-8 sm:flex-row sm:gap-3">
           <Link href="/cart/checkout" className="btn-primary">
             تلاش دوباره برای پرداخت
           </Link>

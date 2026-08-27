@@ -29,16 +29,15 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
   ]);
 
   return (
-    <div className="container-zen space-y-8 py-6 md:py-8">
+    <div className="container-zen space-y-6 py-5 sm:py-6 md:space-y-8 md:py-8">
       <header>
         <div className="max-w-4xl">
-          <p className="text-sm font-bold text-primary-accent-strong">انتخاب روغن بر اساس خودرو</p>
-          <h1 className="t-h1 mt-2">دفترچه راهنمای خودروها</h1>
+          <h1 className="t-h1">دفترچه راهنمای خودروها</h1>
           <p className="mt-3 text-sm leading-8 text-text-muted md:text-base">
             مشخصات فنی، روغن مناسب، حجم روغن و فیلترهای سازگار خودروی خود را پیدا کنید.
           </p>
         </div>
-        <form className="mt-6 flex flex-col gap-3 md:flex-row" method="get">
+        <form className="mt-5 flex flex-col gap-2 sm:flex-row sm:gap-3 md:mt-6" method="get">
           <input
             className="input-zen min-h-12 flex-1"
             defaultValue={search}
@@ -48,11 +47,11 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
           />
           <input type="hidden" name="page" value="1" />
           <input type="hidden" name="pageSize" value={pageInfo.pageSize} />
-          <button className="btn-primary" type="submit">جستجو</button>
+          <button className="btn-primary w-full sm:w-auto" type="submit">جستجو</button>
         </form>
       </header>
 
-      <section className="grid gap-4 rounded-2xl border border-border bg-white p-4 sm:p-5 lg:grid-cols-[1fr_1fr]">
+      <section className="grid gap-4 rounded-2xl border border-border bg-white p-4 sm:p-5 lg:grid-cols-[1fr_1fr] lg:items-center">
         <div>
           <h2 className="text-lg font-extrabold text-text-strong">خودروی خود را انتخاب کنید</h2>
           <p className="mt-2 text-sm leading-7 text-text-muted">با انتخاب برند و مدل، محصولات سازگار و دفترچه تخصصی نمایش داده می‌شود.</p>
@@ -67,7 +66,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
           </div>
         ))}
         {cars.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-10 text-center text-text-muted lg:col-span-2">
+          <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-6 text-center text-text-muted sm:p-10 lg:col-span-2">
             خودرویی با این مشخصات یافت نشد.
           </div>
         )}

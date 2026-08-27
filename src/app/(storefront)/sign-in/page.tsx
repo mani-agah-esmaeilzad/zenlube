@@ -22,7 +22,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     : "/sign-up";
 
   return (
-    <div className="container-zen py-6 md:py-10 lg:flex lg:min-h-[70vh] lg:items-center">
+    <div className="container-zen py-5 sm:py-8 md:py-10 lg:flex lg:min-h-[70vh] lg:items-center">
       <div className="grid w-full gap-6 lg:grid-cols-[1.05fr_480px]">
         <section className="hidden rounded-2xl bg-primary p-10 text-white lg:block">
           <p className="text-sm font-bold text-primary-accent">حساب کاربری Oilbar</p>
@@ -31,10 +31,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             بعد از ورود، پیگیری سفارش، آدرس‌های ذخیره‌شده و پرداخت‌ها در حساب کاربری در دسترس است.
           </p>
         </section>
-        <div className="mx-auto w-full max-w-[34rem] rounded-2xl border border-border bg-white p-5 sm:p-8 lg:max-w-none">
+        <div className="mx-auto w-full max-w-[34rem] bg-white py-2 sm:rounded-2xl sm:border sm:border-border sm:p-8 lg:max-w-none">
         <div className="mb-6">
-          <p className="text-sm font-bold text-primary-accent-strong">Oilbar</p>
-          <h1 className="mt-2 text-2xl font-extrabold text-text-strong">ورود به حساب کاربری</h1>
+          <h1 className="text-2xl font-extrabold text-text-strong">ورود به حساب کاربری</h1>
           <p className="mt-2 text-sm leading-8 text-text-muted">
             برای مدیریت سبد خرید، سفارش‌ها، خودروهای ذخیره‌شده و دسترسی به پنل ادمین وارد شوید.
           </p>
@@ -51,7 +50,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             ثبت‌نام کنید
           </Link>
         </p>
-      </div>
+        </div>
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ type HeroVehicleFinderProps = {
 type SelectFieldProps = {
   ariaLabel: string;
   disabled?: boolean;
+  label: string;
   onChange: (value: string) => void;
   options: string[];
   placeholder: string;
@@ -39,35 +40,38 @@ function getYearLabel(car: HeroVehicleFinderProps["cars"][number]) {
   return "";
 }
 
-function SelectField({ ariaLabel, disabled = false, onChange, options, placeholder, value }: SelectFieldProps) {
+function SelectField({ ariaLabel, disabled = false, label, onChange, options, placeholder, value }: SelectFieldProps) {
   return (
-    <label className="relative block min-w-0">
-      <select
-        aria-label={ariaLabel}
-        className="input-zen appearance-none pl-10 pr-4 text-sm font-semibold disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-subtle"
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-      <svg
-        aria-hidden="true"
-        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-subtle"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        viewBox="0 0 24 24"
-      >
-        <path d="m6 9 6 6 6-6" />
-      </svg>
+    <label className="block min-w-0">
+      <span className="mb-1.5 block text-xs font-bold text-white/60">{label}</span>
+      <span className="relative block">
+        <select
+          aria-label={ariaLabel}
+          className="input-zen appearance-none !border-white/15 !bg-white/[0.07] pl-10 pr-4 text-sm font-semibold !text-white focus:!border-primary-accent [&>option]:bg-white [&>option]:text-text-strong disabled:cursor-not-allowed disabled:!bg-white/[0.03] disabled:!text-white/35"
+          disabled={disabled}
+          onChange={(event) => onChange(event.target.value)}
+          value={value}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/55"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.8"
+          viewBox="0 0 24 24"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </span>
     </label>
   );
 }
@@ -84,17 +88,22 @@ export function HeroVehicleFinder({ cars, variant = "default" }: HeroVehicleFind
     left.localeCompare(right, "fa"),
   );
 
-  const manufacturerCars = manufacturer ? cars.filter((car) => car.manufacturer === manufacturer) : cars;
+  const manufacturerCars = manufacturer ? cars.filter((car) => car.manufacturer === manufacturer) : [];
   const models = Array.from(new Set(manufacturerCars.map((car) => car.model))).sort((left, right) =>
     left.localeCompare(right, "fa"),
   );
 
-  const modelCars = model ? manufacturerCars.filter((car) => car.model === model) : manufacturerCars;
-  const years = Array.from(new Set(modelCars.map(getYearLabel).filter(Boolean)));
-  const engines = Array.from(new Set(modelCars.map((car) => car.engineType).filter(Boolean))) as string[];
-  const hasSelection = Boolean(manufacturer || model || year || engine);
+  const modelCars = model ? manufacturerCars.filter((car) => car.model === model) : [];
+  const years = Array.from(new Set(modelCars.map(getYearLabel).filter(Boolean))).sort((left, right) =>
+    right.localeCompare(left, "fa", { numeric: true }),
+  );
+  const yearCars = year ? modelCars.filter((car) => getYearLabel(car) === year) : modelCars;
+  const engines = Array.from(new Set(yearCars.map((car) => car.engineType).filter(Boolean))) as string[];
+  const requiresYear = years.length > 0;
+  const requiresEngine = engines.length > 0;
+  const canSubmit = Boolean(manufacturer && model && (!requiresYear || year) && (!requiresEngine || engine));
 
-  const exactMatch = hasSelection
+  const exactMatch = canSubmit
     ? modelCars.find((car) => {
         const yearLabel = getYearLabel(car);
         return (!year || yearLabel === year) && (!engine || car.engineType === engine);
@@ -103,11 +112,21 @@ export function HeroVehicleFinder({ cars, variant = "default" }: HeroVehicleFind
 
   const helperText = !cars.length
     ? "هنوز دیتای خودرو برای پیشنهاد سریع ثبت نشده است."
-    : exactMatch?.viscosity
-      ? `ویسکوزیته پیشنهادی: ${exactMatch.viscosity}`
-      : exactMatch
-        ? "خودرو پیدا شد. محصولات سازگار را ببینید."
-        : "برند و مدل خودرو را انتخاب کنید تا محصول سازگار نمایش داده شود.";
+    : !manufacturer
+      ? "از سازنده شروع کنید؛ گزینه‌های بعدی بر اساس انتخاب شما نمایش داده می‌شوند."
+      : !model
+        ? "حالا مدل خودرو را انتخاب کنید."
+        : requiresYear && !year
+          ? "بازهٔ سال ساخت خودرو را مشخص کنید."
+          : requiresEngine && !engine
+            ? "در گام آخر، نوع موتور را انتخاب کنید."
+            : exactMatch?.viscosity
+              ? `ویسکوزیته پیشنهادی: ${exactMatch.viscosity}`
+              : exactMatch
+                ? "خودرو پیدا شد؛ محصولات سازگار آماده نمایش هستند."
+                : "اطلاعات انتخاب‌شده را بررسی کنید.";
+
+  const currentStep = !manufacturer ? 1 : !model ? 2 : requiresYear && !year ? 3 : requiresEngine && !engine ? 4 : 4;
 
   const handleSubmit = () => {
     startTransition(() => {
@@ -124,18 +143,31 @@ export function HeroVehicleFinder({ cars, variant = "default" }: HeroVehicleFind
   };
 
   return (
-    <div className={cn(variant === "compact" ? "border-y border-border bg-surface-secondary py-5" : "panel-zen rounded-2xl p-5")}>
+    <div className={cn(variant === "compact" ? "bg-surface-dark py-7 text-white md:py-9" : "panel-zen-dark rounded-2xl p-5")}>
       <div className={cn(variant === "compact" ? "container-zen" : "space-y-4")}>
-        <div className={cn(variant === "compact" ? "mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between" : "space-y-1")}>
-          <div>
-            <h2 className="text-base font-extrabold text-text-strong sm:text-lg">انتخاب روغن بر اساس خودرو</h2>
-            <p className="mt-1 text-sm leading-7 text-text-muted">{helperText}</p>
+        <div className={cn(variant === "compact" ? "mb-5 flex items-start justify-between gap-5" : "space-y-1")}>
+          <div className="min-w-0">
+            <h2 className="text-xl font-black text-white sm:text-2xl">خودروی شما چیست؟</h2>
+            <p className="mt-1.5 max-w-2xl text-sm leading-7 text-white/60">{helperText}</p>
           </div>
+          <ol aria-label="مراحل انتخاب خودرو" className="mt-2 flex shrink-0 flex-row-reverse items-center gap-1.5" dir="ltr">
+            {[1, 2, 3, 4].map((step) => (
+              <li
+                key={step}
+                aria-current={currentStep === step ? "step" : undefined}
+                className={cn(
+                  "h-2 rounded-full transition-all",
+                  step === currentStep ? "w-6 bg-primary-accent" : step < currentStep ? "w-2 bg-white/55" : "w-2 bg-white/20",
+                )}
+              />
+            ))}
+          </ol>
         </div>
 
-        <div className={cn(variant === "compact" ? "grid gap-3 md:grid-cols-[repeat(4,minmax(0,1fr))_auto]" : "grid gap-3")}>
+        <div className={cn(variant === "compact" ? "grid gap-3 sm:grid-cols-2 lg:grid-cols-4" : "grid gap-3")}>
           <SelectField
             ariaLabel="برند خودرو"
+            label="۱. سازنده"
             onChange={(value) => {
               setManufacturer(value);
               setModel("");
@@ -148,7 +180,8 @@ export function HeroVehicleFinder({ cars, variant = "default" }: HeroVehicleFind
           />
           <SelectField
             ariaLabel="مدل"
-            disabled={!models.length}
+            disabled={!manufacturer || !models.length}
+            label="۲. مدل"
             onChange={(value) => {
               setModel(value);
               setYear("");
@@ -158,16 +191,39 @@ export function HeroVehicleFinder({ cars, variant = "default" }: HeroVehicleFind
             placeholder="مدل"
             value={model}
           />
-          <SelectField ariaLabel="سال" disabled={!years.length} onChange={setYear} options={years} placeholder="سال" value={year} />
-          <SelectField ariaLabel="نوع موتور" disabled={!engines.length} onChange={setEngine} options={engines} placeholder="نوع موتور" value={engine} />
+          {model && requiresYear ? (
+            <SelectField
+              ariaLabel="سال"
+              label="۳. سال ساخت"
+              onChange={(value) => {
+                setYear(value);
+                setEngine("");
+              }}
+              options={years}
+              placeholder="سال ساخت"
+              value={year}
+            />
+          ) : null}
+          {model && (!requiresYear || year) && requiresEngine ? (
+            <SelectField
+              ariaLabel="نوع موتور"
+              label={requiresYear ? "۴. موتور" : "۳. موتور"}
+              onChange={setEngine}
+              options={engines}
+              placeholder="نوع موتور"
+              value={engine}
+            />
+          ) : null}
+          <div className="sm:col-span-2 lg:col-span-4">
           <button
-            className="btn-primary md:min-w-[168px]"
-            disabled={isPending || !cars.length}
+            className="btn-primary w-full sm:w-auto sm:min-w-[210px]"
+            disabled={isPending || !cars.length || !canSubmit}
             onClick={handleSubmit}
             type="button"
           >
-            {isPending ? "در حال انتقال..." : "یافتن محصول سازگار"}
+            {isPending ? "در حال انتقال..." : "انتخاب خودرو"}
           </button>
+          </div>
         </div>
       </div>
     </div>

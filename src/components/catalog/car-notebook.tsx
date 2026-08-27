@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { SVGProps } from "react";
 import { useEffect, useState } from "react";
-import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { WishlistButton } from "@/components/product/wishlist-button";
 import { PriceBlock } from "@/components/ui/price-block";
 import type {
@@ -419,13 +418,12 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
           ) : null}
         </div>
 
-        <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
-          <AddToCartButton productId={product.id} disabled={!isAvailable} size="sm" className="w-full" />
+        <div className="mt-3">
           <Link
             href={`/products/${product.slug}`}
-            className="inline-flex min-h-10 items-center justify-center rounded-[14px] border border-[#E5E7EB] px-4 text-[13px] font-bold text-[#111827] transition hover:border-[#F5C56B] hover:text-[#D97706]"
+            className="inline-flex min-h-10 w-full items-center justify-center rounded-[14px] border border-[#E5E7EB] px-4 text-[13px] font-bold text-[#111827] transition hover:border-[#F5C56B] hover:text-[#D97706]"
           >
-            جزئیات
+            مشاهده جزئیات
           </Link>
         </div>
       </div>

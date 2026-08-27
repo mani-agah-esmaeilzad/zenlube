@@ -22,18 +22,18 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
       <div className="flex items-center overflow-hidden rounded-xl border border-border bg-white">
         <button
           type="button"
           aria-label="کم کردن تعداد"
           onClick={() => updateQuantity(quantity - 1)}
           disabled={isPending || quantity <= 1}
-          className={cn("flex h-11 w-11 items-center justify-center text-lg font-bold text-text-muted hover:bg-surface-elevated", isPending && "opacity-50")}
+          className={cn("flex h-11 w-10 items-center justify-center text-lg font-bold text-text-muted hover:bg-surface-elevated sm:w-11", isPending && "opacity-50")}
         >
           -
         </button>
-        <span className="flex h-11 min-w-10 items-center justify-center border-x border-border px-2 text-sm font-bold text-text-strong">
+        <span className="flex h-11 min-w-9 items-center justify-center border-x border-border px-2 text-sm font-bold text-text-strong sm:min-w-10">
           {quantity.toLocaleString("fa-IR")}
         </span>
         <button
@@ -41,7 +41,7 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
           aria-label="زیاد کردن تعداد"
           onClick={() => updateQuantity(quantity + 1)}
           disabled={isPending}
-          className={cn("flex h-11 w-11 items-center justify-center text-lg font-bold text-text-muted hover:bg-surface-elevated", isPending && "opacity-50")}
+          className={cn("flex h-11 w-10 items-center justify-center text-lg font-bold text-text-muted hover:bg-surface-elevated sm:w-11", isPending && "opacity-50")}
         >
           +
         </button>
@@ -54,7 +54,7 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
             router.refresh();
           })
         }
-        className="rounded-xl border border-[#FECACA] px-3 py-2 text-xs font-bold text-error hover:bg-[#FEF3F2]"
+        className="min-h-11 rounded-xl border border-[#FECACA] px-3 py-2 text-xs font-bold text-error hover:bg-[#FEF3F2]"
         disabled={isPending}
       >
         حذف

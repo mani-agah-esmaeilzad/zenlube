@@ -28,12 +28,12 @@ export async function CartIndicator({ compact = false, className }: CartIndicato
       href="/cart"
       className={cn(
         "btn-outline relative inline-flex h-11 items-center rounded-xl text-sm font-bold text-text-strong",
-        compact ? "w-11 justify-center px-0" : "gap-2 px-3",
+        compact ? "w-11 justify-center !px-0" : "gap-2 px-3",
         className,
       )}
       aria-label={`سبد خرید با ${totalItems.toLocaleString("fa-IR")} کالا`}
     >
-      <CartIcon className="h-5 w-5" />
+      <CartIcon className="h-5 w-5 shrink-0" />
       {!compact ? <span className="hidden sm:inline">سبد خرید</span> : null}
       {totalItems > 0 ? (
         <span

@@ -158,7 +158,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }));
 
   return (
-    <div className="container-zen pb-[calc(11.5rem+env(safe-area-inset-bottom,0px))] pt-6 md:pt-8 lg:pb-8">
+    <div className="container-zen pb-[calc(11rem+env(safe-area-inset-bottom,0px))] pt-5 sm:pt-6 md:pt-8 lg:pb-8">
       <script dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }} type="application/ld+json" />
       <script dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }} type="application/ld+json" />
 
@@ -176,7 +176,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         />
       </div>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start">
+      <section className="grid gap-5 sm:gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start">
         <div className="min-w-0">
           <ProductGallery items={galleryItems} title={product.name} />
         </div>
@@ -235,7 +235,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               compareHref="/products/compare"
               estimatedDeliveryLabel={shippingEstimate}
               isAvailable={isAvailable}
-              price={product.price}
+              price={Number(product.price)}
               productId={product.id}
               stock={product.stock}
               wishlistActive={Boolean(wishlistItem)}
@@ -255,7 +255,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_.9fr]" id="product-reviews">
-        <div className="rounded-2xl border border-border bg-white p-5 md:p-6">
+        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
             <div>
               <h2 className="text-xl font-black text-text-strong">دیدگاه کاربران</h2>
@@ -303,7 +303,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
             {relatedProducts.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}

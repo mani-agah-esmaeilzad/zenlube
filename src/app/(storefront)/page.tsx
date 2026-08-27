@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode, SVGProps } from "react";
 
 import { BlogCard } from "@/components/blog/blog-card";
 import { HeroVehicleFinder } from "@/components/layout/hero-vehicle-finder";
@@ -18,8 +19,6 @@ import {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const heroTrust = ["ضمانت اصالت کالا", "ارسال به سراسر کشور", "مشاوره تخصصی انتخاب محصول"];
-
 export default async function Home() {
   const [categories, brands, cars, posts, featuredProducts, bestsellerProducts] = await Promise.all([
     getHighlightedCategories().catch(() => []),
@@ -32,44 +31,51 @@ export default async function Home() {
 
   const selectedProducts = featuredProducts.length ? featuredProducts : bestsellerProducts;
   const selectedProductsTitle = featuredProducts.length ? "محصولات منتخب" : "محصولات پرفروش";
+  const highlightedCategories = [...categories]
+    .sort((left, right) => right._count.products - left._count.products)
+    .slice(0, 8);
+  const availableBrands = brands
+    .filter((brand) => brand._count.products > 0)
+    .sort((left, right) => right._count.products - left._count.products)
+    .slice(0, 12);
 
   return (
-    <div className="pb-14">
-      <section className="container-zen pt-6 md:pt-8">
-        <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-12">
-          <div>
-            <p className="text-sm font-bold text-primary-accent-strong">فروشگاه تخصصی محصولات خودرو</p>
-            <h1 className="t-display mt-3 max-w-[16ch]">روغن اصل، انتخاب دقیق، خرید مطمئن</h1>
-            <p className="mt-4 max-w-xl text-sm leading-8 text-text-muted sm:text-base">
-              روغن موتور، روغن گیربکس و فیلترهای اصلی را بر اساس برند، ویسکوزیته یا مدل خودرو پیدا کنید و با ضمانت اصالت تحویل بگیرید.
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link className="btn-primary w-full sm:w-auto" href="/products">
+    <div className="pb-6 md:pb-12">
+      <section className="container-zen pt-4 md:pt-8">
+        <div className="relative overflow-hidden rounded-[24px] border border-border bg-white shadow-[0_18px_60px_rgba(17,24,39,0.06)]">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(circle_at_12%_30%,rgba(245,158,11,0.12),transparent_32%),linear-gradient(135deg,#ffffff_0%,#ffffff_58%,#f7f8fa_100%)]"
+          />
+          <div className="relative grid min-h-[350px] grid-cols-[minmax(0,1.25fr)_minmax(105px,0.75fr)] items-center gap-0 px-4 pt-5 sm:min-h-[400px] sm:px-7 md:min-h-0 md:grid-cols-2 md:gap-8 md:px-10 md:py-10 lg:px-14 lg:py-12">
+            <div className="relative z-10 py-4 md:py-6">
+              <h1 className="max-w-[13ch] text-[1.7rem] font-black leading-[1.45] tracking-[-0.035em] text-text-strong min-[390px]:text-[1.8rem] sm:text-4xl md:max-w-[12ch] md:text-5xl md:leading-[1.35] lg:text-[3.35rem]">
+                روغن مناسب خودروی شما، <span className="text-primary-accent-strong">دقیق و مطمئن</span>
+              </h1>
+              <p className="mt-3 hidden max-w-lg text-sm leading-7 text-text-muted min-[390px]:block md:mt-5 md:text-base md:leading-8">
+                روغن موتور، روغن گیربکس و فیلتر اصل را بر اساس مشخصات واقعی خودرو پیدا کنید و با ضمانت اصالت تحویل بگیرید.
+              </p>
+              <Link className="btn-primary mt-5 w-full max-w-[190px] md:mt-7 md:w-auto md:min-w-[190px]" href="/products">
                 مشاهده محصولات
               </Link>
-              <Link className="btn-outline w-full sm:w-auto" href="/brands">
-                مشاهده برندها
-              </Link>
             </div>
-            <ul className="mt-6 space-y-2 text-xs font-bold text-text sm:flex sm:flex-wrap sm:gap-x-5 sm:gap-y-2 sm:space-y-0 sm:text-sm">
-              {heroTrust.map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary-accent-strong" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+
+            <div className="relative h-full min-h-[300px] self-end md:min-h-0">
+              <Image
+                alt="مجموعه روغن و فیلتر خودرو Oilbar"
+                className="absolute bottom-0 left-1/2 h-auto w-[210%] max-w-none -translate-x-1/2 object-contain sm:w-[145%] md:relative md:bottom-auto md:left-auto md:w-full md:max-w-[680px] md:translate-x-0"
+                height={1024}
+                priority
+                sizes="(max-width: 767px) 62vw, 50vw"
+                src="/generated/oilbar-hero-products.png"
+                width={1536}
+              />
+            </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[640px]">
-            <Image
-              alt="محصولات ویژه Oilbar"
-              className="relative z-10 h-auto w-full object-contain"
-              height={1024}
-              priority
-              src="/generated/oilbar-hero-products.png"
-              width={1536}
-            />
+          <div className="relative grid grid-cols-2 border-t border-border bg-white/90 px-3 py-4 sm:px-6 md:max-w-xl md:border md:border-b-0 md:border-r-0 md:py-5">
+            <HeroAssurance icon={<ShieldIcon className="size-6" />} label="ضمانت اصالت کالا" />
+            <HeroAssurance className="border-r border-border" icon={<TruckIcon className="size-6" />} label="ارسال سراسری" />
           </div>
         </div>
       </section>
@@ -92,26 +98,26 @@ export default async function Home() {
         </section>
       ) : null}
 
-      <section className="container-zen mt-10 space-y-5 md:mt-14">
-        <SectionHeader href="/categories" subtitle="روغن موتور، گیربکس، فیلتر و لوازم مصرفی" title="خرید بر اساس دسته‌بندی" />
-        {categories.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {categories.map((category) => (
+      <section className="container-zen mt-9 space-y-4 md:mt-14 md:space-y-6">
+        <SectionHeader compactOnMobile href="/categories" subtitle="مسیر کوتاه‌تر برای رسیدن به کالای موردنیاز" title="دسته‌بندی محصولات" />
+        {highlightedCategories.length > 0 ? (
+          <div className="scrollbar-none -mx-2 flex snap-x snap-mandatory gap-3 overflow-x-auto px-2 pb-2 md:mx-0 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:px-0 xl:grid-cols-8">
+            {highlightedCategories.map((category) => (
               <Link
                 key={category.id}
-                className="group rounded-2xl border border-border bg-white px-3 py-4 text-center transition hover:border-[rgba(217,119,6,0.28)]"
+                className="group flex w-[118px] shrink-0 snap-start flex-col items-center rounded-2xl border border-transparent bg-white px-2 py-3 text-center transition hover:border-[rgba(217,119,6,0.28)] hover:bg-surface-tint md:w-auto md:border-border md:px-3 md:py-5"
                 href={`/categories/${category.slug}`}
               >
-                <span className="mx-auto mb-3 flex size-12 items-center justify-center overflow-hidden rounded-xl bg-surface-secondary text-sm font-extrabold text-primary-accent-strong">
+                <span className="mb-3 flex size-[76px] items-center justify-center overflow-hidden rounded-full border border-border bg-surface-secondary text-lg font-black text-primary-accent-strong md:size-20">
                   {category.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img alt="" className="h-full w-full object-contain p-2" src={category.imageUrl} />
+                    <img alt="" className="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-105" src={category.imageUrl} />
                   ) : (
                     category.name.trim().charAt(0)
                   )}
                 </span>
-                <span className="line-clamp-2 text-sm font-bold leading-6 text-text-strong">{category.name}</span>
-                <span className="mt-1 block text-xs text-text-muted">{category._count.products.toLocaleString("fa-IR")} محصول</span>
+                <span className="line-clamp-2 min-h-11 text-sm font-extrabold leading-6 text-text-strong">{category.name}</span>
+                <span className="mt-1 text-[11px] font-medium text-text-muted">{category._count.products.toLocaleString("fa-IR")} محصول</span>
               </Link>
             ))}
           </div>
@@ -121,24 +127,26 @@ export default async function Home() {
       </section>
 
       {selectedProducts.length ? (
-        <section className="container-zen mt-10 space-y-5 md:mt-14">
-          <SectionHeader href="/products" subtitle="کالاهای منتخب بر اساس موجودی و مشخصات فنی" title={selectedProductsTitle} />
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
+        <section className="container-zen mt-9 space-y-4 md:mt-14 md:space-y-6">
+          <SectionHeader compactOnMobile href="/products" subtitle="انتخاب‌شده از موجودی واقعی فروشگاه" title={selectedProductsTitle} />
+          <div className="scrollbar-none -mx-2 flex snap-x snap-mandatory gap-3 overflow-x-auto px-2 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 xl:grid-cols-4">
             {selectedProducts.slice(0, 8).map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className="w-[calc(100vw-2.75rem)] max-w-[360px] shrink-0 snap-start md:w-auto md:min-w-0 md:max-w-none">
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         </section>
       ) : null}
 
-      {brands.length > 0 ? (
-        <section className="container-zen mt-10 space-y-5 md:mt-14">
-          <SectionHeader href="/brands" subtitle="برندهای تخصصی روغن و فیلتر موجود در فروشگاه" title="برندهای معتبر" />
-          <div className="grid grid-cols-2 border-y border-border sm:grid-cols-3 lg:grid-cols-6">
-            {brands.slice(0, 12).map((brand) => (
+      {availableBrands.length > 0 ? (
+        <section className="container-zen mt-9 space-y-4 md:mt-14 md:space-y-6">
+          <SectionHeader compactOnMobile href="/brands" subtitle="فقط برندهایی که اکنون محصول فعال دارند" title="برندهای موجود" />
+          <div className="scrollbar-none -mx-2 flex snap-x gap-3 overflow-x-auto px-2 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-0 md:overflow-visible md:border-y md:border-border md:px-0 lg:grid-cols-6">
+            {availableBrands.map((brand) => (
               <Link
                 key={brand.id}
-                className="flex min-h-20 items-center justify-center border-b border-l border-border px-4 py-5 text-center text-sm font-extrabold text-text transition hover:bg-surface-secondary hover:text-primary-accent-strong"
+                className="flex min-h-24 w-[156px] shrink-0 snap-start items-center justify-center rounded-2xl border border-border bg-white px-4 py-5 text-center text-sm font-extrabold text-text transition hover:bg-surface-secondary hover:text-primary-accent-strong md:w-auto md:rounded-none md:border-y-0 md:border-r-0"
                 href={`/products?brand=${brand.slug}`}
               >
                 {brand.imageUrl ? (
@@ -153,43 +161,37 @@ export default async function Home() {
         </section>
       ) : null}
 
-      <section className="container-zen mt-10 md:mt-14">
-        <div className="grid gap-8 border-y border-border py-8 md:grid-cols-3 md:gap-10">
-          <TrustItem description="کالاها از منابع معتبر تامین می‌شوند و مشخصات فنی آن‌ها قابل بررسی است." title="اصالت کالا" />
-          <TrustItem description="ویسکوزیته، استاندارد و سازگاری با خودرو برای انتخاب دقیق‌تر در دسترس است." title="انتخاب تخصصی" />
-          <TrustItem description="سفارش‌ها بسته‌بندی می‌شوند و به سراسر کشور ارسال می‌گردند." title="ارسال سراسری" />
-        </div>
-      </section>
-
-      <section className="container-zen mt-10 md:mt-14">
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+      <section className="container-zen mt-9 md:mt-14">
+        <div className="grid gap-7 overflow-hidden rounded-[22px] border border-[rgba(217,119,6,0.16)] bg-surface-tint px-5 py-7 sm:px-7 md:px-9 md:py-9 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
             <h2 className="section-title">راهنمای انتخاب روغن</h2>
-            <p className="section-subtitle">
-              اگر ویسکوزیته مناسب خودرو را نمی‌دانید، از دفترچه خودرو استفاده کنید. مشخصات فنی هر محصول فقط در صورت وجود در داده واقعی نمایش داده می‌شود.
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-text-muted md:text-base md:leading-8">
+              ویسکوزیته، استاندارد و تأییدیهٔ سازنده را با دفترچهٔ خودرو تطبیق دهید. انتخاب‌گر خودرو فقط بر پایهٔ اطلاعات ثبت‌شده، پیشنهاد سازگار نمایش می‌دهد.
             </p>
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-5 flex flex-wrap items-center gap-3">
               <Link className="btn-secondary w-full sm:w-auto" href="/cars">
                 انتخاب بر اساس خودرو
               </Link>
-              <Link className="btn-outline w-full sm:w-auto" href="/blog">
-                مطالب فنی و راهنما
+              <Link className="text-sm font-extrabold text-primary-accent-strong" href="/blog">
+                مطالعه راهنماهای فنی ←
               </Link>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <GuideNote title="ویسکوزیته" text="گریدهایی مثل 5W-30 یا 10W-40 را با توصیه سازنده خودرو مطابقت دهید." />
-            <GuideNote title="استاندارد" text="API، ACEA و تاییدیه سازنده را در صفحه محصول بررسی کنید." />
+            <GuideNote number="۱" title="ویسکوزیته" text="گریدی مثل 5W-30 را با توصیهٔ سازندهٔ خودرو مطابقت دهید." />
+            <GuideNote number="۲" title="استاندارد" text="API، ACEA و تأییدیهٔ سازنده را در صفحهٔ محصول بررسی کنید." />
           </div>
         </div>
       </section>
 
       {!!posts.length && (
-        <section className="container-zen mt-10 space-y-5 md:mt-14">
-          <SectionHeader href="/blog" subtitle="نکات فنی برای انتخاب روغن، فیلتر و نگهداری خودرو" title="راهنمای خرید" />
-          <div className="grid gap-5 md:grid-cols-3">
+        <section className="container-zen mt-9 space-y-4 md:mt-14 md:space-y-6">
+          <SectionHeader compactOnMobile href="/blog" subtitle="نکات فنی برای انتخاب روغن، فیلتر و نگهداری خودرو" title="مجلهٔ فنی" />
+          <div className="scrollbar-none -mx-2 flex snap-x gap-4 overflow-x-auto px-2 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
             {posts.map((post) => (
-              <BlogCard key={post.id} post={post} />
+              <div key={post.id} className="w-[82vw] max-w-[320px] shrink-0 snap-start md:w-auto md:max-w-none">
+                <BlogCard post={post} />
+              </div>
             ))}
           </div>
         </section>
@@ -198,20 +200,42 @@ export default async function Home() {
   );
 }
 
-function TrustItem({ title, description }: { title: string; description: string }) {
+function HeroAssurance({ className = "", icon, label }: { className?: string; icon: ReactNode; label: string }) {
   return (
-    <div>
-      <h2 className="text-base font-extrabold text-text-strong">{title}</h2>
-      <p className="mt-2 text-sm leading-7 text-text-muted">{description}</p>
+    <div className={`flex min-w-0 items-center justify-center gap-2.5 px-2 text-xs font-extrabold text-text sm:text-sm ${className}`}>
+      <span className="shrink-0 text-primary-accent-strong">{icon}</span>
+      <span className="line-clamp-2">{label}</span>
     </div>
   );
 }
 
-function GuideNote({ title, text }: { title: string; text: string }) {
+function GuideNote({ number, title, text }: { number: string; title: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface-secondary px-4 py-4">
-      <p className="text-sm font-extrabold text-text-strong">{title}</p>
-      <p className="mt-2 text-sm leading-7 text-text-muted">{text}</p>
+    <div className="rounded-2xl border border-[rgba(217,119,6,0.14)] bg-white px-4 py-4">
+      <div className="flex items-center gap-3">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-dark text-xs font-black text-white">{number}</span>
+        <p className="text-sm font-extrabold text-text-strong">{title}</p>
+      </div>
+      <p className="mt-3 text-sm leading-7 text-text-muted">{text}</p>
     </div>
+  );
+}
+
+function ShieldIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" viewBox="0 0 24 24" {...props}>
+      <path d="M12 3 5.5 5.7v5.2c0 4.2 2.6 7.8 6.5 10.1 3.9-2.3 6.5-5.9 6.5-10.1V5.7L12 3Z" />
+      <path d="m9.2 12 1.8 1.8 3.8-4" />
+    </svg>
+  );
+}
+
+function TruckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" viewBox="0 0 24 24" {...props}>
+      <path d="M3 6h11v10H3zM14 10h3l4 4v2h-7z" />
+      <circle cx="7" cy="18" r="2" />
+      <circle cx="17" cy="18" r="2" />
+    </svg>
   );
 }

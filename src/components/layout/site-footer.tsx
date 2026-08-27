@@ -2,10 +2,19 @@ import type { SVGProps } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { LOGO_SRC } from "@/components/layout/logo-mark";
+import { LogoMark } from "@/components/layout/logo-mark";
 import { getAllCategoriesLite } from "@/lib/data";
 
 const trustItems = ["ضمانت اصالت کالا", "ارسال سریع", "پرداخت امن", "پشتیبانی تخصصی"];
+
+const mobileFooterLinks = [
+  ["تماس و پشتیبانی", "/support"],
+  ["حساب کاربری", "/account"],
+  ["انتخاب براساس خودرو", "/cars"],
+  ["برندها", "/brands"],
+  ["قوانین خرید", "/terms"],
+  ["حریم خصوصی", "/policy"],
+] as const;
 
 const baseFooterGroups = [
   {
@@ -52,8 +61,8 @@ export async function SiteFooter() {
   ];
 
   return (
-    <footer className="mt-16">
-      <div className="border-y border-border bg-surface-secondary">
+    <footer className="mt-10 md:mt-14 lg:mt-16">
+      <div className="hidden border-y border-border bg-surface-secondary md:block">
         <div className="container-zen grid grid-cols-2 gap-x-4 gap-y-3 py-5 md:grid-cols-4">
           {trustItems.map((item) => (
             <div key={item} className="flex items-center gap-2 text-sm font-bold text-text">
@@ -65,10 +74,38 @@ export async function SiteFooter() {
       </div>
 
       <div className="bg-primary text-white">
-        <div className="container-zen grid gap-8 py-10 lg:grid-cols-[1.15fr_2fr_0.9fr] lg:py-12">
+        <div className="container-zen py-7 lg:hidden">
+          <div className="flex items-start justify-between gap-5">
+            <Link className="inline-flex items-center rounded-lg bg-white px-2 py-1" href="/">
+              <LogoMark className="h-9 w-auto" sizes="92px" />
+            </Link>
+            <Link
+              className="inline-flex min-h-9 shrink-0 items-center rounded-lg border border-white/14 bg-white/7 px-3 text-[11px] font-bold text-white transition hover:border-primary-accent/50 hover:text-[#F5C56B]"
+              href="tel:+989190810910"
+            >
+              ۰۹۱۹۰۸۱۰۹۱۰
+            </Link>
+          </div>
+          <p className="mt-3 max-w-lg text-xs leading-6 text-white/66">
+            محصولات مصرفی خودرو با تضمین اصالت و انتخاب فنی دقیق.
+          </p>
+          <nav className="mt-5 grid grid-cols-2 border-t border-white/10 text-xs font-semibold text-white/72">
+            {mobileFooterLinks.map(([label, href]) => (
+              <Link
+                className="border-b border-white/10 py-3 transition odd:border-l odd:border-white/10 odd:pl-3 even:pr-3 hover:text-[#F5C56B]"
+                href={href}
+                key={href}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className="container-zen hidden gap-8 py-12 lg:grid lg:grid-cols-[1.15fr_2fr_0.9fr]">
           <div>
-            <Link className="inline-flex items-center" href="/">
-              <Image alt="لوگوی Oilbar" className="h-auto w-[148px]" height={50} src={LOGO_SRC} unoptimized width={210} />
+            <Link className="inline-flex items-center rounded-xl bg-white px-2.5 py-1.5" href="/">
+              <LogoMark className="h-[52px] w-auto" sizes="134px" />
             </Link>
             <p className="mt-4 max-w-md text-sm leading-8 text-white/72">
               فروشگاه تخصصی روغن موتور، فیلتر و لوازم مصرفی خودرو با تمرکز روی اصالت کالا، انتخاب فنی دقیق و ارسال سریع.
@@ -80,27 +117,7 @@ export async function SiteFooter() {
             </div>
           </div>
 
-          <div className="space-y-3 lg:hidden">
-            {footerGroups.map((group) => (
-              <details key={group.title} className="group rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-white">
-                  {group.title}
-                  <ChevronIcon className="h-4 w-4 text-white/55 transition group-open:rotate-180" />
-                </summary>
-                <ul className="mt-3 space-y-3 text-sm text-white/70">
-                  {group.links.map(([label, href]) => (
-                    <li key={label}>
-                      <Link className="transition hover:text-[#F5C56B]" href={href}>
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ))}
-          </div>
-
-          <div className="hidden gap-6 lg:grid lg:grid-cols-4">
+          <div className="grid grid-cols-4 gap-6">
             {footerGroups.map((group) => (
               <div key={group.title}>
                 <h3 className="text-sm font-bold text-white">{group.title}</h3>
@@ -139,7 +156,7 @@ export async function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-white/8 bg-[#11151c] py-4 text-center text-xs text-white/48">
+      <div className="border-t border-white/8 bg-[#11151c] px-4 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] text-center text-[11px] text-white/48 lg:py-4 lg:text-xs">
         © {new Date().getFullYear()} Oilbar - همه حقوق محفوظ است.
       </div>
     </footer>
@@ -150,14 +167,6 @@ function CheckIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24" {...props}>
       <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-}
-
-function ChevronIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} viewBox="0 0 24 24" {...props}>
-      <path d="m6 9 6 6 6-6" />
     </svg>
   );
 }

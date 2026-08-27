@@ -136,15 +136,15 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   );
 
   return (
-    <div className="container-zen py-6 md:py-8">
-      <div className="grid gap-4 lg:grid-cols-[280px_1fr] lg:gap-6">
+    <div className="container-zen py-5 sm:py-6 md:py-8">
+      <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-6">
         <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
-          <section className="rounded-2xl bg-primary p-5 text-white">
+          <section className="rounded-2xl bg-primary p-4 text-white sm:p-5">
             <p className="text-xs font-bold text-[#F5C56B]">حساب کاربری Oilbar</p>
             <h1 className="mt-2 text-xl font-black">{dbUser?.name ?? "کاربر اویل‌بار"}</h1>
             <p className="mt-2 text-xs text-slate-300">{dbUser?.phone ?? dbUser?.email}</p>
           </section>
-          <nav className="grid grid-cols-2 gap-2 rounded-2xl border border-border bg-white p-3 text-xs font-bold text-text-muted lg:grid-cols-1">
+          <nav className="-mx-4 flex gap-2 overflow-x-auto border-y border-border bg-white px-4 py-3 text-xs font-bold text-text-muted scrollbar-none sm:mx-0 sm:rounded-2xl sm:border sm:p-3 lg:grid lg:grid-cols-1 lg:overflow-visible">
             {[
               ["داشبورد", "#overview"],
               ["سفارش‌ها", "#orders"],
@@ -153,15 +153,15 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               ["اطلاعات حساب", "#profile"],
               ["پشتیبانی", "/support"],
             ].map(([label, href]) => (
-              <Link key={label} href={href} className="rounded-2xl px-3 py-3 text-center transition hover:bg-surface-tint hover:text-primary-accent-strong">
+              <Link key={label} href={href} className="min-h-11 shrink-0 rounded-xl px-4 py-3 text-center transition hover:bg-surface-tint hover:text-primary-accent-strong lg:px-3">
                 {label}
               </Link>
             ))}
           </nav>
         </aside>
 
-        <main className="space-y-6">
-          <section id="overview" className="rounded-2xl border border-border bg-white p-5 md:p-6">
+        <main className="min-w-0 space-y-5 sm:space-y-6">
+          <section id="overview" className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-sm font-bold text-primary-accent-strong">خوش آمدید</p>
@@ -174,7 +174,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-3 md:mt-6 md:grid-cols-4 md:gap-4">
               <Metric label="کل سفارش‌ها" value={totalOrders} />
               <Metric label="در انتظار پرداخت" value={pendingOrders} tone="amber" />
               <Metric label="سفارش موفق" value={paidOrders} tone="blue" />
@@ -184,7 +184,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
           {selectedOrder ? <OrderDetail order={selectedOrder} /> : null}
 
-          <section id="orders" className="rounded-2xl border border-border bg-white p-5 md:p-6">
+          <section id="orders" className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
             <SectionHeader title="سفارش‌های من" subtitle="تاریخچه سفارش‌ها و وضعیت پرداخت و ارسال" />
             {orders.length ? (
               <>
@@ -193,7 +193,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                   <Link
                     key={order.id}
                     href={`/account?orderId=${order.id}#order-detail`}
-                    className={`rounded-2xl border p-4 transition hover:border-[#F5C56B] ${
+                    className={`rounded-xl border p-4 transition hover:border-[#F5C56B] ${
                       selectedOrder?.id === order.id ? "border-[rgba(245,158,11,0.26)] bg-surface-tint" : "border-border bg-white"
                     }`}
                   >
@@ -216,7 +216,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             )}
           </section>
 
-          <section id="addresses" className="rounded-2xl border border-border bg-white p-5 md:p-6">
+          <section id="addresses" className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
             <SectionHeader title="آدرس پیش‌فرض" subtitle="این آدرس در checkout به صورت خودکار پیشنهاد می‌شود." />
             <div className="mt-5">
               <AddressForm
@@ -231,7 +231,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-white p-5 md:p-6">
+          <section className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
             <SectionHeader title="دفترچه آدرس‌ها" subtitle="چند آدرس مختلف ذخیره کنید و آدرس پیش‌فرض را هر زمان تغییر دهید." />
             <div className="mt-5">
               <AddressBookForm addresses={dbUser?.addresses ?? []} />
@@ -265,7 +265,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 price: Number(item.product.price),
               }))}
             />
-            <div className="rounded-2xl border border-border bg-white p-5">
+            <div className="rounded-2xl border border-border bg-white p-4 sm:p-5">
               <p className="text-sm font-black text-text-strong">سفارش مجدد سریع</p>
               <p className="mt-2 text-xs leading-6 text-text-muted">
                 از بین محصولات علاقه‌مندی و اخیراً دیده‌شده می‌توانید سریع‌تر به خرید بعدی برگردید.
@@ -280,7 +280,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             </div>
           </section>
 
-          <section id="profile" className="rounded-2xl border border-border bg-white p-5 md:p-6">
+          <section id="profile" className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
             <SectionHeader title="اطلاعات حساب" subtitle="اطلاعات تماس و هویت حساب کاربری" />
             <div className="mt-5">
               <ProfileForm name={dbUser?.name} email={dbUser?.email} phone={dbUser?.phone} />
@@ -316,11 +316,11 @@ function OrderDetail({ order }: { order: AccountOrder }) {
   const canRequestReturn = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
 
   return (
-    <section id="order-detail" className="rounded-2xl border border-border bg-white p-5 md:p-6">
+    <section id="order-detail" className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
       <SectionHeader title={`جزئیات سفارش #${order.id.slice(0, 10).toUpperCase()}`} subtitle={new Date(order.createdAt).toLocaleString("fa-IR")} />
-      <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-5">
+      <div className="-mx-4 mt-5 flex snap-x gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:-mx-5 sm:px-5 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
         {timeline.map((step, index) => (
-          <div key={`${step.label}-${index}`} className={`rounded-2xl border px-3 py-3 text-center text-[11px] font-bold ${index <= activeIndex ? "border-green-200 bg-green-50 text-[#16A34A]" : "border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#F7F8FA_100%)] text-text-muted"}`}>
+          <div key={`${step.label}-${index}`} className={`min-w-28 snap-start rounded-xl border px-3 py-3 text-center text-[11px] font-bold md:min-w-0 ${index <= activeIndex ? "border-green-200 bg-green-50 text-[#16A34A]" : "border-border bg-[linear-gradient(180deg,#FFFFFF_0%,#F7F8FA_100%)] text-text-muted"}`}>
             {step.label}
           </div>
         ))}
@@ -335,7 +335,7 @@ function OrderDetail({ order }: { order: AccountOrder }) {
             </Link>
           ))}
         </div>
-        <div className="panel-zen-muted space-y-3 rounded-3xl p-4 text-xs">
+        <div className="panel-zen-muted space-y-3 rounded-2xl p-4 text-xs">
           <Summary label="جمع کالاها" value={formatPrice(itemsTotal)} />
           <Summary label="هزینه ارسال" value={formatPrice(shippingCost)} />
           {discountAmount > 0 ? <Summary label="تخفیف" value={formatPrice(discountAmount)} /> : null}
@@ -359,12 +359,12 @@ function OrderDetail({ order }: { order: AccountOrder }) {
       </div>
 
       {order.statusEvents?.length ? (
-        <div className="mt-6 rounded-3xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
+        <div className="mt-6 rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
           <p className="text-sm font-black text-[#111827]">تایم‌لاین سفارش</p>
           <div className="mt-4 space-y-3">
             {order.statusEvents.map((event) => (
               <div key={event.id} className="rounded-2xl border border-[#E5E7EB] bg-white px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <p className="text-sm font-bold text-[#111827]">{event.title}</p>
                   <span className="text-[11px] text-[#98A2B3]">{new Date(event.createdAt).toLocaleString("fa-IR")}</span>
                 </div>
@@ -376,7 +376,7 @@ function OrderDetail({ order }: { order: AccountOrder }) {
       ) : null}
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[1fr_360px]">
-        <div className="panel-zen rounded-3xl p-5">
+        <div className="panel-zen rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-black text-text-strong">سابقه مرجوعی سفارش</p>
@@ -407,7 +407,7 @@ function OrderDetail({ order }: { order: AccountOrder }) {
           )}
         </div>
 
-        <div className="panel-zen rounded-3xl p-5">
+        <div className="panel-zen rounded-2xl p-4 sm:p-5">
           <p className="text-sm font-black text-text-strong">ثبت درخواست مرجوعی</p>
           <p className="mt-2 text-xs leading-6 text-text-muted">
             اگر کالا مشکل دارد یا با سفارش مطابقت ندارد، درخواست را ثبت کنید تا تیم پشتیبانی آن را بررسی کند.
@@ -428,9 +428,9 @@ function OrderDetail({ order }: { order: AccountOrder }) {
 function Metric({ label, value, tone = "slate" }: { label: string; value: number; tone?: "slate" | "amber" | "blue" | "green" }) {
   const toneClass = tone === "amber" ? "text-amber-600" : tone === "blue" ? "text-blue-600" : tone === "green" ? "text-green-600" : "text-[#111827]";
   return (
-    <div className="metric-zen rounded-3xl">
+    <div className="metric-zen rounded-2xl">
       <p className="text-xs font-bold text-text-muted">{label}</p>
-      <p className={`mt-2 text-3xl font-black ${toneClass}`}>{value.toLocaleString("fa-IR")}</p>
+      <p className={`mt-2 text-2xl font-black sm:text-3xl ${toneClass}`}>{value.toLocaleString("fa-IR")}</p>
     </div>
   );
 }
@@ -470,7 +470,7 @@ function ProductShelf({
   items: Array<{ id: string; slug: string; name: string; brandName: string; price: number }>;
 }) {
   return (
-    <div className="panel-zen rounded-3xl p-5">
+    <div className="panel-zen rounded-2xl p-4 sm:p-5">
       <p className="text-sm font-black text-text-strong">{title}</p>
       {items.length ? (
         <div className="mt-4 space-y-3">

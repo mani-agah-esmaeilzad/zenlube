@@ -1,14 +1,13 @@
 "use client";
 
 import type { ReactNode, SVGProps } from "react";
-import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
-import { LOGO_SRC } from "@/components/layout/logo-mark";
+import { LogoMark } from "@/components/layout/logo-mark";
 import { MobileSheet } from "@/components/ui/mobile-sheet";
 import { cn } from "@/lib/utils";
 
@@ -40,10 +39,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const accountLabel = isAuthenticated ? "حساب کاربری" : "ورود / ثبت‌نام";
-  const drawerNavLinks = useMemo(
-    () => [...links, { href: accountHref, label: accountLabel }, ...drawerLinks],
-    [accountHref, accountLabel, links],
-  );
+  const drawerNavLinks = [...links, ...drawerLinks];
 
   useEffect(() => {
     setMounted(true);
@@ -55,7 +51,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
         aria-label="باز کردن منوی موبایل"
         aria-controls="mobile-site-drawer"
         aria-expanded={open}
-        className="btn-outline inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-strong"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary-accent-strong bg-primary-accent-strong text-white shadow-[0_6px_16px_rgba(217,119,6,0.18)] transition hover:border-primary-accent hover:bg-primary-accent"
         onClick={() => setOpen(true)}
         type="button"
       >
@@ -63,38 +59,36 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
       </button>
 
       <MobileSheet
-        className="w-[min(92vw,390px)]"
+        className="w-[min(88vw,360px)]"
         contentClassName="px-0 py-0"
+        footer={isAuthenticated ? <SignOutButton className="w-full" /> : <SignInButton className="w-full min-h-11 rounded-xl" />}
         open={open}
         onClose={() => setOpen(false)}
         side="right"
         title="منوی فروشگاه"
       >
         <div id="mobile-site-drawer" className="flex min-h-0 flex-col">
-          <div className="border-b border-border px-4 pb-4 sm:px-5">
+          <div className="border-b border-border px-4 py-3 sm:px-5">
             <div className="flex items-center justify-between gap-3">
               <Link className="flex items-center" href="/" onClick={() => setOpen(false)}>
-                <Image alt="لوگوی Oilbar" className="h-auto w-[112px]" height={44} src={LOGO_SRC} unoptimized width={176} />
+                <LogoMark className="h-9 w-auto" sizes="92px" />
               </Link>
-              <Link
-                className="chip-zen-muted rounded-xl px-3 py-2 text-xs font-bold text-text-muted"
-                href={accountHref}
-                onClick={() => setOpen(false)}
-              >
-                {accountLabel}
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  className="rounded-lg bg-surface-secondary px-3 py-2 text-[11px] font-bold text-text-muted transition hover:text-primary-accent-strong"
+                  href={accountHref}
+                  onClick={() => setOpen(false)}
+                >
+                  {accountLabel}
+                </Link>
+              ) : null}
             </div>
-
-            <form action="/products" className="relative mt-4">
-              <SearchIcon className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-              <input className="input-zen pr-11" name="search" placeholder="جستجو در روغن، فیلتر یا خودرو" type="search" />
-            </form>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 sm:px-5">
             <button
               aria-expanded={categoriesOpen}
-              className="panel-zen-muted flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-text-strong"
+              className="flex w-full items-center justify-between border-b border-border px-1 py-3 text-sm font-extrabold text-text-strong transition hover:text-primary-accent-strong"
               onClick={() => setCategoriesOpen((value) => !value)}
               type="button"
             >
@@ -103,12 +97,12 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
             </button>
 
             {categoriesOpen ? (
-              <div className="mt-3 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
+              <div className="mt-1 grid grid-cols-1 min-[360px]:grid-cols-2">
                 {categories.length ? (
                   categories.slice(0, 10).map((category) => (
                     <Link
                       key={category.id}
-                      className="interactive-lift rounded-xl border border-border bg-white px-3 py-3 text-xs font-semibold text-text"
+                      className="border-b border-border/80 px-2 py-3 text-xs font-semibold text-text transition hover:text-primary-accent-strong odd:min-[360px]:border-l"
                       href={`/categories/${category.slug}`}
                       onClick={() => setOpen(false)}
                     >
@@ -116,14 +110,14 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
                     </Link>
                   ))
                 ) : (
-                  <div className="panel-zen-muted min-[360px]:col-span-2 rounded-2xl border-dashed p-4 text-center text-xs font-semibold text-text-muted">
+                  <div className="min-[360px]:col-span-2 py-4 text-center text-xs font-semibold text-text-muted">
                     هنوز دسته‌بندی‌ای ثبت نشده است.
                   </div>
                 )}
               </div>
             ) : null}
 
-            <nav className="mt-5 space-y-2 text-sm font-semibold text-text">
+            <nav className="mt-2 text-sm font-semibold text-text">
               {drawerNavLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
 
@@ -131,10 +125,10 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
                   <Link
                     key={`${link.href}-${link.label}`}
                     className={cn(
-                      "block rounded-xl border px-4 py-3 transition",
+                      "block border-b border-border/80 px-1 py-3.5 transition",
                       isActive || link.highlight
-                        ? "border-[rgba(217,119,6,0.26)] bg-surface-tint text-primary-accent-strong"
-                        : "border-border bg-white text-text hover:border-[rgba(217,119,6,0.28)] hover:bg-surface-tint hover:text-primary-accent-strong",
+                        ? "text-primary-accent-strong"
+                        : "text-text hover:text-primary-accent-strong",
                     )}
                     href={link.href}
                     onClick={() => setOpen(false)}
@@ -145,16 +139,15 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
               })}
             </nav>
           </div>
-
-          <div className="border-t border-border px-4 py-4 mobile-bottom-safe sm:px-5">
-            {isAuthenticated ? <SignOutButton className="w-full" /> : <SignInButton className="w-full min-h-11 rounded-2xl" />}
-          </div>
         </div>
       </MobileSheet>
 
       {mounted && !open
         ? createPortal(
-            <nav className="fixed inset-x-0 bottom-0 z-[90] grid grid-cols-4 border-t border-border bg-white/96 px-1 pt-1 text-[11px] font-bold text-text-muted mobile-bottom-safe lg:hidden">
+            <nav
+              className="fixed inset-x-0 bottom-0 z-[90] grid grid-cols-4 border-t border-border bg-white/95 px-1 pt-0.5 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] text-[10px] font-bold text-text-muted shadow-[0_-8px_24px_rgba(17,24,39,0.05)] backdrop-blur-xl lg:hidden"
+              dir="rtl"
+            >
               <BottomLink active={pathname === "/"} href="/" icon={<HomeIcon className="h-5 w-5" />} label="خانه" />
               <BottomLink active={pathname?.startsWith("/products") ?? false} href="/products" icon={<StoreIcon className="h-5 w-5" />} label="فروشگاه" />
               <BottomLink active={pathname === "/cart"} href="/cart" icon={<CartIcon className="h-5 w-5" />} label="سبد خرید" />
@@ -170,9 +163,12 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
 function BottomLink({ href, icon, label, active = false }: { href: string; label: string; icon: ReactNode; active?: boolean }) {
   return (
     <Link
+      aria-current={active ? "page" : undefined}
       className={cn(
-        "flex flex-col items-center gap-1 rounded-xl px-1 py-1.5 transition",
-        active ? "bg-surface-tint text-primary-accent-strong" : "hover:text-primary-accent-strong",
+        "relative flex min-h-12 flex-col items-center justify-center gap-0.5 px-1 py-1 transition before:absolute before:inset-x-[32%] before:top-0 before:h-0.5 before:rounded-full before:bg-transparent",
+        active
+          ? "text-primary-accent-strong before:bg-primary-accent-strong"
+          : "hover:text-primary-accent-strong",
       )}
       href={href}
     >
@@ -195,24 +191,6 @@ function ChevronIcon(props: SVGProps<SVGSVGElement>) {
       {...props}
     >
       <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-function SearchIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.8}
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <circle cx={11} cy={11} r={7} />
-      <path d="m20 20-3.5-3.5" />
     </svg>
   );
 }

@@ -1,12 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { SVGProps } from "react";
 
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { CartIndicator } from "@/components/layout/cart-indicator";
 import { CategoryDropdown } from "@/components/layout/category-dropdown";
-import { LOGO_SRC } from "@/components/layout/logo-mark";
+import { LogoMark } from "@/components/layout/logo-mark";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { MobileSearch } from "@/components/layout/mobile-search";
 import { SearchAutocompleteForm } from "@/components/layout/search-autocomplete-form";
 import { getAllCategoriesLite } from "@/lib/data";
 import { getAppSession } from "@/lib/session";
@@ -49,23 +49,33 @@ export async function SiteHeader() {
         </div>
       </div>
 
-      <div className="container-zen py-2.5 lg:py-3">
-        <div className="flex flex-col gap-2.5 lg:hidden">
-          <div className="flex items-center gap-2">
-            <MobileNav accountHref={accountHref} categories={categories} isAuthenticated={isAuthenticated} links={links} />
-            <Link aria-label="صفحه اصلی Oilbar" className="shrink-0" href="/">
-              <Image alt="لوگوی Oilbar" className="h-8 w-auto" height={32} priority src={LOGO_SRC} unoptimized width={128} />
-            </Link>
-            <div className="min-w-0 flex-1" />
-            <CartIndicator compact />
+      <div className="container-zen py-2 lg:py-3">
+        <div
+          className="grid min-h-11 grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-2 lg:hidden"
+          dir="rtl"
+        >
+          <MobileNav accountHref={accountHref} categories={categories} isAuthenticated={isAuthenticated} links={links} />
+          <Link
+            aria-label="صفحه اصلی Oilbar"
+            className="min-w-0 justify-self-center overflow-hidden rounded-lg"
+            href="/"
+          >
+            <LogoMark
+              className="h-8 w-auto max-w-[112px] object-contain"
+              priority
+              sizes="82px"
+            />
+          </Link>
+          <div className="flex items-center gap-1.5 justify-self-end">
+            <MobileSearch quickSuggestions={searchSuggestions} />
+            <CartIndicator className="!h-10 !w-10 !min-h-10 rounded-xl" compact />
           </div>
-          <SearchAutocompleteForm placeholder="جستجو در روغن، فیلتر، برند یا خودرو..." quickSuggestions={searchSuggestions} />
         </div>
 
         <div className="hidden lg:block">
           <div className="flex items-center gap-4">
             <Link aria-label="صفحه اصلی Oilbar" className="shrink-0" href="/">
-              <Image alt="لوگوی Oilbar" className="h-10 w-auto" height={40} priority src={LOGO_SRC} unoptimized width={164} />
+              <LogoMark className="h-10 w-auto" priority sizes="104px" />
             </Link>
             <div className="min-w-0 flex-1">
               <SearchAutocompleteForm quickSuggestions={searchSuggestions} />

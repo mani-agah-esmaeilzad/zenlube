@@ -69,7 +69,7 @@ export function ProductDetailSections({
   }
 
   return (
-    <section className="rounded-2xl border border-border bg-white p-4 sm:p-5 lg:p-6">
+    <section className="bg-transparent md:rounded-2xl md:border md:border-border md:bg-white md:p-5 lg:p-6">
       <div className="hidden border-b border-border md:block">
         <div className="flex flex-wrap items-center gap-6 overflow-x-auto pb-1 scrollbar-none">
           {sections.map((section) => (
@@ -96,7 +96,7 @@ export function ProductDetailSections({
         {renderSectionBody(activeSection, { description, specRows, compatibleCars, importantNotes, faqs })}
       </div>
 
-      <div className="space-y-2 md:hidden">
+      <div className="space-y-2.5 md:hidden">
         {sections.map((section) => {
           const isOpen = activeSection === section.id;
 
@@ -108,7 +108,7 @@ export function ProductDetailSections({
                 onClick={() => setActiveSection((current) => (current === section.id ? current : section.id))}
                 type="button"
               >
-              <span>{section.title}</span>
+                <span>{section.title}</span>
                 <ChevronIcon className={cn("h-4 w-4 text-text-muted transition", isOpen ? "rotate-180" : "")} />
               </button>
               {isOpen ? (

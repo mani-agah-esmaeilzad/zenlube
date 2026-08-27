@@ -1,3 +1,24 @@
+# Theme
+
+## Compact token summary
+
+- Direction/language: Persian RTL (`dir=rtl`, `lang=fa`).
+- Framework: Tailwind CSS 4 via `@import "tailwindcss"`; global CSS custom properties.
+- Font: Vazirmatn 400–900, then IRANSans/Yekan Bakh/Tahoma/Arial fallbacks.
+- Brand palette: true white `#ffffff`; soft gray `#f7f8fa`; charcoal `#171b23`; ink `#111827`; amber `#f59e0b`; amber dark `#d97706`; amber deep `#b45309`; muted text `#667085`; pale border `#e6e8ee`.
+- Semantic colors: success `#16a34a`, warning `#d97706`, error `#d92d20`, info `#2563eb`.
+- Radius: 8, 12, 16, 20px plus full pills only for compact chips/navigation.
+- Shadow: restrained 1–2px or soft 8–40px shadows; most storefront surfaces use borders rather than elevation.
+- Containers: max 1280px; current mobile gutter is 10px per edge at <768px.
+- Type: display 1.7–3.1rem/900; H1 1.4–2rem/800; section titles 1.15–1.5rem/800; body 0.925rem with generous RTL line height.
+- Breakpoints: Tailwind defaults; explicit mobile rules at 639px and 767px, desktop header at lg.
+- Motion: 160ms color/border transitions; reduced-motion disables animations.
+
+## Raw source
+
+### `src/app/globals.css`
+
+```css
 @import url("https://fonts.bunny.net/css?family=vazirmatn:400,500,600,700,800,900&display=swap");
 @import "tailwindcss";
 
@@ -92,24 +113,15 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem;
-  overflow-x: clip;
 }
 
 body {
   min-height: 100vh;
-  min-width: 320px;
-  overflow-x: clip;
   background: var(--background);
   color: var(--zen-text);
   font-family: Vazirmatn, IRANSans, "Yekan Bakh", Tahoma, Arial, sans-serif;
   font-feature-settings: "ss01" on, "ss02" on;
   text-rendering: optimizeLegibility;
-}
-
-[dir="rtl"] body {
-  direction: rtl;
-  text-align: start;
 }
 
 img,
@@ -124,12 +136,6 @@ input,
 textarea,
 select {
   font: inherit;
-}
-
-input,
-textarea,
-select {
-  text-align: start;
 }
 
 button {
@@ -156,7 +162,7 @@ a {
 }
 
 .container-zen {
-  width: min(calc(100% - 2rem), 1280px);
+  width: min(100% - clamp(20px, 5vw, 40px), 1280px);
   margin-inline: auto;
 }
 
@@ -204,7 +210,7 @@ a {
 
 .section-band {
   position: relative;
-  padding-block: clamp(1rem, 1vw + 0.7rem, 1.5rem);
+  padding-block: clamp(1rem, 1vw + 0.65rem, 1.35rem);
 }
 
 .interactive-lift {
@@ -554,6 +560,17 @@ textarea.input-zen {
   }
 }
 
+@media (max-width: 639px) {
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .section-heading > * {
+    min-width: 0;
+  }
+}
+
 .admin-panel-muted {
   border: 1px solid #e6eaf2;
   background: linear-gradient(180deg, #fbfcfe 0%, #f4f7fb 100%);
@@ -716,45 +733,60 @@ textarea.input-zen {
 
 @media (max-width: 767px) {
   .section-heading {
-    align-items: center;
-    flex-direction: row;
-    gap: 0.75rem;
+    align-items: start;
+    flex-direction: column;
   }
 
-  .section-heading > * {
-    min-width: 0;
-  }
-
-  .section-heading > :last-child:not(:first-child) {
-    flex: none;
-  }
-
-  .section-title {
-    font-size: 1.2rem;
-  }
-
-  .section-subtitle {
-    display: none;
-  }
-}
-
-@media (min-width: 768px) {
   .container-zen {
-    width: min(calc(100% - 3rem), 1280px);
+    width: min(100% - 20px, 1280px);
   }
 }
 
-@media (min-width: 1280px) {
-  .container-zen {
-    width: min(calc(100% - 5rem), 1280px);
-  }
-}
+```
 
-@media (pointer: coarse) {
-  button,
-  [role="button"],
-  input,
-  select {
-    touch-action: manipulation;
-  }
-}
+### `postcss.config.mjs`
+
+```mjs
+const config = {
+  plugins: ["@tailwindcss/postcss"],
+};
+
+export default config;
+
+```
+
+### `next.config.ts`
+
+```ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "aidlube.ir",
+      },
+      {
+        protocol: "https",
+        hostname: "www.aidlube.ir",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn-sth1.bama.ir",
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+
+```

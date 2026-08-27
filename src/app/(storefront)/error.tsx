@@ -10,9 +10,9 @@ export default function StorefrontError({
   reset: () => void;
 }) {
   return (
-    <div className="container-zen py-12 md:py-16">
-      <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-6 text-center md:p-8">
-        <div className="icon-shell mx-auto grid size-16 place-items-center rounded-full text-3xl font-black text-[#D97706]">
+    <div className="container-zen py-10 sm:py-12 md:py-16">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-5 text-center sm:p-6 md:p-8">
+        <div className="icon-shell mx-auto grid size-14 place-items-center rounded-full text-2xl font-black text-[#D97706] sm:size-16 sm:text-3xl">
           !
         </div>
         <h1 className="mt-5 text-2xl font-extrabold text-text-strong md:text-3xl">نمایش این صفحه با خطا مواجه شد</h1>
@@ -24,7 +24,7 @@ export default function StorefrontError({
             {error.message}
           </p>
         ) : null}
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mt-6 grid gap-2 min-[380px]:grid-cols-2 sm:flex sm:justify-center sm:gap-3">
           <button className="btn-primary" onClick={() => reset()} type="button">
             تلاش دوباره
           </button>

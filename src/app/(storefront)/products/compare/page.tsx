@@ -10,7 +10,7 @@ export default async function ProductComparisonPage() {
   const products = await getAllProductsLite();
 
   return (
-    <div className="container-zen space-y-8 py-6 text-text md:py-8">
+    <div className="container-zen space-y-5 py-5 text-text sm:space-y-6 sm:py-6 md:py-8">
       <div className="flex items-center justify-between">
         <Link
           href="/products"

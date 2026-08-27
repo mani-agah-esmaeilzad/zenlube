@@ -65,12 +65,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const filterDefaults = { brand, car, category, viscosity, oilType, inStock, maxPrice, minPrice, minRating, search, sort };
 
   return (
-    <div className="container-zen py-6 md:py-8">
+    <div className="container-zen py-5 sm:py-6 md:py-8">
       <Breadcrumb items={[{ href: "/", label: "خانه" }, { label: "فروشگاه" }]} />
 
-      <header className="mt-4 mb-6">
+      <header className="mb-5 mt-3 sm:mb-6 sm:mt-4">
         <h1 className="t-h1">فروشگاه تخصصی روغن موتور و فیلتر</h1>
-        <p className="mt-2 text-sm leading-8 text-text-muted">
+        <p className="mt-2 text-sm leading-7 text-text-muted sm:leading-8">
           {pageInfo.total.toLocaleString("fa-IR")} کالا بر اساس برند، ویسکوزیته، نوع روغن و سازگاری خودرو.
         </p>
       </header>
@@ -87,7 +87,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         viscosities={facets.viscosities}
       />
 
-      <form className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]" method="get">
+      <form className="mt-5 grid gap-6 lg:mt-0 lg:grid-cols-[260px_minmax(0,1fr)]" method="get">
         <aside className="hidden h-fit rounded-2xl border border-border bg-white p-5 lg:sticky lg:top-28 lg:block">
           <div className="mb-5 flex items-center justify-between">
             <h2 className="text-base font-extrabold text-text-strong">فیلترها</h2>
@@ -133,9 +133,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </div>
 
           {items.length ? (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
-              {items.map((product) => (
-                <ProductCard key={product.id} product={product} />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
+              {items.map((product, index) => (
+                <ProductCard key={product.id} priority={index === 0} product={product} />
               ))}
             </div>
           ) : (

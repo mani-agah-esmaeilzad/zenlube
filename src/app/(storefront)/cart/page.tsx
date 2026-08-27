@@ -13,7 +13,7 @@ export default async function CartPage() {
 
   if (!userId) {
     return (
-      <div className="container-zen py-16 md:py-20">
+      <div className="container-zen py-10 sm:py-14 md:py-20">
         <div className="mx-auto max-w-xl">
           <EmptyState
             actionHref="/sign-in"
@@ -34,21 +34,21 @@ export default async function CartPage() {
   const subtotal = cart?.items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0) ?? 0;
 
   return (
-    <div className="container-zen space-y-6 py-6 md:py-8">
-      <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <div className="container-zen space-y-5 py-5 sm:space-y-6 sm:py-6 md:py-8">
+      <header className="flex items-end justify-between gap-4">
         <div>
           <h1 className="t-h1">سبد خرید</h1>
-          <p className="mt-2 text-sm leading-7 text-text-muted">محصولات انتخاب‌شده را بررسی کنید و سپس وارد مرحله ارسال و پرداخت شوید.</p>
+          <p className="mt-2 hidden text-sm leading-7 text-text-muted sm:block">محصولات انتخاب‌شده را بررسی کنید و سپس وارد مرحله ارسال و پرداخت شوید.</p>
         </div>
         {cart?.items?.length ? <ClearCartButton /> : null}
       </header>
 
       {cart?.items?.length ? (
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">
-          <div className="divide-y divide-border rounded-2xl border border-border bg-white">
+            <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-white">
             {cart.items.map((item) => (
               <article key={item.id} className="p-4 sm:p-5">
-                <div className="grid gap-4 sm:grid-cols-[88px_minmax(0,1fr)]">
+                <div className="grid grid-cols-[72px_minmax(0,1fr)] gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4">
                   <Link className="relative aspect-square overflow-hidden rounded-xl bg-surface-secondary" href={`/products/${item.product.slug}`}>
                     {item.product.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -58,13 +58,13 @@ export default async function CartPage() {
                     )}
                   </Link>
                   <div className="min-w-0">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                       <div className="min-w-0">
                         <Link className="text-base font-bold leading-7 text-text-strong hover:text-primary-accent-strong" href={`/products/${item.product.slug}`}>
                           {item.product.name}
                         </Link>
                         <p className="mt-1 text-xs font-medium text-text-muted">{item.product.brand.name}</p>
-                        <p className="mt-3 text-sm text-text-muted">قیمت واحد: {formatPrice(item.product.price)}</p>
+                        <p className="mt-2 text-xs text-text-muted sm:mt-3 sm:text-sm">قیمت واحد: {formatPrice(item.product.price)}</p>
                       </div>
                       <div className="flex flex-col gap-3 sm:items-end">
                         <PriceBlock amount={Number(item.product.price) * item.quantity} label="جمع این کالا" size="sm" />

@@ -15,7 +15,7 @@ type ReviewCardProps = {
 
 export function ReviewCard({ review }: ReviewCardProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm sm:p-6">
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600 sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-col">
           <span className="text-base font-semibold text-slate-900">
@@ -40,7 +40,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
         <p className="text-sm font-bold text-slate-900">{review.title}</p>
       ) : null}
       {review.comment && (
-        <p className="leading-7 text-slate-600">“{review.comment}”</p>
+        <p className="break-words leading-7 text-slate-600">“{review.comment}”</p>
       )}
       {review.product && (
         <Link

@@ -46,7 +46,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
   };
 
   return (
-    <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+    <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-black text-[#111827]">گاراژ شما</p>
@@ -70,7 +70,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
                   </p>
                   <p className="mt-1 text-xs text-[#667085]">{car.variant}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:flex">
                   <Link href={`/cars/${car.slug}`} className="btn-outline !min-h-10 px-3 py-2 text-xs">
                     دفترچه خودرو
                   </Link>
@@ -88,7 +88,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
         </p>
       )}
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:px-0">
         {cars.slice(0, 12).map((car) => {
           const active = savedSlugs.includes(car.slug);
           return (
@@ -97,7 +97,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
               type="button"
               onClick={() => toggleCar(car.slug)}
               className={cn(
-                "rounded-full border px-3 py-2 text-xs font-bold transition",
+                "min-h-10 shrink-0 rounded-full border px-3 py-2 text-xs font-bold transition",
                 active
                   ? "border-[#F5C56B] bg-[#FFF8E8] text-[#D97706]"
                   : "border-[#E7E8EE] bg-white text-[#475467]",

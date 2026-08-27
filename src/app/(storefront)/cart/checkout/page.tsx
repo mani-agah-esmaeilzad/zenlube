@@ -58,27 +58,30 @@ export default async function CheckoutPage() {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="container-zen space-y-6 py-6 md:py-8">
+    <div className="container-zen space-y-5 py-5 sm:space-y-6 sm:py-6 md:py-8">
       <header>
-        <p className="text-sm font-bold text-primary-accent-strong">مرحله پایانی خرید</p>
-        <h1 className="t-h1 mt-2">تایید و پرداخت سفارش</h1>
+        <h1 className="t-h1">تایید و پرداخت سفارش</h1>
         <p className="mt-2 text-sm leading-7 text-text-muted">
           جمع کالاهای سبد خرید شما {formatPrice(subtotal)} است. اطلاعات ارسال را تکمیل کنید تا به درگاه پرداخت منتقل شوید.
         </p>
       </header>
 
-  <CheckoutForm items={items} defaults={defaults} addresses={addresses.map((address) => ({
-    id: address.id,
-    label: address.label,
-    fullName: address.fullName,
-    phone: address.phone,
-    address1: address.address1,
-    address2: address.address2,
-    city: address.city,
-    province: address.province,
-    postalCode: address.postalCode,
-    isDefault: address.isDefault,
-  }))} />
+      <CheckoutForm
+        items={items}
+        defaults={defaults}
+        addresses={addresses.map((address) => ({
+          id: address.id,
+          label: address.label,
+          fullName: address.fullName,
+          phone: address.phone,
+          address1: address.address1,
+          address2: address.address2,
+          city: address.city,
+          province: address.province,
+          postalCode: address.postalCode,
+          isDefault: address.isDefault,
+        }))}
+      />
     </div>
   );
 }

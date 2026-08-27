@@ -46,7 +46,7 @@ export function MobileProductsControls({
   const [sortOpen, setSortOpen] = useState(false);
 
   return (
-    <div className="space-y-3 lg:hidden">
+    <div className="lg:hidden">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sm font-extrabold text-text-strong">{resultsCount.toLocaleString("fa-IR")} کالا</p>
@@ -59,7 +59,7 @@ export function MobileProductsControls({
         ) : null}
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="sticky top-[4.25rem] z-20 -mx-4 mt-3 grid grid-cols-2 gap-2 border-y border-border/80 bg-white/95 px-4 py-3 backdrop-blur-md sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
         <button className="btn-outline !min-h-12 flex-1 rounded-xl px-4 text-sm" onClick={() => setFiltersOpen(true)} type="button">
           فیلترها
           {activeFilters.length ? (
@@ -74,9 +74,9 @@ export function MobileProductsControls({
       </div>
 
       {activeFilters.length ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 pt-3 scrollbar-none sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
           {activeFilters.map((item) => (
-            <span key={item} className="chip-zen px-3 py-1.5 text-xs">
+            <span key={item} className="chip-zen shrink-0 px-3 py-1.5 text-xs">
               {item}
             </span>
           ))}

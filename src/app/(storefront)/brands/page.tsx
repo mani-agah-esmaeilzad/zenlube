@@ -16,22 +16,21 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
   const { items: brands, pageInfo } = await getPaginatedBrandsWithProductCount({ page, pageSize });
 
   return (
-    <div className="container-zen space-y-8 py-6 md:py-8">
+    <div className="container-zen space-y-6 py-5 sm:py-6 md:space-y-8 md:py-8">
       <header>
-        <p className="text-sm font-bold text-primary-accent-strong">برندهای فروشگاه</p>
-        <h1 className="t-h1 mt-2">برندهای تخصصی Oilbar</h1>
+        <h1 className="t-h1">برندهای تخصصی Oilbar</h1>
         <p className="mt-3 max-w-3xl text-sm leading-8 text-text-muted">
           برندهای روغن موتور و فیلتر موجود در فروشگاه را ببینید و محصولات هر برند را بررسی کنید.
         </p>
       </header>
       {brands.length > 0 ? (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-5">
           {brands.map((brand) => (
             <BrandCard key={brand.id} brand={brand} />
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-10 text-center text-sm font-semibold text-text-muted">
+        <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-6 text-center text-sm font-semibold text-text-muted sm:p-10">
           هنوز برندی ثبت نشده است.
         </div>
       )}

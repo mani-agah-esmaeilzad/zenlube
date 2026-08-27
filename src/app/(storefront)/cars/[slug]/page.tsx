@@ -222,7 +222,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
             </div>
             <Link href={`/products?car=${car.slug}`} className="text-link-zen text-sm font-bold">مشاهده همه</Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
             {recommendedProducts.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
         </section>

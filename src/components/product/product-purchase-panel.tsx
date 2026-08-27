@@ -92,7 +92,7 @@ export function ProductPurchasePanel({
           </button>
         </div>
 
-        <div className="mt-5 grid gap-2 border-t border-[rgba(217,119,6,0.12)] pt-4 text-sm text-text">
+        <div className="mt-5 grid gap-2 border-t border-[rgba(217,119,6,0.12)] pt-4 text-sm text-text min-[420px]:grid-cols-2">
           {benefits.map((benefit) => (
             <div key={benefit} className="flex items-center gap-2">
               <span className="icon-shell inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
@@ -104,8 +104,8 @@ export function ProductPurchasePanel({
         </div>
       </section>
 
-      <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom,0px)+4.9rem)] z-40 lg:hidden">
-        <div className="rounded-xl border border-border bg-white/96 px-3 py-3 shadow-[0_16px_36px_rgba(17,24,39,0.12)]">
+      <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom,0px)+4.65rem)] z-40 lg:hidden">
+        <div className="rounded-xl border border-border bg-white/96 px-3 py-2.5 shadow-[0_16px_36px_rgba(17,24,39,0.12)] backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="min-w-0 shrink-0">
               <p className="text-[11px] font-bold text-text-muted">قیمت</p>

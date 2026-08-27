@@ -1,0 +1,749 @@
+# Key Page Dependency Trees
+
+Trees include recursively resolved local imports and are the candidate context set for design work.
+
+## / (Home)
+
+Entry: `src/app/(storefront)/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/page.tsx
+  - src/components/blog/blog-card.tsx
+    - src/generated/prisma/index.js
+  - src/components/layout/hero-vehicle-finder.tsx
+    - src/lib/utils.ts
+  - src/components/product/product-card.tsx
+    - src/components/product/add-to-cart-button.tsx
+      - src/actions/cart.ts
+        - src/lib/prisma.ts
+          - src/generated/prisma/index.js
+          - src/lib/config.ts
+        - src/lib/storefront-visibility.ts
+          - src/generated/prisma/index.js
+        - src/lib/validators.ts
+          - src/lib/phone.ts
+        - src/lib/session.ts
+          - src/lib/auth.config.ts
+            - src/lib/prisma.ts
+            - src/lib/config.ts
+            - src/lib/phone.ts
+            - src/services/otp.ts
+              - src/lib/prisma.ts
+              - src/lib/phone.ts
+      - src/components/ui/toast-provider.tsx
+      - src/lib/utils.ts
+    - src/components/product/wishlist-button.tsx
+      - src/actions/catalog.ts
+        - src/lib/prisma.ts
+        - src/lib/session.ts
+        - src/lib/storefront-visibility.ts
+        - src/lib/validators.ts
+      - src/components/ui/toast-provider.tsx
+      - src/lib/utils.ts
+    - src/components/ui/price-block.tsx
+      - src/lib/utils.ts
+    - src/components/ui/status-pill.tsx
+      - src/lib/utils.ts
+    - src/types/catalog.ts
+      - src/generated/prisma/index.js
+    - src/lib/utils.ts
+  - src/components/ui/empty-state.tsx
+    - src/lib/utils.ts
+  - src/components/ui/section-header.tsx
+  - src/lib/data/index.ts
+    - src/lib/data/marketing.ts
+      - src/lib/prisma.ts
+      - src/lib/data/storefront-fallback.ts
+        - src/lib/pagination.ts
+    - src/lib/data/products.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/categories.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/brands.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/cars.ts
+      - src/lib/prisma.ts
+      - src/lib/car-manual-overrides.ts
+        - src/lib/car-notebook-sections.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/blog.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/data/storefront-fallback.ts
+
+## /products
+
+Entry: `src/app/(storefront)/products/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/products/page.tsx
+  - src/components/catalog/product-filter-fields.tsx
+  - src/components/catalog/mobile-products-controls.tsx
+    - src/components/catalog/product-filter-fields.tsx
+    - src/components/ui/mobile-sheet.tsx
+      - src/lib/utils.ts
+    - src/lib/utils.ts
+  - src/components/product/product-card.tsx
+    - src/components/product/add-to-cart-button.tsx
+      - src/actions/cart.ts
+        - src/lib/prisma.ts
+          - src/generated/prisma/index.js
+          - src/lib/config.ts
+        - src/lib/storefront-visibility.ts
+          - src/generated/prisma/index.js
+        - src/lib/validators.ts
+          - src/lib/phone.ts
+        - src/lib/session.ts
+          - src/lib/auth.config.ts
+            - src/lib/prisma.ts
+            - src/lib/config.ts
+            - src/lib/phone.ts
+            - src/services/otp.ts
+              - src/lib/prisma.ts
+              - src/lib/phone.ts
+      - src/components/ui/toast-provider.tsx
+      - src/lib/utils.ts
+    - src/components/product/wishlist-button.tsx
+      - src/actions/catalog.ts
+        - src/lib/prisma.ts
+        - src/lib/session.ts
+        - src/lib/storefront-visibility.ts
+        - src/lib/validators.ts
+      - src/components/ui/toast-provider.tsx
+      - src/lib/utils.ts
+    - src/components/ui/price-block.tsx
+      - src/lib/utils.ts
+    - src/components/ui/status-pill.tsx
+      - src/lib/utils.ts
+    - src/types/catalog.ts
+      - src/generated/prisma/index.js
+    - src/lib/utils.ts
+  - src/components/ui/breadcrumb.tsx
+  - src/components/ui/empty-state.tsx
+    - src/lib/utils.ts
+  - src/components/ui/pagination.tsx
+    - src/lib/pagination.ts
+  - src/lib/data/index.ts
+    - src/lib/data/marketing.ts
+      - src/lib/prisma.ts
+      - src/lib/data/storefront-fallback.ts
+        - src/lib/pagination.ts
+    - src/lib/data/products.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/categories.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/brands.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/cars.ts
+      - src/lib/prisma.ts
+      - src/lib/car-manual-overrides.ts
+        - src/lib/car-notebook-sections.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/blog.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/data/storefront-fallback.ts
+
+## /products/[slug]
+
+Entry: `src/app/(storefront)/products/[slug]/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/products/[slug]/page.tsx
+  - src/components/analytics/engagement-tracker.tsx
+  - src/components/forms/question-form.tsx
+  - src/components/product/copy-sku-button.tsx
+    - src/components/ui/toast-provider.tsx
+  - src/components/product/product-detail-sections.tsx
+    - src/lib/product-detail.ts
+      - src/generated/prisma/index.js
+    - src/lib/utils.ts
+  - src/components/product/product-gallery.tsx
+    - src/components/ui/skeleton.tsx
+      - src/lib/utils.ts
+    - src/lib/utils.ts
+    - src/lib/product-detail.ts
+  - src/components/product/product-card.tsx
+    - src/components/product/add-to-cart-button.tsx
+      - src/actions/cart.ts
+        - src/lib/prisma.ts
+          - src/generated/prisma/index.js
+          - src/lib/config.ts
+        - src/lib/storefront-visibility.ts
+          - src/generated/prisma/index.js
+        - src/lib/validators.ts
+          - src/lib/phone.ts
+        - src/lib/session.ts
+          - src/lib/auth.config.ts
+            - src/lib/prisma.ts
+            - src/lib/config.ts
+            - src/lib/phone.ts
+            - src/services/otp.ts
+              - src/lib/prisma.ts
+              - src/lib/phone.ts
+      - src/components/ui/toast-provider.tsx
+      - src/lib/utils.ts
+    - src/components/product/wishlist-button.tsx
+      - src/actions/catalog.ts
+        - src/lib/prisma.ts
+        - src/lib/session.ts
+        - src/lib/storefront-visibility.ts
+        - src/lib/validators.ts
+      - src/components/ui/toast-provider.tsx
+      - src/lib/utils.ts
+    - src/components/ui/price-block.tsx
+      - src/lib/utils.ts
+    - src/components/ui/status-pill.tsx
+      - src/lib/utils.ts
+    - src/types/catalog.ts
+      - src/generated/prisma/index.js
+    - src/lib/utils.ts
+  - src/components/product/product-purchase-panel.tsx
+    - src/components/product/add-to-cart-button.tsx
+    - src/components/product/quantity-selector.tsx
+      - src/lib/utils.ts
+    - src/components/product/wishlist-button.tsx
+    - src/lib/utils.ts
+  - src/components/product/recently-viewed-tracker.tsx
+    - src/actions/catalog.ts
+  - src/components/questions/question-list.tsx
+    - src/lib/utils.ts
+  - src/components/review/review-card.tsx
+    - src/generated/prisma/index.js
+  - src/components/review/review-form.tsx
+    - src/actions/catalog.ts
+  - src/components/ui/breadcrumb.tsx
+  - src/components/ui/empty-state.tsx
+    - src/lib/utils.ts
+  - src/lib/commerce.ts
+    - src/generated/prisma/index.js
+    - src/lib/prisma.ts
+  - src/lib/product-detail.ts
+  - src/lib/prisma.ts
+  - src/lib/seo.ts
+  - src/lib/session.ts
+  - src/lib/storefront-visibility.ts
+
+## /categories
+
+Entry: `src/app/(storefront)/categories/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/categories/page.tsx
+  - src/components/catalog/category-card.tsx
+    - src/generated/prisma/index.js
+  - src/components/ui/pagination.tsx
+    - src/lib/pagination.ts
+  - src/lib/data/index.ts
+    - src/lib/data/marketing.ts
+      - src/lib/prisma.ts
+        - src/generated/prisma/index.js
+        - src/lib/config.ts
+      - src/lib/data/storefront-fallback.ts
+        - src/lib/pagination.ts
+    - src/lib/data/products.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/storefront-visibility.ts
+        - src/generated/prisma/index.js
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/categories.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/brands.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/cars.ts
+      - src/lib/prisma.ts
+      - src/lib/car-manual-overrides.ts
+        - src/lib/car-notebook-sections.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/blog.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/data/storefront-fallback.ts
+  - src/lib/pagination.ts
+
+## /brands
+
+Entry: `src/app/(storefront)/brands/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/brands/page.tsx
+  - src/components/catalog/brand-card.tsx
+    - src/generated/prisma/index.js
+  - src/components/ui/pagination.tsx
+    - src/lib/pagination.ts
+  - src/lib/data/index.ts
+    - src/lib/data/marketing.ts
+      - src/lib/prisma.ts
+        - src/generated/prisma/index.js
+        - src/lib/config.ts
+      - src/lib/data/storefront-fallback.ts
+        - src/lib/pagination.ts
+    - src/lib/data/products.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/storefront-visibility.ts
+        - src/generated/prisma/index.js
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/categories.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/brands.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/cars.ts
+      - src/lib/prisma.ts
+      - src/lib/car-manual-overrides.ts
+        - src/lib/car-notebook-sections.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/blog.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/data/storefront-fallback.ts
+  - src/lib/pagination.ts
+
+## /cars
+
+Entry: `src/app/(storefront)/cars/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/cars/page.tsx
+  - src/components/catalog/car-card.tsx
+    - src/lib/car-manual-overrides.ts
+      - src/lib/car-notebook-sections.ts
+    - src/lib/utils.ts
+    - src/types/catalog.ts
+      - src/generated/prisma/index.js
+  - src/components/layout/car-search-selector.tsx
+    - src/lib/data/index.ts
+      - src/lib/data/marketing.ts
+        - src/lib/prisma.ts
+          - src/generated/prisma/index.js
+          - src/lib/config.ts
+        - src/lib/data/storefront-fallback.ts
+          - src/lib/pagination.ts
+      - src/lib/data/products.ts
+        - src/generated/prisma/index.js
+        - src/lib/prisma.ts
+        - src/lib/storefront-visibility.ts
+          - src/generated/prisma/index.js
+        - src/lib/data/storefront-fallback.ts
+      - src/lib/data/categories.ts
+        - src/generated/prisma/index.js
+        - src/lib/prisma.ts
+        - src/lib/pagination.ts
+        - src/lib/storefront-visibility.ts
+        - src/lib/data/storefront-fallback.ts
+      - src/lib/data/brands.ts
+        - src/generated/prisma/index.js
+        - src/lib/prisma.ts
+        - src/lib/pagination.ts
+        - src/lib/storefront-visibility.ts
+        - src/lib/data/storefront-fallback.ts
+      - src/lib/data/cars.ts
+        - src/lib/prisma.ts
+        - src/lib/car-manual-overrides.ts
+        - src/lib/pagination.ts
+        - src/lib/storefront-visibility.ts
+        - src/lib/data/storefront-fallback.ts
+      - src/lib/data/blog.ts
+        - src/generated/prisma/index.js
+        - src/lib/prisma.ts
+        - src/lib/pagination.ts
+        - src/lib/data/storefront-fallback.ts
+  - src/components/ui/pagination.tsx
+    - src/lib/pagination.ts
+  - src/lib/data/index.ts
+  - src/lib/pagination.ts
+
+## /cart
+
+Entry: `src/app/(storefront)/cart/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/cart/page.tsx
+  - src/components/cart/cart-item-controls.tsx
+    - src/actions/cart.ts
+      - src/lib/prisma.ts
+        - src/generated/prisma/index.js
+        - src/lib/config.ts
+      - src/lib/storefront-visibility.ts
+        - src/generated/prisma/index.js
+      - src/lib/validators.ts
+        - src/lib/phone.ts
+      - src/lib/session.ts
+        - src/lib/auth.config.ts
+          - src/lib/prisma.ts
+          - src/lib/config.ts
+          - src/lib/phone.ts
+          - src/services/otp.ts
+            - src/lib/prisma.ts
+            - src/lib/phone.ts
+    - src/lib/utils.ts
+  - src/components/ui/empty-state.tsx
+    - src/lib/utils.ts
+  - src/components/ui/price-block.tsx
+    - src/lib/utils.ts
+  - src/lib/prisma.ts
+  - src/lib/utils.ts
+  - src/lib/session.ts
+
+## /account
+
+Entry: `src/app/(storefront)/account/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/account/page.tsx
+  - src/actions/account.ts
+    - src/lib/prisma.ts
+      - src/generated/prisma/index.js
+      - src/lib/config.ts
+    - src/lib/session.ts
+      - src/lib/auth.config.ts
+        - src/lib/prisma.ts
+        - src/lib/config.ts
+        - src/lib/phone.ts
+        - src/services/otp.ts
+          - src/lib/prisma.ts
+          - src/lib/phone.ts
+    - src/lib/phone.ts
+    - src/lib/admin-audit.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+    - src/lib/storefront-visibility.ts
+      - src/generated/prisma/index.js
+    - src/lib/validators.ts
+      - src/lib/phone.ts
+    - src/services/admin/mutations.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/storefront-visibility.ts
+      - src/services/admin/types.ts
+  - src/components/account/address-book-form.tsx
+    - src/actions/account.ts
+  - src/lib/prisma.ts
+  - src/components/account/address-form.tsx
+    - src/actions/account.ts
+  - src/components/account/local-garage.tsx
+    - src/lib/utils.ts
+  - src/components/account/profile-form.tsx
+    - src/actions/account.ts
+  - src/components/account/return-request-form.tsx
+    - src/actions/account.ts
+  - src/components/ui/empty-state.tsx
+    - src/lib/utils.ts
+  - src/components/ui/pagination.tsx
+    - src/lib/pagination.ts
+  - src/components/ui/price-block.tsx
+    - src/lib/utils.ts
+  - src/components/ui/status-pill.tsx
+    - src/lib/utils.ts
+  - src/lib/data/cars.ts
+    - src/lib/prisma.ts
+    - src/lib/car-manual-overrides.ts
+      - src/lib/car-notebook-sections.ts
+    - src/lib/pagination.ts
+    - src/lib/storefront-visibility.ts
+    - src/lib/data/storefront-fallback.ts
+      - src/lib/pagination.ts
+  - src/lib/pagination.ts
+  - src/lib/session.ts
+  - src/lib/utils.ts
+
+## /blog
+
+Entry: `src/app/(storefront)/blog/page.tsx`
+
+Dependencies:
+
+- src/app/(storefront)/blog/page.tsx
+  - src/components/blog/blog-card.tsx
+    - src/generated/prisma/index.js
+  - src/components/ui/pagination.tsx
+    - src/lib/pagination.ts
+  - src/lib/data/index.ts
+    - src/lib/data/marketing.ts
+      - src/lib/prisma.ts
+        - src/generated/prisma/index.js
+        - src/lib/config.ts
+      - src/lib/data/storefront-fallback.ts
+        - src/lib/pagination.ts
+    - src/lib/data/products.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/storefront-visibility.ts
+        - src/generated/prisma/index.js
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/categories.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/brands.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/cars.ts
+      - src/lib/prisma.ts
+      - src/lib/car-manual-overrides.ts
+        - src/lib/car-notebook-sections.ts
+      - src/lib/pagination.ts
+      - src/lib/storefront-visibility.ts
+      - src/lib/data/storefront-fallback.ts
+    - src/lib/data/blog.ts
+      - src/generated/prisma/index.js
+      - src/lib/prisma.ts
+      - src/lib/pagination.ts
+      - src/lib/data/storefront-fallback.ts
+  - src/lib/pagination.ts
+
+## /admin
+
+Entry: `src/app/(admin)/admin/page.tsx`
+
+Dependencies:
+
+- src/app/(admin)/admin/page.tsx
+  - src/lib/auth.ts
+    - src/lib/session.ts
+      - src/lib/auth.config.ts
+        - src/lib/prisma.ts
+          - src/generated/prisma/index.js
+          - src/lib/config.ts
+        - src/lib/config.ts
+        - src/lib/phone.ts
+        - src/services/otp.ts
+          - src/lib/prisma.ts
+          - src/lib/phone.ts
+  - src/lib/utils.ts
+  - src/services/admin/overview.ts
+    - src/generated/prisma/index.js
+    - src/lib/prisma.ts
+    - src/lib/storefront-visibility.ts
+      - src/generated/prisma/index.js
+    - src/services/admin/mappers.ts
+      - src/generated/prisma/index.js
+      - src/services/admin/types.ts
+      - src/services/admin/transformers.ts
+        - src/generated/prisma/index.js
+    - src/services/admin/types.ts
+  - src/services/admin/orders.ts
+    - src/lib/prisma.ts
+    - src/generated/prisma/index.js
+    - src/services/admin/mappers.ts
+    - src/services/admin/types.ts
+  - src/components/admin/tabs/BrandsTab.tsx
+    - src/lib/utils.ts
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+    - src/actions/admin/index.ts
+      - src/actions/admin/brands.ts
+        - src/lib/auth.ts
+        - src/lib/storefront-revalidate.ts
+        - src/lib/validators.ts
+          - src/lib/phone.ts
+        - src/services/admin/mutations.ts
+          - src/generated/prisma/index.js
+          - src/lib/prisma.ts
+          - src/lib/storefront-visibility.ts
+          - src/services/admin/types.ts
+        - src/actions/admin/types.ts
+      - src/actions/admin/cars.ts
+        - src/lib/auth.ts
+        - src/lib/storefront-revalidate.ts
+        - src/lib/validators.ts
+        - src/services/admin/mutations.ts
+        - src/actions/admin/types.ts
+      - src/actions/admin/categories.ts
+        - src/lib/auth.ts
+        - src/lib/storefront-revalidate.ts
+        - src/lib/validators.ts
+        - src/services/admin/mutations.ts
+        - src/actions/admin/types.ts
+      - src/actions/admin/content.ts
+        - src/lib/admin-audit.ts
+          - src/generated/prisma/index.js
+          - src/lib/prisma.ts
+        - src/lib/auth.ts
+        - src/lib/storefront-revalidate.ts
+        - src/lib/validators.ts
+        - src/services/admin/mutations.ts
+        - src/actions/admin/types.ts
+      - src/actions/admin/database.ts
+        - src/lib/auth.ts
+        - src/lib/storefront-revalidate.ts
+        - src/services/admin/mutations.ts
+      - src/actions/admin/maintenance.ts
+        - src/lib/auth.ts
+        - src/lib/storefront-revalidate.ts
+        - src/lib/validators.ts
+        - src/services/admin/mutations.ts
+        - src/actions/admin/types.ts
+      - src/actions/admin/orders.ts
+        - src/lib/auth.ts
+        - src/lib/commerce.ts
+          - src/generated/prisma/index.js
+          - src/lib/prisma.ts
+        - src/lib/prisma.ts
+        - src/lib/sms/service.ts
+          - src/generated/prisma/index.js
+          - src/lib/prisma.ts
+          - src/lib/config.ts
+          - src/lib/phone.ts
+          - src/lib/logger.ts
+            - src/lib/config.ts
+          - src/lib/sms/melipayamak.ts
+            - src/lib/config.ts
+          - src/lib/sms/smsir.ts
+            - src/lib/config.ts
+            - src/lib/logger.ts
+        - src/services/admin/mutations.ts
+      - src/actions/admin/products.ts
+        - src/lib/auth.ts
+        - src/lib/storefront-revalidate.ts
+        - src/lib/validators.ts
+        - src/services/admin/mutations.ts
+        - src/actions/admin/types.ts
+      - src/actions/admin/questions.ts
+        - src/lib/auth.ts
+        - src/lib/validators.ts
+        - src/services/admin/mutations.ts
+      - src/actions/admin/returns.ts
+        - src/lib/admin-audit.ts
+        - src/lib/auth.ts
+        - src/lib/commerce.ts
+        - src/lib/prisma.ts
+        - src/lib/validators.ts
+        - src/services/admin/mutations.ts
+      - src/actions/admin/users.ts
+        - src/lib/auth.ts
+        - src/services/admin/mutations.ts
+    - src/components/admin/forms/BrandForm.tsx
+      - src/actions/admin/index.ts
+      - src/actions/admin/types.ts
+      - src/services/admin/types.ts
+      - src/components/admin/media-upload-field.tsx
+  - src/components/admin/tabs/CarsTab.tsx
+    - src/components/admin/forms/CarForm.tsx
+      - src/actions/admin/index.ts
+      - src/actions/admin/types.ts
+      - src/services/admin/types.ts
+      - src/components/admin/media-upload-field.tsx
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+    - src/actions/admin/index.ts
+  - src/components/admin/tabs/CategoriesTab.tsx
+    - src/lib/utils.ts
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+    - src/actions/admin/index.ts
+    - src/components/admin/forms/CategoryForm.tsx
+      - src/actions/admin/index.ts
+      - src/actions/admin/types.ts
+      - src/services/admin/types.ts
+      - src/components/admin/media-upload-field.tsx
+  - src/components/admin/tabs/ContentTab.tsx
+    - src/actions/admin/index.ts
+    - src/components/admin/forms/ContentCampaignForms.tsx
+      - src/actions/admin/index.ts
+      - src/actions/admin/types.ts
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+  - src/components/admin/tabs/MaintenanceTab.tsx
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+    - src/actions/admin/index.ts
+  - src/components/admin/tabs/OverviewTab.tsx
+    - src/actions/admin/index.ts
+    - src/lib/utils.ts
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+  - src/components/admin/tabs/OrdersTab.tsx
+    - src/actions/admin/index.ts
+    - src/lib/formatters.ts
+    - src/lib/utils.ts
+    - src/services/admin/types.ts
+  - src/components/admin/tabs/ProductsTab.tsx
+    - src/actions/admin/index.ts
+    - src/components/admin/forms/ProductForm.tsx
+      - src/actions/admin/index.ts
+      - src/actions/admin/types.ts
+      - src/services/admin/types.ts
+      - src/lib/formatters.ts
+      - src/components/admin/media-upload-field.tsx
+    - src/lib/formatters.ts
+    - src/lib/utils.ts
+    - src/services/admin/types.ts
+  - src/components/admin/tabs/QuestionsTab.tsx
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+    - src/actions/admin/index.ts
+  - src/components/admin/tabs/ReportsTab.tsx
+    - src/actions/admin/index.ts
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+  - src/components/admin/tabs/UsersTab.tsx
+    - src/lib/utils.ts
+    - src/lib/formatters.ts
+    - src/services/admin/types.ts
+    - src/actions/admin/index.ts
+  - src/services/admin/types.ts

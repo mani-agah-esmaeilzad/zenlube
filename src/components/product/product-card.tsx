@@ -2,7 +2,6 @@ import type { SVGProps } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { WishlistButton } from "@/components/product/wishlist-button";
 import { PriceBlock } from "@/components/ui/price-block";
 import { StatusPill } from "@/components/ui/status-pill";
@@ -12,9 +11,10 @@ import { cn } from "@/lib/utils";
 type ProductCardProps = {
   product: ProductWithRelations;
   compact?: boolean;
+  priority?: boolean;
 };
 
-export function ProductCard({ product, compact = false }: ProductCardProps) {
+export function ProductCard({ product, compact = false, priority = false }: ProductCardProps) {
   const specs = [
     product.viscosity,
     product.packagingSizeLit ? `${Number(product.packagingSizeLit).toLocaleString("fa-IR")} لیتر` : null,
@@ -25,7 +25,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
   const isAvailable = product.stock > 0;
 
   return (
-    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white">
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-[0_1px_2px_rgba(17,24,39,0.03)] transition duration-200 hover:-translate-y-0.5 hover:border-[rgba(217,119,6,0.24)] hover:shadow-[0_14px_32px_rgba(17,24,39,0.07)]">
       <div className="relative flex h-full min-w-0 flex-col p-2.5 sm:p-3">
         <div className="absolute left-2.5 top-2.5 z-10 sm:left-3 sm:top-3">
           <WishlistButton compact productId={product.id} />
@@ -51,7 +51,8 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
                 alt={`تصویر ${product.name}`}
                 className="object-contain p-3 transition duration-300 group-hover:scale-[1.03] sm:p-4"
                 fill
-                sizes="(max-width:767px) 50vw, (max-width:1023px) 33vw, (max-width:1535px) 25vw, 220px"
+                priority={priority}
+                sizes="(max-width:639px) calc(100vw - 32px), (max-width:1023px) 50vw, (max-width:1535px) 33vw, 220px"
                 src={product.imageUrl}
               />
             ) : (
@@ -75,12 +76,12 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
         </Link>
 
         {specs.length ? (
-          <div className="mt-2 text-[11px] font-medium leading-5 text-text-muted">
+          <div className="mt-2 hidden text-[11px] font-medium leading-5 text-text-muted sm:block">
             <span className="line-clamp-1">{specs.join(" • ")}</span>
           </div>
         ) : null}
 
-        <div className="mt-3 flex items-center justify-between gap-2 text-[11px]">
+        <div className="mt-2.5 flex items-center justify-between gap-2 text-[11px] sm:mt-3">
           <span className={cn("inline-flex items-center gap-1 font-bold", isAvailable ? "text-success" : "text-error")}>
             <span className={cn("h-1.5 w-1.5 rounded-full", isAvailable ? "bg-success" : "bg-error")} />
             {isAvailable ? "موجود" : "ناموجود"}
@@ -94,15 +95,13 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
           ) : null}
         </div>
 
-        <div className="mt-auto pt-3">
-          <PriceBlock align="start" amount={product.price} className="mb-2" showLabel={false} size="sm" />
+        <div className="mt-auto pt-2.5 sm:pt-3">
+          <PriceBlock align="start" amount={product.price} className={compact ? "mb-2" : undefined} showLabel={false} size="sm" />
           {compact ? (
             <Link className="btn-outline w-full !min-h-10 text-xs" href={`/products/${product.slug}`}>
               مشاهده محصول
             </Link>
-          ) : (
-            <AddToCartButton className="w-full" disabled={!isAvailable} productId={product.id} size="sm" />
-          )}
+          ) : null}
         </div>
       </div>
     </article>

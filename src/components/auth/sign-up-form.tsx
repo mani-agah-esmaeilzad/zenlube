@@ -119,7 +119,7 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
         <label htmlFor="phone" className="text-xs font-bold text-[#475467]">
           شماره موبایل
         </label>
-        <div className="flex flex-col gap-2 min-[360px]:flex-row">
+        <div className="flex flex-col gap-2 min-[420px]:flex-row">
           <input
             id="phone"
             autoComplete="tel"
@@ -133,7 +133,7 @@ export function SignUpForm({ callbackUrl }: SignUpFormProps) {
           <button
             type="button"
             onClick={(event) => handleSendOtp(event.currentTarget.form)}
-            className="btn-outline shrink-0 rounded-2xl px-4 py-3 text-xs font-bold text-primary-accent-strong disabled:opacity-60"
+            className="btn-outline min-h-12 shrink-0 rounded-xl px-4 py-3 text-xs font-bold text-primary-accent-strong disabled:opacity-60"
             disabled={isOtpPending}
           >
             {isOtpPending ? "در حال ارسال" : "ارسال کد"}

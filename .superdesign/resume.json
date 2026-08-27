@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "targets": {
+    "/": {
+      "targetKind": "existing-ui",
+      "projectId": "4b1c805c-9e2e-4675-9cd6-cbfda32c8925",
+      "baselineDraftId": "f38327be-8589-44c0-bdfc-3c37283bf3bc",
+      "activeDraftId": "bd147ef3-3f8e-4755-a64e-1415f7fad25b",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "3d9c98c2-f7c3-409a-8bf5-802b1f137f26",
+        "cd6708b2-c654-4431-a97e-84520775e76a",
+        "public-oilbar-logo-main.png",
+        "35be6cd5-e144-43a8-a4e4-1ab3932d16b3"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "public-oilbar-logo-main.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/4b1c805c-9e2e-4675-9cd6-cbfda32c8925/brand-assets/public-oilbar-logo-main.png/oilbar-logo-main.png",
+          "sourcePath": "public/oilbar-logo-main.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "src/app/globals.css",
+        "src/app/(storefront)/layout.tsx",
+        "src/app/(storefront)/page.tsx",
+        "src/components/layout/site-header.tsx",
+        "src/components/layout/mobile-nav.tsx",
+        "src/components/layout/mobile-search.tsx",
+        "src/components/layout/site-footer.tsx",
+        "src/components/layout/hero-vehicle-finder.tsx",
+        "src/components/layout/logo-mark.tsx",
+        "src/components/layout/cart-indicator.tsx",
+        "src/components/product/product-card.tsx",
+        "src/components/ui/section-header.tsx",
+        "src/components/ui/mobile-sheet.tsx"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "defc58a06cdaf21a56ccf56b13aefc5a6171183218e503dbab440a271d764333",
+        "src/app/globals.css": "0156b2c78e3ee71fe7693bcf5ff57a7c5bcd747b3549eb13042d72fa8b1089fd",
+        "src/app/(storefront)/layout.tsx": "33119901bb3c232fafb2e3f3162a7dc96fc966578cb5055855cb890effcfbfec",
+        "src/app/(storefront)/page.tsx": "d5aaa55fc87b8bc359471e6048742f44884c40d3a6250f1f0bd3b6daafecf917",
+        "src/components/layout/site-header.tsx": "b498af63b2166589ff2f66fca4bb572a3e3c7733b3f16f68592bdaa72c13317a",
+        "src/components/layout/mobile-nav.tsx": "0e425e20261402a50af06b6f69854eca964e5e1297d31d3329f5f64b1960e9b9",
+        "src/components/layout/mobile-search.tsx": "8d3ee00994c5173f278f6508e4872baddaf29be9db14f68195f84f7e2d4b6eaf",
+        "src/components/layout/site-footer.tsx": "29bc27b1d1a4f9bee1d3ada21f7e11cc12e6f21e1c034b292fe56bd3e7ed81d5",
+        "src/components/layout/hero-vehicle-finder.tsx": "a1a82416cebe65ff5b8c166c4f2b5b485058f877d8f4f6e596d05f7c41d796b4",
+        "src/components/layout/logo-mark.tsx": "82e09f15561d579980dfdf09aef1692aa3c177cd09e95d439a7988ad7716008b",
+        "src/components/layout/cart-indicator.tsx": "3f97a0dba8a0d769729cd8b609d79c3684ead9bc7e0ea34fc070fae3b21f93a2",
+        "src/components/product/product-card.tsx": "c1f39e66f1fe10a409a439ce3c9cad661637ad7f6c4e57a0e1331b1efefc6ecb",
+        "src/components/ui/section-header.tsx": "fc94748e66295bfca399f5f4b0ae28d86e8fc7814ace69d4edea2396f6ad4cc3",
+        "src/components/ui/mobile-sheet.tsx": "795b0e3b59e9335fcb4790618e145e8adfb803fc568dcd14f1b9d484931e09ee"
+      },
+      "components": [
+        {
+          "name": "SiteHeader",
+          "id": "c701be8a-aaa0-415f-99e7-daf51fd963f9",
+          "sourcePath": "src/components/layout/site-header.tsx",
+          "logoAssetKey": "public-oilbar-logo-main.png"
+        },
+        {
+          "name": "MobileNav",
+          "id": "b0442ec2-bbcf-4940-8216-290c0ee0112d",
+          "sourcePath": "src/components/layout/mobile-nav.tsx"
+        },
+        {
+          "name": "SiteFooter",
+          "id": "5aca11ab-99f7-4c5c-8d76-6de2cc28f6e5",
+          "sourcePath": "src/components/layout/site-footer.tsx",
+          "logoAssetKey": "public-oilbar-logo-main.png"
+        }
+      ],
+      "drafts": {
+        "f38327be-8589-44c0-bdfc-3c37283bf3bc": {
+          "title": "Current Oilbar Mobile Home",
+          "visualDirection": "current mobile baseline reproduction",
+          "currentVersion": 1
+        },
+        "55ef0902-ea4a-4634-a919-8848ddd94867": {
+          "title": "Vehicle-led editorial commerce",
+          "visualDirection": "airy product-led hero with charcoal progressive vehicle finder and horizontal rails",
+          "parentDraftId": "f38327be-8589-44c0-bdfc-3c37283bf3bc",
+          "currentVersion": 1
+        },
+        "bd147ef3-3f8e-4755-a64e-1415f7fad25b": {
+          "title": "Compact technical storefront",
+          "visualDirection": "compact search and vehicle-first flow with concise live-data rails",
+          "parentDraftId": "f38327be-8589-44c0-bdfc-3c37283bf3bc",
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-08-27T06:09:46Z"
+    }
+  }
+}

@@ -95,9 +95,9 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
           onTouchEnd={handleTouchEnd}
           onTouchStart={handleTouchStart}
         >
-          <div className="relative min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]">
+          <div className="relative min-h-[280px] min-[390px]:min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]">
             {!activeItem.src ? (
-              <div className="flex h-full min-h-[320px] items-center justify-center text-sm font-bold text-text-soft sm:min-h-[380px] lg:min-h-[460px]">
+              <div className="flex h-full min-h-[280px] items-center justify-center text-sm font-bold text-text-soft min-[390px]:min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]">
                 تصویر محصول موجود نیست
               </div>
             ) : (

@@ -23,33 +23,32 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { items: posts, pageInfo } = await getPaginatedBlogPosts({ page, pageSize });
 
   return (
-    <div className="container-zen space-y-8 py-6 md:py-8">
+    <div className="container-zen space-y-6 py-5 sm:py-6 md:space-y-8 md:py-8">
       <header>
-        <p className="text-sm font-bold text-primary-accent-strong">آموزش و راهنما</p>
-        <h1 className="t-h1 mt-2">وبلاگ تخصصی Oilbar</h1>
+        <h1 className="t-h1">وبلاگ تخصصی Oilbar</h1>
         <p className="mt-3 max-w-4xl text-sm leading-8 text-text-muted">
           راهنمای خرید، مقایسه محصولات و نکات فنی برای انتخاب روغن موتور و فیلتر خودرو.
         </p>
       </header>
 
       <section className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-text-muted">
-          <span>مجموع {posts.length} مقاله تخصصی منتشر شده است.</span>
+        <div className="flex items-center justify-between gap-3 text-sm text-text-muted">
+          <span>مجموع {pageInfo.total.toLocaleString("fa-IR")} مقاله تخصصی منتشر شده است.</span>
           <Link
             href="/support"
-            className="btn-outline rounded-full px-4 py-2 text-xs font-bold text-[#475467]"
+            className="btn-outline shrink-0 rounded-xl px-3 py-2 text-xs font-bold text-[#475467] sm:px-4"
           >
             درخواست موضوع پیشنهادی
           </Link>
         </div>
         {posts.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-5">
             {posts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-10 text-center text-sm font-semibold text-text-muted">
+          <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-6 text-center text-sm font-semibold text-text-muted sm:p-10">
             هنوز مقاله‌ای ثبت نشده است.
           </div>
         )}

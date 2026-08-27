@@ -1,31 +1,30 @@
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
-export const LOGO_SRC = "/oilbar-logo-main.png";
+export const LOGO_SRC = "/oilbar-logo-optimized.png";
+const LOGO_WIDTH = 676;
+const LOGO_HEIGHT = 264;
 
 type LogoMarkProps = {
   className?: string;
-  size?: number;
   priority?: boolean;
+  sizes?: string;
 };
 
 export function LogoMark({
   className = "",
-  size = 48,
   priority = false,
+  sizes,
 }: LogoMarkProps) {
-  const containerClass = ["inline-flex items-center gap-3", className].filter(Boolean).join(" ");
-
   return (
-    <span className={containerClass}>
-      <Image
-        src={LOGO_SRC}
-        alt="لوگوی Oilbar"
-        width={size}
-        height={size}
-        priority={priority}
-        unoptimized
-        className="h-auto w-auto"
-      />
-    </span>
+    <Image
+      alt="لوگوی Oilbar"
+      className={cn("h-auto w-auto object-contain", className)}
+      height={LOGO_HEIGHT}
+      priority={priority}
+      sizes={sizes}
+      src={LOGO_SRC}
+      width={LOGO_WIDTH}
+    />
   );
 }

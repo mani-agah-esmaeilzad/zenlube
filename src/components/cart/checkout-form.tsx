@@ -129,14 +129,14 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
       <div className="space-y-6">
         <Stepper />
 
-        <section className="rounded-2xl border border-border bg-white p-5 md:p-6">
+        <section className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
           <SectionTitle title="اطلاعات تماس" subtitle="کد تایید برای همین شماره ارسال می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field autoComplete="name" label="نام و نام خانوادگی" name="fullName" value={formValues.fullName} onChange={(value) => handleFieldChange("fullName", value)} errors={state.errors?.fullName} required />
             <Field autoComplete="email" label="ایمیل" name="email" type="email" value={formValues.email} onChange={(value) => handleFieldChange("email", value)} errors={state.errors?.email} required />
             <label className="text-xs font-bold text-text">
               شماره موبایل
-              <div className="mt-2 flex flex-col gap-2 min-[360px]:flex-row">
+              <div className="mt-2 flex flex-col gap-2 min-[420px]:flex-row">
                 <input autoComplete="tel" inputMode="tel" name="phone" type="tel" value={formValues.phone} onChange={(event) => handleFieldChange("phone", event.target.value)} className="input-zen" required />
                 <button type="button" onClick={(event) => handleSendOtp(event.currentTarget.form!)} className="btn-outline shrink-0 text-xs text-primary-accent-strong" disabled={isOtpPending}>
                   {isOtpPending ? "در حال ارسال" : "ارسال کد"}
@@ -150,10 +150,10 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
           {otpError && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-[#DC2626]">{otpError}</p>}
         </section>
 
-        <section className="rounded-2xl border border-border bg-white p-5 md:p-6">
+        <section className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
           <SectionTitle title="آدرس و ارسال" subtitle="آدرس دقیق باعث پردازش سریع‌تر سفارش می‌شود." />
           {addresses.length ? (
-            <div className="mt-5 grid gap-3 min-[360px]:grid-cols-2">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {addresses.map((address) => (
                 <button
                   key={address.id}
@@ -261,9 +261,9 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
 function Stepper() {
   const steps = ["سبد خرید", "آدرس و ارسال", "پرداخت", "تکمیل سفارش"];
   return (
-    <div className="grid grid-cols-2 gap-2 rounded-2xl border border-border bg-surface-secondary p-3 text-center text-[11px] font-bold text-text-muted sm:grid-cols-4">
+    <div className="-mx-4 flex snap-x gap-2 overflow-x-auto border-y border-border bg-surface-secondary px-4 py-3 text-center text-[11px] font-bold text-text-muted scrollbar-none sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:rounded-2xl sm:border sm:p-3">
       {steps.map((step, index) => (
-        <div key={step} className={`rounded-xl px-2 py-3 ${index === 1 || index === 2 ? "bg-white text-primary-accent-strong" : "bg-white/70"}`}>
+        <div key={step} className={`min-w-28 snap-start rounded-xl px-2 py-3 sm:min-w-0 ${index === 1 || index === 2 ? "bg-white text-primary-accent-strong" : "bg-white/70"}`}>
           {step}
         </div>
       ))}

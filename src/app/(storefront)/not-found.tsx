@@ -2,7 +2,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 
 export default function StorefrontNotFound() {
   return (
-    <div className="container-zen py-12 md:py-16">
+    <div className="container-zen py-10 sm:py-12 md:py-16">
       <div className="mx-auto max-w-2xl">
         <EmptyState
           actionHref="/products"

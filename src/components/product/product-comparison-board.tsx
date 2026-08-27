@@ -157,7 +157,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
   };
 
   return (
-    <div className="space-y-5 rounded-[30px] border border-[#E7E8EE] bg-white p-4 shadow-[0_20px_50px_rgba(15,23,42,0.08)] sm:space-y-6 sm:rounded-[36px] sm:p-6">
+    <div className="space-y-5 rounded-2xl border border-[#E7E8EE] bg-white p-4 sm:space-y-6 sm:p-6">
       <header className="space-y-4">
         <div className="flex flex-col gap-3 text-[#475467] lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -168,7 +168,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
               انتخاب کنید.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:flex-wrap sm:px-0">
             {highlightRows.map((item) => (
               <button
                 key={item.key}
@@ -176,8 +176,8 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
                 onClick={() => setHighlight(item.key)}
                 className={
                   highlight === item.key
-                    ? `rounded-full px-4 py-2 text-xs font-bold transition ${highlightTokens[item.key].button}`
-                    : "rounded-full border border-[#E7E8EE] px-4 py-2 text-xs font-bold text-[#667085] transition hover:border-[#F5C56B] hover:bg-[#FFF8E8] hover:text-[#D97706] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0]"
+                    ? `min-h-10 shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition ${highlightTokens[item.key].button}`
+                    : "min-h-10 shrink-0 rounded-xl border border-[#E7E8EE] px-4 py-2 text-xs font-bold text-[#667085] transition hover:border-[#F5C56B] hover:bg-[#FFF8E8] hover:text-[#D97706] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0]"
                 }
               >
                 {item.label}
@@ -191,13 +191,13 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="جستجو بر اساس برند، نام یا ویسکوزیته"
-            className="input-zen rounded-full"
+            className="input-zen rounded-xl"
           />
           <div className="flex flex-col gap-2 min-[390px]:flex-row">
             <select
               value={pendingSelection}
               onChange={(event) => setPendingSelection(event.target.value)}
-              className="input-zen min-w-0 flex-1 rounded-full"
+              className="input-zen min-w-0 flex-1 rounded-xl"
             >
               <option value="">انتخاب محصول برای مقایسه</option>
               {filteredProducts.map((product) => (
@@ -209,7 +209,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             <button
               type="button"
               onClick={handleAddProduct}
-              className="btn-primary w-full !min-h-11 rounded-full px-4 py-2 text-sm min-[390px]:w-auto"
+              className="btn-primary w-full !min-h-11 rounded-xl px-4 py-2 text-sm min-[390px]:w-auto"
             >
               افزودن
             </button>
@@ -243,7 +243,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             {selectedProducts.map((product) => (
               <article
                 key={product.id}
-                className="rounded-[24px] border border-[#E7E8EE] bg-[#F7F8FA] p-4"
+                className="rounded-2xl border border-[#E7E8EE] bg-[#F7F8FA] p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">

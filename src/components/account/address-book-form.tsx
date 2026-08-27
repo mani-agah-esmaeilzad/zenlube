@@ -38,7 +38,7 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
       <div className="grid gap-3">
         {addresses.length ? (
           addresses.map((address) => (
-            <div key={address.id} className="rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
+            <div key={address.id} className="rounded-xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
@@ -58,18 +58,18 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
                   </p>
                   <p className="text-xs leading-6 text-[#6B7280]">کد پستی: {address.postalCode}</p>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex w-full flex-wrap gap-2 sm:w-auto">
                   {!address.isDefault ? (
                     <form action={setDefaultAddressAction}>
                       <input type="hidden" name="addressId" value={address.id} />
-                      <button type="submit" className="rounded-full border border-[#F5C56B] px-3 py-2 text-xs font-bold text-[#D97706]">
+                      <button type="submit" className="min-h-10 rounded-xl border border-[#F5C56B] px-3 py-2 text-xs font-bold text-[#D97706]">
                         پیش‌فرض کن
                       </button>
                     </form>
                   ) : null}
                   <form action={deleteAddressAction}>
                     <input type="hidden" name="addressId" value={address.id} />
-                    <button type="submit" className="rounded-full border border-[#FECACA] px-3 py-2 text-xs font-bold text-[#B42318]">
+                    <button type="submit" className="min-h-10 rounded-xl border border-[#FECACA] px-3 py-2 text-xs font-bold text-[#B42318]">
                       حذف
                     </button>
                   </form>
@@ -84,7 +84,7 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
         )}
       </div>
 
-      <form ref={formRef} action={formAction} className="grid gap-4 rounded-3xl border border-dashed border-[#E5E7EB] p-4 text-sm md:grid-cols-2">
+      <form ref={formRef} action={formAction} className="grid gap-4 rounded-2xl border border-dashed border-[#E5E7EB] p-4 text-sm md:grid-cols-2">
         <Field label="عنوان آدرس" name="label" defaultValue="" errors={state?.errors?.label} />
         <Field label="نام گیرنده" name="fullName" defaultValue="" errors={state?.errors?.fullName} />
         <Field label="شماره موبایل" name="phone" defaultValue="" errors={state?.errors?.phone} />

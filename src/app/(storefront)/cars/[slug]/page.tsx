@@ -5,6 +5,7 @@ import { QuestionForm } from "@/components/forms/question-form";
 import { QuestionList } from "@/components/questions/question-list";
 import { EngagementTracker } from "@/components/analytics/engagement-tracker";
 import { ProductCard } from "@/components/product/product-card";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import {
   buildNotebookData,
   buildNotebookProductPanels,
@@ -140,21 +141,19 @@ export default async function CarDetailPage({ params }: CarPageProps) {
     <div className="container-zen space-y-8 py-6 md:py-8">
       <EngagementTracker entityType="car" entityId={car.id} eventType="notebook_view" metadata={{ slug: car.slug }} />
 
-      <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-text-subtle">
-        <Link href="/" className="text-link-zen">خانه</Link>
-        <span>/</span>
-        <Link href="/cars" className="text-link-zen">دفترچه خودروها</Link>
-        <span>/</span>
-        <span className="line-clamp-1 min-w-0">{title}</span>
-      </nav>
+      <Breadcrumb items={[{ href: "/", label: "خانه" }, { href: "/cars", label: "دفترچه خودروها" }, { label: title }]} />
 
       <section className="relative grid gap-5 overflow-hidden rounded-2xl bg-primary p-5 text-white sm:p-6 md:p-8 lg:grid-cols-[1fr_360px]">
         <div className="min-w-0">
-          <span className="chip-zen-dark inline-flex">دفترچه راهنمای خودرو</span>
-          <h1 className="mt-3 text-[1.65rem] font-extrabold leading-[1.6] md:text-4xl">{title}</h1>
+          <h1 className="text-[1.75rem] font-black leading-[1.55] tracking-[-0.035em] md:text-4xl">{title}</h1>
           <p className="mt-3 max-w-3xl text-sm leading-8 text-white/75">
             اطلاعات فنی، روغن موتور مناسب، حجم روغن، فیلترهای سازگار و محصولات پیشنهادی این خودرو را یک‌جا ببینید.
           </p>
+          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs font-bold text-white/65">
+            <span>سال ساخت: {years}</span>
+            <span>روغن: {car.viscosity ?? "ثبت نشده"}</span>
+            <span>حجم: {oilCapacity}</span>
+          </div>
           <div className="mt-6 flex flex-col gap-3 min-[390px]:flex-row min-[390px]:flex-wrap">
             <Link href={`/products?car=${car.slug}`} className="btn-primary w-full min-[390px]:w-auto">مشاهده محصولات سازگار</Link>
             <Link href="/support" className="btn-outline w-full !border-white/20 !bg-white/10 !text-white min-[390px]:w-auto">مشاوره تخصصی</Link>
@@ -171,44 +170,22 @@ export default async function CarDetailPage({ params }: CarPageProps) {
       </section>
 
       <section className="space-y-5">
-        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 lg:p-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="border-b border-border pb-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0">
-              <span className="chip-zen-warning inline-flex">
-                دفترچه هوشمند خودرو
-              </span>
-              <h2 className="mt-3 section-title">دفترچه تخصصی این خودرو</h2>
-              <p className="section-subtitle">
-                بخش بالایی ساده شد تا کاربر مستقیم وارد دفترچه شود. هر تب فقط اطلاعات همان سیستم خودرو را نشان می‌دهد و در
-                موبایل هم راحت‌تر خوانده می‌شود.
+              <h2 className="section-title">دفترچه تخصصی این خودرو</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-text-muted">
+                هر بخش فقط اطلاعات همان سیستم خودرو را نشان می‌دهد تا روی موبایل هم سریع‌تر خوانده شود.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {notebook.pages.map((page) => (
-                <span
-                  key={page.id}
-                  className="chip-zen-muted"
-                >
-                  {page.title}
-                </span>
-              ))}
-            </div>
+            <Link href={`/products?car=${car.slug}`} className="text-sm font-extrabold text-primary-accent-strong">مشاهده محصولات سازگار</Link>
           </div>
 
-          <div className="mt-5 grid gap-3 min-[390px]:grid-cols-2 xl:grid-cols-4">
+          <dl className="-mx-4 mt-5 flex snap-x overflow-x-auto px-4 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 xl:grid-cols-4">
             {quickHighlights.map((item) => (
               <QuickHighlightCard key={item.title} title={item.title} value={item.value} helper={item.helper} />
             ))}
-          </div>
-
-          <div className="panel-zen-tint mt-5 flex flex-col gap-3 rounded-[24px] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm leading-7 text-text-muted">
-              برای انتخاب سریع، از تب‌های دفترچه شروع کنید؛ برای خرید مستقیم هم محصولات سازگار همین خودرو در دسترس است.
-            </p>
-            <Link href={`/products?car=${car.slug}`} className="btn-primary w-full sm:w-auto sm:shrink-0">
-              مشاهده محصولات سازگار
-            </Link>
-          </div>
+          </dl>
         </div>
         <CarNotebook pages={notebook.pages} productPanels={notebookProductPanels} />
       </section>
@@ -228,11 +205,11 @@ export default async function CarDetailPage({ params }: CarPageProps) {
         </section>
       )}
 
-      <section className="panel-zen rounded-[30px] p-5 sm:p-6">
+      <section className="border-t border-border pt-6">
         <h2 className="section-title">سوالات پرتکرار</h2>
         <div className="mt-5 space-y-3">
           {faqs.map(([question, answer]) => (
-            <details key={question} className="panel-zen-muted rounded-[24px] p-4">
+            <details key={question} className="rounded-xl border border-border bg-surface-secondary p-4">
               <summary className="cursor-pointer text-sm font-bold text-text-strong">{question}</summary>
               <p className="mt-3 text-sm leading-7 text-text-muted">{answer}</p>
             </details>
@@ -279,10 +256,10 @@ export default async function CarDetailPage({ params }: CarPageProps) {
 
 function QuickHighlightCard({ title, value, helper }: { title: string; value: string; helper: string }) {
   return (
-    <div className="metric-zen rounded-[22px] p-4">
-      <p className="text-[11px] font-bold text-text-subtle">{title}</p>
-      <p className="mt-2 text-base font-extrabold leading-7 text-text-strong">{value}</p>
-      <p className="mt-1 text-xs leading-6 text-text-muted">{helper}</p>
+    <div className="min-w-[210px] snap-start border-l border-border px-4 py-2 first:pr-0 last:border-l-0 sm:min-w-0">
+      <dt className="text-[11px] font-bold text-text-subtle">{title}</dt>
+      <dd className="mt-2 text-base font-extrabold leading-7 text-text-strong">{value}</dd>
+      <dd className="mt-1 line-clamp-2 text-xs leading-6 text-text-muted">{helper}</dd>
     </div>
   );
 }

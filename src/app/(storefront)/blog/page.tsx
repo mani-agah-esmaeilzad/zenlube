@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { BlogCard } from "@/components/blog/blog-card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
+import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getPaginatedBlogPosts } from "@/lib/data";
 import { getPaginationParams } from "@/lib/pagination";
 
@@ -24,16 +26,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   return (
     <div className="container-zen space-y-6 py-5 sm:py-6 md:space-y-8 md:py-8">
-      <header>
-        <h1 className="t-h1">وبلاگ تخصصی Oilbar</h1>
-        <p className="mt-3 max-w-4xl text-sm leading-8 text-text-muted">
-          راهنمای خرید، مقایسه محصولات و نکات فنی برای انتخاب روغن موتور و فیلتر خودرو.
-        </p>
-      </header>
+      <StorefrontPageIntro
+        description="راهنمای خرید، مقایسهٔ محصولات و نکات فنی برای انتخاب روغن موتور و فیلتر خودرو."
+        meta={`${pageInfo.total.toLocaleString("fa-IR")} مقالهٔ منتشرشده`}
+        title="وبلاگ تخصصی Oilbar"
+      />
 
       <section className="space-y-4">
-        <div className="flex items-center justify-between gap-3 text-sm text-text-muted">
-          <span>مجموع {pageInfo.total.toLocaleString("fa-IR")} مقاله تخصصی منتشر شده است.</span>
+        <div className="flex items-center justify-between gap-3 border-b border-border pb-4 text-sm text-text-muted">
+          <span>تازه‌ترین راهنماهای فنی و خرید</span>
           <Link
             href="/support"
             className="btn-outline shrink-0 rounded-xl px-3 py-2 text-xs font-bold text-[#475467] sm:px-4"
@@ -48,9 +49,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-6 text-center text-sm font-semibold text-text-muted sm:p-10">
-            هنوز مقاله‌ای ثبت نشده است.
-          </div>
+          <EmptyState compact description="با انتشار نخستین راهنمای فنی، مطالب این بخش نمایش داده می‌شود." title="هنوز مقاله‌ای ثبت نشده است" />
         )}
         <Pagination pathname="/blog" searchParams={params} pageInfo={pageInfo} />
       </section>

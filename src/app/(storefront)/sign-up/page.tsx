@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { SignUpForm } from "@/components/auth/sign-up-form";
 import { getAppSession } from "@/lib/session";
 
@@ -17,24 +18,10 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   }
 
   return (
-    <div className="container-zen py-5 sm:py-8 md:py-10 lg:flex lg:min-h-[70vh] lg:items-center">
-      <div className="grid w-full gap-6 lg:grid-cols-[1.05fr_480px]">
-        <section className="hidden rounded-2xl bg-surface-secondary p-10 lg:block">
-          <p className="text-sm font-bold text-primary-accent-strong">شروع خرید</p>
-          <h1 className="mt-4 text-4xl font-black leading-[1.5] text-text-strong">حساب بسازید تا خرید و پیگیری سفارش ساده‌تر شود</h1>
-          <p className="mt-4 max-w-xl text-sm leading-8 text-text-muted">
-            با ثبت‌نام در Oilbar، اطلاعات تماس و آدرس شما ذخیره می‌شود و برای سفارش‌های بعدی سریع‌تر به پرداخت می‌رسید.
-          </p>
-        </section>
-        <div className="mx-auto w-full max-w-[34rem] bg-white py-2 sm:rounded-2xl sm:border sm:border-border sm:p-8 lg:max-w-none">
-        <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-text-strong">ساخت حساب کاربری</h1>
-          <p className="mt-2 text-sm leading-8 text-text-muted">
-            با ثبت‌نام در Oilbar، سبد خرید، سفارش‌ها و پیشنهادهای مناسب خودروی خود را مدیریت کنید.
-          </p>
-        </div>
-        <SignUpForm callbackUrl={callbackUrl} />
-        <p className="mt-6 text-center text-xs text-text-muted">
+    <AuthPageShell
+      description="اطلاعات تماس و آدرس شما برای خریدهای بعدی ذخیره می‌شود و پیگیری سفارش‌ها ساده‌تر خواهد بود."
+      footer={(
+        <>
           قبلا حساب دارید؟{" "}
           <Link
             href={callbackUrl ? `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/sign-in"}
@@ -42,9 +29,13 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
           >
             وارد شوید
           </Link>
-        </p>
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+      formDescription="مشخصات اصلی و کد تأیید پیامکی را وارد کنید."
+      formTitle="ساخت حساب کاربری"
+      title="حساب بسازید تا خرید و پیگیری سفارش ساده‌تر شود"
+    >
+        <SignUpForm callbackUrl={callbackUrl} />
+    </AuthPageShell>
   );
 }

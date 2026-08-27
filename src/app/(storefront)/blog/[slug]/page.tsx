@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { BlogArticle } from "@/components/blog/blog-article";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { getBlogPostBySlug } from "@/lib/data";
 
 type BlogPostPageProps = {
@@ -40,9 +41,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <div className="container-zen py-5 sm:py-6 md:py-8">
       <div className="mx-auto max-w-4xl space-y-5 text-text-strong sm:space-y-8">
-        <header className="rounded-2xl border border-border bg-white p-4 sm:p-6 md:p-8">
-          <span className="chip-zen inline-flex">راهنمای تخصصی Oilbar</span>
-          <h1 className="mt-3 text-2xl font-black leading-[1.55] sm:text-3xl md:text-4xl">{post.title}</h1>
+        <Breadcrumb items={[{ href: "/", label: "خانه" }, { href: "/blog", label: "وبلاگ" }, { label: post.title }]} />
+        <header className="border-r-4 border-primary-accent-strong py-2 pr-4 sm:pr-6">
+          <h1 className="text-2xl font-black leading-[1.55] sm:text-3xl md:text-4xl">{post.title}</h1>
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-text-muted">
             <span>{post.authorName}</span>
             <span>•</span>
@@ -71,7 +72,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           />
         ) : null}
 
-        <div className="rounded-2xl border border-border bg-white p-4 sm:p-6 md:p-8">
+        <div className="border-t border-border pt-6 sm:pt-8">
           <BlogArticle content={post.content} />
         </div>
       </div>

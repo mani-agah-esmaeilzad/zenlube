@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CartItemControls, ClearCartButton } from "@/components/cart/cart-item-controls";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PriceBlock } from "@/components/ui/price-block";
+import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
@@ -13,8 +14,14 @@ export default async function CartPage() {
 
   if (!userId) {
     return (
-      <div className="container-zen py-10 sm:py-14 md:py-20">
-        <div className="mx-auto max-w-xl">
+      <div className="container-zen space-y-6 py-5 sm:py-6 md:space-y-8 md:py-8">
+        <StorefrontPageIntro
+          compact
+          description="پس از ورود، کالاهای انتخاب‌شده و خلاصهٔ پرداخت در همین صفحه نمایش داده می‌شود."
+          title="سبد خرید"
+          tone="dark"
+        />
+        <div className="mx-auto w-full max-w-2xl">
           <EmptyState
             actionHref="/sign-in"
             actionLabel="ورود به حساب کاربری"
@@ -35,13 +42,13 @@ export default async function CartPage() {
 
   return (
     <div className="container-zen space-y-5 py-5 sm:space-y-6 sm:py-6 md:py-8">
-      <header className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="t-h1">سبد خرید</h1>
-          <p className="mt-2 hidden text-sm leading-7 text-text-muted sm:block">محصولات انتخاب‌شده را بررسی کنید و سپس وارد مرحله ارسال و پرداخت شوید.</p>
-        </div>
-        {cart?.items?.length ? <ClearCartButton /> : null}
-      </header>
+      <StorefrontPageIntro
+        actions={cart?.items?.length ? <ClearCartButton /> : undefined}
+        compact
+        description="محصولات انتخاب‌شده را بررسی کنید و سپس وارد مرحلهٔ ارسال و پرداخت شوید."
+        meta={`${(cart?.items?.length ?? 0).toLocaleString("fa-IR")} ردیف کالا`}
+        title="سبد خرید"
+      />
 
       {cart?.items?.length ? (
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">

@@ -50,7 +50,7 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="panel-zen grid w-full gap-3 rounded-2xl p-3 text-sm text-slate-600 sm:grid-cols-2 xl:grid-cols-[1.2fr_1fr_1fr_auto]"
+      className="grid w-full gap-3 text-sm text-slate-600 sm:grid-cols-2 xl:grid-cols-[1.2fr_1fr_1fr_auto]"
     >
       <label className="flex flex-col gap-1 text-xs text-slate-500">
         برند خودرو

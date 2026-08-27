@@ -161,11 +161,9 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
       <header className="space-y-4">
         <div className="flex flex-col gap-3 text-[#475467] lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-[1.45rem] font-black text-[#171B23] sm:text-2xl">مقایسه تخصصی روغن موتور</h1>
+            <h2 className="text-lg font-black text-[#171B23] sm:text-xl">محصولات و معیار مقایسه</h2>
             <p className="mt-2 text-sm leading-8 text-[#667085]">
-              حداکثر سه محصول را انتخاب کنید تا مشخصات فنی، استانداردها و قیمت آن‌ها را در کنار هم
-              بررسی کنید. برای برجسته‌سازی معیارها، یکی از گزینه‌های ویسکوزیته، استاندارد یا قیمت را
-              انتخاب کنید.
+              محصول‌ها را اضافه کنید و معیار مهم‌تر را برای برجسته‌سازی انتخاب کنید.
             </p>
           </div>
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:flex-wrap sm:px-0">

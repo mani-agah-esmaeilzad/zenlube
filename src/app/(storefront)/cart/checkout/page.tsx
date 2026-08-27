@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { CheckoutForm } from "@/components/cart/checkout-form";
+import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
@@ -59,12 +60,13 @@ export default async function CheckoutPage() {
 
   return (
     <div className="container-zen space-y-5 py-5 sm:space-y-6 sm:py-6 md:py-8">
-      <header>
-        <h1 className="t-h1">تایید و پرداخت سفارش</h1>
-        <p className="mt-2 text-sm leading-7 text-text-muted">
-          جمع کالاهای سبد خرید شما {formatPrice(subtotal)} است. اطلاعات ارسال را تکمیل کنید تا به درگاه پرداخت منتقل شوید.
-        </p>
-      </header>
+      <StorefrontPageIntro
+        compact
+        description="اطلاعات ارسال را تکمیل و خلاصهٔ سفارش را بررسی کنید؛ سپس به درگاه پرداخت منتقل می‌شوید."
+        meta={`جمع سبد خرید: ${formatPrice(subtotal)}`}
+        title="تأیید و پرداخت سفارش"
+        tone="dark"
+      />
 
       <CheckoutForm
         items={items}

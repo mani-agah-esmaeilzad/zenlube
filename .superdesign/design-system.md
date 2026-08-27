@@ -32,7 +32,7 @@ Use Vazirmatn only (400–900) with Persian-appropriate line height. Mobile H1: 
 1. Compact hero: offer, short supporting sentence, one primary CTA, product render. No eyebrow pill, duplicate CTA, or three stacked trust bullets.
 2. Vehicle finder as signature dark band using progressive disclosure. Start with manufacturer/model or vehicle type; reveal year/engine after the first choice. Preserve the real compatibility workflow.
 3. Category shortcuts as an open horizontal rail; prioritize categories with products and keep a view-all link.
-4. Featured products as a horizontal rail on mobile with a simplified card; retain image, title, price, stock, wishlist and 44px add-to-cart action.
+4. Featured products as a horizontal rail on mobile with a simplified card; retain image, title, price, stock and wishlist. Product cards never contain an add-to-cart button; purchasing starts only on the product detail page.
 5. Brands as compact horizontal logo/text rail, de-emphasizing brands with no products.
 6. Merge authenticity/shipping/technical guidance into one compact editorial trust section; do not repeat trust claims in hero, middle, and footer.
 7. Blog content appears only when real posts exist, as one feature plus a rail.
@@ -42,7 +42,9 @@ Use Vazirmatn only (400–900) with Persian-appropriate line height. Mobile H1: 
 - Primary button: amber or charcoal, 48–52px high, 12–16px radius, full-width only when the action is truly dominant.
 - Secondary action: text link or quiet outline; do not stack two equally heavy full-width CTAs.
 - Category shortcut: icon/image in a circular frame with a text label; open rail, not a bordered card grid.
-- Product card: one badge maximum; hide low-priority specs/ratings on narrow home rails; never let wishlist/badge collide.
+- Product card: one badge maximum; hide low-priority specs/ratings on narrow home rails; never let wishlist/badge collide; render exactly one full-width card per row on phones and never include an add-to-cart button inside the card.
+- Internal page intro: use one compact 16–20px-radius band with a slim amber rule, clear H1, short description and at most one secondary action. Dark charcoal is reserved for vehicle, account, checkout and support contexts.
+- Catalog directory rows: categories, brands and vehicles use compact summary rows/cards. Put available inventory first and move zero-count entries into a separate, visually quieter section.
 - Section header: title and “مشاهده همه” share one row; mobile subtitle is hidden or one short line.
 - Vehicle controls: 44–48px minimum tap target; staged/progressive UI rather than four selects plus CTA.
 - Icon system: 1.8–2px charcoal outline SVG, amber only for active state.

@@ -37,7 +37,7 @@
         "src/components/ui/mobile-sheet.tsx"
       ],
       "fingerprints": {
-        ".superdesign/design-system.md": "defc58a06cdaf21a56ccf56b13aefc5a6171183218e503dbab440a271d764333",
+        ".superdesign/design-system.md": "a59938e2e2872d6f248c0cf4ed2410be2e40db5ba37be66ceb9c7c1506f40ff1",
         "src/app/globals.css": "0156b2c78e3ee71fe7693bcf5ff57a7c5bcd747b3549eb13042d72fa8b1089fd",
         "src/app/(storefront)/layout.tsx": "33119901bb3c232fafb2e3f3162a7dc96fc966578cb5055855cb890effcfbfec",
         "src/app/(storefront)/page.tsx": "d5aaa55fc87b8bc359471e6048742f44884c40d3a6250f1f0bd3b6daafecf917",
@@ -90,7 +90,7 @@
           "currentVersion": 1
         }
       },
-      "updatedAt": "2026-08-27T06:09:46Z"
+      "updatedAt": "2026-08-27T15:37:36Z"
     }
   }
 }

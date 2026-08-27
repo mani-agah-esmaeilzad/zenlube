@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { PriceBlock } from "@/components/ui/price-block";
 import { StatusPill } from "@/components/ui/status-pill";
+import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getCarHierarchy } from "@/lib/data/cars";
 import { createPageInfo, getPaginationParams } from "@/lib/pagination";
 import { getAppSession } from "@/lib/session";
@@ -137,13 +138,15 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
   return (
     <div className="container-zen py-5 sm:py-6 md:py-8">
-      <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-6">
-        <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
-          <section className="rounded-2xl bg-primary p-4 text-white sm:p-5">
-            <p className="text-xs font-bold text-[#F5C56B]">حساب کاربری Oilbar</p>
-            <h1 className="mt-2 text-xl font-black">{dbUser?.name ?? "کاربر اویل‌بار"}</h1>
-            <p className="mt-2 text-xs text-slate-300">{dbUser?.phone ?? dbUser?.email}</p>
-          </section>
+      <StorefrontPageIntro
+        compact
+        description="سفارش‌ها، آدرس‌ها، خودروهای ذخیره‌شده و اطلاعات حساب را از یک مسیر مدیریت کنید."
+        meta={dbUser?.phone ?? dbUser?.email ?? undefined}
+        title={dbUser?.name ?? "حساب کاربری Oilbar"}
+        tone="dark"
+      />
+      <div className="mt-5 grid gap-5 lg:mt-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-6">
+        <aside className="lg:sticky lg:top-32 lg:self-start">
           <nav className="-mx-4 flex gap-2 overflow-x-auto border-y border-border bg-white px-4 py-3 text-xs font-bold text-text-muted scrollbar-none sm:mx-0 sm:rounded-2xl sm:border sm:p-3 lg:grid lg:grid-cols-1 lg:overflow-visible">
             {[
               ["داشبورد", "#overview"],
@@ -164,8 +167,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           <section id="overview" className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm font-bold text-primary-accent-strong">خوش آمدید</p>
-                <h2 className="mt-2 text-2xl font-black text-text-strong">داشبورد خرید شما</h2>
+                <h2 className="text-2xl font-black text-text-strong">نمای کلی حساب</h2>
                 <p className="mt-2 text-sm leading-7 text-text-muted">سفارش‌ها، آدرس پیش‌فرض، اطلاعات حساب و خودروهای مناسب روغن را از اینجا مدیریت کنید.</p>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">

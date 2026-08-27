@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
+import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getAllProductsWithFilters, getBrandsWithProductCount, getHighlightedCategories, getProductFilterFacets } from "@/lib/data";
 import type { ProductSort } from "@/lib/data";
 
@@ -21,6 +22,7 @@ const sorts: { value: ProductSort; label: string }[] = [
   { value: "price-desc", label: "گران‌ترین" },
   { value: "rating", label: "بالاترین امتیاز" },
 ];
+const allowedSorts = sorts.map((item) => item.value);
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
@@ -34,7 +36,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const maxPrice = typeof params.maxPrice === "string" ? Number(params.maxPrice) || undefined : undefined;
   const inStock = params.inStock === "1";
   const minRating = typeof params.minRating === "string" ? Number(params.minRating) || undefined : undefined;
-  const allowedSorts = sorts.map((item) => item.value);
   const sort = typeof params.sort === "string" && allowedSorts.includes(params.sort as ProductSort) ? (params.sort as ProductSort) : "latest";
   const page = Number(params.page ?? "1") || 1;
 
@@ -68,12 +69,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     <div className="container-zen py-5 sm:py-6 md:py-8">
       <Breadcrumb items={[{ href: "/", label: "خانه" }, { label: "فروشگاه" }]} />
 
-      <header className="mb-5 mt-3 sm:mb-6 sm:mt-4">
-        <h1 className="t-h1">فروشگاه تخصصی روغن موتور و فیلتر</h1>
-        <p className="mt-2 text-sm leading-7 text-text-muted sm:leading-8">
-          {pageInfo.total.toLocaleString("fa-IR")} کالا بر اساس برند، ویسکوزیته، نوع روغن و سازگاری خودرو.
-        </p>
-      </header>
+      <StorefrontPageIntro
+        actions={(
+          <Link className="btn-outline w-full bg-white lg:w-auto" href="/products/compare">
+            مقایسه محصولات
+          </Link>
+        )}
+        className="mb-5 mt-3 sm:mb-6 sm:mt-4"
+        description="بر اساس برند، ویسکوزیته، نوع روغن یا سازگاری خودرو، انتخاب مناسب را سریع‌تر پیدا کنید."
+        meta={`${pageInfo.total.toLocaleString("fa-IR")} کالا در فروشگاه`}
+        title="فروشگاه تخصصی روغن موتور و فیلتر"
+      />
 
       <MobileProductsControls
         activeFilters={activeFilters}

@@ -220,14 +220,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ) : null}
 
           {quickFacts.length ? (
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-surface-secondary">
               {quickFacts.map((item) => (
-                <div key={item.label} className="rounded-xl border border-border bg-surface-secondary px-4 py-3">
-                  <p className="text-xs font-bold text-text-muted">{item.label}</p>
-                  <p className="mt-1 text-sm font-extrabold text-text-strong">{item.value}</p>
+                <div key={item.label} className="min-w-0 border-b border-l border-border px-3 py-3 even:border-l-0 sm:px-4">
+                  <dt className="text-[11px] font-bold text-text-muted">{item.label}</dt>
+                  <dd className="mt-1 truncate text-sm font-extrabold text-text-strong">{item.value}</dd>
                 </div>
               ))}
-            </div>
+            </dl>
           ) : null}
 
           <div className="mt-6">

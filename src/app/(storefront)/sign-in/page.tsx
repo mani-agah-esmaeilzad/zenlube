@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { getAppSession } from "@/lib/session";
 
@@ -22,36 +23,26 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     : "/sign-up";
 
   return (
-    <div className="container-zen py-5 sm:py-8 md:py-10 lg:flex lg:min-h-[70vh] lg:items-center">
-      <div className="grid w-full gap-6 lg:grid-cols-[1.05fr_480px]">
-        <section className="hidden rounded-2xl bg-primary p-10 text-white lg:block">
-          <p className="text-sm font-bold text-primary-accent">حساب کاربری Oilbar</p>
-          <h1 className="mt-4 text-4xl font-black leading-[1.5]">ورود برای مدیریت سفارش و سبد خرید</h1>
-          <p className="mt-4 max-w-xl text-sm leading-8 text-white/72">
-            بعد از ورود، پیگیری سفارش، آدرس‌های ذخیره‌شده و پرداخت‌ها در حساب کاربری در دسترس است.
-          </p>
-        </section>
-        <div className="mx-auto w-full max-w-[34rem] bg-white py-2 sm:rounded-2xl sm:border sm:border-border sm:p-8 lg:max-w-none">
-        <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-text-strong">ورود به حساب کاربری</h1>
-          <p className="mt-2 text-sm leading-8 text-text-muted">
-            برای مدیریت سبد خرید، سفارش‌ها، خودروهای ذخیره‌شده و دسترسی به پنل ادمین وارد شوید.
-          </p>
-        </div>
-        {registered && (
-          <p className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-6 text-emerald-700">
-            حساب شما با موفقیت ایجاد شد. با وارد کردن شماره موبایل و دریافت کد تایید وارد شوید.
-          </p>
-        )}
-        <SignInForm callbackUrl={callbackUrl} />
-        <p className="mt-6 text-center text-xs text-text-muted">
+    <AuthPageShell
+      description="بعد از ورود، سفارش‌ها، آدرس‌های ذخیره‌شده و سبد خریدتان از یک مسیر در دسترس است."
+      footer={(
+        <>
           کاربر جدید هستید؟{" "}
           <Link href={signUpLink} className="font-bold text-primary-accent-strong hover:text-[#B45309]">
             ثبت‌نام کنید
           </Link>
-        </p>
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+      formDescription="شمارهٔ موبایل را وارد کنید و با کد تأیید پیامکی ادامه دهید."
+      formTitle="ورود به حساب کاربری"
+      title="ورود برای مدیریت سفارش و سبد خرید"
+    >
+        {registered && (
+          <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-6 text-emerald-700">
+            حساب شما با موفقیت ایجاد شد. با وارد کردن شماره موبایل و دریافت کد تایید وارد شوید.
+          </p>
+        )}
+        <SignInForm callbackUrl={callbackUrl} />
+    </AuthPageShell>
   );
 }

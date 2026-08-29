@@ -52,9 +52,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <span>{post.readMinutes} دقیقه مطالعه</span>
           </div>
           {post.tags.length ? (
-            <div className="mt-4 flex flex-wrap gap-2 text-xs text-text-muted">
+            <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs font-bold text-text-muted">
               {post.tags.map((tag) => (
-                <span key={tag} className="chip-zen-muted">
+                <span key={tag}>
                   #{tag}
                 </span>
               ))}
@@ -67,7 +67,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <img
             src={post.coverImage}
             alt={post.title}
-            className="h-52 w-full rounded-2xl border border-border object-cover sm:h-72"
+            className="h-52 w-full rounded-xl object-cover sm:h-72"
             loading="lazy"
           />
         ) : null}

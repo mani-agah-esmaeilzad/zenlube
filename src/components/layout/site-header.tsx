@@ -51,7 +51,7 @@ export async function SiteHeader() {
 
       <div className="container-zen py-2 lg:py-3">
         <div
-          className="grid min-h-11 grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-2 lg:hidden"
+          className="grid min-h-11 grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-2 lg:hidden"
           dir="rtl"
         >
           <MobileNav accountHref={accountHref} categories={categories} isAuthenticated={isAuthenticated} links={links} />
@@ -68,7 +68,7 @@ export async function SiteHeader() {
           </Link>
           <div className="flex items-center gap-1.5 justify-self-end">
             <MobileSearch quickSuggestions={searchSuggestions} />
-            <CartIndicator className="!h-10 !w-10 !min-h-10 rounded-xl" compact />
+            <CartIndicator className="!h-11 !w-11 !min-h-11 rounded-xl" compact />
           </div>
         </div>
 

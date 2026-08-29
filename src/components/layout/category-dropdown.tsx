@@ -69,7 +69,7 @@ export function CategoryDropdown({ categories }: CategoryDropdownProps) {
             ))}
           </div>
         ) : (
-          <div className="panel-zen-muted rounded-xl border-dashed p-5 text-center text-sm font-semibold text-text-muted">
+          <div className="border-y border-border py-5 text-center text-sm font-semibold text-text-muted">
             هنوز دسته‌بندی‌ای ثبت نشده است.
           </div>
         )}

@@ -11,12 +11,11 @@ export default function StorefrontLoading() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="rounded-xl border border-border p-2.5 sm:rounded-2xl sm:p-3">
-              <Skeleton className="aspect-[4/3] w-full rounded-xl" />
+            <div key={index} className="border-t border-border py-3">
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
               <Skeleton className="mt-4 h-4 w-20" />
               <Skeleton className="mt-3 h-5 w-full" />
               <Skeleton className="mt-2 h-5 w-4/5" />
-              <Skeleton className="mt-5 h-10 w-full rounded-xl" />
             </div>
           ))}
         </div>

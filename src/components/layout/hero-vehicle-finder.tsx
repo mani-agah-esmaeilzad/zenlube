@@ -216,7 +216,7 @@ export function HeroVehicleFinder({ cars, variant = "default" }: HeroVehicleFind
           ) : null}
           <div className="sm:col-span-2 lg:col-span-4">
           <button
-            className="btn-primary w-full sm:w-auto sm:min-w-[210px]"
+            className="btn-primary"
             disabled={isPending || !cars.length || !canSubmit}
             onClick={handleSubmit}
             type="button"

@@ -39,7 +39,7 @@ export function ProductPurchasePanel({
 
   return (
     <>
-      <section className="rounded-2xl border border-[rgba(217,119,6,0.16)] bg-surface-tint p-4 sm:p-5">
+      <section className="rounded-xl bg-surface-tint p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-xs font-bold text-text-muted">قیمت نهایی</p>
@@ -50,10 +50,11 @@ export function ProductPurchasePanel({
           </div>
 
           <span
-            className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-extrabold ${
-              isAvailable ? "bg-emerald-50 text-emerald-700" : "bg-[#FFF1F3] text-[#D92D20]"
+            className={`inline-flex items-center gap-2 text-xs font-extrabold ${
+              isAvailable ? "text-emerald-700" : "text-[#D92D20]"
             }`}
           >
+            <span aria-hidden="true" className={`h-2 w-2 rounded-full ${isAvailable ? "bg-emerald-600" : "bg-[#D92D20]"}`} />
             {isAvailable ? `${stock.toLocaleString("fa-IR")} عدد موجود` : "ناموجود"}
           </span>
         </div>
@@ -69,18 +70,18 @@ export function ProductPurchasePanel({
           <AddToCartButton className="w-full" disabled={!isAvailable} productId={productId} quantity={quantity} size="lg" />
         </div>
 
-        <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto_auto] gap-2">
+        <div className="mt-3 flex items-center gap-2">
           <Link
             aria-label="افزودن این محصول به مقایسه"
-            className="btn-outline inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-text"
+            className="inline-flex min-h-11 items-center px-2 text-sm font-extrabold text-primary-accent-strong transition hover:text-primary-accent"
             href={compareHref}
           >
             مقایسه
           </Link>
-          <WishlistButton compact productId={productId} initialActive={wishlistActive} className="!size-12 !rounded-[18px]" />
+          <WishlistButton compact productId={productId} initialActive={wishlistActive} className="!size-11 !rounded-xl" />
           <button
             aria-label="اشتراک‌گذاری محصول"
-            className="btn-outline inline-flex h-12 w-12 items-center justify-center rounded-xl text-text"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-text transition hover:border-primary-accent hover:text-primary-accent-strong"
             onClick={() => {
               if (typeof navigator !== "undefined" && navigator.share) {
                 navigator.share({ url: window.location.href }).catch(() => undefined);

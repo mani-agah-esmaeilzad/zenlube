@@ -42,12 +42,8 @@ export default async function Home() {
   return (
     <div className="pb-6 md:pb-12">
       <section className="container-zen pt-4 md:pt-8">
-        <div className="relative overflow-hidden rounded-[24px] border border-border bg-white shadow-[0_18px_60px_rgba(17,24,39,0.06)]">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-[radial-gradient(circle_at_12%_30%,rgba(245,158,11,0.12),transparent_32%),linear-gradient(135deg,#ffffff_0%,#ffffff_58%,#f7f8fa_100%)]"
-          />
-          <div className="relative grid min-h-[350px] grid-cols-[minmax(0,1.25fr)_minmax(105px,0.75fr)] items-center gap-0 px-4 pt-5 sm:min-h-[400px] sm:px-7 md:min-h-0 md:grid-cols-2 md:gap-8 md:px-10 md:py-10 lg:px-14 lg:py-12">
+        <div className="relative overflow-hidden border-b border-border bg-white">
+          <div className="relative grid min-h-[350px] grid-cols-[minmax(0,1.25fr)_minmax(105px,0.75fr)] items-center gap-0 pt-3 sm:min-h-[400px] md:min-h-0 md:grid-cols-2 md:gap-8 md:py-8 lg:py-10">
             <div className="relative z-10 py-4 md:py-6">
               <h1 className="max-w-[13ch] text-[1.7rem] font-black leading-[1.45] tracking-[-0.035em] text-text-strong min-[390px]:text-[1.8rem] sm:text-4xl md:max-w-[12ch] md:text-5xl md:leading-[1.35] lg:text-[3.35rem]">
                 روغن مناسب خودروی شما، <span className="text-primary-accent-strong">دقیق و مطمئن</span>
@@ -55,7 +51,7 @@ export default async function Home() {
               <p className="mt-3 hidden max-w-lg text-sm leading-7 text-text-muted min-[390px]:block md:mt-5 md:text-base md:leading-8">
                 روغن موتور، روغن گیربکس و فیلتر اصل را بر اساس مشخصات واقعی خودرو پیدا کنید و با ضمانت اصالت تحویل بگیرید.
               </p>
-              <Link className="btn-primary mt-5 w-full max-w-[190px] md:mt-7 md:w-auto md:min-w-[190px]" href="/products">
+              <Link className="btn-secondary mt-5 md:mt-7" href="/products">
                 مشاهده محصولات
               </Link>
             </div>
@@ -73,7 +69,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="relative grid grid-cols-2 border-t border-border bg-white/90 px-3 py-4 sm:px-6 md:max-w-xl md:border md:border-b-0 md:border-r-0 md:py-5">
+          <div className="relative grid grid-cols-2 border-t border-border bg-white py-4 md:max-w-xl md:py-5">
             <HeroAssurance icon={<ShieldIcon className="size-6" />} label="ضمانت اصالت کالا" />
             <HeroAssurance className="border-r border-border" icon={<TruckIcon className="size-6" />} label="ارسال سراسری" />
           </div>
@@ -105,17 +101,15 @@ export default async function Home() {
             {highlightedCategories.map((category) => (
               <Link
                 key={category.id}
-                className="group flex w-[118px] shrink-0 snap-start flex-col items-center rounded-2xl border border-transparent bg-white px-2 py-3 text-center transition hover:border-[rgba(217,119,6,0.28)] hover:bg-surface-tint md:w-auto md:border-border md:px-3 md:py-5"
+                className="group flex w-[118px] shrink-0 snap-start flex-col items-center px-2 py-3 text-center transition hover:bg-surface-secondary md:w-auto md:px-3 md:py-4"
                 href={`/categories/${category.slug}`}
               >
-                <span className="mb-3 flex size-[76px] items-center justify-center overflow-hidden rounded-full border border-border bg-surface-secondary text-lg font-black text-primary-accent-strong md:size-20">
-                  {category.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+                {category.imageUrl ? (
+                  <span className="mb-3 flex size-[76px] items-center justify-center overflow-hidden rounded-xl bg-surface-secondary md:size-20">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img alt="" className="h-full w-full object-contain p-3 transition duration-300 group-hover:scale-105" src={category.imageUrl} />
-                  ) : (
-                    category.name.trim().charAt(0)
-                  )}
-                </span>
+                  </span>
+                ) : null}
                 <span className="line-clamp-2 min-h-11 text-sm font-extrabold leading-6 text-text-strong">{category.name}</span>
                 <span className="mt-1 text-[11px] font-medium text-text-muted">{category._count.products.toLocaleString("fa-IR")} محصول</span>
               </Link>
@@ -146,7 +140,7 @@ export default async function Home() {
             {availableBrands.map((brand) => (
               <Link
                 key={brand.id}
-                className="flex min-h-24 w-[156px] shrink-0 snap-start items-center justify-center rounded-2xl border border-border bg-white px-4 py-5 text-center text-sm font-extrabold text-text transition hover:bg-surface-secondary hover:text-primary-accent-strong md:w-auto md:rounded-none md:border-y-0 md:border-r-0"
+                className="flex min-h-20 w-[156px] shrink-0 snap-start items-center justify-center border-l border-border px-4 py-4 text-center text-sm font-extrabold text-text transition last:border-l-0 hover:bg-surface-secondary hover:text-primary-accent-strong md:w-auto"
                 href={`/products?brand=${brand.slug}`}
               >
                 {brand.imageUrl ? (
@@ -162,14 +156,14 @@ export default async function Home() {
       ) : null}
 
       <section className="container-zen mt-9 md:mt-14">
-        <div className="grid gap-7 overflow-hidden rounded-[22px] border border-[rgba(217,119,6,0.16)] bg-surface-tint px-5 py-7 sm:px-7 md:px-9 md:py-9 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <div className="grid gap-7 border-y border-[rgba(217,119,6,0.18)] bg-surface-tint py-7 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
             <h2 className="section-title">راهنمای انتخاب روغن</h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-text-muted md:text-base md:leading-8">
               ویسکوزیته، استاندارد و تأییدیهٔ سازنده را با دفترچهٔ خودرو تطبیق دهید. انتخاب‌گر خودرو فقط بر پایهٔ اطلاعات ثبت‌شده، پیشنهاد سازگار نمایش می‌دهد.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-3">
-              <Link className="btn-secondary w-full sm:w-auto" href="/cars">
+              <Link className="btn-secondary" href="/cars">
                 انتخاب بر اساس خودرو
               </Link>
               <Link className="text-sm font-extrabold text-primary-accent-strong" href="/blog">
@@ -211,7 +205,7 @@ function HeroAssurance({ className = "", icon, label }: { className?: string; ic
 
 function GuideNote({ number, title, text }: { number: string; title: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-[rgba(217,119,6,0.14)] bg-white px-4 py-4">
+    <div className="border-t border-[rgba(217,119,6,0.18)] px-1 py-4 first:border-t-0 sm:first:border-t">
       <div className="flex items-center gap-3">
         <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-dark text-xs font-black text-white">{number}</span>
         <p className="text-sm font-extrabold text-text-strong">{title}</p>

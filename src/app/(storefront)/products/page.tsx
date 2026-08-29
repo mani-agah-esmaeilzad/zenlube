@@ -70,8 +70,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       <Breadcrumb items={[{ href: "/", label: "خانه" }, { label: "فروشگاه" }]} />
 
       <StorefrontPageIntro
+        compact
         actions={(
-          <Link className="btn-outline w-full bg-white lg:w-auto" href="/products/compare">
+          <Link className="inline-flex min-h-11 items-center px-1 text-sm font-extrabold text-primary-accent-strong transition hover:text-[#B45309] md:min-h-10" href="/products/compare">
             مقایسه محصولات
           </Link>
         )}
@@ -79,6 +80,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         description="بر اساس برند، ویسکوزیته، نوع روغن یا سازگاری خودرو، انتخاب مناسب را سریع‌تر پیدا کنید."
         meta={`${pageInfo.total.toLocaleString("fa-IR")} کالا در فروشگاه`}
         title="فروشگاه تخصصی روغن موتور و فیلتر"
+        tone="plain"
       />
 
       <MobileProductsControls
@@ -94,8 +96,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       />
 
       <form className="mt-5 grid gap-6 lg:mt-0 lg:grid-cols-[260px_minmax(0,1fr)]" method="get">
-        <aside className="hidden h-fit rounded-2xl border border-border bg-white p-5 lg:sticky lg:top-28 lg:block">
-          <div className="mb-5 flex items-center justify-between">
+        <aside className="hidden h-fit border-l border-border pl-5 lg:sticky lg:top-28 lg:block">
+          <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-extrabold text-text-strong">فیلترها</h2>
             <Link className="text-xs font-bold text-primary-accent-strong" href="/products">
               حذف همه
@@ -109,7 +111,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             oilTypes={facets.oilTypes}
             viscosities={facets.viscosities}
           />
-          <button className="btn-primary mt-5 w-full">اعمال فیلتر</button>
+          <button className="btn-primary mt-5 !min-h-10 !rounded-lg px-5 text-sm">اعمال فیلتر</button>
         </aside>
 
         <section className="min-w-0">
@@ -117,7 +119,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <div className="flex min-h-8 min-w-0 flex-wrap gap-2">
               {activeFilters.length ? (
                 activeFilters.map((item) => (
-                  <span key={item} className="chip-zen px-3 py-1.5 text-xs">
+                  <span key={item} className="inline-flex items-center gap-1.5 text-xs font-medium text-text-muted">
+                    <span aria-hidden="true" className="h-1 w-1 rounded-full bg-primary-accent-strong" />
                     {item}
                   </span>
                 ))
@@ -134,12 +137,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   </option>
                 ))}
               </select>
-              <button className="btn-secondary !min-h-9 !rounded-xl !px-4 !py-2 text-xs">اعمال</button>
+              <button className="inline-flex min-h-10 items-center px-2 text-xs font-extrabold text-primary-accent-strong">اعمال</button>
             </label>
           </div>
 
           {items.length ? (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {items.map((product, index) => (
                 <ProductCard key={product.id} priority={index === 0} product={product} />
               ))}

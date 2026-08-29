@@ -8,8 +8,8 @@ export default function SupportPage() {
       <StorefrontPageIntro
         actions={(
           <>
-            <a className="btn-primary w-full lg:w-auto" href="tel:09190810910">تماس با پشتیبانی</a>
-            <a className="btn-outline w-full !border-white/20 !bg-white/10 !text-white lg:w-auto" href="mailto:support@oilbar.ir">ارسال ایمیل</a>
+            <a className="btn-primary w-fit px-4" href="tel:09190810910">تماس با پشتیبانی</a>
+            <a className="inline-flex min-h-11 items-center text-sm font-extrabold text-white/75 transition hover:text-white" href="mailto:support@oilbar.ir">ارسال ایمیل</a>
           </>
         )}
         description="برای پیگیری سفارش، سؤال فنی دربارهٔ محصولات یا مشاورهٔ انتخاب روغن با تیم پشتیبانی در ارتباط باشید."
@@ -18,7 +18,7 @@ export default function SupportPage() {
         tone="dark"
       />
 
-      <section className="overflow-hidden rounded-2xl border border-border bg-white">
+      <section className="divide-y divide-border border-y border-border">
         <ContactRow href="tel:09190810910" label="شماره تماس" value="09190810910" helper="پاسخ‌گویی تلفنی و مشاورهٔ خرید" />
         <ContactRow href="mailto:support@oilbar.ir" label="ایمیل" value="support@oilbar.ir" helper="درخواست فنی و پیگیری سفارش" ltr />
         <ContactRow label="آدرس" value="البرز، کرج، عظیمیه، پاسداران غربی، بین نیک‌نژادی و غلامی، اتوسرویس مانی" helper="مراجعهٔ حضوری در ساعات پاسخ‌گویی" />
@@ -60,7 +60,7 @@ function ContactRow({
   );
 
   return (
-    <div className="grid gap-2 border-b border-border p-4 last:border-b-0 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-5 sm:p-5">
+    <div className="grid gap-2 py-4 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-5 sm:py-5">
       <p className="text-xs font-bold text-text-muted">{label}</p>
       <div className="min-w-0">
         {href ? <a className="transition hover:text-primary-accent-strong" href={href}>{valueNode}</a> : valueNode}

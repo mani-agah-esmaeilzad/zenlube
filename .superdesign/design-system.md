@@ -13,8 +13,9 @@ Keep the existing technical charcoal-and-amber Oilbar identity, but make the mob
 - Brand accent: amber `#F59E0B`; primary amber `#D97706`; hover/deep amber `#B45309`.
 - Border: `#E6E8EE`; strong border `#D5D9E2`.
 - Semantic green only for real availability/success; never as decoration.
-- Radius: 12px controls, 16px surfaces, 20px only for signature panels; compact circular category/image frames are allowed. Avoid pill spam.
-- Shadow: restrained and functional; use borders by default, soft 8–24px shadows only for sticky/floating states.
+- Radius: 8–10px controls, 12px image-led cards, and 16px only for signature dark panels or sheets. Open sections, rows, tables and editorial content do not need a radius. Avoid pill spam.
+- Container model: open whitespace and single dividers are the default. Use a full border only when it clarifies an interactive image-led card, form field, sticky summary, drawer or modal; never nest multiple framed surfaces.
+- Shadow: restrained and functional; use it only for sticky/floating states. Ordinary sections and rows stay flat.
 
 ## Typography
 Use Vazirmatn only (400–900) with Persian-appropriate line height. Mobile H1: 32–38px/1.25/900 with at most three lines. Section heading: 20–24px/1.45/800. Body: 14–16px/1.9/400–500. UI controls: 14px/800; captions 12px/700. All control typography must be explicit.
@@ -39,12 +40,12 @@ Use Vazirmatn only (400–900) with Persian-appropriate line height. Mobile H1: 
 8. Mobile footer is concise: contact, collapsible navigation, legal; it respects bottom-nav safe area.
 
 ## Component rules
-- Primary button: amber or charcoal, 48–52px high, 12–16px radius, full-width only when the action is truly dominant.
-- Secondary action: text link or quiet outline; do not stack two equally heavy full-width CTAs.
+- Primary button: visually compact at 38–40px on desktop and a 44px minimum tap target on mobile, with an 8–10px radius. Use amber or charcoal and make it full-width only for the dominant purchase or form submission.
+- Secondary action: prefer a text/icon link or a quiet borderless surface; use an outline only when a control boundary is functionally necessary. Do not stack two equally heavy full-width CTAs.
 - Category shortcut: icon/image in a circular frame with a text label; open rail, not a bordered card grid.
 - Product card: one badge maximum; hide low-priority specs/ratings on narrow home rails; never let wishlist/badge collide; render exactly one full-width card per row on phones and never include an add-to-cart button inside the card.
-- Internal page intro: use one compact 16–20px-radius band with a slim amber rule, clear H1, short description and at most one secondary action. Dark charcoal is reserved for vehicle, account, checkout and support contexts.
-- Catalog directory rows: categories, brands and vehicles use compact summary rows/cards. Put available inventory first and move zero-count entries into a separate, visually quieter section.
+- Internal page intro: default to an open or divider-led heading with a slim RTL amber rule, clear H1, short description and at most one compact secondary action. Do not force actions to full width. Dark charcoal is reserved for vehicle, account, checkout and support contexts and is the only intro treatment that may use a rounded enclosing surface.
+- Catalog directory rows: categories, brands and vehicles use compact image-led rows. Put available inventory first and move zero-count entries into a separate, visually quieter list. If a real image or logo is unavailable, use an unframed typographic row instead of a fake image tile or initial-letter card.
 - Section header: title and “مشاهده همه” share one row; mobile subtitle is hidden or one short line.
 - Vehicle controls: 44–48px minimum tap target; staged/progressive UI rather than four selects plus CTA.
 - Icon system: 1.8–2px charcoal outline SVG, amber only for active state.
@@ -56,4 +57,4 @@ Use 160–220ms ease-out transitions for drawer, selected state, and rail feedba
 Preserve real product and navigation meaning. Approved hero copy direction: “روغن مناسب خودروی شما، دقیق و مطمئن”. Primary CTA: “مشاهده همه محصولات”. Vehicle heading: “خودروی شما چیست؟” and action “انتخاب خودرو”. Trust strings: “ضمانت اصالت” and “ارسال سراسری”. Do not invent products, metrics, claims, testimonials, or populated states. Empty/zero-value content should be hidden or visually de-emphasized.
 
 ## Avoid
-No purple, neon, glassmorphism, glow, decorative gradients, fake dashboards, excessive pills/badges, default bento grids, repeated card stacks, lifestyle stock illustrations, unreadable Persian, duplicated discovery routes, or a hero pretitle/eyebrow pill.
+No purple, neon, glassmorphism, glow, decorative gradients, fake dashboards, excessive pills/badges, default bento grids, repeated card stacks, nested framed panels, cards without real imagery, oversized secondary buttons, lifestyle stock illustrations, unreadable Persian, duplicated discovery routes, or a hero pretitle/eyebrow pill.

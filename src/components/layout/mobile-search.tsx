@@ -33,7 +33,7 @@ export function MobileSearch({ quickSuggestions }: MobileSearchProps) {
         aria-controls="mobile-search-sheet"
         aria-expanded={open}
         aria-label="باز کردن جستجو"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-white text-text-strong transition hover:border-[rgba(217,119,6,0.28)] hover:bg-surface-tint hover:text-primary-accent-strong"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-text-strong transition hover:border-[rgba(217,119,6,0.28)] hover:bg-surface-tint hover:text-primary-accent-strong"
         onClick={() => setOpen(true)}
         type="button"
       >

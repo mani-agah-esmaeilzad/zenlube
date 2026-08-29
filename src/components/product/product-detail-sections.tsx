@@ -69,7 +69,7 @@ export function ProductDetailSections({
   }
 
   return (
-    <section className="bg-transparent md:rounded-2xl md:border md:border-border md:bg-white md:p-5 lg:p-6">
+    <section>
       <div className="hidden border-b border-border md:block">
         <div className="flex flex-wrap items-center gap-6 overflow-x-auto pb-1 scrollbar-none">
           {sections.map((section) => (
@@ -92,19 +92,19 @@ export function ProductDetailSections({
         </div>
       </div>
 
-      <div className="hidden pt-5 md:block">
+      <div className="hidden pt-6 md:block">
         {renderSectionBody(activeSection, { description, specRows, compatibleCars, importantNotes, faqs })}
       </div>
 
-      <div className="space-y-2.5 md:hidden">
+      <div className="divide-y divide-border border-y border-border md:hidden">
         {sections.map((section) => {
           const isOpen = activeSection === section.id;
 
           return (
-            <section key={section.id} className="overflow-hidden rounded-xl border border-border bg-white">
+            <section key={section.id}>
               <button
                 aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-3 px-4 py-4 text-right text-sm font-extrabold text-text-strong"
+                className="flex min-h-12 w-full items-center justify-between gap-3 py-3 text-right text-sm font-extrabold text-text-strong"
                 onClick={() => setActiveSection((current) => (current === section.id ? current : section.id))}
                 type="button"
               >
@@ -112,7 +112,7 @@ export function ProductDetailSections({
                 <ChevronIcon className={cn("h-4 w-4 text-text-muted transition", isOpen ? "rotate-180" : "")} />
               </button>
               {isOpen ? (
-                <div className="border-t border-border px-4 py-4">
+                <div className="pb-5">
                   {renderSectionBody(section.id, { description, specRows, compatibleCars, importantNotes, faqs })}
                 </div>
               ) : null}
@@ -147,7 +147,7 @@ function renderSectionBody(
         <ul className="space-y-3 text-sm leading-7 text-text-muted">
           {data.importantNotes.map((note) => (
             <li key={note} className="flex gap-3">
-              <span className="mt-2 inline-flex h-2.5 w-2.5 shrink-0 rounded-full bg-primary-accent shadow-[0_0_0_6px_rgba(245,158,11,0.12)]" />
+              <span className="mt-2.5 inline-flex h-1.5 w-1.5 shrink-0 rounded-full bg-primary-accent" />
               <span>{note}</span>
             </li>
           ))}
@@ -156,9 +156,9 @@ function renderSectionBody(
 
     case "faq":
       return (
-        <div className="space-y-3">
+        <div className="divide-y divide-border border-y border-border">
           {data.faqs.map((faq) => (
-            <details key={faq.question} className="rounded-xl border border-border bg-white px-4 py-4">
+            <details key={faq.question} className="py-4">
               <summary className="cursor-pointer list-none text-sm font-extrabold text-text-strong">{faq.question}</summary>
               <p className="mt-3 text-sm leading-7 text-[#475467]">{faq.answer}</p>
             </details>
@@ -190,20 +190,17 @@ function SectionText({ text }: { text: string }) {
 
 function SpecsTable({ rows }: { rows: ProductSpecRow[] }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-border">
+    <dl className="divide-y divide-border border-y border-border">
       {rows.map((row, index) => (
         <div
           key={`${row.label}-${index}`}
-          className={cn(
-            "grid gap-2 px-4 py-3 text-sm sm:grid-cols-[200px_minmax(0,1fr)] sm:items-center sm:px-5",
-            index % 2 === 0 ? "bg-white" : "bg-surface-secondary",
-          )}
+          className="grid gap-2 py-3 text-sm sm:grid-cols-[200px_minmax(0,1fr)] sm:items-center"
         >
-          <span className="font-bold text-text-muted">{row.label}</span>
-          <span className="min-w-0 break-words font-semibold text-text-strong">{row.value}</span>
+          <dt className="font-bold text-text-muted">{row.label}</dt>
+          <dd className="min-w-0 break-words font-semibold text-text-strong">{row.value}</dd>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }
 
@@ -237,31 +234,25 @@ function CompatibleCarsList({ items }: { items: ProductCompatibilityItem[] }) {
         </div>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="divide-y divide-border border-y border-border">
         {visibleItems.map((item) => (
           <Link
             key={item.id}
-            className="interactive-lift rounded-xl border border-border bg-white p-4"
+            className="group block py-4"
             href={`/cars/${item.slug}`}
           >
-            <p className="text-sm font-extrabold text-text-strong">{item.title}</p>
+            <p className="text-sm font-extrabold text-text-strong transition group-hover:text-primary-accent-strong">{item.title}</p>
             {item.subtitle.length ? (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {item.subtitle.map((line) => (
-                  <span key={line} className="chip-zen-muted bg-white px-3 py-1 text-[11px] font-bold text-text-muted">
-                    {line}
-                  </span>
-                ))}
-              </div>
+              <p className="mt-1 text-xs font-bold leading-6 text-text-muted">{item.subtitle.join(" · ")}</p>
             ) : null}
-            {item.note ? <p className="mt-3 text-xs leading-6 text-[#475467]">{item.note}</p> : null}
+            {item.note ? <p className="mt-1 text-xs leading-6 text-[#475467]">{item.note}</p> : null}
           </Link>
         ))}
       </div>
 
       {filteredItems.length > 6 ? (
         <button
-          className="btn-outline inline-flex min-h-11 items-center justify-center rounded-xl px-5 text-sm font-bold text-text"
+          className="inline-flex min-h-11 items-center text-sm font-extrabold text-primary-accent-strong transition hover:text-primary-accent"
           onClick={() => setExpanded((value) => !value)}
           type="button"
         >

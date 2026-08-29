@@ -14,10 +14,9 @@ export function ReviewForm({ productId }: ReviewFormProps) {
   const [state, formAction] = useActionState(createProductReviewAction, initialState);
 
   return (
-    <form action={formAction} className="rounded-2xl border border-border bg-white p-5 md:p-6">
+    <form action={formAction} className="border-t border-border pt-5 md:pt-6">
       <input type="hidden" name="productId" value={productId} />
-      <span className="chip-zen inline-flex">بازخورد خریداران</span>
-      <h3 className="mt-3 text-lg font-black text-text-strong">ثبت نظر و امتیاز</h3>
+      <h3 className="text-lg font-black text-text-strong">ثبت نظر و امتیاز</h3>
       <p className="mt-2 text-xs leading-6 text-text-muted">
         فقط کاربران واردشده می‌توانند نظر ثبت کنند. اگر این محصول را خریده باشید، نظر شما به‌عنوان خرید تاییدشده نمایش داده می‌شود.
       </p>
@@ -55,17 +54,17 @@ export function ReviewForm({ productId }: ReviewFormProps) {
 
       {state.message ? (
         <p
-          className={`mt-4 rounded-2xl border px-4 py-3 text-xs font-bold ${
+          className={`mt-4 border-r-2 py-2 pl-3 pr-4 text-xs font-bold ${
             state.success
-              ? "border-emerald-200 bg-[linear-gradient(180deg,#F4FFF7_0%,#ECFDF3_100%)] text-emerald-700"
-              : "border-red-200 bg-[linear-gradient(180deg,#FFF6F7_0%,#FEF3F2_100%)] text-[#B42318]"
+              ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+              : "border-red-500 bg-red-50 text-[#B42318]"
           }`}
         >
           {state.message}
         </p>
       ) : null}
 
-      <button type="submit" className="btn-primary mt-5 w-full sm:w-auto">
+      <button type="submit" className="btn-primary mt-5 w-fit px-4">
         ثبت نظر
       </button>
     </form>

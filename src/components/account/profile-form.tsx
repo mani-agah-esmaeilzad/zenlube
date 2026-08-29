@@ -20,11 +20,11 @@ export function ProfileForm({ name, email, phone }: ProfileFormProps) {
       <Field label="نام و نام خانوادگی" name="name" defaultValue={name ?? ""} errors={state?.errors?.name} />
       <Field label="ایمیل" name="email" type="email" defaultValue={email ?? ""} errors={state?.errors?.email} />
       <Field label="شماره موبایل" name="phone" type="tel" defaultValue={phone ?? ""} errors={state?.errors?.phone} />
-      <div className="flex items-end">
-        <button type="submit" className="btn-primary w-full">ذخیره تغییرات</button>
+      <div className="flex items-end md:justify-end">
+        <button type="submit" className="btn-primary !min-h-11 w-full sm:w-auto sm:min-w-36">ذخیره تغییرات</button>
       </div>
       {state?.message && (
-        <p className={`md:col-span-2 rounded-2xl px-4 py-3 text-xs font-bold ${state.success ? "bg-green-50 text-[#16A34A]" : "bg-red-50 text-[#DC2626]"}`}>
+        <p className={`border-r-2 px-3 py-2 text-xs font-bold leading-6 md:col-span-2 ${state.success ? "border-green-500 text-[#16A34A]" : "border-red-400 text-[#DC2626]"}`}>
           {state.message}
         </p>
       )}

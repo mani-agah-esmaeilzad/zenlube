@@ -13,7 +13,7 @@ export default async function ProductComparisonPage() {
   return (
     <div className="container-zen space-y-5 py-5 text-text sm:space-y-6 sm:py-6 md:py-8">
       <StorefrontPageIntro
-        actions={<Link href="/products" className="btn-outline w-full bg-white lg:w-auto">بازگشت به فروشگاه</Link>}
+        actions={<Link href="/products" className="text-link-zen inline-flex min-h-11 items-center px-2 text-xs font-bold">بازگشت به فروشگاه</Link>}
         compact
         description="حداکثر سه محصول را کنار هم بگذارید و ویسکوزیته، استاندارد و قیمت را با یک ساختار خوانا بررسی کنید."
         meta={`${products.length.toLocaleString("fa-IR")} محصول قابل انتخاب`}

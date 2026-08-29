@@ -32,8 +32,8 @@ export function PurchaseBox({
   return (
     <section
       className={cn(
-        "rounded-[28px] border border-[#E5E7EB] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.07)]",
-        compact ? "p-4" : "p-5",
+        "border-y border-border bg-white",
+        compact ? "py-4" : "py-5",
         className,
       )}
     >
@@ -44,20 +44,20 @@ export function PurchaseBox({
         </StatusPill>
       </div>
 
-      <div className="mt-4 space-y-2 rounded-2xl bg-[#F7F8FA] p-4 text-xs leading-6 text-[#374151]">
-        <p>ضمانت اصالت و سلامت فیزیکی کالا</p>
-        <p>مشاوره تخصصی قبل از خرید</p>
-        <p>ارسال سریع با بسته‌بندی امن</p>
-        {estimatedDeliveryLabel ? <p className="font-bold text-[#D97706]">{estimatedDeliveryLabel}</p> : null}
+      <div className="mt-4 divide-y divide-border border-y border-border text-xs leading-6 text-[#374151]">
+        <p className="py-2">ضمانت اصالت و سلامت فیزیکی کالا</p>
+        <p className="py-2">مشاوره تخصصی قبل از خرید</p>
+        <p className="py-2">ارسال سریع با بسته‌بندی امن</p>
+        {estimatedDeliveryLabel ? <p className="py-2 font-bold text-[#D97706]">{estimatedDeliveryLabel}</p> : null}
       </div>
 
       <div className="mt-4">
         <AddToCartButton productId={productId} disabled={!isAvailable} className="w-full" />
       </div>
 
-      <div className="mt-3 grid gap-2 min-[360px]:grid-cols-2">
-        <WishlistButton productId={productId} initialActive={wishlistActive} />
-        <Link href={compareHref} className="btn-outline w-full justify-center">
+      <div className="mt-3 flex items-start gap-2">
+        <WishlistButton compact className="!size-11 rounded-lg" productId={productId} initialActive={wishlistActive} />
+        <Link href={compareHref} className="btn-ghost min-h-11 px-3 text-xs text-primary-accent-strong">
           افزودن به مقایسه
         </Link>
       </div>

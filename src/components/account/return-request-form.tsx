@@ -50,12 +50,12 @@ export function ReturnRequestForm({ orderId }: ReturnRequestFormProps) {
       </label>
 
       {state?.message ? (
-        <p className={`rounded-2xl px-4 py-3 text-xs font-bold ${state.success ? "bg-green-50 text-[#16A34A]" : "bg-red-50 text-[#DC2626]"}`}>
+        <p className={`border-r-2 px-3 py-2 text-xs font-bold leading-6 ${state.success ? "border-green-500 text-[#16A34A]" : "border-red-400 text-[#DC2626]"}`}>
           {state.message}
         </p>
       ) : null}
 
-      <button type="submit" className="btn-primary w-full">
+      <button type="submit" className="btn-primary !min-h-11 w-full sm:w-auto sm:min-w-44">
         ثبت درخواست مرجوعی
       </button>
     </form>

@@ -29,16 +29,16 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
   return (
     <div className="container-zen py-8 sm:py-10">
-      <div className="mx-auto max-w-3xl rounded-2xl border border-emerald-200 bg-white p-4 sm:p-6 md:p-8">
-        <div className="flex flex-col gap-4 text-center md:items-center">
-          <div className="mx-auto grid size-16 place-items-center rounded-full bg-emerald-50 text-3xl font-black text-[#16A34A]">✓</div>
+      <div className="mx-auto max-w-3xl border-y border-emerald-200 bg-white py-6 sm:py-8">
+        <div className="flex items-start gap-4 border-r-4 border-emerald-500 pr-4">
+          <div className="grid size-11 shrink-0 place-items-center text-2xl font-black text-[#16A34A]">✓</div>
           <div>
-            <h1 className="text-2xl font-extrabold text-[#111827] md:text-3xl">پرداخت با موفقیت انجام شد</h1>
+            <h1 className="text-xl font-extrabold text-[#111827] sm:text-2xl">پرداخت با موفقیت انجام شد</h1>
             <p className="mt-2 text-sm leading-7 text-[#6B7280]">سفارش #{order.id.slice(0, 10).toUpperCase()} ثبت شد و برای پردازش آماده است.</p>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-3 sm:mt-8 md:grid-cols-2">
+        <div className="mt-6 divide-y divide-border border-y border-border sm:mt-8">
           <Info label="مبلغ پرداختی" value={formatPrice(order.total)} />
           <Info label="کد پیگیری پرداخت" value={latestTransaction?.refId ?? order.paymentRefId ?? "-"} mono />
           <Info label="وضعیت سفارش" value="پرداخت شده" />
@@ -51,11 +51,11 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
           {latestTransaction?.cardPan ? <StatusPill tone="neutral">{latestTransaction.cardPan}</StatusPill> : null}
         </div>
 
-        <div className="mt-6 rounded-2xl border border-border p-4 sm:mt-8 sm:p-5">
+        <div className="mt-6 border-t border-border pt-5 sm:mt-8">
           <h2 className="text-sm font-black text-[#111827]">اقلام سفارش</h2>
-          <div className="mt-3 space-y-2">
+          <div className="mt-3 divide-y divide-border border-y border-border">
             {order.items.map((item) => (
-              <div key={item.id} className="flex items-start justify-between gap-3 rounded-xl bg-[#F7F7F8] px-3 py-2 text-xs text-[#6B7280]">
+              <div key={item.id} className="flex min-h-11 items-start justify-between gap-3 py-3 text-xs text-[#6B7280]">
                 <span className="min-w-0 break-words">{item.product.name}</span>
                 <span className="font-bold text-[#111827]">{item.quantity.toLocaleString("fa-IR")} عدد</span>
               </div>
@@ -63,11 +63,11 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:gap-3">
-          <Link href={`/account?orderId=${order.id}`} className="btn-primary flex-1 text-center">
+        <div className="mt-6 flex flex-wrap gap-2 sm:mt-8">
+          <Link href={`/account?orderId=${order.id}`} className="btn-primary !min-h-11 px-4 text-center text-xs">
             مشاهده سفارش
           </Link>
-          <Link href="/products" className="btn-outline flex-1 text-center">
+          <Link href="/products" className="btn-ghost !min-h-11 px-3 text-center text-xs">
             بازگشت به فروشگاه
           </Link>
         </div>
@@ -78,7 +78,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
 function Info({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
+    <div className="flex min-h-11 flex-col justify-between gap-1 py-3 sm:flex-row sm:items-center sm:gap-4">
       <p className="text-xs text-[#6B7280]">{label}</p>
       <p className={`mt-1 break-words font-black text-[#111827] ${mono ? "font-mono text-xs" : "text-sm"}`}>{value}</p>
     </div>
@@ -87,11 +87,11 @@ function Info({ label, value, mono }: { label: string; value: string; mono?: boo
 
 function ResultShell({ title, message }: { type: string; title: string; message: string }) {
   return (
-    <div className="container-zen py-10 text-center sm:py-16">
-      <div className="mx-auto max-w-xl rounded-2xl border border-[#E5E7EB] bg-white p-5 sm:p-8">
+    <div className="container-zen py-10 sm:py-16">
+      <div className="mx-auto max-w-xl border-y border-[#E5E7EB] bg-white py-6 text-center sm:py-8">
         <h1 className="text-2xl font-extrabold text-[#111827]">{title}</h1>
         <p className="mt-3 text-sm text-[#6B7280]">{message}</p>
-        <Link href="/products" className="btn-primary mt-8 inline-flex">بازگشت به فروشگاه</Link>
+        <Link href="/products" className="btn-primary mt-8 inline-flex !min-h-11 px-4 text-xs">بازگشت به فروشگاه</Link>
       </div>
     </div>
   );

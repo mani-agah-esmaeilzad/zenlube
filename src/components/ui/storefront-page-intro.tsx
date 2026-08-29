@@ -26,11 +26,11 @@ export function StorefrontPageIntro({
   return (
     <header
       className={cn(
-        "relative overflow-hidden border px-4 sm:px-6 md:px-8",
-        compact ? "rounded-2xl py-5 sm:py-6" : "rounded-[20px] py-6 sm:py-8 md:py-10",
-        tone === "dark" && "border-primary bg-primary text-white",
-        tone === "soft" && "border-border bg-surface-secondary text-text-strong",
-        tone === "plain" && "border-border bg-white text-text-strong",
+        "relative px-4 sm:px-5 md:px-6",
+        compact ? "py-4 sm:py-5" : "py-5 sm:py-6 md:py-7",
+        tone === "dark" && "overflow-hidden rounded-xl bg-primary text-white",
+        tone === "soft" && "border-y border-border/80 bg-surface-secondary text-text-strong",
+        tone === "plain" && "bg-white text-text-strong",
         className,
       )}
     >
@@ -41,7 +41,7 @@ export function StorefrontPageIntro({
           dark ? "bg-primary-accent" : "bg-primary-accent-strong",
         )}
       />
-      <div className="flex min-w-0 flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+      <div className="flex min-w-0 flex-col items-start gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
         <div className="min-w-0 max-w-3xl">
           <h1
             className={cn(
@@ -63,7 +63,7 @@ export function StorefrontPageIntro({
             </div>
           ) : null}
         </div>
-        {actions ? <div className="flex w-full shrink-0 flex-col gap-2 min-[390px]:flex-row lg:w-auto">{actions}</div> : null}
+        {actions ? <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
       </div>
     </header>
   );

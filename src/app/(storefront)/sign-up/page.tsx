@@ -25,7 +25,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
           قبلا حساب دارید؟{" "}
           <Link
             href={callbackUrl ? `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/sign-in"}
-            className="font-bold text-primary-accent-strong hover:text-[#B45309]"
+            className="inline-flex min-h-11 items-center align-middle font-bold text-primary-accent-strong transition hover:text-[#B45309]"
           >
             وارد شوید
           </Link>
@@ -35,7 +35,7 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
       formTitle="ساخت حساب کاربری"
       title="حساب بسازید تا خرید و پیگیری سفارش ساده‌تر شود"
     >
-        <SignUpForm callbackUrl={callbackUrl} />
+      <SignUpForm callbackUrl={callbackUrl} />
     </AuthPageShell>
   );
 }

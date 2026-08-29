@@ -59,8 +59,8 @@ export function MobileProductsControls({
         ) : null}
       </div>
 
-      <div className="sticky top-[4.25rem] z-20 -mx-4 mt-3 grid grid-cols-2 gap-2 border-y border-border/80 bg-white/95 px-4 py-3 backdrop-blur-md sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
-        <button className="btn-outline !min-h-12 flex-1 rounded-xl px-4 text-sm" onClick={() => setFiltersOpen(true)} type="button">
+      <div className="sticky top-[4.25rem] z-20 -mx-4 mt-3 flex gap-2 border-y border-border/80 bg-white/95 px-4 py-2 backdrop-blur-md sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
+        <button className="btn-outline min-h-11 px-3 text-xs" onClick={() => setFiltersOpen(true)} type="button">
           فیلترها
           {activeFilters.length ? (
             <span className="rounded-full bg-primary px-2 py-1 text-[11px] text-white">
@@ -68,7 +68,7 @@ export function MobileProductsControls({
             </span>
           ) : null}
         </button>
-        <button className="btn-outline !min-h-12 flex-1 rounded-xl px-4 text-sm" onClick={() => setSortOpen(true)} type="button">
+        <button className="btn-outline min-h-11 px-3 text-xs" onClick={() => setSortOpen(true)} type="button">
           مرتب‌سازی
         </button>
       </div>
@@ -85,11 +85,11 @@ export function MobileProductsControls({
 
       <MobileSheet
         footer={
-          <div className="grid gap-2 min-[360px]:grid-cols-2">
-            <Link className="btn-outline w-full rounded-xl" href="/products">
+          <div className="flex items-center justify-between gap-3">
+            <Link className="text-link-zen inline-flex min-h-11 items-center px-2 text-xs font-bold" href="/products">
               حذف همه
             </Link>
-            <button className="btn-primary w-full rounded-xl" form="mobile-products-filter-form" type="submit">
+            <button className="btn-primary" form="mobile-products-filter-form" type="submit">
               اعمال فیلتر
             </button>
           </div>
@@ -113,9 +113,11 @@ export function MobileProductsControls({
 
       <MobileSheet
         footer={
-          <button className="btn-primary w-full rounded-xl" form="mobile-products-sort-form" type="submit">
-            اعمال مرتب‌سازی
-          </button>
+          <div className="flex justify-end">
+            <button className="btn-primary" form="mobile-products-sort-form" type="submit">
+              اعمال مرتب‌سازی
+            </button>
+          </div>
         }
         onClose={() => setSortOpen(false)}
         open={sortOpen}
@@ -138,9 +140,9 @@ export function MobileProductsControls({
             <label
               key={item.value}
               className={cn(
-                "flex cursor-pointer items-center justify-between rounded-xl border px-4 py-4 text-sm font-bold transition",
+                "flex min-h-12 cursor-pointer items-center justify-between border-b px-1 py-3 text-sm font-bold transition",
                 defaults.sort === item.value
-                  ? "border-[rgba(217,119,6,0.26)] bg-surface-tint text-primary-accent-strong"
+                  ? "border-primary-accent bg-surface-tint text-primary-accent-strong"
                   : "border-border bg-white text-text",
               )}
             >

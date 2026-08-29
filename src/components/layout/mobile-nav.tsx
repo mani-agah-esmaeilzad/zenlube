@@ -51,7 +51,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
         aria-label="باز کردن منوی موبایل"
         aria-controls="mobile-site-drawer"
         aria-expanded={open}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-primary-accent-strong bg-primary-accent-strong text-white shadow-[0_6px_16px_rgba(217,119,6,0.18)] transition hover:border-primary-accent hover:bg-primary-accent"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-primary-accent-strong bg-primary-accent-strong text-white shadow-[0_6px_16px_rgba(217,119,6,0.18)] transition hover:border-primary-accent hover:bg-primary-accent"
         onClick={() => setOpen(true)}
         type="button"
       >

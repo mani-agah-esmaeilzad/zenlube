@@ -9,27 +9,34 @@ export function BlogCard({ post }: BlogCardProps) {
   const published = new Intl.DateTimeFormat("fa-IR", { dateStyle: "medium" }).format(new Date(post.publishedAt));
 
   return (
-    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-white">
-      <Link className="block bg-surface-secondary" href={`/blog/${post.slug}`}>
-        {post.coverImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img alt={post.title} className="h-40 w-full object-cover sm:h-44" loading="lazy" src={post.coverImage} />
-        ) : (
-          <div className="flex h-40 items-center justify-center bg-primary text-sm font-bold text-white sm:h-44">راهنمای تخصصی روغن</div>
-        )}
-      </Link>
-      <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
-        <div className="mb-3 flex flex-wrap items-center gap-2 text-[11px] font-medium text-text-muted">
+    <article className="group flex h-full min-w-0 flex-col border-b border-border pb-5">
+      {post.coverImage ? (
+        <Link className="mb-4 block overflow-hidden rounded-xl bg-surface-secondary" href={`/blog/${post.slug}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt={post.title}
+            className="h-40 w-full object-cover transition duration-300 group-hover:scale-[1.02] sm:h-44"
+            loading="lazy"
+            src={post.coverImage}
+          />
+        </Link>
+      ) : null}
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-text-muted">
           <span>{published}</span>
           <span>{post.readMinutes.toLocaleString("fa-IR")} دقیقه مطالعه</span>
         </div>
-        <Link className="line-clamp-2 text-base font-bold leading-7 text-text-strong transition group-hover:text-primary-accent-strong" href={`/blog/${post.slug}`}>
+        <Link
+          className="line-clamp-2 text-base font-extrabold leading-7 text-text-strong transition group-hover:text-primary-accent-strong"
+          href={`/blog/${post.slug}`}
+        >
           {post.title}
         </Link>
-        <p className="mt-3 line-clamp-3 text-sm leading-7 text-text-muted">{post.excerpt}</p>
-        <div className="mt-auto flex items-center justify-between gap-3 pt-5 text-xs">
+        <p className="mt-2 line-clamp-3 text-sm leading-7 text-text-muted">{post.excerpt}</p>
+        <div className="mt-auto flex items-center justify-between gap-3 pt-3 text-xs">
           <span className="min-w-0 truncate font-medium text-text-muted">{post.authorName}</span>
-          <Link className="font-bold text-primary-accent-strong" href={`/blog/${post.slug}`}>
+          <Link className="inline-flex min-h-11 shrink-0 items-center font-extrabold text-primary-accent-strong md:min-h-8" href={`/blog/${post.slug}`}>
             مطالعه مقاله
           </Link>
         </div>

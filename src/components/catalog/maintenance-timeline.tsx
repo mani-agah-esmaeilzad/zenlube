@@ -67,7 +67,7 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
   }, [tasks, currentMileage, lastServiceMileage, monthsSinceService]);
 
   return (
-    <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5 md:p-6">
+    <section className="bg-white">
       <header>
         <h2 className="section-title">برنامه نگهداری پیشنهادی {carName}</h2>
         <p className="section-subtitle">
@@ -80,17 +80,17 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
         </div>
       </header>
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-6 divide-y divide-[#E5E7EB] border-y border-[#E5E7EB]">
         {computedTasks.map((task) => (
           <article
             key={task.id}
             className={cn(
-              "rounded-2xl border p-4 transition",
+              "border-r-2 px-1 py-5 transition sm:px-4",
               task.status === "due"
-                ? "border-[#FDE7B0] bg-[#FFF8E8]"
+                ? "border-[#DC2626] bg-[#FFF8E8]"
                 : task.status === "upcoming"
-                ? "border-amber-200 bg-amber-50"
-                : "border-[#E5E7EB] bg-[#F7F7F8]",
+                ? "border-amber-400 bg-amber-50"
+                : "border-green-500 bg-white",
             )}
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -103,12 +103,12 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
                 </div>
                 {task.description && <p className="mt-2 text-sm leading-7 text-[#6B7280]">{task.description}</p>}
               </div>
-              <div className="flex flex-wrap gap-2 text-[11px] font-medium text-[#6B7280]">
-                <span className="rounded-full border border-[#E5E7EB] bg-white px-3 py-1">اولویت {task.priority.toLocaleString("fa-IR")}</span>
-                <span className="rounded-full border border-[#E5E7EB] bg-white px-3 py-1">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-medium text-[#6B7280]">
+                <span>اولویت {task.priority.toLocaleString("fa-IR")}</span>
+                <span>
                   {task.intervalKm ? `هر ${task.intervalKm.toLocaleString("fa-IR")} کیلومتر` : "کیلومتر نامشخص"}
                 </span>
-                <span className="rounded-full border border-[#E5E7EB] bg-white px-3 py-1">
+                <span>
                   {task.intervalMonths ? `هر ${task.intervalMonths.toLocaleString("fa-IR")} ماه` : "زمان نامشخص"}
                 </span>
               </div>
@@ -120,9 +120,9 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
             </div>
 
             {task.recommendedProducts?.length ? (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
                 {task.recommendedProducts.map((product) => (
-                  <Link key={product.slug} href={`/products/${product.slug}`} className="rounded-full border border-[#FDE7B0] bg-white px-3 py-1.5 text-xs font-bold text-[#D97706] hover:bg-[#FFF8E8]">
+                  <Link key={product.slug} href={`/products/${product.slug}`} className="text-link-zen inline-flex min-h-11 items-center text-xs font-bold md:min-h-10">
                     {product.brandName ? `${product.brandName} - ${product.name}` : product.name}
                     {typeof product.price === "number" ? <span className="mr-2 font-medium text-[#6B7280]">{formatPrice(product.price)}</span> : null}
                   </Link>
@@ -133,7 +133,7 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
         ))}
 
         {!computedTasks.length && (
-          <div className="rounded-2xl border border-dashed border-[#E5E7EB] p-8 text-center text-sm text-[#6B7280]">
+          <div className="py-8 text-center text-sm text-[#6B7280]">
             برای این خودرو هنوز برنامه نگهداری تعریف نشده است.
           </div>
         )}
@@ -163,7 +163,7 @@ function MileageInput({ label, placeholder, onValue }: { label: string; placehol
 
 function EstimateCard({ title, value }: { title: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[#E5E7EB] bg-white p-3">
+    <div className="border-t border-[#E5E7EB] py-3 first:border-t-0 md:border-t-0 md:border-l md:px-4 md:last:border-l-0">
       <p className="text-[#6B7280]">{title}</p>
       <p className="mt-1 font-bold text-[#111827]">{value}</p>
     </div>

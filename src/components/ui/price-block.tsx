@@ -33,7 +33,7 @@ export function PriceBlock({
   className,
 }: PriceBlockProps) {
   return (
-    <div className={cn(align === "end" ? "text-left" : "text-right", className)}>
+    <div className={cn(align === "end" ? "text-end" : "text-start", className)}>
       {showLabel ? <p className={cn("font-medium text-text-muted", sizeMap[size].label)}>{label}</p> : null}
       <p className={cn("t-price", showLabel ? "mt-1" : null, sizeMap[size].amount)}>{formatPrice(amount)}</p>
     </div>

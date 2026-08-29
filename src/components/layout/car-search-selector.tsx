@@ -105,7 +105,7 @@ export function CarSearchSelector({ hierarchy }: CarSearchSelectorProps) {
       <button
         type="submit"
         disabled={!selectedCarSlug}
-        className="btn-primary w-full rounded-xl px-4 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#EAECF0] disabled:text-[#98A2B3] xl:w-auto"
+        className="btn-primary justify-self-start px-4 text-xs font-semibold disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#EAECF0] disabled:text-[#98A2B3] xl:self-end"
       >
         مشاهده دفترچه
       </button>

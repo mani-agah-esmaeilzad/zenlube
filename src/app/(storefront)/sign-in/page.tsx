@@ -38,7 +38,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       title="ورود برای مدیریت سفارش و سبد خرید"
     >
         {registered && (
-          <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-6 text-emerald-700">
+          <p className="mb-5 border-r-2 border-emerald-500 px-3 py-2 text-xs leading-6 text-emerald-700">
             حساب شما با موفقیت ایجاد شد. با وارد کردن شماره موبایل و دریافت کد تایید وارد شوید.
           </p>
         )}

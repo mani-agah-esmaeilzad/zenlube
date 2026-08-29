@@ -46,7 +46,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
+    <div className="border-y border-[#E5E7EB] bg-white py-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-black text-[#111827]">گاراژ شما</p>
@@ -54,15 +54,15 @@ export function LocalGarage({ cars }: LocalGarageProps) {
             خودروهای منتخب شما روی همین مرورگر ذخیره می‌شوند تا سریع‌تر به دفترچه و محصولات سازگار برسید.
           </p>
         </div>
-        <span className="rounded-full bg-[#FFF8E8] px-3 py-1.5 text-[11px] font-bold text-[#D97706]">
+        <span className="shrink-0 text-[11px] font-bold text-[#D97706]">
           {savedCars.length.toLocaleString("fa-IR")} خودرو
         </span>
       </div>
 
       {savedCars.length ? (
-        <div className="mt-4 space-y-3">
+        <div className="mt-4 divide-y divide-border border-y border-border">
           {savedCars.map((car) => (
-            <div key={car.slug} className="rounded-2xl border border-[#E5E7EB] px-4 py-3">
+            <div key={car.slug} className="py-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-bold text-[#111827]">
@@ -70,11 +70,11 @@ export function LocalGarage({ cars }: LocalGarageProps) {
                   </p>
                   <p className="mt-1 text-xs text-[#667085]">{car.variant}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex">
-                  <Link href={`/cars/${car.slug}`} className="btn-outline !min-h-10 px-3 py-2 text-xs">
+                <div className="flex flex-wrap gap-1">
+                  <Link href={`/cars/${car.slug}`} className="btn-ghost min-h-11 px-3 text-xs">
                     دفترچه خودرو
                   </Link>
-                  <Link href={`/products?car=${car.slug}`} className="btn-primary !min-h-10 px-3 py-2 text-xs">
+                  <Link href={`/products?car=${car.slug}`} className="btn-ghost min-h-11 px-3 text-xs text-primary-accent-strong">
                     محصولات سازگار
                   </Link>
                 </div>
@@ -83,7 +83,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
           ))}
         </div>
       ) : (
-        <p className="mt-4 rounded-2xl bg-[#F7F7F8] px-4 py-3 text-xs leading-6 text-[#6B7280]">
+        <p className="mt-4 border-y border-[#E5E7EB] py-3 text-xs leading-6 text-[#6B7280]">
           هنوز خودرویی در گاراژ این دستگاه ذخیره نشده است.
         </p>
       )}
@@ -97,10 +97,10 @@ export function LocalGarage({ cars }: LocalGarageProps) {
               type="button"
               onClick={() => toggleCar(car.slug)}
               className={cn(
-                "min-h-10 shrink-0 rounded-full border px-3 py-2 text-xs font-bold transition",
+                "min-h-11 shrink-0 border-b-2 px-3 py-2 text-xs font-bold transition",
                 active
-                  ? "border-[#F5C56B] bg-[#FFF8E8] text-[#D97706]"
-                  : "border-[#E7E8EE] bg-white text-[#475467]",
+                  ? "border-[#D97706] text-[#D97706]"
+                  : "border-transparent text-[#475467] hover:border-[#E7E8EE]",
               )}
             >
               {car.brand} {car.model}
@@ -109,8 +109,8 @@ export function LocalGarage({ cars }: LocalGarageProps) {
         })}
       </div>
 
-      <div className="mt-4">
-        <Link href="/cars" className="btn-outline w-full justify-center !min-h-11 text-xs">
+      <div className="mt-4 flex justify-end">
+        <Link href="/cars" className="btn-ghost min-h-11 px-3 text-xs text-primary-accent-strong">
           مشاهده همه خودروها و دفترچه‌ها
         </Link>
       </div>

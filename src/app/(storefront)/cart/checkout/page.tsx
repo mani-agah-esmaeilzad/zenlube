@@ -61,11 +61,12 @@ export default async function CheckoutPage() {
   return (
     <div className="container-zen space-y-5 py-5 sm:space-y-6 sm:py-6 md:py-8">
       <StorefrontPageIntro
+        className="border-y border-border/80"
         compact
         description="اطلاعات ارسال را تکمیل و خلاصهٔ سفارش را بررسی کنید؛ سپس به درگاه پرداخت منتقل می‌شوید."
         meta={`جمع سبد خرید: ${formatPrice(subtotal)}`}
         title="تأیید و پرداخت سفارش"
-        tone="dark"
+        tone="plain"
       />
 
       <CheckoutForm

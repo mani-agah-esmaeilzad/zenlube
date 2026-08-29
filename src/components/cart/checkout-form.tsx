@@ -126,19 +126,19 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
 
   return (
     <form action={formAction} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-      <div className="space-y-6">
+      <div>
         <Stepper />
 
-        <section className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
+        <section className="border-b border-border py-6">
           <SectionTitle title="اطلاعات تماس" subtitle="کد تایید برای همین شماره ارسال می‌شود." />
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field autoComplete="name" label="نام و نام خانوادگی" name="fullName" value={formValues.fullName} onChange={(value) => handleFieldChange("fullName", value)} errors={state.errors?.fullName} required />
             <Field autoComplete="email" label="ایمیل" name="email" type="email" value={formValues.email} onChange={(value) => handleFieldChange("email", value)} errors={state.errors?.email} required />
             <label className="text-xs font-bold text-text">
               شماره موبایل
-              <div className="mt-2 flex flex-col gap-2 min-[420px]:flex-row">
-                <input autoComplete="tel" inputMode="tel" name="phone" type="tel" value={formValues.phone} onChange={(event) => handleFieldChange("phone", event.target.value)} className="input-zen" required />
-                <button type="button" onClick={(event) => handleSendOtp(event.currentTarget.form!)} className="btn-outline shrink-0 text-xs text-primary-accent-strong" disabled={isOtpPending}>
+              <div className="mt-2 flex gap-2">
+                <input autoComplete="tel" inputMode="tel" name="phone" type="tel" value={formValues.phone} onChange={(event) => handleFieldChange("phone", event.target.value)} className="input-zen min-w-0 flex-1" required />
+                <button type="button" onClick={(event) => handleSendOtp(event.currentTarget.form!)} className="btn-ghost !min-h-11 shrink-0 px-3 text-xs text-primary-accent-strong" disabled={isOtpPending}>
                   {isOtpPending ? "در حال ارسال" : "ارسال کد"}
                 </button>
               </div>
@@ -146,24 +146,25 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
             </label>
             <Field autoComplete="one-time-code" label="کد تایید پیامکی" name="otpCode" inputMode="numeric" errors={state.errors?.otpCode} required />
           </div>
-          {otpMessage && <p className="mt-3 rounded-xl bg-green-50 px-3 py-2 text-xs font-bold text-[#16A34A]">{otpMessage}</p>}
-          {otpError && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-[#DC2626]">{otpError}</p>}
+          {otpMessage && <p className="mt-4 border-r-2 border-green-500 px-3 py-2 text-xs font-bold leading-6 text-[#16A34A]">{otpMessage}</p>}
+          {otpError && <p className="mt-4 border-r-2 border-red-400 px-3 py-2 text-xs font-bold leading-6 text-[#DC2626]">{otpError}</p>}
         </section>
 
-        <section className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
+        <section className="border-b border-border py-6">
           <SectionTitle title="آدرس و ارسال" subtitle="آدرس دقیق باعث پردازش سریع‌تر سفارش می‌شود." />
           {addresses.length ? (
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <div className="mt-5 divide-y divide-border border-y border-border">
               {addresses.map((address) => (
                 <button
                   key={address.id}
                   type="button"
                   onClick={() => handleAddressSelect(address.id)}
-                  className={`rounded-xl border p-4 text-right text-xs transition ${selectedAddressId === address.id ? "border-[rgba(217,119,6,0.28)] bg-surface-tint" : "border-border bg-white"}`}
+                  className={`relative block min-h-11 w-full px-3 py-3 text-right text-xs transition hover:bg-surface-secondary ${selectedAddressId === address.id ? "bg-surface-tint" : "bg-white"}`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-black text-text-strong">{address.label}</span>
-                    {address.isDefault ? <span className="chip-zen px-2 py-1 text-[10px]">پیش‌فرض</span> : null}
+                    {address.isDefault ? <span className="text-[10px] font-bold text-primary-accent-strong">پیش‌فرض</span> : null}
+                    {selectedAddressId === address.id ? <span className="mr-auto text-[10px] font-bold text-primary-accent-strong">انتخاب‌شده</span> : null}
                   </div>
                   <p className="mt-2 leading-6 text-[#374151]">{address.fullName} · {address.phone}</p>
                   <p className="leading-6 text-text-muted">{address.province}، {address.city}، {address.address1}</p>
@@ -177,18 +178,18 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
             <Field autoComplete="address-level2" label="شهر" name="city" value={formValues.city} onChange={(value) => handleFieldChange("city", value)} errors={state.errors?.city} required />
             <Field autoComplete="address-level1" label="استان" name="province" value={formValues.province} onChange={(value) => handleFieldChange("province", value)} errors={state.errors?.province} required />
             <Field autoComplete="postal-code" inputMode="numeric" label="کد پستی" name="postalCode" value={formValues.postalCode} onChange={(value) => handleFieldChange("postalCode", value)} errors={state.errors?.postalCode} required />
-            <label className="flex items-center gap-2 self-end rounded-xl border border-border bg-surface-secondary px-4 py-3 text-xs font-bold text-text">
+            <label className="flex min-h-11 items-center gap-2 self-end text-xs font-bold text-text">
               <input type="checkbox" name="saveAddress" defaultChecked className="size-4 accent-[#F59E0B]" />
               ذخیره به عنوان آدرس پیش‌فرض
             </label>
           </div>
 
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
+          <div className="mt-6 divide-y divide-border border-y border-border md:grid md:grid-cols-3 md:divide-x md:divide-y-0">
             {shippingOptions.map((option) => (
               <label
                 key={option.value}
-                className={`cursor-pointer rounded-xl border p-4 text-xs transition ${
-                  shipping === option.value ? "border-[rgba(217,119,6,0.26)] bg-surface-tint" : "border-border bg-white hover:border-[rgba(217,119,6,0.24)]"
+                className={`flex min-h-11 cursor-pointer items-start gap-3 px-3 py-4 text-xs transition ${
+                  shipping === option.value ? "bg-surface-tint" : "bg-white hover:bg-surface-secondary"
                 }`}
               >
                 <input
@@ -197,11 +198,13 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
                   value={option.value}
                   checked={shipping === option.value}
                   onChange={() => setShipping(option.value)}
-                  className="sr-only"
+                  className="mt-1 size-4 shrink-0 accent-[#F59E0B]"
                 />
-                <span className="block font-black text-text-strong">{option.label}</span>
-                <span className="mt-1 block text-text-muted">{option.detail}</span>
-                <span className="mt-3 block font-bold text-primary-accent-strong">{formatPrice(option.cost)}</span>
+                <span className="min-w-0">
+                  <span className="block font-black text-text-strong">{option.label}</span>
+                  <span className="mt-1 block text-text-muted">{option.detail}</span>
+                  <span className="mt-2 block font-bold text-primary-accent-strong">{formatPrice(option.cost)}</span>
+                </span>
               </label>
             ))}
           </div>
@@ -218,8 +221,8 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
         </section>
       </div>
 
-      <aside className="space-y-4">
-        <section className="rounded-2xl border border-border bg-surface-secondary p-5 text-sm lg:sticky lg:top-28">
+      <aside>
+        <section className="border-y border-border py-5 text-sm lg:sticky lg:top-28 lg:border-y-0 lg:border-r lg:px-5 lg:py-0">
           <h2 className="text-lg font-extrabold text-text-strong">خلاصه سفارش</h2>
           <div className="mt-4 space-y-3">
             {items.map((item) => (
@@ -248,8 +251,8 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
               <span>{formatPrice(total)}</span>
             </div>
           </div>
-          {!state.success && state.message && <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-[#DC2626]">{state.message}</p>}
-          {state.success && state.message && <p className="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">{state.message}</p>}
+          {!state.success && state.message && <p className="mt-4 border-r-2 border-red-400 px-3 py-2 text-xs leading-6 text-[#DC2626]">{state.message}</p>}
+          {state.success && state.message && <p className="mt-4 border-r-2 border-blue-400 px-3 py-2 text-xs leading-6 text-blue-700">{state.message}</p>}
           <SubmitButton />
           <p className="mt-3 text-xs leading-6 text-text-muted">پرداخت از طریق درگاه امن زرین‌پال انجام می‌شود. بعد از پرداخت، وضعیت سفارش در حساب کاربری شما ثبت می‌شود.</p>
         </section>
@@ -261,13 +264,14 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
 function Stepper() {
   const steps = ["سبد خرید", "آدرس و ارسال", "پرداخت", "تکمیل سفارش"];
   return (
-    <div className="-mx-4 flex snap-x gap-2 overflow-x-auto border-y border-border bg-surface-secondary px-4 py-3 text-center text-[11px] font-bold text-text-muted scrollbar-none sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:rounded-2xl sm:border sm:p-3">
+    <ol className="grid grid-cols-4 border-y border-border text-[10px] font-bold text-text-muted sm:text-[11px]">
       {steps.map((step, index) => (
-        <div key={step} className={`min-w-28 snap-start rounded-xl px-2 py-3 sm:min-w-0 ${index === 1 || index === 2 ? "bg-white text-primary-accent-strong" : "bg-white/70"}`}>
-          {step}
-        </div>
+        <li key={step} className={`flex min-h-11 items-center justify-center gap-1 border-l border-border px-1 py-2 text-center last:border-l-0 ${index === 1 || index === 2 ? "text-primary-accent-strong" : ""}`}>
+          <span className="hidden text-[10px] text-text-soft min-[390px]:inline">{(index + 1).toLocaleString("fa-IR")}.</span>
+          <span>{step}</span>
+        </li>
       ))}
-    </div>
+    </ol>
   );
 }
 
@@ -292,7 +296,7 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-primary mt-5 w-full" disabled={pending}>
+    <button type="submit" className="btn-primary mt-5 !min-h-11 w-full" disabled={pending}>
       {pending ? "در حال انتقال به درگاه پرداخت..." : "پرداخت و ثبت نهایی سفارش"}
     </button>
   );

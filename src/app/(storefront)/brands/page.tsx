@@ -1,4 +1,5 @@
 import { BrandCard } from "@/components/catalog/brand-card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getPaginatedBrandsWithProductCount } from "@/lib/data";
@@ -19,41 +20,41 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
   const upcomingBrands = brands.filter((brand) => brand._count.products === 0);
 
   return (
-    <div className="container-zen space-y-6 py-5 sm:py-6 md:space-y-8 md:py-8">
+    <div className="container-zen space-y-6 py-5 sm:py-6 md:py-8">
       <StorefrontPageIntro
+        compact
         description="ابتدا برندهایی را می‌بینید که اکنون محصول قابل خرید دارند؛ برندهای بدون کالا در بخش جدا و کم‌رنگ‌تر نمایش داده می‌شوند."
         meta={`${availableBrands.length.toLocaleString("fa-IR")} برند دارای محصول`}
         title="برندهای تخصصی Oilbar"
+        tone="plain"
       />
       {brands.length > 0 ? (
-        <div className="space-y-8">
+        <div className="space-y-7">
           {availableBrands.length ? (
             <section>
-              <div className="mb-4">
-                <h2 className="t-h2">برندهای موجود در فروشگاه</h2>
-                <p className="mt-1 text-sm leading-7 text-text-muted">برندهایی که همین حالا برای آن‌ها محصول ثبت شده است.</p>
+              <div className="mb-2 flex items-baseline justify-between gap-3">
+                <h2 className="text-lg font-extrabold text-text-strong">برندهای موجود در فروشگاه</h2>
+                <span className="text-xs font-bold text-text-muted">{availableBrands.length.toLocaleString("fa-IR")} برند</span>
               </div>
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid border-t border-border md:grid-cols-2 md:gap-x-6 xl:grid-cols-3">
                 {availableBrands.map((brand) => <BrandCard key={brand.id} brand={brand} />)}
               </div>
             </section>
           ) : null}
           {upcomingBrands.length ? (
-            <section className="border-t border-border pt-6">
-              <div className="mb-4">
-                <h2 className="text-base font-extrabold text-text-strong">فهرست برندهای در حال تکمیل</h2>
-                <p className="mt-1 text-xs leading-6 text-text-muted">با اضافه‌شدن موجودی، لینک محصولات هر برند فعال می‌شود.</p>
+            <section>
+              <div className="mb-2 flex items-baseline justify-between gap-3">
+                <h2 className="text-base font-extrabold text-text-strong">برندهای در حال تکمیل</h2>
+                <span className="text-xs text-text-muted">با اضافه‌شدن موجودی فعال می‌شوند</span>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid border-t border-border sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3">
                 {upcomingBrands.map((brand) => <BrandCard key={brand.id} brand={brand} />)}
               </div>
             </section>
           ) : null}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border bg-surface-secondary p-6 text-center text-sm font-semibold text-text-muted sm:p-10">
-          هنوز برندی ثبت نشده است.
-        </div>
+        <EmptyState compact title="هنوز برندی ثبت نشده است" />
       )}
       <Pagination pathname="/brands" searchParams={params} pageInfo={pageInfo} />
     </div>

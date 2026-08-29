@@ -23,7 +23,7 @@ export function LocalFavorites() {
   }, []);
 
   return (
-    <div className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+    <div className="border-y border-[#E5E7EB] bg-white py-5">
       <p className="text-sm font-black text-[#111827]">علاقه‌مندی‌ها</p>
       <p className="mt-2 text-3xl font-black text-[#DC2626]">{count.toLocaleString("fa-IR")}</p>
       <p className="mt-2 text-xs leading-6 text-[#6B7280]">

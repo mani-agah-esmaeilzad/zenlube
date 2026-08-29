@@ -211,7 +211,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             ) : null}
           </div>
 
-          <div className={`mt-4 inline-flex px-3 py-1.5 text-xs font-extrabold ${isAvailable ? "chip-zen-success" : "rounded-full bg-[#FEF3F2] text-error"}`}>
+          <div className={`mt-4 inline-flex items-center gap-2 text-xs font-extrabold ${isAvailable ? "text-success" : "text-error"}`}>
+            <span aria-hidden="true" className={`h-2 w-2 rounded-full ${isAvailable ? "bg-success" : "bg-error"}`} />
             {isAvailable ? "موجود در انبار" : "ناموجود"}
           </div>
 
@@ -220,9 +221,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ) : null}
 
           {quickFacts.length ? (
-            <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-surface-secondary">
+            <dl className="-mx-4 mt-5 flex overflow-x-auto border-y border-border px-4 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0">
               {quickFacts.map((item) => (
-                <div key={item.label} className="min-w-0 border-b border-l border-border px-3 py-3 even:border-l-0 sm:px-4">
+                <div key={item.label} className="min-w-[10rem] border-l border-border px-4 py-3 first:pr-0 last:border-l-0 sm:min-w-0">
                   <dt className="text-[11px] font-bold text-text-muted">{item.label}</dt>
                   <dd className="mt-1 truncate text-sm font-extrabold text-text-strong">{item.value}</dd>
                 </div>
@@ -255,7 +256,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_.9fr]" id="product-reviews">
-        <div className="rounded-2xl border border-border bg-white p-4 sm:p-5 md:p-6">
+        <div className="min-w-0">
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
             <div>
               <h2 className="text-xl font-black text-text-strong">دیدگاه کاربران</h2>
@@ -267,11 +268,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <p className="mt-2 text-sm text-text-muted">هنوز امتیاز ثبت‌شده‌ای برای این کالا وجود ندارد.</p>
               )}
             </div>
-            {product.reviewCount > 0 ? (
-              <span className="chip-zen px-3 py-1.5 text-xs font-extrabold">
-                {product.reviewCount.toLocaleString("fa-IR")} نظر
-              </span>
-            ) : null}
+            {product.reviewCount > 0 ? <span className="text-xs font-bold text-text-muted">{product.reviewCount.toLocaleString("fa-IR")} نظر</span> : null}
           </div>
 
           <div className="mt-5 space-y-4">

@@ -89,15 +89,18 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
 
   return (
     <>
-      <section className="rounded-2xl border border-border bg-white p-3 sm:p-4">
+      <section>
         <div
-          className="relative overflow-hidden rounded-xl bg-surface-secondary"
+          className={cn(
+            "relative overflow-hidden rounded-xl bg-surface-secondary",
+            !activeItem.src && "rounded-none border-y border-border bg-transparent",
+          )}
           onTouchEnd={handleTouchEnd}
           onTouchStart={handleTouchStart}
         >
-          <div className="relative min-h-[280px] min-[390px]:min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]">
+          <div className={cn("relative", activeItem.src ? "min-h-[280px] min-[390px]:min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]" : "min-h-[140px]")}>
             {!activeItem.src ? (
-              <div className="flex h-full min-h-[280px] items-center justify-center text-sm font-bold text-text-soft min-[390px]:min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]">
+              <div className="flex min-h-[140px] items-center justify-center text-sm font-bold text-text-soft">
                 تصویر محصول موجود نیست
               </div>
             ) : (

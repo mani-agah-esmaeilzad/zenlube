@@ -35,16 +35,16 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3">
+      <div className="divide-y divide-border border-y border-border">
         {addresses.length ? (
           addresses.map((address) => (
-            <div key={address.id} className="rounded-xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
+            <div key={address.id} className="py-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold text-[#111827]">{address.label}</p>
                     {address.isDefault ? (
-                      <span className="rounded-full bg-[#FFF8E8] px-2.5 py-1 text-[11px] font-bold text-[#D97706]">
+                      <span className="text-[11px] font-bold text-[#D97706]">
                         پیش‌فرض
                       </span>
                     ) : null}
@@ -62,14 +62,14 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
                   {!address.isDefault ? (
                     <form action={setDefaultAddressAction}>
                       <input type="hidden" name="addressId" value={address.id} />
-                      <button type="submit" className="min-h-10 rounded-xl border border-[#F5C56B] px-3 py-2 text-xs font-bold text-[#D97706]">
+                      <button type="submit" className="btn-ghost !min-h-11 px-3 text-xs font-bold text-[#D97706]">
                         پیش‌فرض کن
                       </button>
                     </form>
                   ) : null}
                   <form action={deleteAddressAction}>
                     <input type="hidden" name="addressId" value={address.id} />
-                    <button type="submit" className="min-h-10 rounded-xl border border-[#FECACA] px-3 py-2 text-xs font-bold text-[#B42318]">
+                    <button type="submit" className="btn-ghost !min-h-11 px-3 text-xs font-bold text-[#B42318] hover:text-[#B42318]">
                       حذف
                     </button>
                   </form>
@@ -78,13 +78,13 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
             </div>
           ))
         ) : (
-          <p className="rounded-2xl border border-dashed border-[#E5E7EB] px-4 py-6 text-center text-xs text-[#6B7280]">
+          <p className="py-6 text-center text-xs text-[#6B7280]">
             هنوز آدرس دیگری ثبت نشده است.
           </p>
         )}
       </div>
 
-      <form ref={formRef} action={formAction} className="grid gap-4 rounded-2xl border border-dashed border-[#E5E7EB] p-4 text-sm md:grid-cols-2">
+      <form ref={formRef} action={formAction} className="grid gap-4 border-t border-border pt-5 text-sm md:grid-cols-2">
         <Field label="عنوان آدرس" name="label" defaultValue="" errors={state?.errors?.label} />
         <Field label="نام گیرنده" name="fullName" defaultValue="" errors={state?.errors?.fullName} />
         <Field label="شماره موبایل" name="phone" defaultValue="" errors={state?.errors?.phone} />
@@ -98,12 +98,12 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
           این آدرس به‌عنوان پیش‌فرض ذخیره شود
         </label>
         {state?.message ? (
-          <p className={`rounded-2xl px-4 py-3 text-xs font-bold md:col-span-2 ${state.success ? "bg-green-50 text-[#16A34A]" : "bg-red-50 text-[#DC2626]"}`}>
+          <p className={`border-r-2 px-3 py-2 text-xs font-bold leading-6 md:col-span-2 ${state.success ? "border-green-500 text-[#16A34A]" : "border-red-400 text-[#DC2626]"}`}>
             {state.message}
           </p>
         ) : null}
-        <div className="md:col-span-2">
-          <button type="submit" className="btn-primary w-full">افزودن آدرس جدید</button>
+        <div className="flex md:col-span-2 md:justify-end">
+          <button type="submit" className="btn-primary !min-h-11 w-full sm:w-auto sm:min-w-40">افزودن آدرس جدید</button>
         </div>
       </form>
     </div>

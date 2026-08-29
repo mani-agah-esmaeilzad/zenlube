@@ -60,7 +60,7 @@ export function CarNotebook({ pages, productPanels = [] }: CarNotebookProps) {
   const activePanel = productPanels.find((panel) => panel.pageId === activePage.id);
   const pageCount = pages.length;
   const sheetSurfaceClass =
-    "rounded-[30px] border border-slate-200 bg-white p-5 text-slate-700 shadow-[0_30px_70px_-40px_rgba(15,23,42,0.3)] sm:p-6 lg:p-8";
+    "border-y border-slate-200 bg-white py-5 text-slate-700 sm:py-6 lg:py-8";
 
   const handleSelect = (index: number) => {
     if (index === activeNavIndex || isFlipping) {
@@ -72,8 +72,8 @@ export function CarNotebook({ pages, productPanels = [] }: CarNotebookProps) {
   };
 
   return (
-    <div className="relative space-y-4 rounded-[34px] border border-[#E5E7EB] bg-white p-4 shadow-[0_25px_70px_-50px_rgba(15,23,42,0.28)] sm:p-5 xl:p-6">
-      <div className="rounded-[28px] border border-[#E5E7EB] bg-[#F8FAFC] p-2 sm:p-3">
+    <div className="relative space-y-5 bg-white">
+      <div className="border-b border-[#E5E7EB] bg-[#F8FAFC] py-2">
         <div
           role="tablist"
           aria-label="بخش‌های دفترچه خودرو"
@@ -91,10 +91,10 @@ export function CarNotebook({ pages, productPanels = [] }: CarNotebookProps) {
                 aria-controls={`notebook-panel-${page.id}`}
                 aria-selected={isActive}
                 className={cn(
-                  "min-h-[64px] min-w-[148px] shrink-0 rounded-[20px] border px-4 py-3 text-right transition sm:min-w-[168px]",
+                  "min-h-12 min-w-[136px] shrink-0 border-b-2 px-3 py-2 text-right transition sm:min-w-[156px]",
                   isActive
-                    ? "border-[#F5C56B] bg-[#FFF8E8] text-[#D97706] shadow-[0_18px_34px_-28px_rgba(245,158,11,0.65)]"
-                    : "border-[#E5E7EB] bg-white text-[#667085] hover:border-[#F5C56B]/60 hover:text-[#111827]",
+                    ? "border-[#D97706] bg-[#FFF8E8] text-[#D97706]"
+                    : "border-transparent text-[#667085] hover:border-[#F5C56B]/60 hover:text-[#111827]",
                 )}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -108,10 +108,10 @@ export function CarNotebook({ pages, productPanels = [] }: CarNotebookProps) {
                   </div>
                   <span
                     className={cn(
-                      "rounded-full border px-2.5 py-1 text-[10px] font-bold",
+                      "text-[10px] font-bold",
                       isActive
-                        ? "border-[#F5C56B] bg-white/80 text-[#D97706]"
-                        : "border-[#E5E7EB] text-[#98A2B3]",
+                        ? "text-[#D97706]"
+                        : "text-[#98A2B3]",
                     )}
                   >
                     {page.tag ?? "دفترچه"}
@@ -208,7 +208,7 @@ function NotebookSheet({ page, index, pageCount, panelId, tabId, className }: No
           صفحه {index !== null ? index + 1 : "?"} از {pageCount}
         </span>
         {page.tag && (
-          <span className="rounded-full border border-[#E5E7EB] bg-[#FFF8E8] px-3 py-1 text-[11px] font-bold text-[#D97706]">
+          <span className="text-[11px] font-bold text-[#D97706]">
             {page.tag}
           </span>
         )}
@@ -216,11 +216,11 @@ function NotebookSheet({ page, index, pageCount, panelId, tabId, className }: No
       <h3 className="mt-4 text-[1.55rem] font-black leading-9 text-slate-900 sm:text-3xl">{page.title}</h3>
       {page.kicker && <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-500">{page.kicker}</p>}
       {page.highlights?.length ? (
-        <div className="mt-5 grid gap-3 min-[390px]:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-5 grid border-y border-[#E5E7EB] min-[390px]:grid-cols-2 xl:grid-cols-4">
           {page.highlights.map((highlight) => (
             <div
               key={`${page.id}-${highlight.label}`}
-              className="rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-4"
+              className="border-b border-[#E5E7EB] px-1 py-4 min-[390px]:border-l min-[390px]:odd:border-l-0 xl:border-b-0 xl:first:border-r-0"
             >
               <span className="text-[11px] font-bold text-slate-400">{highlight.label}</span>
               <p className="mt-2 text-sm font-extrabold leading-7 text-slate-900">{highlight.value}</p>
@@ -234,7 +234,7 @@ function NotebookSheet({ page, index, pageCount, panelId, tabId, className }: No
             block.type === "list" ? (
               <ul
                 key={`${page.id}-list-${idx}`}
-                className="grid gap-2 rounded-[24px] border border-[#E5E7EB] bg-[#F8FAFC] p-4 sm:p-5"
+                className="grid gap-2 border-r-2 border-[#F59E0B] bg-[#F8FAFC] px-4 py-3 sm:px-5"
               >
                 {block.items.map((item) => (
                   <li key={item} className="flex items-start gap-3">
@@ -263,7 +263,7 @@ function NotebookSheet({ page, index, pageCount, panelId, tabId, className }: No
             href={page.sourceUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-4 py-2 text-xs font-bold text-[#667085] transition hover:border-[#F5C56B] hover:text-[#D97706]"
+            className="text-link-zen inline-flex min-h-11 items-center gap-2 px-1 text-xs font-bold"
           >
             مشاهده منبع این بخش
           </a>
@@ -275,15 +275,15 @@ function NotebookSheet({ page, index, pageCount, panelId, tabId, className }: No
 
 function NotebookProductsPanel({ page, panel }: { page: NotebookPage; panel: NotebookProductPanel }) {
   return (
-    <section className="overflow-hidden rounded-[30px] border border-[#E5E7EB] bg-[linear-gradient(180deg,#FFFDF7_0%,#FFFFFF_100%)]">
+    <section className="border-y border-[#E5E7EB] bg-[#FFFDF7]">
       <div className="flex flex-col gap-4 border-b border-[#E5E7EB] px-4 py-4 sm:px-5 lg:flex-row lg:items-start lg:justify-between lg:px-6">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex rounded-full border border-[#FDE7B0] bg-[#FFF8E8] px-3 py-1 text-[11px] font-extrabold text-[#D97706]">
+            <span className="text-[11px] font-extrabold text-[#D97706]">
               محصولات سازگار این بخش
             </span>
             {page.tag ? (
-              <span className="inline-flex rounded-full border border-[#E5E7EB] bg-white px-3 py-1 text-[11px] font-bold text-[#667085]">
+              <span className="text-[11px] font-bold text-[#667085]">
                 {page.tag}
               </span>
             ) : null}
@@ -299,11 +299,11 @@ function NotebookProductsPanel({ page, panel }: { page: NotebookPage; panel: Not
         </div>
 
         <div className="flex shrink-0 flex-wrap gap-2">
-          <Link href={panel.browseHref} className="btn-outline w-full sm:w-auto">
+          <Link href={panel.browseHref} className="text-link-zen inline-flex min-h-11 items-center px-2 text-xs font-bold">
             مشاهده دسته‌ی {panel.categoryName}
           </Link>
           {panel.browseHref !== panel.allProductsHref ? (
-            <Link href={panel.allProductsHref} className="btn-primary w-full sm:w-auto">
+            <Link href={panel.allProductsHref} className="text-link-zen inline-flex min-h-11 items-center px-2 text-xs font-extrabold">
               همه محصولات سازگار
             </Link>
           ) : null}
@@ -311,22 +311,22 @@ function NotebookProductsPanel({ page, panel }: { page: NotebookPage; panel: Not
       </div>
 
       {panel.products.length > 0 ? (
-        <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5 xl:grid-cols-3 xl:p-6">
+        <div className="grid gap-x-5 px-4 sm:grid-cols-2 sm:px-5 xl:grid-cols-3 xl:px-6">
           {panel.products.map((product) => (
             <NotebookCompatibleProductCard key={`${panel.pageId}-${product.id}`} product={product} />
           ))}
         </div>
       ) : (
         <div className="px-4 py-6 sm:px-5 sm:py-7 lg:px-6">
-          <div className="rounded-[26px] border border-dashed border-[#E5E7EB] bg-white p-5 text-center sm:p-6">
+          <div className="py-2 text-center">
             <h5 className="text-base font-extrabold text-[#111827]">{panel.emptyTitle}</h5>
             <p className="mx-auto mt-2 max-w-2xl text-sm leading-7 text-[#667085]">{panel.emptyDescription}</p>
-            <div className="mt-4 flex flex-col justify-center gap-2 sm:flex-row">
-              <Link href={panel.allProductsHref} className="btn-primary w-full sm:w-auto">
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <Link href={panel.allProductsHref} className="text-link-zen inline-flex min-h-11 items-center px-2 text-xs font-extrabold">
                 مشاهده همه محصولات این خودرو
               </Link>
               {panel.hasCatalogCategory ? (
-                <Link href={panel.browseHref} className="btn-outline w-full sm:w-auto">
+                <Link href={panel.browseHref} className="text-link-zen inline-flex min-h-11 items-center px-2 text-xs font-bold">
                   باز کردن دسته {panel.categoryName}
                 </Link>
               ) : null}
@@ -347,14 +347,14 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
   ].filter(Boolean);
 
   return (
-    <article className="flex h-full min-w-0 flex-col rounded-[26px] border border-[#E7E8EE] bg-white shadow-[0_18px_36px_-28px_rgba(15,23,42,0.18)]">
+    <article className="flex h-full min-w-0 flex-col border-t border-[#E7E8EE] bg-white py-4">
       <div className="flex items-start gap-3 p-3 sm:p-4">
-        <Link
-          href={`/products/${product.slug}`}
-          aria-label={product.name}
-          className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-[20px] border border-[#EEF2F6] bg-[#F8FAFC] sm:size-28"
-        >
-          {product.imageUrl ? (
+        {product.imageUrl ? (
+          <Link
+            href={`/products/${product.slug}`}
+            aria-label={product.name}
+            className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#F8FAFC] sm:size-28"
+          >
             <Image
               alt={`تصویر ${product.name}`}
               src={product.imageUrl}
@@ -362,10 +362,8 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
               sizes="(max-width:640px) 96px, 112px"
               className="object-contain p-3"
             />
-          ) : (
-            <span className="text-xs font-bold text-[#98A2B3]">بدون تصویر</span>
-          )}
-        </Link>
+          </Link>
+        ) : null}
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
@@ -382,7 +380,7 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-1.5">
-            <span className="rounded-full border border-[#E5E7EB] bg-[#F8FAFC] px-2.5 py-1 text-[10px] font-bold text-[#667085]">
+            <span className="text-[10px] font-bold text-[#667085]">
               {product.categoryName}
             </span>
             {product.isBestseller ? (
@@ -407,7 +405,7 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
         </div>
       </div>
 
-      <div className="mt-auto border-t border-[#EEF2F6] p-3 sm:p-4">
+      <div className="mt-auto border-t border-[#EEF2F6] px-3 pt-3 sm:px-4">
         <div className="flex items-center justify-between gap-3">
           <PriceBlock amount={product.price} align="start" size="sm" />
           {product.averageRating != null && product.reviewCount > 0 ? (
@@ -418,14 +416,9 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
           ) : null}
         </div>
 
-        <div className="mt-3">
-          <Link
-            href={`/products/${product.slug}`}
-            className="inline-flex min-h-10 w-full items-center justify-center rounded-[14px] border border-[#E5E7EB] px-4 text-[13px] font-bold text-[#111827] transition hover:border-[#F5C56B] hover:text-[#D97706]"
-          >
-            مشاهده جزئیات
-          </Link>
-        </div>
+        <Link href={`/products/${product.slug}`} className="text-link-zen mt-2 inline-flex min-h-11 items-center px-1 text-xs font-bold">
+          مشاهده جزئیات
+        </Link>
       </div>
     </article>
   );

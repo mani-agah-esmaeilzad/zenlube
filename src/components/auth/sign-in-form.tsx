@@ -81,7 +81,7 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
         <label htmlFor="phone" className="text-xs font-bold text-[#475467]">
           شماره موبایل
         </label>
-        <div className="flex flex-col gap-2 min-[420px]:flex-row">
+        <div className="flex gap-2">
           <input
             id="phone"
             autoComplete="tel"
@@ -90,12 +90,12 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
             type="tel"
             placeholder="09xxxxxxxxx"
             required
-            className="input-zen"
+            className="input-zen min-w-0 flex-1"
           />
           <button
             type="button"
             onClick={(event) => handleSendOtp(event.currentTarget.form)}
-            className="btn-outline min-h-12 shrink-0 rounded-xl px-4 py-3 text-xs font-bold text-primary-accent-strong disabled:opacity-60"
+            className="btn-ghost !min-h-11 shrink-0 px-3 text-xs font-bold text-primary-accent-strong disabled:opacity-60"
             disabled={isOtpPending}
           >
             {isOtpPending ? "در حال ارسال" : "ارسال کد"}
@@ -115,12 +115,12 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
           className="input-zen"
         />
       </div>
-      {otpMessage && <p className="rounded-xl bg-green-50 px-3 py-2 text-xs font-bold text-emerald-600">{otpMessage}</p>}
-      {otpError && <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-500">{otpError}</p>}
-      {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-500">{error}</p>}
+      {otpMessage && <p className="border-r-2 border-emerald-500 px-3 py-2 text-xs font-bold leading-6 text-emerald-600">{otpMessage}</p>}
+      {otpError && <p className="border-r-2 border-red-400 px-3 py-2 text-xs font-bold leading-6 text-red-500">{otpError}</p>}
+      {error && <p className="border-r-2 border-red-400 px-3 py-2 text-xs font-bold leading-6 text-red-500">{error}</p>}
       <button
         type="submit"
-        className="btn-primary w-full"
+        className="btn-primary !min-h-11 w-full"
         disabled={isPending}
       >
         {isPending ? "در حال ورود..." : "ورود"}

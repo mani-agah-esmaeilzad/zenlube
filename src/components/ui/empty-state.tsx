@@ -22,18 +22,16 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "panel-zen-muted rounded-2xl border-dashed text-center",
-        compact ? "p-6 sm:p-7" : "p-8 sm:p-10",
+        "text-center",
+        compact ? "px-3 py-5 sm:py-6" : "px-4 py-8 sm:py-10",
         className,
       )}
     >
-      <div className="icon-shell mx-auto flex size-14 items-center justify-center rounded-full">
-        <EmptySparkIcon className="h-7 w-7" />
-      </div>
-      <h2 className="mt-4 text-lg font-extrabold text-text-strong sm:text-xl">{title}</h2>
-      {description ? <p className="mt-2 text-sm leading-7 text-text-muted">{description}</p> : null}
+      <EmptySparkIcon className="mx-auto h-7 w-7 text-primary-accent-strong" />
+      <h2 className="mt-3 text-base font-extrabold text-text-strong sm:text-lg">{title}</h2>
+      {description ? <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-text-muted">{description}</p> : null}
       {actionHref && actionLabel ? (
-        <Link href={actionHref} className="btn-primary mt-5 inline-flex">
+        <Link href={actionHref} className="text-link-zen mt-3 inline-flex min-h-11 items-center px-2 text-sm font-extrabold">
           {actionLabel}
         </Link>
       ) : null}

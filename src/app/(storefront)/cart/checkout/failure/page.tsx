@@ -29,9 +29,9 @@ export default async function CheckoutFailurePage({ searchParams }: FailurePageP
 
   return (
     <div className="container-zen py-8 sm:py-10">
-      <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-5 text-center sm:p-6 md:p-8">
-        <div className="icon-shell mx-auto grid size-16 place-items-center rounded-full text-3xl font-black text-[#D97706]">!</div>
-        <h1 className="mt-5 text-2xl font-extrabold text-text-strong md:text-3xl">پرداخت ناموفق بود</h1>
+      <div className="mx-auto max-w-2xl border-y border-border bg-white py-6 text-center sm:py-8">
+        <div className="mx-auto grid size-11 place-items-center text-2xl font-black text-[#D97706]">!</div>
+        <h1 className="mt-4 text-xl font-extrabold text-text-strong sm:text-2xl">پرداخت ناموفق بود</h1>
         <p className="mt-3 text-sm leading-7 text-text-muted">{message}</p>
         {orderId ? <p className="mt-2 font-mono text-xs text-text-muted">#{orderId.slice(0, 10).toUpperCase()}</p> : null}
         <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -39,15 +39,15 @@ export default async function CheckoutFailurePage({ searchParams }: FailurePageP
           {latestTransaction?.status ? <StatusPill tone="neutral">{latestTransaction.status}</StatusPill> : null}
         </div>
         {latestTransaction?.errorMessage ? (
-          <p className="mt-4 rounded-2xl bg-[linear-gradient(180deg,#FFFFFF_0%,#F7F8FA_100%)] px-4 py-3 text-xs leading-6 text-text-muted">
+          <p className="mx-auto mt-4 max-w-lg border-r-2 border-amber-400 px-3 py-2 text-right text-xs leading-6 text-text-muted">
             {latestTransaction.errorMessage}
           </p>
         ) : null}
-        <div className="mt-6 flex flex-col justify-center gap-2 sm:mt-8 sm:flex-row sm:gap-3">
-          <Link href="/cart/checkout" className="btn-primary">
+        <div className="mt-6 flex flex-wrap justify-center gap-2 sm:mt-8">
+          <Link href="/cart/checkout" className="btn-primary !min-h-11 px-4 text-xs">
             تلاش دوباره برای پرداخت
           </Link>
-          <Link href={orderId ? `/account?orderId=${orderId}` : "/cart"} className="btn-outline">
+          <Link href={orderId ? `/account?orderId=${orderId}` : "/cart"} className="btn-ghost !min-h-11 px-3 text-xs">
             {orderId ? "مشاهده سفارش" : "بازگشت به سبد خرید"}
           </Link>
         </div>

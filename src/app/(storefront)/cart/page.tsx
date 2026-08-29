@@ -52,18 +52,16 @@ export default async function CartPage() {
 
       {cart?.items?.length ? (
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">
-            <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-white">
+          <div className="divide-y divide-border border-y border-border bg-white">
             {cart.items.map((item) => (
-              <article key={item.id} className="p-4 sm:p-5">
-                <div className="grid grid-cols-[72px_minmax(0,1fr)] gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4">
-                  <Link className="relative aspect-square overflow-hidden rounded-xl bg-surface-secondary" href={`/products/${item.product.slug}`}>
-                    {item.product.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
+              <article key={item.id} className="py-4 sm:py-5">
+                <div className={item.product.imageUrl ? "grid grid-cols-[72px_minmax(0,1fr)] gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4" : "grid grid-cols-1"}>
+                  {item.product.imageUrl ? (
+                    <Link className="relative aspect-square overflow-hidden rounded-lg bg-surface-secondary" href={`/products/${item.product.slug}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img alt={item.product.name} className="h-full w-full object-contain p-2" src={item.product.imageUrl} />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-xs font-bold text-text-soft">بدون تصویر</div>
-                    )}
-                  </Link>
+                    </Link>
+                  ) : null}
                   <div className="min-w-0">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                       <div className="min-w-0">
@@ -84,7 +82,7 @@ export default async function CartPage() {
             ))}
           </div>
 
-          <aside className="h-fit rounded-2xl border border-border bg-surface-secondary p-5 lg:sticky lg:top-28">
+          <aside className="h-fit border-y border-border py-5 lg:sticky lg:top-28 lg:border-y-0 lg:border-r lg:px-5 lg:py-0">
             <h2 className="text-lg font-extrabold text-text-strong">خلاصه سفارش</h2>
             <PriceBlock amount={subtotal} className="mt-5" label="مبلغ قابل پرداخت" size="lg" />
             <div className="mt-5 space-y-4 text-sm text-text-muted">
@@ -97,7 +95,7 @@ export default async function CartPage() {
                 <span>محاسبه در مرحله بعد</span>
               </div>
             </div>
-            <Link className="btn-primary mt-6 w-full" href="/cart/checkout">
+            <Link className="btn-primary mt-6 !min-h-11 w-full" href="/cart/checkout">
               ادامه فرایند خرید
             </Link>
             <p className="mt-4 text-xs leading-6 text-text-muted">تایید نهایی سفارش بعد از ورود اطلاعات ارسال و پرداخت انجام می‌شود.</p>

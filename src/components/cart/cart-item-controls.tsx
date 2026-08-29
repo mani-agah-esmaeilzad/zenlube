@@ -23,7 +23,7 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
 
   return (
     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-      <div className="flex items-center overflow-hidden rounded-xl border border-border bg-white">
+      <div className="flex items-center border-y border-border bg-white">
         <button
           type="button"
           aria-label="کم کردن تعداد"
@@ -54,7 +54,7 @@ export function CartItemControls({ productId, quantity }: CartItemControlsProps)
             router.refresh();
           })
         }
-        className="min-h-11 rounded-xl border border-[#FECACA] px-3 py-2 text-xs font-bold text-error hover:bg-[#FEF3F2]"
+        className="btn-ghost min-h-11 px-3 text-xs font-bold text-error hover:bg-[#FEF3F2] hover:text-error"
         disabled={isPending}
       >
         حذف
@@ -76,7 +76,7 @@ export function ClearCartButton() {
           router.refresh();
         })
       }
-      className="btn-outline !min-h-11 rounded-xl text-xs disabled:opacity-60"
+      className="btn-ghost min-h-11 px-3 text-xs text-error disabled:opacity-60"
       disabled={isPending}
     >
       خالی کردن سبد

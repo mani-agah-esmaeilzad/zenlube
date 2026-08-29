@@ -51,7 +51,7 @@ export function WishlistButton({
         disabled={isPending}
         aria-label={active ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
         className={cn(
-          "inline-flex size-9 items-center justify-center rounded-full border border-border bg-white transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint",
+          "inline-flex size-11 items-center justify-center rounded-full border border-border bg-white transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint md:size-9",
           active ? "border-[#FECACA] bg-[#FFF1F3] text-[#DC2626]" : "text-text-muted",
           className,
         )}
@@ -62,23 +62,23 @@ export function WishlistButton({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <button
         type="button"
         onClick={handleClick}
         disabled={isPending}
         className={cn(
-          "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[16px] border px-5 py-2.5 text-sm font-extrabold transition",
+          "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-transparent px-3 py-2 text-xs font-extrabold transition",
           active
-            ? "border-[#FECACA] bg-[#FFF1F3] text-[#B42318]"
-            : "border-border bg-white text-text-strong hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong",
+            ? "bg-[#FFF1F3] text-[#B42318]"
+            : "bg-surface-secondary text-text-strong hover:bg-surface-tint hover:text-primary-accent-strong",
           className,
         )}
       >
         <HeartIcon className={cn("h-4 w-4", active ? "fill-current" : "")} />
         {isPending ? "در حال ثبت..." : active ? "در علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
       </button>
-      <span className="block text-center text-[11px] text-text-muted" aria-live="polite">
+      <span className="block text-start text-[11px] text-text-muted" aria-live="polite">
         {feedback ?? " "}
       </span>
     </div>

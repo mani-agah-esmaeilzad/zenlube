@@ -25,25 +25,27 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { items: posts, pageInfo } = await getPaginatedBlogPosts({ page, pageSize });
 
   return (
-    <div className="container-zen space-y-6 py-5 sm:py-6 md:space-y-8 md:py-8">
+    <div className="container-zen space-y-6 py-5 sm:py-6 md:py-8">
       <StorefrontPageIntro
+        compact
         description="راهنمای خرید، مقایسهٔ محصولات و نکات فنی برای انتخاب روغن موتور و فیلتر خودرو."
         meta={`${pageInfo.total.toLocaleString("fa-IR")} مقالهٔ منتشرشده`}
         title="وبلاگ تخصصی Oilbar"
+        tone="plain"
       />
 
       <section className="space-y-4">
-        <div className="flex items-center justify-between gap-3 border-b border-border pb-4 text-sm text-text-muted">
+        <div className="flex items-center justify-between gap-3 border-b border-border pb-3 text-sm text-text-muted">
           <span>تازه‌ترین راهنماهای فنی و خرید</span>
           <Link
             href="/support"
-            className="btn-outline shrink-0 rounded-xl px-3 py-2 text-xs font-bold text-[#475467] sm:px-4"
+            className="inline-flex min-h-10 shrink-0 items-center px-1 text-xs font-extrabold text-primary-accent-strong transition hover:text-[#B45309]"
           >
             درخواست موضوع پیشنهادی
           </Link>
         </div>
         {posts.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-5">
+          <div className="grid gap-x-5 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
             {posts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}

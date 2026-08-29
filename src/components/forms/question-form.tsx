@@ -70,7 +70,7 @@ export function QuestionForm({ type, slug, title }: QuestionFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="panel-zen space-y-4 rounded-[28px] p-5 sm:p-6">
+    <form onSubmit={handleSubmit} className="space-y-4 border-t border-border pt-5 sm:pt-6">
       {title ? (
         <h3 className="text-lg font-extrabold text-text-strong">{title}</h3>
       ) : (
@@ -110,12 +110,12 @@ export function QuestionForm({ type, slug, title }: QuestionFormProps) {
         />
       </label>
       {state.status === "error" && state.message ? (
-        <p className="rounded-xl border border-red-200 bg-[linear-gradient(180deg,#FFF6F7_0%,#FEF3F2_100%)] px-3 py-2 text-xs font-bold text-[#DC2626]">{state.message}</p>
+        <p className="border-r-2 border-red-500 bg-red-50 py-2 pl-3 pr-4 text-xs font-bold text-[#DC2626]">{state.message}</p>
       ) : null}
       {state.status === "success" && state.message ? (
-        <p className="rounded-xl border border-emerald-200 bg-[linear-gradient(180deg,#F4FFF7_0%,#ECFDF3_100%)] px-3 py-2 text-xs font-bold text-[#16A34A]">{state.message}</p>
+        <p className="border-r-2 border-emerald-500 bg-emerald-50 py-2 pl-3 pr-4 text-xs font-bold text-[#16A34A]">{state.message}</p>
       ) : null}
-      <button type="submit" disabled={isPending} className="btn-primary w-full sm:w-auto">
+      <button type="submit" disabled={isPending} className="btn-primary w-fit px-4">
         {isPending ? "در حال ارسال..." : "ثبت سوال"}
       </button>
     </form>

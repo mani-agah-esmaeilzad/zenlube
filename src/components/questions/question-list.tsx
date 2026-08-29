@@ -26,9 +26,9 @@ const statusLabel: Record<QuestionItem["status"], string> = {
 };
 
 const statusStyle: Record<QuestionItem["status"], string> = {
-  PENDING: "chip-zen-warning",
-  ANSWERED: "chip-zen-success",
-  ARCHIVED: "chip-zen-muted",
+  PENDING: "text-amber-700",
+  ANSWERED: "text-emerald-700",
+  ARCHIVED: "text-text-muted",
 };
 
 const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
@@ -43,7 +43,7 @@ export function QuestionList({ items, emptyMessage }: QuestionListProps) {
 
   if (items.length === 0) {
     return (
-      <div className="panel-zen-muted rounded-[28px] border-dashed p-8 text-center text-sm text-text-muted">
+      <div className="border-y border-border py-8 text-center text-sm text-text-muted">
         {emptyMessage ?? "هنوز پرسشی ثبت نشده است."}
       </div>
     );
@@ -54,7 +54,7 @@ export function QuestionList({ items, emptyMessage }: QuestionListProps) {
       {pending.length ? (
         <section className="space-y-3">
           <SectionHeading title="سوال‌های در انتظار پاسخ" subtitle="به‌زودی توسط تیم فنی بررسی می‌شود." />
-          <div className="space-y-4">
+          <div className="divide-y divide-border border-y border-border">
             {pending.map((question) => (
               <QuestionCard key={question.id} question={question} variant="pending" />
             ))}
@@ -65,7 +65,7 @@ export function QuestionList({ items, emptyMessage }: QuestionListProps) {
       {answered.length ? (
         <section className="space-y-3">
           <SectionHeading title="پرسش‌های پاسخ داده شده" subtitle="دیدگاه و پاسخ کارشناسان Oilbar" />
-          <div className="space-y-4">
+          <div className="divide-y divide-border border-y border-border">
             {answered.map((question) => (
               <QuestionCard key={question.id} question={question} variant="answered" />
             ))}
@@ -91,18 +91,16 @@ function QuestionCard({ question, variant }: { question: QuestionItem; variant: 
   const showAnswer = Boolean(question.answer);
 
   return (
-    <article className="panel-zen rounded-[28px] p-4 sm:p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <h5 className="text-sm font-bold leading-7 text-text-strong">{question.question}</h5>
-          <p className="mt-1 text-[11px] text-text-subtle">
-            {question.authorName} • ثبت شده در {createdAt}
-          </p>
-        </div>
-        <span className={cn("inline-flex items-center gap-1", statusStyle[question.status])}>
+    <article className="py-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[11px] text-text-subtle">
+          {question.authorName} • ثبت شده در {createdAt}
+        </p>
+        <span className={cn("text-[11px] font-extrabold", statusStyle[question.status])}>
           {statusLabel[question.status]}
         </span>
       </div>
+      <p className="mt-3 break-words text-sm font-bold leading-7 text-text-strong">{question.question}</p>
       {question.linkHref && question.linkLabel ? (
         <Link href={question.linkHref} className="text-link-zen mt-2 inline-flex items-center gap-1 text-xs font-bold">
           {question.linkLabel}
@@ -110,23 +108,17 @@ function QuestionCard({ question, variant }: { question: QuestionItem; variant: 
         </Link>
       ) : null}
 
-      <div className="panel-zen-muted mt-4 grid gap-4 rounded-[22px] border-dashed p-4 text-sm leading-7 text-text-body">
-        <div className="space-y-2">
-          <p className="text-xs font-bold text-text-subtle">متن پرسش</p>
-          <p className="break-words">{question.question}</p>
-        </div>
-        {showAnswer ? (
-          <div className="panel-zen rounded-[20px] p-4">
-            <p className="text-xs font-semibold text-emerald-700">پاسخ کارشناس Oilbar</p>
-            <p className="mt-2 break-words text-text-body">{question.answer}</p>
-            {answeredAt ? <p className="mt-2 text-[11px] text-text-subtle">تاریخ پاسخ: {answeredAt}</p> : null}
-          </div>
-        ) : variant === "pending" ? (
-          <div className="panel-zen-tint rounded-[20px] p-4 text-xs text-primary-accent-strong">
-            این پرسش در صف بررسی است و حداکثر ظرف ۲۴ ساعت پاسخ داده می‌شود.
-          </div>
-        ) : null}
-      </div>
+      {showAnswer ? (
+        <blockquote className="mt-4 border-r-2 border-emerald-500 bg-surface-secondary py-3 pl-3 pr-4 text-sm leading-7 text-text-body">
+          <p className="text-xs font-semibold text-emerald-700">پاسخ کارشناس Oilbar</p>
+          <p className="mt-2 break-words">{question.answer}</p>
+          {answeredAt ? <p className="mt-2 text-[11px] text-text-subtle">تاریخ پاسخ: {answeredAt}</p> : null}
+        </blockquote>
+      ) : variant === "pending" ? (
+        <p className="mt-4 border-r-2 border-primary-accent py-1 pr-4 text-xs leading-6 text-primary-accent-strong">
+          این پرسش در صف بررسی است و حداکثر ظرف ۲۴ ساعت پاسخ داده می‌شود.
+        </p>
+      ) : null}
     </article>
   );
 }

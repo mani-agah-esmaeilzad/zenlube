@@ -56,8 +56,8 @@ export function ReviewForm({ productId }: ReviewFormProps) {
         <p
           className={`mt-4 border-r-2 py-2 pl-3 pr-4 text-xs font-bold ${
             state.success
-              ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-              : "border-red-500 bg-red-50 text-[#B42318]"
+              ? "border-emerald-500 text-emerald-700"
+              : "border-red-500 text-[#B42318]"
           }`}
         >
           {state.message}

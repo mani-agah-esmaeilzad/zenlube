@@ -16,7 +16,7 @@ export function SignOutButton({ className }: SignOutButtonProps) {
       type="button"
       onClick={() => startTransition(() => signOut({ callbackUrl: "/" }))}
       className={cn(
-        "btn-outline inline-flex min-h-11 rounded-xl px-4 text-sm font-bold text-text-strong disabled:opacity-60",
+        "btn-ghost inline-flex !min-h-11 !rounded-lg px-3 text-sm font-bold text-text-strong disabled:opacity-60 md:!min-h-10",
         className,
       )}
       disabled={isPending}

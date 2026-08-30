@@ -93,14 +93,14 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
         <div
           className={cn(
             "relative overflow-hidden rounded-xl bg-surface-secondary",
-            !activeItem.src && "rounded-none border-y border-border bg-transparent",
+            !activeItem.src && "rounded-none bg-transparent",
           )}
           onTouchEnd={handleTouchEnd}
           onTouchStart={handleTouchStart}
         >
-          <div className={cn("relative", activeItem.src ? "min-h-[280px] min-[390px]:min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]" : "min-h-[140px]")}>
+          <div className={cn("relative", activeItem.src ? "min-h-[280px] min-[390px]:min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]" : "min-h-20")}>
             {!activeItem.src ? (
-              <div className="flex min-h-[140px] items-center justify-center text-sm font-bold text-text-soft">
+              <div className="flex min-h-20 items-center justify-start py-4 text-sm font-bold text-text-soft">
                 تصویر محصول موجود نیست
               </div>
             ) : (
@@ -124,7 +124,7 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
             {activeItem.src ? (
               <button
                 aria-label="نمایش تصویر بزرگ‌تر"
-                className="absolute left-3 top-3 inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white/90 text-text-strong shadow-[0_8px_20px_rgba(17,24,39,0.08)] transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong"
+                className="absolute left-3 top-3 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-white/95 text-text-strong transition hover:bg-surface-tint hover:text-primary-accent-strong"
                 onClick={() => setLightboxOpen(true)}
                 type="button"
               >
@@ -136,7 +136,7 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
               <>
                 <button
                   aria-label="تصویر قبلی"
-                  className="absolute right-3 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white/90 text-text-strong shadow-[0_8px_20px_rgba(17,24,39,0.08)] transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong"
+                  className="absolute right-3 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg bg-white/95 text-text-strong transition hover:bg-surface-tint hover:text-primary-accent-strong"
                   onClick={goPrevious}
                   type="button"
                 >
@@ -144,7 +144,7 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
                 </button>
                 <button
                   aria-label="تصویر بعدی"
-                  className="absolute left-3 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-white/90 text-text-strong shadow-[0_8px_20px_rgba(17,24,39,0.08)] transition hover:border-[rgba(245,158,11,0.26)] hover:bg-surface-tint hover:text-primary-accent-strong"
+                  className="absolute left-3 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg bg-white/95 text-text-strong transition hover:bg-surface-tint hover:text-primary-accent-strong"
                   onClick={goNext}
                   type="button"
                 >
@@ -163,8 +163,8 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
                 aria-label={`انتخاب تصویر ${index + 1}`}
                 aria-pressed={index === activeIndex}
                 className={cn(
-                  "relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border bg-surface-secondary transition sm:h-24 sm:w-24",
-                  index === activeIndex ? "border-[rgba(245,158,11,0.4)] ring-2 ring-[rgba(245,158,11,0.15)]" : "border-border",
+                  "relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 bg-surface-secondary transition sm:h-24 sm:w-24",
+                  index === activeIndex ? "border-primary-accent" : "border-transparent hover:border-border",
                 )}
                 onClick={() => setActiveIndex(index)}
                 type="button"
@@ -178,20 +178,20 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
 
       {mounted && lightboxOpen && activeItem.src
         ? createPortal(
-            <div className="fixed inset-0 z-[210] flex items-center justify-center bg-[#101828]/82 p-4 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[210] flex items-center justify-center bg-[#101828]/82 p-4">
               <button
                 aria-label="بستن تصویر"
                 className="absolute inset-0"
                 onClick={() => setLightboxOpen(false)}
                 type="button"
               />
-              <div className="relative z-10 w-full max-w-5xl rounded-2xl border border-white/10 bg-primary p-3 sm:p-5">
-                <div className="relative min-h-[72dvh] overflow-hidden rounded-xl bg-white">
+              <div className="relative z-10 w-full max-w-5xl">
+                <div className="relative min-h-[72dvh] overflow-hidden rounded-lg bg-white">
                   <Image alt={activeItem.alt} className="object-contain p-4 sm:p-6" fill sizes="90vw" src={activeItem.src} />
                 </div>
                 <button
                   aria-label="بستن"
-                  className="absolute left-5 top-5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-[#171B23]/90 text-white transition hover:border-[#F5C56B] hover:text-[#F5C56B]"
+                  className="absolute left-3 top-3 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[#171B23]/90 text-white transition hover:text-[#F5C56B] sm:left-5 sm:top-5"
                   onClick={() => setLightboxOpen(false)}
                   type="button"
                 >

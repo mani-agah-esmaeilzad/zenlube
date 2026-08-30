@@ -12,7 +12,7 @@ export function SignInButton({ className }: SignInButtonProps) {
     <Link
       href="/sign-in"
       className={cn(
-        "btn-outline inline-flex h-10 min-h-10 rounded-xl px-3.5 text-[13px] font-bold text-text-strong",
+        "btn-ghost inline-flex !min-h-11 !rounded-lg px-3 text-[13px] font-bold text-text-strong md:!min-h-10",
         className,
       )}
     >

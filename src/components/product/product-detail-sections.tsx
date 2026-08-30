@@ -77,7 +77,7 @@ export function ProductDetailSections({
               key={section.id}
               aria-selected={activeSection === section.id}
               className={cn(
-                "border-b-2 pb-3 text-sm font-extrabold transition",
+                "min-h-11 border-b-2 py-2 text-sm font-extrabold transition",
                 activeSection === section.id
                   ? "border-primary-accent text-text-strong"
                   : "border-transparent text-text-muted hover:text-text-strong",
@@ -159,7 +159,7 @@ function renderSectionBody(
         <div className="divide-y divide-border border-y border-border">
           {data.faqs.map((faq) => (
             <details key={faq.question} className="py-4">
-              <summary className="cursor-pointer list-none text-sm font-extrabold text-text-strong">{faq.question}</summary>
+              <summary className="flex min-h-11 cursor-pointer list-none items-center text-sm font-extrabold text-text-strong">{faq.question}</summary>
               <p className="mt-3 text-sm leading-7 text-[#475467]">{faq.answer}</p>
             </details>
           ))}

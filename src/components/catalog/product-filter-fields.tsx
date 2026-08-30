@@ -114,7 +114,7 @@ export function ProductFilterFields({
         </Field>
       </div>
 
-      <label className="flex min-h-11 items-center justify-between border-y border-border bg-surface-secondary px-1 py-2 text-sm font-bold text-text">
+      <label className="flex min-h-11 items-center justify-between border-y border-border px-1 py-2 text-sm font-bold text-text">
         فقط کالاهای موجود
         <input className="size-4 accent-[#D97706]" defaultChecked={defaults.inStock} name="inStock" type="checkbox" value="1" />
       </label>

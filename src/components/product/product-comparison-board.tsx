@@ -153,8 +153,8 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
                 onClick={() => setHighlight(item.key)}
                 className={
                   highlight === item.key
-                    ? "min-h-10 shrink-0 border-b-2 border-[#D97706] px-4 py-2 text-xs font-extrabold text-[#171B23] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0]"
-                    : "min-h-10 shrink-0 border-b-2 border-transparent px-4 py-2 text-xs font-bold text-[#667085] transition hover:text-[#D97706] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0]"
+                    ? "min-h-11 shrink-0 border-b-2 border-[#D97706] px-4 py-2 text-xs font-extrabold text-[#171B23] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0] md:min-h-10"
+                    : "min-h-11 shrink-0 border-b-2 border-transparent px-4 py-2 text-xs font-bold text-[#667085] transition hover:text-[#D97706] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDE7B0] md:min-h-10"
                 }
               >
                 {item.label}
@@ -168,13 +168,13 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="جستجو بر اساس برند، نام یا ویسکوزیته"
-            className="input-zen rounded-xl"
+            className="input-zen"
           />
           <div className="flex items-end gap-2">
             <select
               value={pendingSelection}
               onChange={(event) => setPendingSelection(event.target.value)}
-              className="input-zen min-w-0 flex-1 rounded-xl"
+              className="input-zen min-w-0 flex-1"
             >
               <option value="">انتخاب محصول برای مقایسه</option>
               {filteredProducts.map((product) => (
@@ -200,7 +200,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
                 key={product.id}
                 type="button"
                 onClick={() => handleRemove(product.id)}
-                className="inline-flex min-h-10 items-center gap-1.5 px-1 font-bold text-[#475467] transition hover:text-[#D97706]"
+                className="inline-flex min-h-11 items-center gap-1.5 px-1 font-bold text-[#475467] transition hover:text-[#D97706] md:min-h-10"
               >
                 {product.brand.name} · {product.name}
                 <span className="text-[10px]">×</span>
@@ -226,7 +226,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
                   <div className="min-w-0">
                     <Link
                       href={`/products/${product.slug}`}
-                      className="line-clamp-2 text-sm font-extrabold leading-7 text-[#171B23] hover:text-[#D97706]"
+                      className="line-clamp-2 min-h-11 py-2 text-sm font-extrabold leading-7 text-[#171B23] hover:text-[#D97706]"
                     >
                       {product.brand.name} · {product.name}
                     </Link>
@@ -235,7 +235,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
                   <button
                     type="button"
                     onClick={() => handleRemove(product.id)}
-                    className="inline-flex min-h-10 shrink-0 items-center px-1 text-[11px] font-bold text-[#667085] transition hover:text-[#D97706]"
+                    className="inline-flex min-h-11 shrink-0 items-center px-1 text-[11px] font-bold text-[#667085] transition hover:text-[#D97706] md:min-h-10"
                   >
                     حذف
                   </button>
@@ -291,7 +291,7 @@ export function ProductComparisonBoard({ products }: ProductComparisonBoardProps
           </div>
         </>
       ) : (
-        <div className="border-y border-dashed border-[#D0D5DD] py-10 text-center text-sm text-[#667085]">
+        <div className="py-10 text-center text-sm text-[#667085]">
           ابتدا محصولی را انتخاب کنید تا جدول مقایسه نمایش داده شود.
         </div>
       )}

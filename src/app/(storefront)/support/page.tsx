@@ -28,12 +28,12 @@ export default function SupportPage() {
         <div>
           <h2 className="text-lg font-extrabold text-text-strong">پیگیری سفارش</h2>
           <p className="mt-2 text-sm leading-7 text-text-muted">وضعیت سفارش، پرداخت و ارسال را از حساب کاربری ببینید.</p>
-          <Link className="mt-3 inline-flex text-sm font-extrabold text-primary-accent-strong" href="/account">رفتن به حساب کاربری</Link>
+          <Link className="mt-2 inline-flex min-h-11 items-center px-1 text-sm font-extrabold text-primary-accent-strong md:min-h-8" href="/account">رفتن به حساب کاربری</Link>
         </div>
         <div>
           <h2 className="text-lg font-extrabold text-text-strong">مشاورهٔ فنی</h2>
           <p className="mt-2 text-sm leading-7 text-text-muted">نام خودرو، سال ساخت و نوع موتور را آماده کنید تا انتخاب دقیق‌تری دریافت کنید.</p>
-          <Link className="mt-3 inline-flex text-sm font-extrabold text-primary-accent-strong" href="/cars">مشاهده دفترچه خودروها</Link>
+          <Link className="mt-2 inline-flex min-h-11 items-center px-1 text-sm font-extrabold text-primary-accent-strong md:min-h-8" href="/cars">مشاهده دفترچه خودروها</Link>
         </div>
       </section>
     </div>
@@ -63,7 +63,7 @@ function ContactRow({
     <div className="grid gap-2 py-4 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-5 sm:py-5">
       <p className="text-xs font-bold text-text-muted">{label}</p>
       <div className="min-w-0">
-        {href ? <a className="transition hover:text-primary-accent-strong" href={href}>{valueNode}</a> : valueNode}
+        {href ? <a className="inline-flex min-h-11 max-w-full items-center transition hover:text-primary-accent-strong md:min-h-8" href={href}>{valueNode}</a> : valueNode}
         <p className="mt-1 text-xs leading-6 text-text-muted">{helper}</p>
       </div>
     </div>

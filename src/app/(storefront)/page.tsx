@@ -163,7 +163,7 @@ export default async function Home() {
               ویسکوزیته، استاندارد و تأییدیهٔ سازنده را با دفترچهٔ خودرو تطبیق دهید. انتخاب‌گر خودرو فقط بر پایهٔ اطلاعات ثبت‌شده، پیشنهاد سازگار نمایش می‌دهد.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-3">
-              <Link className="btn-secondary" href="/cars">
+              <Link className="text-link-zen inline-flex min-h-11 items-center px-1 text-sm font-extrabold" href="/cars">
                 انتخاب بر اساس خودرو
               </Link>
               <Link className="text-sm font-extrabold text-primary-accent-strong" href="/blog">

@@ -46,7 +46,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
   };
 
   return (
-    <div className="border-y border-[#E5E7EB] bg-white py-5">
+    <div className="py-1">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-black text-[#111827]">گاراژ شما</p>
@@ -60,7 +60,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
       </div>
 
       {savedCars.length ? (
-        <div className="mt-4 divide-y divide-border border-y border-border">
+        <div className="mt-4 divide-y divide-border border-t border-border">
           {savedCars.map((car) => (
             <div key={car.slug} className="py-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -83,7 +83,7 @@ export function LocalGarage({ cars }: LocalGarageProps) {
           ))}
         </div>
       ) : (
-        <p className="mt-4 border-y border-[#E5E7EB] py-3 text-xs leading-6 text-[#6B7280]">
+        <p className="mt-4 text-xs leading-6 text-[#6B7280]">
           هنوز خودرویی در گاراژ این دستگاه ذخیره نشده است.
         </p>
       )}

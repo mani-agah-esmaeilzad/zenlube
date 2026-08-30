@@ -29,7 +29,7 @@ export default async function CheckoutFailurePage({ searchParams }: FailurePageP
 
   return (
     <div className="container-zen py-8 sm:py-10">
-      <div className="mx-auto max-w-2xl border-y border-border bg-white py-6 text-center sm:py-8">
+      <div className="mx-auto max-w-2xl bg-white py-6 text-center sm:py-8">
         <div className="mx-auto grid size-11 place-items-center text-2xl font-black text-[#D97706]">!</div>
         <h1 className="mt-4 text-xl font-extrabold text-text-strong sm:text-2xl">پرداخت ناموفق بود</h1>
         <p className="mt-3 text-sm leading-7 text-text-muted">{message}</p>

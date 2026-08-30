@@ -28,7 +28,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       footer={(
         <>
           کاربر جدید هستید؟{" "}
-          <Link href={signUpLink} className="font-bold text-primary-accent-strong hover:text-[#B45309]">
+          <Link href={signUpLink} className="inline-flex min-h-11 items-center align-middle font-bold text-primary-accent-strong transition hover:text-[#B45309]">
             ثبت‌نام کنید
           </Link>
         </>

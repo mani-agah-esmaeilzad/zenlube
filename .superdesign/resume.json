@@ -37,18 +37,18 @@
         "src/components/ui/mobile-sheet.tsx"
       ],
       "fingerprints": {
-        ".superdesign/design-system.md": "0b42e35bab0dc519ee5b851d4388e99272b20367f69ba6441a4c9f6f58b60c03",
-        "src/app/globals.css": "ecc895a9930999ea5118d7134308e455e9d698bd331d01f2e14cb223cca03514",
+        ".superdesign/design-system.md": "b9b099671b4473b311c906ffbb2ed8d31bf52b99d65cb3d503ce024a6001d484",
+        "src/app/globals.css": "d5266e436f24f2fca43d9a75f9a13026d26f4d5fa348a53bada76f505ef26730",
         "src/app/(storefront)/layout.tsx": "33119901bb3c232fafb2e3f3162a7dc96fc966578cb5055855cb890effcfbfec",
-        "src/app/(storefront)/page.tsx": "3af69f508126e4e1f14439ed7814dbb011469de6c701c5d28b6b174820d9d6fa",
+        "src/app/(storefront)/page.tsx": "4066d7deb79228c197c25564650c3eea3c9b908e8637c6608201978d7e35ea48",
         "src/components/layout/site-header.tsx": "569f7017b70e8584f0fca930987f8758509fc5a11534682a6674907629221925",
         "src/components/layout/mobile-nav.tsx": "d947118fb839a4edc26ba94e54ed2275e940ad5a3bf2d69da369271eb985962b",
         "src/components/layout/mobile-search.tsx": "950a63582dca87df00b33b8392a064d28b48b9980175477aa4c649d74a253608",
         "src/components/layout/site-footer.tsx": "29bc27b1d1a4f9bee1d3ada21f7e11cc12e6f21e1c034b292fe56bd3e7ed81d5",
-        "src/components/layout/hero-vehicle-finder.tsx": "e56a6bf2635147b263473c8354b70f074acefcefb677773779a8bcc67a51b81c",
+        "src/components/layout/hero-vehicle-finder.tsx": "ac04aa464347d250e423e2fda72d3d3cb1fb0384008c8839c3e6aba8cc368570",
         "src/components/layout/logo-mark.tsx": "82e09f15561d579980dfdf09aef1692aa3c177cd09e95d439a7988ad7716008b",
         "src/components/layout/cart-indicator.tsx": "3f97a0dba8a0d769729cd8b609d79c3684ead9bc7e0ea34fc070fae3b21f93a2",
-        "src/components/product/product-card.tsx": "6c2a610ab03a2934cfe9052757dc1c96e1fa16c0304dc57340000c2fd29cc46e",
+        "src/components/product/product-card.tsx": "42752435305a4912b22d04cfe777880c6225644ae01d7b65aebb4a48677d4808",
         "src/components/ui/section-header.tsx": "fc94748e66295bfca399f5f4b0ae28d86e8fc7814ace69d4edea2396f6ad4cc3",
         "src/components/ui/mobile-sheet.tsx": "795b0e3b59e9335fcb4790618e145e8adfb803fc568dcd14f1b9d484931e09ee"
       },
@@ -85,12 +85,12 @@
         },
         "bd147ef3-3f8e-4755-a64e-1415f7fad25b": {
           "title": "Compact technical storefront",
-          "visualDirection": "open image-led editorial storefront with compact controls and divider-led internal pages",
+          "visualDirection": "open image-led storefront with compact mobile product rows, square-edged dark bands, and divider-led internal pages",
           "parentDraftId": "f38327be-8589-44c0-bdfc-3c37283bf3bc",
           "currentVersion": 2
         }
       },
-      "updatedAt": "2026-08-29T20:35:38Z"
+      "updatedAt": "2026-08-30T06:04:34Z"
     }
   }
 }

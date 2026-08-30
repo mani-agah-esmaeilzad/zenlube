@@ -52,7 +52,7 @@ export default async function CartPage() {
 
       {cart?.items?.length ? (
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">
-          <div className="divide-y divide-border border-y border-border bg-white">
+          <div className="divide-y divide-border border-t border-border bg-white">
             {cart.items.map((item) => (
               <article key={item.id} className="py-4 sm:py-5">
                 <div className={item.product.imageUrl ? "grid grid-cols-[72px_minmax(0,1fr)] gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4" : "grid grid-cols-1"}>
@@ -65,7 +65,7 @@ export default async function CartPage() {
                   <div className="min-w-0">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                       <div className="min-w-0">
-                        <Link className="text-base font-bold leading-7 text-text-strong hover:text-primary-accent-strong" href={`/products/${item.product.slug}`}>
+                        <Link className="inline-flex min-h-11 items-center text-base font-bold leading-7 text-text-strong hover:text-primary-accent-strong" href={`/products/${item.product.slug}`}>
                           {item.product.name}
                         </Link>
                         <p className="mt-1 text-xs font-medium text-text-muted">{item.product.brand.name}</p>
@@ -82,7 +82,7 @@ export default async function CartPage() {
             ))}
           </div>
 
-          <aside className="h-fit border-y border-border py-5 lg:sticky lg:top-28 lg:border-y-0 lg:border-r lg:px-5 lg:py-0">
+          <aside className="h-fit border-t border-border pt-5 lg:sticky lg:top-28 lg:border-t-0 lg:border-r lg:px-5 lg:py-0">
             <h2 className="text-lg font-extrabold text-text-strong">خلاصه سفارش</h2>
             <PriceBlock amount={subtotal} className="mt-5" label="مبلغ قابل پرداخت" size="lg" />
             <div className="mt-5 space-y-4 text-sm text-text-muted">

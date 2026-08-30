@@ -27,8 +27,8 @@ export function QuantitySelector({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-xl border border-border bg-white",
-        size === "sm" ? "min-h-10" : "min-h-12",
+        "inline-flex items-center rounded-lg border border-border bg-white",
+        size === "sm" ? "min-h-11 md:min-h-10" : "min-h-12",
         className,
       )}
     >
@@ -36,7 +36,7 @@ export function QuantitySelector({
         aria-label="کاهش تعداد"
         className={cn(
           "inline-flex items-center justify-center text-text-strong transition hover:bg-surface-elevated disabled:text-text-soft",
-          size === "sm" ? "h-10 w-10 text-lg" : "h-12 w-12 text-xl",
+          size === "sm" ? "h-11 w-11 text-lg md:h-10 md:w-10" : "h-12 w-12 text-xl",
         )}
         disabled={decrementDisabled}
         onClick={() => onChange(Math.max(min, value - 1))}
@@ -57,7 +57,7 @@ export function QuantitySelector({
         aria-label="افزایش تعداد"
         className={cn(
           "inline-flex items-center justify-center text-text-strong transition hover:bg-surface-elevated disabled:text-text-soft",
-          size === "sm" ? "h-10 w-10 text-lg" : "h-12 w-12 text-xl",
+          size === "sm" ? "h-11 w-11 text-lg md:h-10 md:w-10" : "h-12 w-12 text-xl",
         )}
         disabled={incrementDisabled}
         onClick={() => onChange(typeof max === "number" ? Math.min(max, value + 1) : value + 1)}

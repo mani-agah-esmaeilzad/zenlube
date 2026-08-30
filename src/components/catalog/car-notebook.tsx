@@ -60,7 +60,7 @@ export function CarNotebook({ pages, productPanels = [] }: CarNotebookProps) {
   const activePanel = productPanels.find((panel) => panel.pageId === activePage.id);
   const pageCount = pages.length;
   const sheetSurfaceClass =
-    "border-y border-slate-200 bg-white py-5 text-slate-700 sm:py-6 lg:py-8";
+    "bg-white py-5 text-slate-700 sm:py-6 lg:py-8";
 
   const handleSelect = (index: number) => {
     if (index === activeNavIndex || isFlipping) {
@@ -73,7 +73,7 @@ export function CarNotebook({ pages, productPanels = [] }: CarNotebookProps) {
 
   return (
     <div className="relative space-y-5 bg-white">
-      <div className="border-b border-[#E5E7EB] bg-[#F8FAFC] py-2">
+      <div className="border-b border-[#E5E7EB]">
         <div
           role="tablist"
           aria-label="بخش‌های دفترچه خودرو"
@@ -93,7 +93,7 @@ export function CarNotebook({ pages, productPanels = [] }: CarNotebookProps) {
                 className={cn(
                   "min-h-12 min-w-[136px] shrink-0 border-b-2 px-3 py-2 text-right transition sm:min-w-[156px]",
                   isActive
-                    ? "border-[#D97706] bg-[#FFF8E8] text-[#D97706]"
+                    ? "border-[#D97706] text-[#D97706]"
                     : "border-transparent text-[#667085] hover:border-[#F5C56B]/60 hover:text-[#111827]",
                 )}
               >
@@ -202,7 +202,6 @@ function NotebookSheet({ page, index, pageCount, panelId, tabId, className }: No
       aria-labelledby={tabId}
       className={cn("relative flex h-full flex-col overflow-hidden notebook-sheet", className)}
     >
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-b from-[#F5C56B]/75 via-transparent to-[#F5C56B]/75 opacity-60" />
       <div className="flex items-center justify-between gap-3 text-xs text-slate-400">
         <span>
           صفحه {index !== null ? index + 1 : "?"} از {pageCount}
@@ -234,7 +233,7 @@ function NotebookSheet({ page, index, pageCount, panelId, tabId, className }: No
             block.type === "list" ? (
               <ul
                 key={`${page.id}-list-${idx}`}
-                className="grid gap-2 border-r-2 border-[#F59E0B] bg-[#F8FAFC] px-4 py-3 sm:px-5"
+                className="grid gap-2 border-r-2 border-[#F59E0B] py-1 pr-4 sm:pr-5"
               >
                 {block.items.map((item) => (
                   <li key={item} className="flex items-start gap-3">
@@ -275,7 +274,7 @@ function NotebookSheet({ page, index, pageCount, panelId, tabId, className }: No
 
 function NotebookProductsPanel({ page, panel }: { page: NotebookPage; panel: NotebookProductPanel }) {
   return (
-    <section className="border-y border-[#E5E7EB] bg-[#FFFDF7]">
+    <section className="border-t border-[#E5E7EB] bg-white">
       <div className="flex flex-col gap-4 border-b border-[#E5E7EB] px-4 py-4 sm:px-5 lg:flex-row lg:items-start lg:justify-between lg:px-6">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -348,12 +347,12 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
 
   return (
     <article className="flex h-full min-w-0 flex-col border-t border-[#E7E8EE] bg-white py-4">
-      <div className="flex items-start gap-3 p-3 sm:p-4">
+      <div className="flex items-start gap-3">
         {product.imageUrl ? (
           <Link
             href={`/products/${product.slug}`}
             aria-label={product.name}
-            className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#F8FAFC] sm:size-28"
+            className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#F8FAFC] sm:size-28"
           >
             <Image
               alt={`تصویر ${product.name}`}
@@ -371,7 +370,7 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
               <p className="text-[11px] font-extrabold text-[#D97706]">{product.brandName}</p>
               <Link
                 href={`/products/${product.slug}`}
-                className="mt-1 block line-clamp-2 text-sm font-extrabold leading-7 text-[#111827] transition hover:text-[#D97706]"
+                className="mt-1 inline-flex min-h-11 items-center text-sm font-extrabold leading-7 text-[#111827] transition hover:text-[#D97706]"
               >
                 {product.name}
               </Link>
@@ -379,22 +378,22 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
             <WishlistButton compact productId={product.id} />
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
             <span className="text-[10px] font-bold text-[#667085]">
               {product.categoryName}
             </span>
             {product.isBestseller ? (
-              <span className="rounded-full bg-[#111827] px-2.5 py-1 text-[10px] font-bold text-white">پرفروش</span>
-            ) : null}
-            {product.isFeatured ? (
-              <span className="rounded-full bg-[#FFF8E8] px-2.5 py-1 text-[10px] font-bold text-[#D97706]">ویژه</span>
+              <span className="text-[10px] font-extrabold text-[#111827]">پرفروش</span>
+            ) : product.isFeatured ? (
+              <span className="text-[10px] font-extrabold text-[#D97706]">ویژه</span>
             ) : null}
             <span
               className={cn(
-                "rounded-full px-2.5 py-1 text-[10px] font-bold",
-                isAvailable ? "bg-[#ECFDF3] text-[#027A48]" : "bg-[#FEF3F2] text-[#B42318]",
+                "inline-flex items-center gap-1.5 text-[10px] font-bold",
+                isAvailable ? "text-[#027A48]" : "text-[#B42318]",
               )}
             >
+              <span aria-hidden="true" className={cn("h-1.5 w-1.5 rounded-full", isAvailable ? "bg-[#027A48]" : "bg-[#B42318]")} />
               {isAvailable ? "موجود" : "ناموجود"}
             </span>
           </div>
@@ -405,11 +404,11 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
         </div>
       </div>
 
-      <div className="mt-auto border-t border-[#EEF2F6] px-3 pt-3 sm:px-4">
+      <div className="mt-auto border-t border-[#EEF2F6] pt-3">
         <div className="flex items-center justify-between gap-3">
           <PriceBlock amount={product.price} align="start" size="sm" />
           {product.averageRating != null && product.reviewCount > 0 ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#FFFAEB] px-2.5 py-1 text-[11px] font-bold text-[#B54708]">
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#B54708]">
               <StarIcon className="h-3.5 w-3.5 fill-current" />
               {product.averageRating.toLocaleString("fa-IR", { maximumFractionDigits: 1 })}
             </span>

@@ -34,10 +34,10 @@ export function CarCard({ car, showDetailLink = true, showOverview = true }: Car
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <Link
-                className="line-clamp-2 text-base font-extrabold leading-7 text-text-strong transition hover:text-primary-accent-strong sm:text-lg"
+                className="inline-flex min-h-11 items-center text-base font-extrabold leading-7 text-text-strong transition hover:text-primary-accent-strong sm:text-lg md:min-h-8"
                 href={`/cars/${car.slug}`}
               >
-                {carName}
+                <span className="line-clamp-2">{carName}</span>
               </Link>
               {car.generation ? <p className="mt-0.5 line-clamp-1 text-xs text-text-muted sm:text-sm">{car.generation}</p> : null}
             </div>

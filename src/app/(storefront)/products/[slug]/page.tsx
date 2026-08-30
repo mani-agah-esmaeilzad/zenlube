@@ -116,6 +116,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const shippingEstimate = getShippingEstimateLabel("STANDARD");
   const isAvailable = product.stock > 0;
   const galleryItems = buildProductGalleryItems(product);
+  const hasGalleryMedia = galleryItems.length > 0;
   const specRows = buildProductSpecRows(product);
   const quickFacts = buildProductQuickFacts(product);
   const compatibleCars = buildCompatibilityItems(product);
@@ -176,18 +177,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
         />
       </div>
 
-      <section className="grid gap-5 sm:gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start">
-        <div className="min-w-0">
-          <ProductGallery items={galleryItems} title={product.name} />
-        </div>
+      <section className={hasGalleryMedia ? "grid gap-5 sm:gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start" : "max-w-4xl"}>
+        {hasGalleryMedia ? (
+          <div className="min-w-0">
+            <ProductGallery items={galleryItems} title={product.name} />
+          </div>
+        ) : null}
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2 text-sm font-bold">
-            <Link className="text-primary-accent-strong hover:text-[#B45309]" href={`/products?brand=${product.brand.slug}`}>
+            <Link className="inline-flex min-h-11 items-center text-primary-accent-strong hover:text-[#B45309] md:min-h-9" href={`/products?brand=${product.brand.slug}`}>
               {product.brand.name}
             </Link>
             <span className="text-text-soft">•</span>
-            <Link className="text-text-muted hover:text-text-strong" href={`/categories/${product.category.slug}`}>
+            <Link className="inline-flex min-h-11 items-center text-text-muted hover:text-text-strong md:min-h-9" href={`/categories/${product.category.slug}`}>
               {product.category.name}
             </Link>
           </div>
@@ -295,7 +298,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <h2 className="section-title">محصولات مرتبط</h2>
               <p className="section-subtitle">کالاهای هم‌دسته یا هم‌برند برای تصمیم‌گیری سریع‌تر</p>
             </div>
-            <Link className="text-sm font-bold text-primary-accent-strong" href="/products">
+            <Link className="inline-flex min-h-11 items-center text-sm font-bold text-primary-accent-strong" href="/products">
               مشاهده همه
             </Link>
           </div>

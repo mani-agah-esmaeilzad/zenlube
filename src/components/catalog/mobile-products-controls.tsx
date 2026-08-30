@@ -53,30 +53,42 @@ export function MobileProductsControls({
           <p className="mt-1 text-xs text-text-muted">{currentSortLabel}</p>
         </div>
         {activeFilters.length ? (
-          <Link className="text-xs font-bold text-primary-accent-strong" href="/products">
+          <Link className="inline-flex min-h-11 items-center px-1 text-xs font-bold text-primary-accent-strong" href="/products">
             پاکسازی فیلترها
           </Link>
         ) : null}
       </div>
 
-      <div className="sticky top-[4.25rem] z-20 -mx-4 mt-3 flex gap-2 border-y border-border/80 bg-white/95 px-4 py-2 backdrop-blur-md sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
-        <button className="btn-outline min-h-11 px-3 text-xs" onClick={() => setFiltersOpen(true)} type="button">
+      <div className="sticky top-[4.25rem] z-20 -mx-4 mt-3 flex border-y border-border/80 bg-white/95 px-4 backdrop-blur-md sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
+        <button
+          className="inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 border-l border-border px-3 text-xs font-extrabold text-text-strong transition hover:bg-surface-secondary hover:text-primary-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-accent-strong"
+          onClick={() => setFiltersOpen(true)}
+          type="button"
+        >
           فیلترها
           {activeFilters.length ? (
-            <span className="rounded-full bg-primary px-2 py-1 text-[11px] text-white">
-              {activeFilters.length.toLocaleString("fa-IR")}
+            <span className="text-[11px] text-primary-accent-strong">
+              ({activeFilters.length.toLocaleString("fa-IR")})
             </span>
           ) : null}
         </button>
-        <button className="btn-outline min-h-11 px-3 text-xs" onClick={() => setSortOpen(true)} type="button">
+        <button
+          className="inline-flex min-h-11 flex-1 items-center justify-center px-3 text-xs font-extrabold text-text-strong transition hover:bg-surface-secondary hover:text-primary-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-accent-strong"
+          onClick={() => setSortOpen(true)}
+          type="button"
+        >
           مرتب‌سازی
         </button>
       </div>
 
       {activeFilters.length ? (
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 pt-3 scrollbar-none sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
-          {activeFilters.map((item) => (
-            <span key={item} className="chip-zen shrink-0 px-3 py-1.5 text-xs">
+        <div className="-mx-4 flex overflow-x-auto px-4 pb-1 pt-2 scrollbar-none sm:-mx-5 sm:px-5 md:-mx-6 md:px-6">
+          {activeFilters.map((item, index) => (
+            <span
+              key={item}
+              className="inline-flex min-h-11 shrink-0 items-center text-xs font-medium text-text-muted"
+            >
+              {index > 0 ? <span aria-hidden="true" className="mx-3 size-1 rounded-full bg-primary-accent-strong" /> : null}
               {item}
             </span>
           ))}

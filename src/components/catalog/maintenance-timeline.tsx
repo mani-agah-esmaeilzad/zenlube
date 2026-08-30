@@ -85,19 +85,19 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
           <article
             key={task.id}
             className={cn(
-              "border-r-2 px-1 py-5 transition sm:px-4",
+              "border-r-2 px-1 py-5 transition sm:pr-4",
               task.status === "due"
-                ? "border-[#DC2626] bg-[#FFF8E8]"
+                ? "border-[#DC2626]"
                 : task.status === "upcoming"
-                ? "border-amber-400 bg-amber-50"
-                : "border-green-500 bg-white",
+                ? "border-amber-400"
+                : "border-green-500",
             )}
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-base font-extrabold text-[#111827]">{task.title}</h3>
-                  <span className={cn("rounded-full px-3 py-1 text-[11px] font-bold", task.status === "due" ? "bg-[#FFF1F3] text-[#DC2626]" : task.status === "upcoming" ? "bg-[#FFF8E8] text-[#D97706]" : "bg-green-50 text-[#16A34A]")}>
+                  <span className={cn("text-[11px] font-bold", task.status === "due" ? "text-[#DC2626]" : task.status === "upcoming" ? "text-[#D97706]" : "text-[#16A34A]")}>
                     {statusLabels[task.status]}
                   </span>
                 </div>

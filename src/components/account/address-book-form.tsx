@@ -35,7 +35,7 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="divide-y divide-border border-y border-border">
+      <div className="divide-y divide-border border-t border-border">
         {addresses.length ? (
           addresses.map((address) => (
             <div key={address.id} className="py-4">
@@ -93,7 +93,7 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
         <Field label="شهر" name="city" defaultValue="" errors={state?.errors?.city} />
         <Field label="آدرس اصلی" name="address1" defaultValue="" errors={state?.errors?.address1} wide />
         <Field label="جزئیات تکمیلی" name="address2" defaultValue="" wide required={false} />
-        <label className="flex items-center gap-2 text-xs font-bold text-[#374151] md:col-span-2">
+        <label className="flex min-h-11 items-center gap-2 text-xs font-bold text-[#374151] md:col-span-2">
           <input type="checkbox" name="setAsDefault" className="size-4 accent-[#F59E0B]" />
           این آدرس به‌عنوان پیش‌فرض ذخیره شود
         </label>

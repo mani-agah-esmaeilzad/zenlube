@@ -102,14 +102,14 @@ function QuestionCard({ question, variant }: { question: QuestionItem; variant: 
       </div>
       <p className="mt-3 break-words text-sm font-bold leading-7 text-text-strong">{question.question}</p>
       {question.linkHref && question.linkLabel ? (
-        <Link href={question.linkHref} className="text-link-zen mt-2 inline-flex items-center gap-1 text-xs font-bold">
+        <Link href={question.linkHref} className="text-link-zen mt-2 inline-flex min-h-11 items-center gap-1 text-xs font-bold">
           {question.linkLabel}
           <ArrowIcon className="h-3 w-3" />
         </Link>
       ) : null}
 
       {showAnswer ? (
-        <blockquote className="mt-4 border-r-2 border-emerald-500 bg-surface-secondary py-3 pl-3 pr-4 text-sm leading-7 text-text-body">
+        <blockquote className="mt-4 border-r-2 border-emerald-500 py-2 pl-3 pr-4 text-sm leading-7 text-text-body">
           <p className="text-xs font-semibold text-emerald-700">پاسخ کارشناس Oilbar</p>
           <p className="mt-2 break-words">{question.answer}</p>
           {answeredAt ? <p className="mt-2 text-[11px] text-text-subtle">تاریخ پاسخ: {answeredAt}</p> : null}

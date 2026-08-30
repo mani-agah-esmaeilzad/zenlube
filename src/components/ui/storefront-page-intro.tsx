@@ -28,7 +28,7 @@ export function StorefrontPageIntro({
       className={cn(
         "relative px-4 sm:px-5 md:px-6",
         compact ? "py-4 sm:py-5" : "py-5 sm:py-6 md:py-7",
-        tone === "dark" && "overflow-hidden rounded-xl bg-primary text-white",
+        tone === "dark" && "overflow-hidden border-y border-white/10 bg-primary text-white",
         tone === "soft" && "border-y border-border/80 bg-surface-secondary text-text-strong",
         tone === "plain" && "bg-white text-text-strong",
         className,

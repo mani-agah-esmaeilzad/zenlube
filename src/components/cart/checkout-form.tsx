@@ -153,13 +153,13 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
         <section className="border-b border-border py-6">
           <SectionTitle title="آدرس و ارسال" subtitle="آدرس دقیق باعث پردازش سریع‌تر سفارش می‌شود." />
           {addresses.length ? (
-            <div className="mt-5 divide-y divide-border border-y border-border">
+            <div className="mt-5 divide-y divide-border border-t border-border">
               {addresses.map((address) => (
                 <button
                   key={address.id}
                   type="button"
                   onClick={() => handleAddressSelect(address.id)}
-                  className={`relative block min-h-11 w-full px-3 py-3 text-right text-xs transition hover:bg-surface-secondary ${selectedAddressId === address.id ? "bg-surface-tint" : "bg-white"}`}
+                  className={`relative block min-h-11 w-full border-r-2 px-3 py-3 text-right text-xs transition hover:bg-surface-secondary ${selectedAddressId === address.id ? "border-primary-accent-strong bg-surface-tint" : "border-transparent bg-white"}`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-black text-text-strong">{address.label}</span>
@@ -184,7 +184,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
             </label>
           </div>
 
-          <div className="mt-6 divide-y divide-border border-y border-border md:grid md:grid-cols-3 md:divide-x md:divide-y-0">
+          <div className="mt-6 divide-y divide-border border-t border-border md:grid md:grid-cols-3 md:divide-x md:divide-y-0">
             {shippingOptions.map((option) => (
               <label
                 key={option.value}
@@ -222,7 +222,7 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
       </div>
 
       <aside>
-        <section className="border-y border-border py-5 text-sm lg:sticky lg:top-28 lg:border-y-0 lg:border-r lg:px-5 lg:py-0">
+        <section className="border-t border-border pt-5 text-sm lg:sticky lg:top-28 lg:border-t-0 lg:border-r lg:px-5 lg:py-0">
           <h2 className="text-lg font-extrabold text-text-strong">خلاصه سفارش</h2>
           <div className="mt-4 space-y-3">
             {items.map((item) => (
@@ -264,9 +264,9 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
 function Stepper() {
   const steps = ["سبد خرید", "آدرس و ارسال", "پرداخت", "تکمیل سفارش"];
   return (
-    <ol className="grid grid-cols-4 border-y border-border text-[10px] font-bold text-text-muted sm:text-[11px]">
+    <ol className="grid grid-cols-4 border-b border-border text-[10px] font-bold text-text-muted sm:text-[11px]">
       {steps.map((step, index) => (
-        <li key={step} className={`flex min-h-11 items-center justify-center gap-1 border-l border-border px-1 py-2 text-center last:border-l-0 ${index === 1 || index === 2 ? "text-primary-accent-strong" : ""}`}>
+        <li key={step} className={`-mb-px flex min-h-11 items-center justify-center gap-1 border-b-2 px-1 py-2 text-center ${index === 1 || index === 2 ? "border-primary-accent-strong text-primary-accent-strong" : "border-transparent"}`}>
           <span className="hidden text-[10px] text-text-soft min-[390px]:inline">{(index + 1).toLocaleString("fa-IR")}.</span>
           <span>{step}</span>
         </li>

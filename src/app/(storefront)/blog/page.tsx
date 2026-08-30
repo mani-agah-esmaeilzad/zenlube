@@ -39,7 +39,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <span>تازه‌ترین راهنماهای فنی و خرید</span>
           <Link
             href="/support"
-            className="inline-flex min-h-10 shrink-0 items-center px-1 text-xs font-extrabold text-primary-accent-strong transition hover:text-[#B45309]"
+            className="inline-flex min-h-11 shrink-0 items-center px-1 text-xs font-extrabold text-primary-accent-strong transition hover:text-[#B45309] md:min-h-10"
           >
             درخواست موضوع پیشنهادی
           </Link>

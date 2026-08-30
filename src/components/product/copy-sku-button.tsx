@@ -25,7 +25,7 @@ export function CopySkuButton({ sku }: CopySkuButtonProps) {
 
   return (
     <button
-      className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-2 py-1 text-[11px] font-bold text-text-muted transition hover:border-[rgba(217,119,6,0.28)] hover:text-primary-accent-strong"
+      className="inline-flex min-h-11 items-center gap-1.5 rounded-md bg-surface-secondary px-2.5 py-1 text-[11px] font-bold text-text-muted transition hover:bg-surface-tint hover:text-primary-accent-strong md:min-h-9"
       onClick={handleCopy}
       type="button"
     >

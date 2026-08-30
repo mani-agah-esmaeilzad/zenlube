@@ -144,7 +144,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
       <Breadcrumb items={[{ href: "/", label: "خانه" }, { href: "/cars", label: "دفترچه خودروها" }, { label: title }]} />
 
       <section
-        className={`relative grid gap-5 overflow-hidden rounded-2xl bg-primary p-5 text-white sm:p-6 md:p-8 ${
+        className={`relative grid gap-5 overflow-hidden border-y border-white/10 bg-primary p-5 text-white sm:p-6 md:p-8 ${
           car.imageUrl ? "lg:grid-cols-[1fr_360px]" : ""
         }`}
       >
@@ -165,7 +165,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
         </div>
         {car.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={car.imageUrl} alt={title} className="aspect-[4/3] h-full w-full rounded-xl object-cover" loading="lazy" />
+          <img src={car.imageUrl} alt={title} className="aspect-[4/3] h-full w-full rounded-lg object-cover" loading="lazy" />
         ) : null}
       </section>
 
@@ -178,7 +178,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
                 هر بخش فقط اطلاعات همان سیستم خودرو را نشان می‌دهد تا روی موبایل هم سریع‌تر خوانده شود.
               </p>
             </div>
-            <Link href={`/products?car=${car.slug}`} className="text-sm font-extrabold text-primary-accent-strong">مشاهده محصولات سازگار</Link>
+            <Link href={`/products?car=${car.slug}`} className="inline-flex min-h-11 items-center text-sm font-extrabold text-primary-accent-strong">مشاهده محصولات سازگار</Link>
           </div>
 
           <dl className="-mx-4 mt-5 flex snap-x overflow-x-auto px-4 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 xl:grid-cols-4">
@@ -197,9 +197,9 @@ export default async function CarDetailPage({ params }: CarPageProps) {
               <h2 className="section-title">محصولات مناسب این خودرو</h2>
               <p className="section-subtitle">روغن‌ها و فیلترهای متصل‌شده به دفترچه فنی {title}</p>
             </div>
-            <Link href={`/products?car=${car.slug}`} className="text-link-zen text-sm font-bold">مشاهده همه</Link>
+            <Link href={`/products?car=${car.slug}`} className="text-link-zen inline-flex min-h-11 items-center text-sm font-bold">مشاهده همه</Link>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {recommendedProducts.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
         </section>
@@ -210,7 +210,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
         <div className="mt-5 divide-y divide-border border-y border-border">
           {faqs.map(([question, answer]) => (
             <details key={question} className="py-4">
-              <summary className="cursor-pointer list-none text-sm font-bold text-text-strong">{question}</summary>
+              <summary className="flex min-h-11 cursor-pointer list-none items-center text-sm font-bold text-text-strong">{question}</summary>
               <p className="mt-3 text-sm leading-7 text-text-muted">{answer}</p>
             </details>
           ))}
@@ -227,9 +227,19 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           <h2 className="section-title">مطالب مرتبط با نگهداری {title}</h2>
           <div className="divide-y divide-border border-y border-border">
             {relatedPosts.map((post) => (
-              <Link key={post.id} href={`/blog/${post.slug}`} className="group grid gap-2 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5">
-                <span className="text-xs text-text-subtle">{dateFormatter.format(post.publishedAt)}</span>
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className={post.coverImage ? "group grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5" : "group grid gap-2 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5"}
+              >
+                {post.coverImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={post.coverImage} alt="" className="h-16 w-full rounded-lg object-cover sm:h-20" loading="lazy" />
+                ) : (
+                  <span className="text-xs text-text-subtle">{dateFormatter.format(post.publishedAt)}</span>
+                )}
                 <span className="min-w-0">
+                  {post.coverImage ? <span className="block text-xs text-text-subtle">{dateFormatter.format(post.publishedAt)}</span> : null}
                   <span className="block text-base font-bold leading-7 text-text-strong transition group-hover:text-primary-accent-strong">{post.title}</span>
                   <span className="mt-1 block line-clamp-2 text-sm leading-7 text-text-muted">{post.excerpt}</span>
                 </span>
@@ -245,9 +255,15 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           <div className="divide-y divide-border border-y border-border">
             {siblings.map((sibling) => (
               <Link key={sibling.id} href={`/cars/${sibling.slug}`} className="group flex items-center justify-between gap-4 py-4">
-                <span className="min-w-0">
-                  <span className="block font-bold text-text-strong transition group-hover:text-primary-accent-strong">{sibling.manufacturer} {sibling.model}</span>
-                  <span className="mt-1 block text-xs leading-6 text-text-muted">{sibling.generation ?? "نسل ثبت نشده"} · {sibling.viscosity ?? "ویسکوزیته نامشخص"}</span>
+                <span className="flex min-w-0 items-center gap-3">
+                  {sibling.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={sibling.imageUrl} alt="" className="h-14 w-16 shrink-0 rounded-lg object-cover" loading="lazy" />
+                  ) : null}
+                  <span className="min-w-0">
+                    <span className="block font-bold text-text-strong transition group-hover:text-primary-accent-strong">{sibling.manufacturer} {sibling.model}</span>
+                    <span className="mt-1 block text-xs leading-6 text-text-muted">{sibling.generation ?? "نسل ثبت نشده"} · {sibling.viscosity ?? "ویسکوزیته نامشخص"}</span>
+                  </span>
                 </span>
                 <span aria-hidden="true" className="shrink-0 text-primary-accent-strong">←</span>
               </Link>

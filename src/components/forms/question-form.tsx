@@ -106,14 +106,14 @@ export function QuestionForm({ type, slug, title }: QuestionFormProps) {
           onChange={(event) => setQuestion(event.target.value)}
           rows={4}
           placeholder="سوال خود را با جزئیات بیان کنید..."
-          className="input-zen mt-2 min-h-32 resize-y rounded-[18px] py-3"
+          className="input-zen mt-2 min-h-32 resize-y py-3"
         />
       </label>
       {state.status === "error" && state.message ? (
-        <p className="border-r-2 border-red-500 bg-red-50 py-2 pl-3 pr-4 text-xs font-bold text-[#DC2626]">{state.message}</p>
+        <p className="border-r-2 border-red-500 py-2 pl-3 pr-4 text-xs font-bold text-[#DC2626]">{state.message}</p>
       ) : null}
       {state.status === "success" && state.message ? (
-        <p className="border-r-2 border-emerald-500 bg-emerald-50 py-2 pl-3 pr-4 text-xs font-bold text-[#16A34A]">{state.message}</p>
+        <p className="border-r-2 border-emerald-500 py-2 pl-3 pr-4 text-xs font-bold text-[#16A34A]">{state.message}</p>
       ) : null}
       <button type="submit" disabled={isPending} className="btn-primary w-fit px-4">
         {isPending ? "در حال ارسال..." : "ثبت سوال"}

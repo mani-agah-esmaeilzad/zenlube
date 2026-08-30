@@ -29,7 +29,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
   return (
     <div className="container-zen py-8 sm:py-10">
-      <div className="mx-auto max-w-3xl border-y border-emerald-200 bg-white py-6 sm:py-8">
+      <div className="mx-auto max-w-3xl bg-white py-6 sm:py-8">
         <div className="flex items-start gap-4 border-r-4 border-emerald-500 pr-4">
           <div className="grid size-11 shrink-0 place-items-center text-2xl font-black text-[#16A34A]">✓</div>
           <div>
@@ -38,7 +38,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
           </div>
         </div>
 
-        <div className="mt-6 divide-y divide-border border-y border-border sm:mt-8">
+        <div className="mt-6 divide-y divide-border border-t border-border sm:mt-8">
           <Info label="مبلغ پرداختی" value={formatPrice(order.total)} />
           <Info label="کد پیگیری پرداخت" value={latestTransaction?.refId ?? order.paymentRefId ?? "-"} mono />
           <Info label="وضعیت سفارش" value="پرداخت شده" />
@@ -53,7 +53,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
         <div className="mt-6 border-t border-border pt-5 sm:mt-8">
           <h2 className="text-sm font-black text-[#111827]">اقلام سفارش</h2>
-          <div className="mt-3 divide-y divide-border border-y border-border">
+          <div className="mt-3 divide-y divide-border border-t border-border">
             {order.items.map((item) => (
               <div key={item.id} className="flex min-h-11 items-start justify-between gap-3 py-3 text-xs text-[#6B7280]">
                 <span className="min-w-0 break-words">{item.product.name}</span>
@@ -88,7 +88,7 @@ function Info({ label, value, mono }: { label: string; value: string; mono?: boo
 function ResultShell({ title, message }: { type: string; title: string; message: string }) {
   return (
     <div className="container-zen py-10 sm:py-16">
-      <div className="mx-auto max-w-xl border-y border-[#E5E7EB] bg-white py-6 text-center sm:py-8">
+      <div className="mx-auto max-w-xl bg-white py-6 text-center sm:py-8">
         <h1 className="text-2xl font-extrabold text-[#111827]">{title}</h1>
         <p className="mt-3 text-sm text-[#6B7280]">{message}</p>
         <Link href="/products" className="btn-primary mt-8 inline-flex !min-h-11 px-4 text-xs">بازگشت به فروشگاه</Link>

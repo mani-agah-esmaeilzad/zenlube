@@ -143,7 +143,7 @@ export function HeroVehicleFinder({ cars, variant = "default" }: HeroVehicleFind
   };
 
   return (
-    <div className={cn(variant === "compact" ? "bg-surface-dark py-7 text-white md:py-9" : "panel-zen-dark rounded-2xl p-5")}>
+    <div className={cn(variant === "compact" ? "bg-surface-dark py-7 text-white md:py-9" : "panel-zen-dark p-5")}>
       <div className={cn(variant === "compact" ? "container-zen" : "space-y-4")}>
         <div className={cn(variant === "compact" ? "mb-5 flex items-start justify-between gap-5" : "space-y-1")}>
           <div className="min-w-0">

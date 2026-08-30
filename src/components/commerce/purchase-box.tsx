@@ -44,11 +44,11 @@ export function PurchaseBox({
         </StatusPill>
       </div>
 
-      <div className="mt-4 divide-y divide-border border-y border-border text-xs leading-6 text-[#374151]">
-        <p className="py-2">ضمانت اصالت و سلامت فیزیکی کالا</p>
-        <p className="py-2">مشاوره تخصصی قبل از خرید</p>
-        <p className="py-2">ارسال سریع با بسته‌بندی امن</p>
-        {estimatedDeliveryLabel ? <p className="py-2 font-bold text-[#D97706]">{estimatedDeliveryLabel}</p> : null}
+      <div className="mt-4 space-y-2 text-xs leading-6 text-[#374151]">
+        <p>ضمانت اصالت و سلامت فیزیکی کالا</p>
+        <p>مشاوره تخصصی قبل از خرید</p>
+        <p>ارسال سریع با بسته‌بندی امن</p>
+        {estimatedDeliveryLabel ? <p className="font-bold text-[#D97706]">{estimatedDeliveryLabel}</p> : null}
       </div>
 
       <div className="mt-4">

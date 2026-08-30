@@ -15,9 +15,9 @@ type AddToCartButtonProps = {
 };
 
 const sizeStyles = {
-  sm: "min-h-10 rounded-xl px-4 py-2 text-[13px]",
-  md: "min-h-11 rounded-xl px-5 py-2.5 text-sm",
-  lg: "min-h-[48px] rounded-xl px-6 py-3 text-sm sm:text-base",
+  sm: "min-h-11 rounded-lg px-4 py-2 text-[13px] md:min-h-10",
+  md: "min-h-11 rounded-lg px-5 py-2.5 text-sm",
+  lg: "min-h-[48px] rounded-lg px-6 py-3 text-sm sm:text-base",
 } as const;
 
 export function AddToCartButton({

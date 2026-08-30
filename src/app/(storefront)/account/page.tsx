@@ -251,6 +251,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 name: item.product.name,
                 brandName: item.product.brand.name,
                 price: Number(item.product.price),
+                imageUrl: item.product.imageUrl,
               }))}
             />
           </section>
@@ -265,9 +266,10 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 name: item.product.name,
                 brandName: item.product.brand.name,
                 price: Number(item.product.price),
+                imageUrl: item.product.imageUrl,
               }))}
             />
-            <div className="border-y border-border py-5">
+            <div className="py-1">
               <p className="text-sm font-black text-text-strong">سفارش مجدد سریع</p>
               <p className="mt-2 text-xs leading-6 text-text-muted">
                 از بین محصولات علاقه‌مندی و اخیراً دیده‌شده می‌توانید سریع‌تر به خرید بعدی برگردید.
@@ -365,7 +367,7 @@ function OrderDetail({ order }: { order: AccountOrder }) {
       {order.statusEvents?.length ? (
         <div className="mt-6 border-t border-[#E5E7EB] pt-5">
           <p className="text-sm font-black text-[#111827]">تایم‌لاین سفارش</p>
-          <div className="mt-4 divide-y divide-[#E5E7EB] border-y border-[#E5E7EB]">
+          <div className="mt-4 divide-y divide-[#E5E7EB] border-t border-[#E5E7EB]">
             {order.statusEvents.map((event) => (
               <div key={event.id} className="py-3">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
@@ -388,7 +390,7 @@ function OrderDetail({ order }: { order: AccountOrder }) {
             </div>
           </div>
           {order.returnRequests?.length ? (
-            <div className="mt-4 divide-y divide-border border-y border-border">
+            <div className="mt-4 divide-y divide-border border-t border-border">
               {order.returnRequests.map((request) => (
                 <div key={request.id} className="py-4 text-xs">
                   <div className="flex items-center justify-between gap-3">
@@ -471,24 +473,34 @@ function ProductShelf({
 }: {
   title: string;
   emptyMessage: string;
-  items: Array<{ id: string; slug: string; name: string; brandName: string; price: number }>;
+  items: Array<{ id: string; slug: string; name: string; brandName: string; price: number; imageUrl?: string | null }>;
 }) {
   return (
-    <div className="border-y border-border py-5">
+    <div className="py-1">
       <p className="text-sm font-black text-text-strong">{title}</p>
       {items.length ? (
-        <div className="mt-4 divide-y divide-border border-y border-border">
+        <div className="mt-4 divide-y divide-border border-t border-border">
           {items.map((item) => (
             <Link
               key={item.id}
               href={`/products/${item.slug}`}
-              className="flex min-h-11 flex-col gap-3 py-3 text-sm transition hover:text-primary-accent-strong sm:flex-row sm:items-center sm:justify-between"
+              className={`min-h-11 gap-3 py-3 text-sm transition hover:text-primary-accent-strong ${
+                item.imageUrl ? "grid grid-cols-[56px_minmax(0,1fr)] items-center" : "block"
+              }`}
             >
-              <div>
-                <p className="font-bold text-text-strong">{item.name}</p>
-                <p className="mt-1 text-xs text-text-muted">{item.brandName}</p>
+              {item.imageUrl ? (
+                <span className="relative block size-14 overflow-hidden rounded-lg bg-surface-secondary">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img alt={item.name} className="h-full w-full object-contain p-1.5" src={item.imageUrl} />
+                </span>
+              ) : null}
+              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="font-bold leading-6 text-text-strong">{item.name}</p>
+                  <p className="mt-1 text-xs text-text-muted">{item.brandName}</p>
+                </div>
+                <PriceBlock amount={item.price} label="قیمت" size="sm" />
               </div>
-              <PriceBlock amount={item.price} label="قیمت" size="sm" />
             </Link>
           ))}
         </div>

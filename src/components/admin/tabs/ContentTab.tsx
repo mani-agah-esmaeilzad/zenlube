@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { deleteCouponAction, deleteMarketingBannerAction } from "@/actions/admin";
 import { BannerCreateForm, CouponCreateForm } from "@/components/admin/forms/ContentCampaignForms";
 import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
+import { formatPrice } from "@/lib/utils";
 import type { ContentTabData } from "@/services/admin/types";
 
 const cmsSections = [
@@ -116,7 +117,7 @@ export function ContentTab({ data }: { data: ContentTabData }) {
                   </span>
                 </div>
                 <p className="mt-3 text-xs text-[#6B7280]">
-                  {coupon.discountType === "PERCENTAGE" ? `${coupon.amount.toLocaleString("fa-IR")}٪` : `${coupon.amount.toLocaleString("fa-IR")} تومان`} · استفاده {coupon.usedCount.toLocaleString("fa-IR")}
+                  {coupon.discountType === "PERCENTAGE" ? `${coupon.amount.toLocaleString("fa-IR")}٪` : formatPrice(coupon.amount)} · استفاده {coupon.usedCount.toLocaleString("fa-IR")}
                 </p>
                 <form action={deleteCouponAction} className="mt-3">
                   <input type="hidden" name="id" value={coupon.id} />

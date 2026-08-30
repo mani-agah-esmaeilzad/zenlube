@@ -47,8 +47,8 @@ function gatewayCurrency() {
 
 function toGatewayAmount(amount: Prisma.Decimal | number) {
   const value = amount instanceof Prisma.Decimal ? amount.toNumber() : amount;
-  const toman = Math.round(value);
-  return amountUnit() === "rial" ? toman * 10 : toman;
+  const rial = Math.round(value);
+  return amountUnit() === "rial" ? rial : Math.round(rial / 10);
 }
 
 function gatewayBaseUrl() {
@@ -112,6 +112,7 @@ export async function requestZarinpalPayment(args: {
       email: args.email ?? undefined,
       mobile: args.phone ?? undefined,
       ...args.metadata,
+      auto_verify: false,
     },
   };
 
@@ -132,7 +133,6 @@ export async function verifyZarinpalPayment(authority: string, amount: Prisma.De
   const payload = {
     merchant_id: merchantId(),
     amount: toGatewayAmount(amount),
-    currency: gatewayCurrency(),
     authority,
   };
 

@@ -16,6 +16,7 @@ import { config } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
+import { formatPrice } from "@/lib/utils";
 
 export type CheckoutState = {
   success: boolean;
@@ -172,7 +173,7 @@ export async function createCheckoutOrderAction(
         orderId: createdOrder.id,
         status: "PENDING",
         title: "سفارش ثبت شد",
-        detail: `سفارش با مبلغ ${total.toLocaleString("fa-IR")} تومان ثبت شد.`,
+        detail: `سفارش با مبلغ ${formatPrice(total)} ثبت شد.`,
       });
 
       if (input.saveAddress) {
@@ -265,7 +266,7 @@ export async function createCheckoutOrderAction(
           callbackUrl,
           email: input.email,
           phone: normalizedPhone,
-          metadata: { orderId: order.id },
+          metadata: { order_id: order.id },
         });
 
     await prisma.$transaction(async (tx) => {
@@ -281,7 +282,7 @@ export async function createCheckoutOrderAction(
           orderId: order.id,
           gateway: "zarinpal",
           amount: order.total,
-          currency: "IRT",
+          currency: "IRR",
           authority: payment.authority ?? null,
           status: payment.authority ? "initiated" : "redirected",
           requestPayload: {
@@ -332,7 +333,7 @@ export async function createCheckoutOrderAction(
             orderId: failedOrderId,
             gateway: "zarinpal",
             amount: failedOrderTotal,
-            currency: "IRT",
+            currency: "IRR",
             status: "request_failed",
             errorMessage: message,
           },

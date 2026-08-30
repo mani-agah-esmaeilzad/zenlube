@@ -94,7 +94,7 @@ async function handlePaymentRequest(request: IncomingMessage, response: ServerRe
       orderId: order.id,
       gateway: "zarinpal",
       amount: order.total,
-      currency: process.env.ZARINPAL_AMOUNT_UNIT === "rial" ? "IRR" : "IRT",
+      currency: "IRR",
       status: "pending",
       requestPayload: toJson({ orderId: order.id }),
     },
@@ -108,7 +108,7 @@ async function handlePaymentRequest(request: IncomingMessage, response: ServerRe
       description: `پرداخت سفارش ${orderNumber(order.id)} در Oilbar`,
       email: order.email,
       phone: order.phone,
-      metadata: { orderId: order.id, transactionId: transaction.id },
+      metadata: { order_id: order.id, transaction_id: transaction.id },
     });
 
     await prisma.$transaction([

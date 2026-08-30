@@ -8,6 +8,8 @@ const DEFAULT_BASE_URLS = [
 ];
 
 const DEFAULT_START_PAY_URL = "https://payment.zarinpal.com/pg/StartPay";
+const SANDBOX_BASE_URL = "https://sandbox.zarinpal.com/pg/v4";
+const SANDBOX_START_PAY_URL = "https://sandbox.zarinpal.com/pg/StartPay";
 
 function normalizeBaseUrl(url: string) {
   return url.replace(/\/$/, "");
@@ -17,11 +19,17 @@ function uniqueUrls(urls: string[]) {
   return [...new Set(urls.map(normalizeBaseUrl).filter(Boolean))];
 }
 
-const BASE_URLS = uniqueUrls([config.ZARINPAL_BASE_URL, ...DEFAULT_BASE_URLS]);
-const PROXY_URL = config.ZARINPAL_PROXY_URL ? normalizeBaseUrl(config.ZARINPAL_PROXY_URL) : null;
-const START_PAY_URL = normalizeBaseUrl(
-  config.ZARINPAL_STARTPAY_URL.replace("https://www.zarinpal.com", "https://payment.zarinpal.com") || DEFAULT_START_PAY_URL,
-);
+const BASE_URLS = config.ZARINPAL_SANDBOX
+  ? [SANDBOX_BASE_URL]
+  : uniqueUrls([config.ZARINPAL_BASE_URL, ...DEFAULT_BASE_URLS]);
+const PROXY_URL = !config.ZARINPAL_SANDBOX && config.ZARINPAL_PROXY_URL
+  ? normalizeBaseUrl(config.ZARINPAL_PROXY_URL)
+  : null;
+const START_PAY_URL = config.ZARINPAL_SANDBOX
+  ? SANDBOX_START_PAY_URL
+  : normalizeBaseUrl(
+      config.ZARINPAL_STARTPAY_URL.replace("https://www.zarinpal.com", "https://payment.zarinpal.com") || DEFAULT_START_PAY_URL,
+    );
 
 export type PaymentRequestArgs = {
   amount: Prisma.Decimal | number;
@@ -42,6 +50,21 @@ export type PaymentVerifyResult = {
   cardPan?: string;
 };
 
+type ZarinpalRequestPayload = {
+  merchant_id: string;
+  amount: number;
+  currency: "IRR" | "IRT";
+  description: string;
+  callback_url: string;
+  metadata: Record<string, unknown>;
+};
+
+type ZarinpalVerifyPayload = {
+  merchant_id: string;
+  amount: number;
+  authority: string;
+};
+
 type ZarinpalRequestResponse = {
   data?: { code?: number; authority?: string };
   errors?: Array<{ message?: string }> | { message?: string };
@@ -56,8 +79,8 @@ type ZarinpalVerifyResponse = {
 
 function toGatewayAmount(amount: Prisma.Decimal | number) {
   const value = amount instanceof Prisma.Decimal ? amount.toNumber() : amount;
-  const toman = Math.round(value);
-  return config.ZARINPAL_AMOUNT_UNIT === "rial" ? toman * 10 : toman;
+  const rial = Math.round(value);
+  return config.ZARINPAL_AMOUNT_UNIT === "rial" ? rial : Math.round(rial / 10);
 }
 
 function gatewayCurrency() {
@@ -141,8 +164,8 @@ async function postJsonWithFallback<T>(path: string, payload: unknown, label: st
   throw new Error("ارتباط با زرین‌پال برقرار نشد. روی Vercel باید ZARINPAL_PROXY_URL را به یک پراکسی داخل ایران تنظیم کنید یا از درگاهی استفاده کنید که از خارج ایران قابل دسترسی باشد.");
 }
 
-export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<PaymentRequestResult> {
-  const payload = {
+export function buildZarinpalRequestPayload(args: PaymentRequestArgs): ZarinpalRequestPayload {
+  return {
     merchant_id: merchantId(),
     amount: toGatewayAmount(args.amount),
     currency: gatewayCurrency(),
@@ -152,8 +175,21 @@ export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<
       email: args.email ?? undefined,
       mobile: args.phone ?? undefined,
       ...args.metadata,
+      auto_verify: false,
     },
   };
+}
+
+export function buildZarinpalVerifyPayload(authority: string, amount: Prisma.Decimal | number): ZarinpalVerifyPayload {
+  return {
+    merchant_id: merchantId(),
+    amount: toGatewayAmount(amount),
+    authority,
+  };
+}
+
+export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<PaymentRequestResult> {
+  const payload = buildZarinpalRequestPayload(args);
 
   logger.info("Payment init request", { gateway: "ZARINPAL", amount: payload.amount, callbackUrl: args.callbackUrl, proxy: PROXY_URL, endpoints: BASE_URLS });
 
@@ -173,12 +209,7 @@ export async function requestZarinpalPayment(args: PaymentRequestArgs): Promise<
 }
 
 export async function verifyZarinpalPayment(authority: string, amount: Prisma.Decimal | number): Promise<PaymentVerifyResult> {
-  const payload = {
-    merchant_id: merchantId(),
-    amount: toGatewayAmount(amount),
-    currency: gatewayCurrency(),
-    authority,
-  };
+  const payload = buildZarinpalVerifyPayload(authority, amount);
 
   logger.info("Payment verify request", { gateway: "ZARINPAL", authority, amount: payload.amount, proxy: PROXY_URL, endpoints: BASE_URLS });
 

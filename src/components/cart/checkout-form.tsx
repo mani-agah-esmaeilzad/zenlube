@@ -1,6 +1,6 @@
 "use client";
 
-import type { InputHTMLAttributes } from "react";
+import type { ChangeEvent, InputHTMLAttributes } from "react";
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { createCheckoutOrderAction, CheckoutState } from "@/actions/orders";
@@ -144,7 +144,17 @@ export function CheckoutForm({ items, defaults, addresses }: CheckoutFormProps) 
               </div>
               {state.errors?.phone?.map((error) => <ErrorText key={error} error={error} />)}
             </label>
-            <Field autoComplete="one-time-code" label="کد تایید پیامکی" name="otpCode" inputMode="numeric" errors={state.errors?.otpCode} required />
+            <Field
+              autoComplete="one-time-code"
+              label="کد تایید پیامکی"
+              name="otpCode"
+              inputMode="numeric"
+              minLength={6}
+              maxLength={6}
+              pattern="[0-9۰-۹٠-٩]{6}"
+              errors={state.errors?.otpCode}
+              required
+            />
           </div>
           {otpMessage && <p className="mt-4 border-r-2 border-green-500 px-3 py-2 text-xs font-bold leading-6 text-[#16A34A]">{otpMessage}</p>}
           {otpError && <p className="mt-4 border-r-2 border-red-400 px-3 py-2 text-xs font-bold leading-6 text-[#DC2626]">{otpError}</p>}
@@ -302,39 +312,29 @@ function SubmitButton() {
   );
 }
 
-function Field({
-  label,
-  name,
-  type = "text",
-  inputMode,
-  autoComplete,
-  value = "",
-  onChange,
-  errors,
-  required,
-}: {
+type CheckoutFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "value"> & {
   label: string;
   name: string;
-  type?: string;
-  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
-  autoComplete?: InputHTMLAttributes<HTMLInputElement>["autoComplete"];
   value?: string;
   onChange?: (value: string) => void;
   errors?: string[];
-  required?: boolean;
-}) {
+};
+
+function Field({ label, value, onChange, errors, ...inputProps }: CheckoutFieldProps) {
+  const controlledProps = onChange
+    ? {
+        value: value ?? "",
+        onChange: (event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value),
+      }
+    : {};
+
   return (
     <label className="text-xs font-bold text-text">
       {label}
       <input
-        name={name}
-        type={type}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        value={value}
-        onChange={(event) => onChange?.(event.target.value)}
+        {...inputProps}
+        {...controlledProps}
         className="input-zen mt-2"
-        required={required}
       />
       {errors?.map((error) => <ErrorText key={error} error={error} />)}
     </label>

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { updateReturnRequestAction } from "@/actions/admin";
 import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
+import { formatPrice } from "@/lib/utils";
 import type { ReportsTabData } from "@/services/admin/types";
 
 export function ReportsTab({ data }: { data: ReportsTabData }) {
@@ -67,7 +68,7 @@ export function ReportsTab({ data }: { data: ReportsTabData }) {
     },
     {
       label: "میانگین ارزش سفارش",
-      value: `${Math.round(averageOrderValue).toLocaleString("fa-IR")} تومان`,
+      value: formatPrice(averageOrderValue),
       helper: `${faNumberFormatter.format(paidOrdersCount)} سفارش موفق`,
     },
     {

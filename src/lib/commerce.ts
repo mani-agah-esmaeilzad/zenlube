@@ -1,6 +1,7 @@
 import { Prisma } from "@/generated/prisma";
 import type { DiscountType } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
+import { formatPrice } from "@/lib/utils";
 
 type CouponLike = {
   id: string;
@@ -32,7 +33,7 @@ export function calculateCouponDiscount(coupon: CouponLike, subtotal: number) {
     return {
       valid: false as const,
       discount: 0,
-      message: `حداقل مبلغ سفارش برای این کد ${new Intl.NumberFormat("fa-IR").format(minOrderAmount)} تومان است.`,
+      message: `حداقل مبلغ سفارش برای این کد ${formatPrice(minOrderAmount)} است.`,
     };
   }
 

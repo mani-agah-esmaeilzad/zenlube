@@ -221,7 +221,7 @@ async function recordPaymentTransaction(
     orderId: input.orderId,
     gateway: "zarinpal",
     amount: input.amount,
-    currency: "IRT",
+    currency: "IRR",
     authority: input.authority ?? null,
     cardPan: input.cardPan,
     errorMessage: input.errorMessage,

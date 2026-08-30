@@ -16,6 +16,7 @@ export const config = {
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
 
   ZARINPAL_MERCHANT_ID: process.env.ZARINPAL_MERCHANT_ID,
+  ZARINPAL_SANDBOX: parseBoolean(process.env.ZARINPAL_SANDBOX, false),
   ZARINPAL_BASE_URL: process.env.ZARINPAL_BASE_URL ?? "https://payment.zarinpal.com/pg/v4",
   ZARINPAL_STARTPAY_URL: process.env.ZARINPAL_STARTPAY_URL ?? "https://payment.zarinpal.com/pg/StartPay",
   ZARINPAL_CALLBACK_URL: process.env.ZARINPAL_CALLBACK_URL,

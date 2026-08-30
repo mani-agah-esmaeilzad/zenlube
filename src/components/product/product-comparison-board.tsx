@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { formatPrice } from "@/lib/utils";
 
 type ComparisonProduct = {
   id: string;
@@ -47,8 +48,7 @@ const comparisonRows = [
   {
     key: "price",
     label: "قیمت",
-    render: (product: ComparisonProduct) =>
-      `${new Intl.NumberFormat("fa-IR").format(product.price)} تومان`,
+    render: (product: ComparisonProduct) => formatPrice(product.price),
   },
   {
     key: "averageRating",

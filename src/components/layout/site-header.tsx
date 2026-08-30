@@ -8,7 +8,7 @@ import { LogoMark } from "@/components/layout/logo-mark";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { MobileSearch } from "@/components/layout/mobile-search";
 import { SearchAutocompleteForm } from "@/components/layout/search-autocomplete-form";
-import { getAllCategoriesLite } from "@/lib/data";
+import { getHeaderCategories } from "@/lib/data";
 import { getAppSession } from "@/lib/session";
 
 type NavLink = {
@@ -18,8 +18,10 @@ type NavLink = {
 };
 
 export async function SiteHeader() {
-  const categories = await getAllCategoriesLite().catch(() => []);
-  const rawSession = await getAppSession();
+  const [categories, rawSession] = await Promise.all([
+    getHeaderCategories().catch(() => []),
+    getAppSession(),
+  ]);
   const isAuthenticated = Boolean((rawSession as { user?: { id?: string } } | null)?.user?.id);
   const accountHref = isAuthenticated ? "/account" : "/sign-in";
 

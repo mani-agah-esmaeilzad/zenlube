@@ -2,6 +2,7 @@
 
 import type { ReactNode, SVGProps } from "react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
@@ -25,6 +26,10 @@ type MobileNavProps = {
     id: string;
     name: string;
     slug: string;
+    imageUrl: string | null;
+    _count: {
+      products: number;
+    };
   }[];
 };
 
@@ -40,6 +45,11 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
   const pathname = usePathname();
   const accountLabel = isAuthenticated ? "حساب کاربری" : "ورود / ثبت‌نام";
   const drawerNavLinks = [...links, ...drawerLinks];
+
+  const closeDrawer = () => {
+    setOpen(false);
+    setCategoriesOpen(false);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -63,21 +73,21 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
         contentClassName="px-0 py-0"
         footer={isAuthenticated ? <SignOutButton className="w-full" /> : <SignInButton className="w-full min-h-11 rounded-xl" />}
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={closeDrawer}
         side="right"
         title="منوی فروشگاه"
       >
         <div id="mobile-site-drawer" className="flex min-h-0 flex-col">
           <div className="border-b border-border px-4 py-3 sm:px-5">
             <div className="flex items-center justify-between gap-3">
-              <Link className="flex items-center" href="/" onClick={() => setOpen(false)}>
+              <Link className="flex items-center" href="/" onClick={closeDrawer}>
                 <LogoMark className="h-9 w-auto" sizes="92px" />
               </Link>
               {isAuthenticated ? (
                 <Link
                   className="rounded-lg bg-surface-secondary px-3 py-2 text-[11px] font-bold text-text-muted transition hover:text-primary-accent-strong"
                   href={accountHref}
-                  onClick={() => setOpen(false)}
+                  onClick={closeDrawer}
                 >
                   {accountLabel}
                 </Link>
@@ -87,9 +97,11 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
 
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 sm:px-5">
             <button
+              aria-controls="mobile-category-links"
               aria-expanded={categoriesOpen}
-              className="flex w-full items-center justify-between border-b border-border px-1 py-3 text-sm font-extrabold text-text-strong transition hover:text-primary-accent-strong"
+              className="flex min-h-12 w-full items-center justify-between border-b border-border px-1 text-sm font-extrabold text-text-strong transition hover:text-primary-accent-strong focus-visible:border-b-primary-accent-strong focus-visible:text-primary-accent-strong"
               onClick={() => setCategoriesOpen((value) => !value)}
+              style={{ outline: "none" }}
               type="button"
             >
               دسته‌بندی‌ها
@@ -97,23 +109,48 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
             </button>
 
             {categoriesOpen ? (
-              <div className="mt-1 grid grid-cols-1 min-[360px]:grid-cols-2">
+              <div id="mobile-category-links" className="border-b border-border">
                 {categories.length ? (
-                  categories.slice(0, 10).map((category) => (
-                    <Link
-                      key={category.id}
-                      className="border-b border-border/80 px-2 py-3 text-xs font-semibold text-text transition hover:text-primary-accent-strong odd:min-[360px]:border-l"
-                      href={`/categories/${category.slug}`}
-                      onClick={() => setOpen(false)}
-                    >
-                      {category.name}
-                    </Link>
-                  ))
-                ) : (
-                  <div className="min-[360px]:col-span-2 py-4 text-center text-xs font-semibold text-text-muted">
-                    هنوز دسته‌بندی‌ای ثبت نشده است.
+                  <div className="divide-y divide-border/80">
+                    {categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        className="group flex min-h-14 items-center gap-3 px-1 py-2 text-right transition hover:text-primary-accent-strong"
+                        href={`/products?category=${encodeURIComponent(category.slug)}`}
+                        onClick={closeDrawer}
+                      >
+                        {category.imageUrl ? (
+                          <span className="relative h-10 w-11 shrink-0 overflow-hidden rounded-lg bg-surface-secondary">
+                            <Image alt="" className="object-cover" fill sizes="44px" src={category.imageUrl} />
+                          </span>
+                        ) : (
+                          <span aria-hidden="true" className="h-7 w-0.5 shrink-0 bg-primary-accent" />
+                        )}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-extrabold text-text-strong transition group-hover:text-primary-accent-strong">
+                            {category.name}
+                          </span>
+                          <span className="mt-0.5 block text-[11px] font-semibold text-text-muted">
+                            {category._count.products.toLocaleString("fa-IR")} محصول
+                          </span>
+                        </span>
+                        <ArrowLeftIcon className="h-4 w-4 shrink-0 text-text-muted" />
+                      </Link>
+                    ))}
                   </div>
+                ) : (
+                  <p className="py-4 text-xs font-semibold leading-6 text-text-muted">
+                    هنوز محصول فعالی برای نمایش آماده نشده است.
+                  </p>
                 )}
+                <Link
+                  className="flex min-h-11 items-center justify-between px-1 text-xs font-extrabold text-primary-accent-strong"
+                  href="/categories"
+                  onClick={closeDrawer}
+                >
+                  مشاهده همه دسته‌بندی‌ها
+                  <ArrowLeftIcon className="h-4 w-4" />
+                </Link>
               </div>
             ) : null}
 
@@ -131,7 +168,7 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
                         : "text-text hover:text-primary-accent-strong",
                     )}
                     href={link.href}
-                    onClick={() => setOpen(false)}
+                    onClick={closeDrawer}
                   >
                     {link.label}
                   </Link>
@@ -191,6 +228,23 @@ function ChevronIcon(props: SVGProps<SVGSVGElement>) {
       {...props}
     >
       <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+function ArrowLeftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.8}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path d="m14 6-6 6 6 6" />
     </svg>
   );
 }

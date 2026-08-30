@@ -5,9 +5,10 @@ import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import prisma from "./prisma";
+import { buildPhoneAccountEmail, isPhoneAccountEmail } from "./account-email";
 import { config } from "./config";
-import { normalizeIranPhone } from "./phone";
-import { verifyOtpCode } from "@/services/otp";
+import { authorizeOtpAccount } from "./otp-auth";
+import { OtpVerificationError, verifyOtpCodeAndRun } from "@/services/otp";
 
 type RoleAwareToken = JWT & { role?: string | null; adminExpiresAt?: number };
 
@@ -41,22 +42,56 @@ export const authOptions = {
         otpCode: { label: "کد تایید", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.phone || !credentials.otpCode) {
-          return null;
-        }
-
-        try {
-          await verifyOtpCode(credentials.phone, credentials.otpCode, "account");
-        } catch {
-          return null;
-        }
-
-        const normalizedPhone = normalizeIranPhone(credentials.phone);
-        const user = await prisma.user.findFirst({
-          where: {
-            phone: normalizedPhone,
+        const user = await authorizeOtpAccount(
+          {
+            phone: credentials?.phone,
+            otpCode: credentials?.otpCode,
           },
-        });
+          {
+            authenticateOtp: async ({ normalizedPhone, normalizedCode, phoneCandidates }) => {
+              try {
+                return await verifyOtpCodeAndRun(
+                  normalizedPhone,
+                  normalizedCode,
+                  "account",
+                  async (transaction) => {
+                    const matchingUsers = await transaction.user.findMany({
+                      where: { phone: { in: phoneCandidates } },
+                      select: { id: true, email: true, name: true, phone: true, role: true },
+                    });
+                    const existingUser = phoneCandidates
+                      .map((candidatePhone) => matchingUsers.find((candidate) => candidate.phone === candidatePhone))
+                      .find((candidate) => candidate !== undefined);
+
+                    if (existingUser) {
+                      return {
+                        id: existingUser.id,
+                        email: existingUser.email,
+                        name: existingUser.name,
+                        role: existingUser.role,
+                      };
+                    }
+
+                    return transaction.user.upsert({
+                      where: { phone: normalizedPhone },
+                      update: {},
+                      create: {
+                        email: buildPhoneAccountEmail(normalizedPhone),
+                        phone: normalizedPhone,
+                      },
+                      select: { id: true, email: true, name: true, role: true },
+                    });
+                  },
+                );
+              } catch (error) {
+                if (error instanceof OtpVerificationError) {
+                  return null;
+                }
+                throw error;
+              }
+            },
+          },
+        );
 
         if (!user) {
           return null;
@@ -131,6 +166,9 @@ export const authOptions = {
       }
       if (typeof token.adminExpiresAt === "number") {
         session.user.adminExpiresAt = token.adminExpiresAt;
+      }
+      if (isPhoneAccountEmail(session.user.email)) {
+        session.user.email = null;
       }
       return session;
     },

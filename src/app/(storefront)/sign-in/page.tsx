@@ -27,13 +27,13 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       description="بعد از ورود، سفارش‌ها، آدرس‌های ذخیره‌شده و سبد خریدتان از یک مسیر در دسترس است."
       footer={(
         <>
-          کاربر جدید هستید؟{" "}
+          می‌خواهید نام و ایمیل را همین ابتدا وارد کنید؟{" "}
           <Link href={signUpLink} className="inline-flex min-h-11 items-center align-middle font-bold text-primary-accent-strong transition hover:text-[#B45309]">
-            ثبت‌نام کنید
+            ثبت‌نام کامل
           </Link>
         </>
       )}
-      formDescription="شمارهٔ موبایل را وارد کنید و با کد تأیید پیامکی ادامه دهید."
+      formDescription="شمارهٔ موبایل را وارد کنید؛ اگر حسابی نداشته باشید، پس از تأیید کد به‌صورت خودکار ساخته می‌شود."
       formTitle="ورود به حساب کاربری"
       title="ورود برای مدیریت سفارش و سبد خرید"
     >

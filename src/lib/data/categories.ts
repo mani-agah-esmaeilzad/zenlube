@@ -14,6 +14,20 @@ type CategoryWithProductCount = Prisma.CategoryGetPayload<{
   };
 }>;
 
+type HeaderCategory = Prisma.CategoryGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    slug: true;
+    imageUrl: true;
+    _count: {
+      select: {
+        products: true;
+      };
+    };
+  };
+}>;
+
 export async function getHighlightedCategories() {
   return withStorefrontDataFallback("getHighlightedCategories", [], () =>
     prisma.category.findMany({
@@ -70,4 +84,25 @@ export async function getAllCategoriesLite() {
       orderBy: { name: "asc" },
     }),
   );
+}
+
+export async function getHeaderCategories() {
+  return withStorefrontDataFallback<HeaderCategory[]>("getHeaderCategories", [], async () => {
+    const categories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        imageUrl: true,
+        _count: {
+          select: {
+            products: { where: storefrontVisibleProductWhere() },
+          },
+        },
+      },
+      orderBy: { name: "asc" },
+    });
+
+    return categories.filter((category) => category._count.products > 0);
+  });
 }

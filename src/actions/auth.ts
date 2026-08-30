@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { registerUserSchema } from "@/lib/validators";
-import { normalizeIranPhone } from "@/lib/phone";
+import { getIranPhoneLookupVariants, normalizeIranPhone } from "@/lib/phone";
 import { verifyOtpCode } from "@/services/otp";
 
 type RegisterState = {
@@ -45,7 +45,10 @@ export async function registerUserAction(
     };
   }
 
-  const existingPhone = await prisma.user.findUnique({ where: { phone: normalizedPhone } });
+  const existingPhone = await prisma.user.findFirst({
+    where: { phone: { in: getIranPhoneLookupVariants(normalizedPhone) } },
+    select: { id: true },
+  });
 
   if (existingPhone) {
     return {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { FormEvent, useState, useTransition } from "react";
 
@@ -10,14 +10,16 @@ type SignInFormProps = {
 
 export function SignInForm({ callbackUrl }: SignInFormProps) {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isOtpPending, startOtpTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [otpMessage, setOtpMessage] = useState<string | null>(null);
   const [otpError, setOtpError] = useState<string | null>(null);
 
-  const resolvedCallback = callbackUrl ?? searchParams.get("callbackUrl") ?? "/account";
+  const requestedCallback = callbackUrl ?? searchParams.get("callbackUrl");
+  const resolvedCallback = requestedCallback?.startsWith("/") && !requestedCallback.startsWith("//")
+    ? requestedCallback
+    : "/account";
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,19 +34,25 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
 
     startTransition(async () => {
       setError(null);
-      const result = await signIn("credentials", {
-        phone,
-        otpCode,
-        redirect: false,
-        callbackUrl: resolvedCallback,
-      });
+      try {
+        const result = await signIn("credentials", {
+          phone,
+          otpCode,
+          redirect: false,
+          callbackUrl: resolvedCallback,
+        });
 
-      if (result?.error) {
-        setError("ورود با کد تایید ناموفق بود. دوباره تلاش کنید.");
-        return;
+        if (!result?.ok || result.error) {
+          setError(result?.error === "CredentialsSignin"
+            ? "کد تایید نادرست یا منقضی است. در صورت ادامه مشکل، یک کد تازه بگیرید."
+            : "سامانه ورود موقتاً پاسخ نمی‌دهد. همان کد را چند لحظه دیگر دوباره امتحان کنید.");
+          return;
+        }
+
+        window.location.assign(result.url ?? resolvedCallback);
+      } catch {
+        setError("ورود کامل نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.");
       }
-
-      router.replace(resolvedCallback);
     });
   };
 
@@ -111,6 +119,9 @@ export function SignInForm({ callbackUrl }: SignInFormProps) {
           autoComplete="one-time-code"
           name="otpCode"
           inputMode="numeric"
+          maxLength={6}
+          minLength={6}
+          pattern="[0-9۰-۹٠-٩]{6}"
           required
           className="input-zen"
         />

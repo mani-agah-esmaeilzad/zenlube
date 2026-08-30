@@ -21,7 +21,7 @@ const digitMap: Record<string, string> = {
   "٩": "9",
 };
 
-function toEnglishDigits(value: string) {
+export function toEnglishDigits(value: string) {
   return value.replace(/[\u06F0-\u06F9\u0660-\u0669]/g, (char) => digitMap[char] ?? char);
 }
 
@@ -45,4 +45,25 @@ export function normalizeIranPhone(rawPhone: string) {
 export function validateIranPhone(phone: string) {
   const normalized = normalizeIranPhone(phone);
   return /^\+989\d{9}$/.test(normalized);
+}
+
+export function getIranPhoneLookupVariants(rawPhone: string) {
+  const normalized = normalizeIranPhone(rawPhone);
+
+  if (!/^\+989\d{9}$/.test(normalized)) {
+    return [normalized];
+  }
+
+  const nationalNumber = normalized.slice(3);
+
+  return Array.from(new Set([
+    normalized,
+    `0${nationalNumber}`,
+    normalized.slice(1),
+    nationalNumber,
+  ]));
+}
+
+export function normalizeOtpCode(rawCode: string) {
+  return toEnglishDigits(rawCode).trim().replace(/[\s-]+/g, "");
 }

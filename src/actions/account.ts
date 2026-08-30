@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import prisma from "@/lib/prisma";
 import { getAppSession } from "@/lib/session";
-import { normalizeIranPhone, validateIranPhone } from "@/lib/phone";
+import { getIranPhoneLookupVariants, normalizeIranPhone, validateIranPhone } from "@/lib/phone";
 import { createAuditLog } from "@/lib/admin-audit";
 import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
 import { returnRequestSchema } from "@/lib/validators";
@@ -60,7 +60,10 @@ export async function updateProfileAction(_prev: ActionState | undefined, formDa
 
     const [emailOwner, phoneOwner] = await Promise.all([
       prisma.user.findFirst({ where: { email, id: { not: userId } }, select: { id: true } }),
-      prisma.user.findFirst({ where: { phone: normalizedPhone, id: { not: userId } }, select: { id: true } }),
+      prisma.user.findFirst({
+        where: { phone: { in: getIranPhoneLookupVariants(normalizedPhone) }, id: { not: userId } },
+        select: { id: true },
+      }),
     ]);
 
     if (emailOwner) {

@@ -81,12 +81,16 @@ async function logSms(args: {
   errorMessage?: string;
 }) {
   try {
+    const storedMessage = args.eventType === "otp"
+      ? "کد تایید اویل‌بار: [محافظت‌شده]"
+      : args.message;
+
     await prisma.smsLog.create({
       data: {
         phone: args.phone,
         eventType: args.eventType,
         templateName: args.templateName,
-        message: args.message,
+        message: storedMessage,
         status: args.status,
         provider: args.provider,
         providerResponse: args.providerResponse == null ? Prisma.JsonNull : (args.providerResponse as Prisma.InputJsonValue),

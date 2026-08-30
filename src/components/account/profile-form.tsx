@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateProfileAction } from "@/actions/account";
+import { isPhoneAccountEmail } from "@/lib/account-email";
 
 type ProfileFormProps = {
   name?: string | null;
@@ -14,11 +15,12 @@ const initialState: FormState = { success: false };
 
 export function ProfileForm({ name, email, phone }: ProfileFormProps) {
   const [state, formAction] = useActionState(updateProfileAction, initialState);
+  const visibleEmail = isPhoneAccountEmail(email) ? "" : (email ?? "");
 
   return (
     <form action={formAction} className="grid gap-4 text-sm md:grid-cols-2">
       <Field label="نام و نام خانوادگی" name="name" defaultValue={name ?? ""} errors={state?.errors?.name} />
-      <Field label="ایمیل" name="email" type="email" defaultValue={email ?? ""} errors={state?.errors?.email} />
+      <Field label="ایمیل" name="email" type="email" defaultValue={visibleEmail} errors={state?.errors?.email} />
       <Field label="شماره موبایل" name="phone" type="tel" defaultValue={phone ?? ""} errors={state?.errors?.phone} />
       <div className="flex items-end md:justify-end">
         <button type="submit" className="btn-primary !min-h-11 w-full sm:w-auto sm:min-w-36">ذخیره تغییرات</button>

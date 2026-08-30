@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { normalizeIranPhone, validateIranPhone } from "@/lib/phone";
+import {
+  getIranPhoneLookupVariants,
+  normalizeIranPhone,
+  normalizeOtpCode,
+  validateIranPhone,
+} from "@/lib/phone";
 
 test("normalizeIranPhone normalizes numbers with leading zero", () => {
   assert.equal(normalizeIranPhone("09121234567"), "+989121234567");
@@ -29,4 +34,17 @@ test("validateIranPhone returns true for valid iranian phones", () => {
 test("validateIranPhone returns false for invalid phones", () => {
   assert.equal(validateIranPhone("12345"), false);
   assert.equal(validateIranPhone("+982112345678"), false);
+});
+
+test("getIranPhoneLookupVariants includes normalized and legacy database formats", () => {
+  assert.deepEqual(getIranPhoneLookupVariants("09123456789"), [
+    "+989123456789",
+    "09123456789",
+    "989123456789",
+    "9123456789",
+  ]);
+});
+
+test("normalizeOtpCode converts Persian and Arabic digits", () => {
+  assert.equal(normalizeOtpCode(" ۱۲۳-٤٥٦ "), "123456");
 });

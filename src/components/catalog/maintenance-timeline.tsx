@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { cn, formatPrice } from "@/lib/utils";
+import { cn, formatCatalogPrice } from "@/lib/utils";
 
 type MaintenanceProduct = {
   slug: string;
@@ -124,7 +124,7 @@ export function MaintenanceTimeline({ carName, tasks }: MaintenanceTimelineProps
                 {task.recommendedProducts.map((product) => (
                   <Link key={product.slug} href={`/products/${product.slug}`} className="text-link-zen inline-flex min-h-11 items-center text-xs font-bold md:min-h-10">
                     {product.brandName ? `${product.brandName} - ${product.name}` : product.name}
-                    {typeof product.price === "number" ? <span className="mr-2 font-medium text-[#6B7280]">{formatPrice(product.price)}</span> : null}
+                    {typeof product.price === "number" ? <span className="mr-2 font-medium text-[#6B7280]">{formatCatalogPrice(product.price)}</span> : null}
                   </Link>
                 ))}
               </div>

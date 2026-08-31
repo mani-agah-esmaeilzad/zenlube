@@ -20,3 +20,20 @@ export function formatPrice(value: unknown) {
     maximumFractionDigits: 0,
   }).format(Math.round(numericValue));
 }
+
+export function hasPublishedPrice(value: unknown) {
+  const numericValue =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+      ? Number(value)
+      : value && typeof value === "object" && "toString" in value
+      ? Number((value as { toString: () => string }).toString())
+      : Number.NaN;
+
+  return Number.isFinite(numericValue) && numericValue > 0;
+}
+
+export function formatCatalogPrice(value: unknown) {
+  return hasPublishedPrice(value) ? formatPrice(value) : "قیمت در حال به‌روزرسانی";
+}

@@ -4,7 +4,7 @@ import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Fragment, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { cn, formatPrice } from "@/lib/utils";
+import { cn, formatCatalogPrice } from "@/lib/utils";
 
 type SuggestionProduct = {
   id: string;
@@ -444,7 +444,7 @@ function SuggestionSection({
               </span>
               {typeof item.price === "number" ? (
                 <span className="shrink-0 text-left">
-                  <span className="block font-black text-text-strong">{formatPrice(item.price)}</span>
+                  <span className="block font-black text-text-strong">{formatCatalogPrice(item.price)}</span>
                   {typeof item.available === "boolean" ? (
                     <span className={cn("mt-1 block text-[10px] font-bold", item.available ? "text-success" : "text-error")}>
                       {item.available ? "موجود" : "ناموجود"}

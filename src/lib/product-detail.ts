@@ -40,7 +40,7 @@ const preferredSpecLabels = [
   "گرانروی SAE",
   "حجم",
   "نوع محصول",
-  "استاندارد سازنده",
+  "استانداردها و سطوح عملکرد",
   "محدوده دمای عملکرد",
   "کشور سازنده",
   "گارانتی",
@@ -51,7 +51,7 @@ const quickFactLabels = [
   "گرانروی SAE",
   "نوع محصول",
   "حجم",
-  "استاندارد سازنده",
+  "استانداردها و سطوح عملکرد",
   "کشور سازنده",
   "خودروهای سازگار",
 ] as const;
@@ -119,13 +119,13 @@ function normalizeSpecValue(value: unknown): string | null {
 function prettifyTechnicalLabel(key: string) {
   const explicitMap: Record<string, string> = {
     api: "استاندارد API",
-    approvals: "استاندارد سازنده",
+    approvals: "استانداردها و سطوح عملکرد",
     brand: "برند",
     capacity: "حجم",
     engineType: "نوع موتور",
     fuelType: "نوع سوخت",
     model: "مدل",
-    oem: "استاندارد سازنده",
+    oem: "استانداردها و سطوح عملکرد",
     partNumber: "شماره فنی",
     sae: "گرانروی SAE",
     sku: "کد کالا",
@@ -253,7 +253,7 @@ export function buildProductSpecRows(product: ProductDetailRecord) {
     { label: "گرانروی SAE", value: product.viscosity ?? "" },
     { label: "حجم", value: formatLiters(product.packagingSizeLit) ?? "" },
     { label: "نوع محصول", value: product.oilType ?? "" },
-    { label: "استاندارد سازنده", value: product.approvals ?? "" },
+    { label: "استانداردها و سطوح عملکرد", value: product.approvals ?? "" },
     { label: "محدوده دمای عملکرد", value: product.temperatureRange ?? "" },
     { label: "کشور سازنده", value: product.originCountry ?? "" },
     { label: "گارانتی", value: product.warranty ?? "" },
@@ -316,7 +316,7 @@ export function buildCompatibilityItems(product: ProductDetailRecord) {
 
 export function buildProductImportantNotes(product: ProductDetailRecord) {
   return uniqueStrings([
-    product.approvals ? `استاندارد یا تاییدیه ثبت‌شده برای این کالا: ${product.approvals}` : null,
+    product.approvals ? `استانداردها و سطوح عملکرد اعلام‌شده برای این کالا: ${product.approvals}` : null,
     product.temperatureRange ? `محدوده دمای عملکرد ثبت‌شده: ${product.temperatureRange}` : null,
     product.warranty ? `اطلاعات گارانتی یا اصالت: ${product.warranty}` : null,
     product.carMappings.find((mapping) => formatOptionalText(mapping.note))?.note ?? null,
@@ -343,8 +343,8 @@ export function buildProductFaqs(product: ProductDetailRecord) {
 
   if (product.approvals) {
     faqs.push({
-      question: "این محصول چه استانداردی دارد؟",
-      answer: `استاندارد یا تاییدیه ثبت‌شده برای این کالا ${product.approvals} است.`,
+      question: "این محصول چه استاندارد و سطح عملکردی دارد؟",
+      answer: `استانداردها و سطوح عملکرد ثبت‌شده برای این کالا ${product.approvals} است.`,
     });
   }
 

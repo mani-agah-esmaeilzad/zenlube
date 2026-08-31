@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { QuantitySelector } from "@/components/product/quantity-selector";
 import { WishlistButton } from "@/components/product/wishlist-button";
-import { formatPrice } from "@/lib/utils";
+import { formatCatalogPrice } from "@/lib/utils";
 
 type ProductPurchasePanelProps = {
   compareHref: string;
@@ -35,7 +35,7 @@ export function ProductPurchasePanel({
   wishlistActive = false,
 }: ProductPurchasePanelProps) {
   const [quantity, setQuantity] = useState(1);
-  const finalPrice = useMemo(() => formatPrice(price), [price]);
+  const finalPrice = useMemo(() => formatCatalogPrice(price), [price]);
 
   return (
     <>

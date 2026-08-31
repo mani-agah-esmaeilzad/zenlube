@@ -231,6 +231,17 @@ const MG_MANUAL_OVERRIDES: Record<string, ManualOverride> = {
   "hyundai-62-mg-gs": {
     ...OFFICIAL_MG_HUB,
     engineCode: "20L4E / MGE 2.0T",
+    viscosity: "5W-30 / 0W-30",
+    specification: "ACEA C3 / API SN یا بالاتر",
+    oilCapacityLit: 6,
+    engineDetails: [
+      "نوع موتور: 4 سیلندر بنزینی توربو 2 لیتر با تزریق مستقیم",
+      "کد یا خانواده موتور: 20L4E / MGE 2.0T",
+      "ویسکوزیته پیشنهادی روغن موتور: 5W-30 / 0W-30",
+      "استاندارد روغن موتور: ACEA C3 / API SN یا بالاتر",
+      "حجم سرویس روغن موتور: 6 لیتر",
+      "- بولتن فنی SAIC برای MG GS با موتور MGE 2.0T به‌صورت صریح C3 5W-30 یا C3 0W-30 را ثبت می‌کند.",
+    ].join("\n"),
     gearboxDetails: [
       "نوع گیربکس: 6 دنده دوکلاچه تر 6DCT360",
       "سطح کیفیت روغن گیربکس: VW TL 052 182 / Pentosin FFL-2",
@@ -242,11 +253,13 @@ const MG_MANUAL_OVERRIDES: Record<string, ManualOverride> = {
       {
         categoryId: 1,
         description: [
-          "برای MG GS با موتور 2.0T از روغن تمام‌سنتتیک توربو با گرید 5W-30 یا 0W-30 استفاده شود.",
-          "- سطح کیفی پیشنهادی: API SN / API SP / ACEA C5.",
+          "برای MG GS با موتور MGE 2.0T از روغن مناسب موتور توربو تزریق مستقیم با گرید 5W-30 یا 0W-30 استفاده شود.",
+          "- سطح کیفی ثبت‌شده در بولتن فنی SAIC: ACEA C3 و حداقل API SN.",
           "- حجم سرویس روغن موتور: 6 لیتر.",
           "- روغن 10W-40 و 5W-40 برای این موتور مرجع اصلی توصیه نشده‌اند.",
         ].join("\n"),
+        sourceTitle: "بولتن فنی روغن موتور MG - SAIC SI-ALL-EN-20170811",
+        sourceUrl: "https://mg-wiki.com/media/oils/SI-ALL-EN-20170811-The.pdf",
       },
       {
         categoryId: 3,
@@ -265,6 +278,17 @@ const MG_MANUAL_OVERRIDES: Record<string, ManualOverride> = {
     sourceUrl: "https://mgmotors-prod-s3.s3.us-east-2.amazonaws.com/CL/pdp/MG-RX5/PDf/--manual-de-usuario-rx5.pdf.pdf",
     engineType: "4 سیلندر بنزینی توربو 2 لیتر",
     engineCode: "20L4E / 2.0T GDi",
+    viscosity: "5W-30 / 0W-30",
+    specification: "ACEA C3 / API SN یا بالاتر",
+    oilCapacityLit: 6,
+    engineDetails: [
+      "نوع موتور: 4 سیلندر بنزینی توربو 2 لیتر با تزریق مستقیم",
+      "کد یا خانواده موتور: 20L4E / MGE 2.0T GDi",
+      "ویسکوزیته پیشنهادی روغن موتور: 5W-30 / 0W-30",
+      "استاندارد روغن موتور: ACEA C3 / API SN یا بالاتر",
+      "حجم سرویس روغن موتور: 6 لیتر",
+      "- بولتن فنی SAIC برای MG RX5 با موتور MGE 2.0T به‌صورت صریح C3 5W-30 یا C3 0W-30 را ثبت می‌کند.",
+    ].join("\n"),
     gearboxDetails: [
       "نوع گیربکس: 6 دنده دوکلاچه تر DCT",
       "سطح کیفیت روغن گیربکس: VW TL 052 182 / Pentosin FFL-2",
@@ -276,11 +300,13 @@ const MG_MANUAL_OVERRIDES: Record<string, ManualOverride> = {
       {
         categoryId: 1,
         description: [
-          "برای MG RX5 با موتور 2.0T از روغن تمام‌سنتتیک توربو با گرید 5W-30 یا 0W-30 استفاده شود.",
-          "- سطح کیفی پیشنهادشده: API SN / API SP.",
+          "برای MG RX5 با موتور MGE 2.0T از روغن مناسب موتور توربو تزریق مستقیم با گرید 5W-30 یا 0W-30 استفاده شود.",
+          "- سطح کیفی ثبت‌شده در بولتن فنی SAIC: ACEA C3 و حداقل API SN.",
           "- حجم سرویس روغن موتور: 6 لیتر.",
           "- بازه تعویض پیشنهادی: حدود 8,000 تا 10,000 کیلومتر.",
         ].join("\n"),
+        sourceTitle: "بولتن فنی روغن موتور MG - SAIC SI-ALL-EN-20170811",
+        sourceUrl: "https://mg-wiki.com/media/oils/SI-ALL-EN-20170811-The.pdf",
       },
       {
         categoryId: 3,

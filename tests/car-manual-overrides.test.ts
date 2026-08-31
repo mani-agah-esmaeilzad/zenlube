@@ -94,3 +94,28 @@ test("resolveCarOilCapacityLabel falls back to manual text for MG7 multi-trim ca
 
   assert.equal(resolveCarOilCapacityLabel(car), "4 لیتر برای 1.5T و 4.8 لیتر برای 2.0T");
 });
+
+test("MG GS and RX5 MGE 2.0T overrides use the SAIC C3 bulletin instead of stale C5 data", () => {
+  for (const slug of ["hyundai-62-mg-gs", "hyundai-68-mg-rx5"]) {
+    const car = applyCarManualOverrides({
+      slug,
+      manufacturer: "ام جی",
+      model: slug.includes("rx5") ? "RX5" : "GS",
+      engineType: "4 سیلندر بنزینی توربو 2 لیتر",
+      engineCode: "20L4E",
+      viscosity: "5W-30 / 0W-30",
+      specification: "API SN / ACEA C5",
+      oilCapacityLit: 6,
+      engineDetails: null,
+      notebookSections: [],
+    });
+
+    assert.equal(car.specification, "ACEA C3 / API SN یا بالاتر");
+    assert.match(car.engineDetails ?? "", /MGE 2\.0T/u);
+
+    const sections = car.notebookSections as Array<{ categoryId: number; description: string; sourceUrl?: string }>;
+    const engineSection = sections.find((section) => section.categoryId === 1);
+    assert.match(engineSection?.description ?? "", /ACEA C3/u);
+    assert.equal(engineSection?.sourceUrl, "https://mg-wiki.com/media/oils/SI-ALL-EN-20170811-The.pdf");
+  }
+});

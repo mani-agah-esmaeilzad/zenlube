@@ -48,15 +48,18 @@ export function buildProductStructuredData(input: ProductStructuredDataInput) {
       "@type": "Brand",
       name: input.brandName,
     },
-    offers: {
+  };
+
+  if (Number.isFinite(input.price) && input.price > 0) {
+    structuredData.offers = {
       "@type": "Offer",
       priceCurrency: "IRR",
       price: Math.round(input.price),
       availability: input.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       url: productUrl,
       itemCondition: "https://schema.org/NewCondition",
-    },
-  };
+    };
+  }
 
   if (input.description) {
     structuredData.description = input.description;

@@ -12,6 +12,20 @@ function emptyToUndefined(value: unknown) {
 
 const optionalString = z.preprocess(emptyToUndefined, z.string().optional());
 const optionalUrl = z.preprocess(emptyToUndefined, z.string().url().optional());
+const optionalImageUrl = z.preprocess(
+  emptyToUndefined,
+  z
+    .union([
+      z.string().url(),
+      z
+        .string()
+        .regex(
+          /^\/(?!\/)(?!.*(?:\.\.|\\))[A-Za-z0-9_\-./%]+$/,
+          "آدرس تصویر باید یک URL معتبر یا مسیر امن داخل سایت باشد.",
+        ),
+    ])
+    .optional(),
+);
 const optionalNumber = z.preprocess((value) => {
   if (value === "" || value === null) {
     return undefined;
@@ -38,7 +52,7 @@ const categoryFields = {
   name: z.string().trim().min(2, "نام دسته باید حداقل دو کاراکتر باشد."),
   slug: slugSchema,
   description: optionalString,
-  imageUrl: optionalUrl,
+  imageUrl: optionalImageUrl,
 };
 
 export const categorySchema = z.object(categoryFields);
@@ -52,7 +66,7 @@ const brandFields = {
   name: z.string().trim().min(2, "نام برند باید حداقل دو کاراکتر باشد."),
   slug: slugSchema,
   description: optionalString,
-  imageUrl: optionalUrl,
+  imageUrl: optionalImageUrl,
   website: optionalUrl,
 };
 
@@ -76,7 +90,7 @@ const carFields = {
   oilCapacityLit: z.number().min(0).optional(),
   viscosity: optionalString,
   specification: optionalString,
-  imageUrl: optionalUrl,
+  imageUrl: optionalImageUrl,
   overviewDetails: optionalString,
   engineDetails: optionalString,
   gearboxDetails: optionalString,
@@ -130,7 +144,7 @@ const productFields = {
   stock: z.number().int().min(0),
   viscosity: optionalString,
   oilType: optionalString,
-  imageUrl: optionalUrl,
+  imageUrl: optionalImageUrl,
   isFeatured: z.boolean().optional(),
   categoryId: z.string().cuid(),
   brandId: z.string().cuid(),
@@ -237,7 +251,7 @@ export const marketingBannerSchema = z.object({
   subtitle: optionalString,
   ctaLabel: optionalString,
   ctaLink: optionalUrl,
-  imageUrl: optionalUrl,
+  imageUrl: optionalImageUrl,
   position: z.string().trim().min(2, "جایگاه بنر معتبر نیست."),
   isActive: z.boolean().optional(),
 });

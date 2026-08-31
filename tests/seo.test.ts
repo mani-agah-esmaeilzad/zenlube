@@ -84,3 +84,22 @@ test("buildProductStructuredData omits aggregate rating without real reviews", (
     itemCondition: "https://schema.org/NewCondition",
   });
 });
+
+test("buildProductStructuredData omits an offer until a real product price is set", () => {
+  const structuredData = buildProductStructuredData({
+    averageRating: null,
+    baseUrl: "https://www.oilbar.ir",
+    brandName: "ایدلوب",
+    categoryName: "روغن موتور",
+    description: "محصول در انتظار قیمت‌گذاری مدیر است.",
+    imageUrl: "/products/aidlube/example.png",
+    inStock: false,
+    name: "روغن موتور ایدلوب",
+    price: 0,
+    reviewCount: 0,
+    sku: "AID-TEST",
+    slug: "aidlube-test",
+  });
+
+  assert.equal("offers" in structuredData, false);
+});

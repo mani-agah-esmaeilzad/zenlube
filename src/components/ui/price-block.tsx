@@ -1,4 +1,4 @@
-import { cn, formatPrice } from "@/lib/utils";
+import { cn, formatCatalogPrice } from "@/lib/utils";
 
 type PriceBlockProps = {
   amount: number | string | { toString(): string };
@@ -35,7 +35,7 @@ export function PriceBlock({
   return (
     <div className={cn(align === "end" ? "text-end" : "text-start", className)}>
       {showLabel ? <p className={cn("font-medium text-text-muted", sizeMap[size].label)}>{label}</p> : null}
-      <p className={cn("t-price", showLabel ? "mt-1" : null, sizeMap[size].amount)}>{formatPrice(amount)}</p>
+      <p className={cn("t-price", showLabel ? "mt-1" : null, sizeMap[size].amount)}>{formatCatalogPrice(amount)}</p>
     </div>
   );
 }

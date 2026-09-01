@@ -58,6 +58,10 @@ export function buildProductStructuredData(input: ProductStructuredDataInput) {
       availability: input.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       url: productUrl,
       itemCondition: "https://schema.org/NewCondition",
+      seller: {
+        "@type": "Organization",
+        name: "Oilbar",
+      },
     };
   }
 
@@ -66,7 +70,7 @@ export function buildProductStructuredData(input: ProductStructuredDataInput) {
   }
 
   if (input.imageUrl) {
-    structuredData.image = [input.imageUrl];
+    structuredData.image = [new URL(input.imageUrl, `${baseUrl}/`).toString()];
   }
 
   if (input.sku) {

@@ -1,7 +1,7 @@
 import prisma from "../prisma";
 import { applyCarManualOverrides } from "../car-manual-overrides";
 import { createPageInfo } from "../pagination";
-import { storefrontVisibleCarWhere } from "../storefront-visibility";
+import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "../storefront-visibility";
 import { createEmptyPageResult, withStorefrontDataFallback } from "./storefront-fallback";
 
 type StorefrontCarItem = Awaited<ReturnType<typeof getCarsWithProducts>>[number];
@@ -12,10 +12,12 @@ export async function getPopularCars(limit = 6) {
       where: storefrontVisibleCarWhere(),
       include: {
         productMappings: {
+          where: { product: { is: storefrontVisibleProductWhere() } },
           include: {
             product: {
               include: {
                 brand: true,
+                promotion: true,
               },
             },
           },
@@ -38,10 +40,12 @@ export async function getCarsWithProducts() {
       where: storefrontVisibleCarWhere(),
       include: {
         productMappings: {
+          where: { product: { is: storefrontVisibleProductWhere() } },
           include: {
             product: {
               include: {
                 brand: true,
+                promotion: true,
               },
             },
           },
@@ -103,10 +107,12 @@ export async function getPaginatedCarsWithProducts({
         where,
         include: {
           productMappings: {
+            where: { product: { is: storefrontVisibleProductWhere() } },
             include: {
               product: {
                 include: {
                   brand: true,
+                  promotion: true,
                 },
               },
             },
@@ -218,11 +224,13 @@ export async function getCarBySlug(slug: string) {
       where: storefrontVisibleCarWhere({ slug }),
       include: {
         productMappings: {
+          where: { product: { is: storefrontVisibleProductWhere() } },
           include: {
             product: {
               include: {
                 brand: true,
                 category: true,
+                promotion: true,
                 carMappings: {
                   include: { car: true },
                 },

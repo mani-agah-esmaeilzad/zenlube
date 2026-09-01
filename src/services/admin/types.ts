@@ -373,3 +373,53 @@ export type ContentTabData = {
     createdAt: Date;
   }>;
 };
+
+export type AdminPromotionKind = "SALE" | "OCTANE" | "RACING_FUEL";
+
+export type AdminSpecialOffer = {
+  id: string;
+  productId: string;
+  kind: AdminPromotionKind;
+  label?: string | null;
+  specialPrice?: number | null;
+  startsAt?: Date | null;
+  endsAt?: Date | null;
+  sortOrder: number;
+  isActive: boolean;
+  updatedAt: Date;
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    price: number;
+    stock: number;
+    imageUrl?: string | null;
+    brandName: string;
+  };
+};
+
+export type SpecialOffersTabData = {
+  offers: AdminSpecialOffer[];
+  products: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    price: number;
+    stock: number;
+    imageUrl?: string | null;
+    brandName: string;
+    categoryName: string;
+    hasPromotion: boolean;
+    torobReady: boolean;
+  }>;
+  readiness: {
+    total: number;
+    priced: number;
+    inStock: number;
+    withImage: number;
+    torobReady: number;
+    missingPrice: number;
+    outOfStock: number;
+    missingImage: number;
+  };
+};

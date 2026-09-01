@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import prisma from "@/lib/prisma";
+import { resolveProductPricing } from "@/lib/pricing";
 import { appendOrderStatusEvent, calculateCouponDiscount, findActiveCouponByCode, getShippingEstimateLabel } from "@/lib/commerce";
 import { checkoutOrderSchema } from "@/lib/validators";
 import { getAppSession } from "@/lib/session";
@@ -93,7 +94,7 @@ export async function createCheckoutOrderAction(
     const input = parsed.data;
     const cart = await prisma.cart.findUnique({
       where: { userId },
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { product: { include: { promotion: true } } } } },
     });
 
     if (!cart || !cart.items.length) {
@@ -107,12 +108,22 @@ export async function createCheckoutOrderAction(
       return { success: false, message: "یکی از محصولات سبد خرید دیگر در فروشگاه فعال نیست." };
     }
 
+    const pricedItems = cart.items.map((item) => ({
+      ...item,
+      unitPrice: resolveProductPricing(item.product).effectivePrice,
+    }));
+
+    const unpricedItem = pricedItems.find((item) => item.unitPrice <= 0);
+    if (unpricedItem) {
+      return { success: false, message: `قیمت محصول «${unpricedItem.product.name}» هنوز نهایی نشده است.` };
+    }
+
     const unavailable = cart.items.find((item) => item.product.stock < item.quantity);
     if (unavailable) {
       return { success: false, message: `موجودی محصول «${unavailable.product.name}» کافی نیست.` };
     }
 
-    const subtotal = cart.items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0);
+    const subtotal = pricedItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
     const shippingCost = input.shippingMethod === "EXPRESS" ? 120000 : input.shippingMethod === "STANDARD" ? 60000 : 0;
     const estimatedDeliveryLabel = getShippingEstimateLabel(input.shippingMethod);
     const normalizedPhone = normalizeIranPhone(input.phone);
@@ -159,10 +170,10 @@ export async function createCheckoutOrderAction(
           notes: input.notes,
           items: {
             createMany: {
-              data: cart.items.map((item) => ({
+              data: pricedItems.map((item) => ({
                 productId: item.productId,
                 quantity: item.quantity,
-                price: item.product.price,
+                price: item.unitPrice,
               })),
             },
           },

@@ -51,6 +51,12 @@ enum DiscountType {
   FIXED
 }
 
+enum PromotionKind {
+  SALE
+  OCTANE
+  RACING_FUEL
+}
+
 enum ReturnRequestStatus {
   REQUESTED
   APPROVED
@@ -182,6 +188,26 @@ model Product {
   questions        ProductQuestion[]
   wishlistItems    WishlistItem[]
   recentViews      RecentlyViewedProduct[]
+  promotion       ProductPromotion?
+}
+
+model ProductPromotion {
+  id           String        @id @default(cuid())
+  productId    String        @unique
+  kind         PromotionKind @default(SALE)
+  label        String?
+  specialPrice Decimal?      @db.Decimal(10, 2)
+  startsAt     DateTime?
+  endsAt       DateTime?
+  sortOrder    Int           @default(0)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([isActive, sortOrder])
+  @@index([kind, isActive])
+  @@index([startsAt, endsAt])
 }
 
 model Car {

@@ -8,6 +8,7 @@ import type {
   ProductCar,
   ProductQuestion,
   ProductReview,
+  ProductPromotion,
 } from "@/generated/prisma";
 
 export type ProductWithRelations = Product & {
@@ -16,6 +17,7 @@ export type ProductWithRelations = Product & {
   carMappings: Array<ProductCar & { car: Car }>;
   reviews?: ProductReview[];
   questions?: ProductQuestion[];
+  promotion?: ProductPromotion | null;
 };
 
 export type CarWithProducts = Car & {

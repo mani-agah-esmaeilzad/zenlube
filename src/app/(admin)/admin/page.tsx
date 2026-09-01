@@ -14,6 +14,7 @@ import {
   getProductsTabData,
   getQuestionsTabData,
   getReportsTabData,
+  getSpecialOffersTabData,
   getUsersTabData,
 } from "@/services/admin/overview";
 import { getOrdersTabData } from "@/services/admin/orders";
@@ -27,6 +28,7 @@ import { OrdersTab } from "@/components/admin/tabs/OrdersTab";
 import { ProductsTab } from "@/components/admin/tabs/ProductsTab";
 import { QuestionsTab } from "@/components/admin/tabs/QuestionsTab";
 import { ReportsTab } from "@/components/admin/tabs/ReportsTab";
+import { SpecialOffersTab } from "@/components/admin/tabs/SpecialOffersTab";
 import { UsersTab } from "@/components/admin/tabs/UsersTab";
 import type { OrdersTabData } from "@/services/admin/types";
 
@@ -44,6 +46,12 @@ const tabs = [
     label: "محصولات",
     description: "کاتالوگ، موجودی، قیمت‌گذاری و ارتباط محصولات با خودروها را مدیریت کنید.",
     icon: BoxIcon,
+  },
+  {
+    id: "offers",
+    label: "فروش و ترب",
+    description: "قیمت، موجودی، آمادگی خروجی ترب و پیشنهادهای ویژه صفحه اصلی را مدیریت کنید.",
+    icon: SparklesIcon,
   },
   {
     id: "orders",
@@ -253,6 +261,10 @@ async function renderActiveTab(
       });
       return <ProductsTab data={data} />;
     }
+    case "offers": {
+      const data = await getSpecialOffersTabData();
+      return <SpecialOffersTab data={data} />;
+    }
     case "orders": {
       const statusParam = typeof searchParams?.status === "string" ? searchParams.status : undefined;
       const normalizedStatus = statusParam &&
@@ -313,6 +325,16 @@ function HomeIcon(props: SVGProps<SVGSVGElement>) {
     <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} viewBox="0 0 24 24" {...props}>
       <path d="M3 11.5 12 4l9 7.5" />
       <path d="M5 10.5V20h14v-9.5" />
+    </svg>
+  );
+}
+
+function SparklesIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} viewBox="0 0 24 24" {...props}>
+      <path d="m12 3 1.3 3.7L17 8l-3.7 1.3L12 13l-1.3-3.7L7 8l3.7-1.3L12 3Z" />
+      <path d="m18.5 13 .8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" />
+      <path d="m5.5 13 .7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8Z" />
     </svg>
   );
 }

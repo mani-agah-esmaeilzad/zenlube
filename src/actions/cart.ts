@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { resolveProductPricing } from "@/lib/pricing";
 import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
 import { cartItemSchema } from "@/lib/validators";
 import { getAppSession } from "@/lib/session";
@@ -51,11 +52,15 @@ export async function addToCartAction(input: { productId: string; quantity?: num
 
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      select: { slug: true, stock: true },
+      select: { slug: true, stock: true, price: true, promotion: true },
     });
 
     if (!isStorefrontVisibleProduct(product)) {
       return { success: false, message: "این محصول در فروشگاه پیدا نشد." };
+    }
+
+    if (resolveProductPricing(product).effectivePrice <= 0) {
+      return { success: false, message: "قیمت این محصول هنوز برای خرید نهایی نشده است." };
     }
 
     if (product.stock < quantity) {
@@ -67,6 +72,14 @@ export async function addToCartAction(input: { productId: string; quantity?: num
       update: {},
       create: { userId: session.user.id },
     });
+
+    const existingItem = await prisma.cartItem.findUnique({
+      where: { cartId_productId: { cartId: cart.id, productId } },
+      select: { quantity: true },
+    });
+    if ((existingItem?.quantity ?? 0) + quantity > product.stock) {
+      return { success: false, message: "تعداد این محصول در سبد از موجودی انبار بیشتر می‌شود." };
+    }
 
     await prisma.cartItem.upsert({
       where: {
@@ -110,6 +123,19 @@ export async function updateCartItemAction(input: { productId: string; quantity:
 
     if (!cart) {
       return { success: false, message: "سبد خرید یافت نشد." };
+    }
+
+    const product = await prisma.product.findUnique({
+      where: { id: parsed.data.productId },
+      select: { slug: true, stock: true, price: true, promotion: true },
+    });
+
+    if (!isStorefrontVisibleProduct(product) || resolveProductPricing(product).effectivePrice <= 0) {
+      return { success: false, message: "این محصول در حال حاضر قابل خرید نیست." };
+    }
+
+    if (product.stock < parsed.data.quantity) {
+      return { success: false, message: "موجودی این محصول کافی نیست." };
     }
 
     if (parsed.data.quantity <= 0) {

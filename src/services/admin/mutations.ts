@@ -142,6 +142,59 @@ export async function saveProduct(data: {
   });
 }
 
+export async function saveProductPromotion(data: {
+  productId: string;
+  kind: "SALE" | "OCTANE" | "RACING_FUEL";
+  label?: string | null;
+  specialPrice?: number | null;
+  startsAt?: Date | null;
+  endsAt?: Date | null;
+  sortOrder: number;
+  isActive: boolean;
+}) {
+  return prisma.productPromotion.upsert({
+    where: { productId: data.productId },
+    update: {
+      kind: data.kind,
+      label: data.label ?? null,
+      specialPrice: data.specialPrice != null ? new Prisma.Decimal(data.specialPrice) : null,
+      startsAt: data.startsAt ?? null,
+      endsAt: data.endsAt ?? null,
+      sortOrder: data.sortOrder,
+      isActive: data.isActive,
+    },
+    create: {
+      productId: data.productId,
+      kind: data.kind,
+      label: data.label ?? null,
+      specialPrice: data.specialPrice != null ? new Prisma.Decimal(data.specialPrice) : null,
+      startsAt: data.startsAt ?? null,
+      endsAt: data.endsAt ?? null,
+      sortOrder: data.sortOrder,
+      isActive: data.isActive,
+    },
+    include: { product: { select: { name: true, slug: true } } },
+  });
+}
+
+export async function deleteProductPromotion(promotionId: string) {
+  return prisma.productPromotion.delete({
+    where: { id: promotionId },
+    include: { product: { select: { name: true, slug: true } } },
+  });
+}
+
+export async function updateProductCommerce(data: { productId: string; price: number; stock: number }) {
+  return prisma.product.update({
+    where: { id: data.productId },
+    data: {
+      price: new Prisma.Decimal(data.price),
+      stock: data.stock,
+    },
+    select: { id: true, name: true, slug: true, price: true, stock: true },
+  });
+}
+
 export async function deleteProduct(productId: string) {
   const orderItemCount = await prisma.orderItem.count({ where: { productId } });
 

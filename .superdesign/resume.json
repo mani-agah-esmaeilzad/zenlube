@@ -47,7 +47,7 @@
         "src/components/layout/category-dropdown.tsx": "69f00afb199629cb2df7432c8df1071a0d9471d7b5f970c2b2c88c2bd3b1be4b",
         "src/components/layout/mobile-nav.tsx": "8fdd89c775dc18758ee41f5a098bea4907ad0d4790f540bd8be4f4cfb0383a81",
         "src/components/layout/mobile-search.tsx": "950a63582dca87df00b33b8392a064d28b48b9980175477aa4c649d74a253608",
-        "src/components/layout/site-footer.tsx": "29bc27b1d1a4f9bee1d3ada21f7e11cc12e6f21e1c034b292fe56bd3e7ed81d5",
+        "src/components/layout/site-footer.tsx": "f8c1f801bfd68c87b5fa2f3a15dbd0c3e197c8cf4a3ab410698d16cfc33e0056",
         "src/components/layout/hero-vehicle-finder.tsx": "ac04aa464347d250e423e2fda72d3d3cb1fb0384008c8839c3e6aba8cc368570",
         "src/components/layout/logo-mark.tsx": "82e09f15561d579980dfdf09aef1692aa3c177cd09e95d439a7988ad7716008b",
         "src/components/layout/cart-indicator.tsx": "3f97a0dba8a0d769729cd8b609d79c3684ead9bc7e0ea34fc070fae3b21f93a2",
@@ -88,13 +88,13 @@
           "currentVersion": 1
         },
         "bd147ef3-3f8e-4755-a64e-1415f7fad25b": {
-          "title": "Compact technical storefront",
-          "visualDirection": "open image-led storefront with compact mobile product rows, square-edged dark bands, and divider-led internal pages",
+          "title": "Oilbar homepage with special offers",
+          "visualDirection": "open image-led storefront with compact single-row mobile special offers for sales, octane boosters and racing fuels, plus an Enamad footer trust seal",
           "parentDraftId": "f38327be-8589-44c0-bdfc-3c37283bf3bc",
-          "currentVersion": 2
+          "currentVersion": 3
         }
       },
-      "updatedAt": "2026-08-30T07:44:22Z"
+      "updatedAt": "2026-09-01T15:01:25Z"
     }
   }
 }

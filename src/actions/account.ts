@@ -9,6 +9,7 @@ import { getAppSession } from "@/lib/session";
 import { getIranPhoneLookupVariants, normalizeIranPhone, validateIranPhone } from "@/lib/phone";
 import { createAuditLog } from "@/lib/admin-audit";
 import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
+import { resolveProductPricing } from "@/lib/pricing";
 import { returnRequestSchema } from "@/lib/validators";
 import { createReturnRequest } from "@/services/admin/mutations";
 
@@ -273,7 +274,7 @@ export async function reorderOrderAction(formData: FormData): Promise<void> {
         items: {
           include: {
             product: {
-              select: { id: true, stock: true, slug: true },
+              select: { id: true, stock: true, slug: true, price: true, promotion: true },
             },
           },
         },
@@ -291,7 +292,7 @@ export async function reorderOrderAction(formData: FormData): Promise<void> {
     });
 
     for (const item of order.items) {
-      if (!isStorefrontVisibleProduct(item.product) || item.product.stock <= 0) {
+      if (!isStorefrontVisibleProduct(item.product) || item.product.stock <= 0 || resolveProductPricing(item.product).effectivePrice <= 0) {
         continue;
       }
 

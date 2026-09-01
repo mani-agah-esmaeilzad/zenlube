@@ -1,4 +1,5 @@
 import type { ProductWithRelations } from "@/types/catalog";
+import { resolveProductPricing } from "./pricing";
 import {
   REQUESTED_CAR_NOTEBOOK_SECTION_BY_PAGE_ID,
   REQUESTED_CAR_NOTEBOOK_SECTIONS,
@@ -536,7 +537,7 @@ function serializeNotebookProduct(product: ProductWithRelations): NotebookCompat
     categoryName: product.category.name,
     categorySlug: product.category.slug,
     imageUrl: product.imageUrl,
-    price: Number(product.price),
+    price: resolveProductPricing(product).effectivePrice,
     stock: product.stock,
     averageRating: product.averageRating != null ? Number(product.averageRating) : null,
     reviewCount: product.reviewCount,

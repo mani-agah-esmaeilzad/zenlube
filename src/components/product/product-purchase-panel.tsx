@@ -12,7 +12,9 @@ type ProductPurchasePanelProps = {
   compareHref: string;
   estimatedDeliveryLabel?: string | null;
   isAvailable: boolean;
+  originalPrice?: number | null;
   price: number | string | { toString(): string };
+  promotionLabel?: string | null;
   productId: string;
   stock: number;
   wishlistActive?: boolean;
@@ -29,7 +31,9 @@ export function ProductPurchasePanel({
   compareHref,
   estimatedDeliveryLabel,
   isAvailable,
+  originalPrice,
   price,
+  promotionLabel,
   productId,
   stock,
   wishlistActive = false,
@@ -42,7 +46,17 @@ export function ProductPurchasePanel({
       <section className="border-y border-border bg-surface-tint px-4 py-4 sm:px-5 sm:py-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold text-text-muted">قیمت نهایی</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-xs font-bold text-text-muted">قیمت نهایی</p>
+              {promotionLabel ? (
+                <span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-black text-amber-800">
+                  {promotionLabel}
+                </span>
+              ) : null}
+            </div>
+            {originalPrice && originalPrice > Number(price) ? (
+              <del className="mt-2 block text-xs font-bold text-text-soft">{formatCatalogPrice(originalPrice)}</del>
+            ) : null}
             <p className="mt-2 text-2xl font-black text-text-strong sm:text-[2rem]">{finalPrice}</p>
             {estimatedDeliveryLabel ? (
               <p className="mt-2 text-xs font-bold text-success">{estimatedDeliveryLabel}</p>
@@ -107,6 +121,9 @@ export function ProductPurchasePanel({
         <div className="flex items-center gap-3">
           <div className="min-w-0 shrink-0">
             <p className="text-[11px] font-bold text-text-muted">قیمت</p>
+            {originalPrice && originalPrice > Number(price) ? (
+              <del className="block text-[10px] font-bold text-text-soft">{formatCatalogPrice(originalPrice)}</del>
+            ) : null}
             <p className="mt-1 text-sm font-black text-text-strong">{finalPrice}</p>
           </div>
           <AddToCartButton className="w-full" disabled={!isAvailable} productId={productId} quantity={quantity} size="md" />

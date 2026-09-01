@@ -15,6 +15,7 @@ import { StatusPill } from "@/components/ui/status-pill";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getCarHierarchy } from "@/lib/data/cars";
 import { createPageInfo, getPaginationParams } from "@/lib/pagination";
+import { resolveProductPricing } from "@/lib/pricing";
 import { getAppSession } from "@/lib/session";
 import { formatPrice } from "@/lib/utils";
 
@@ -97,6 +98,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             name: true,
             imageUrl: true,
             price: true,
+            promotion: true,
             brand: { select: { name: true } },
           },
         },
@@ -114,6 +116,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             name: true,
             imageUrl: true,
             price: true,
+            promotion: true,
             brand: { select: { name: true } },
           },
         },
@@ -250,7 +253,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 slug: item.product.slug,
                 name: item.product.name,
                 brandName: item.product.brand.name,
-                price: Number(item.product.price),
+                price: resolveProductPricing(item.product).effectivePrice,
                 imageUrl: item.product.imageUrl,
               }))}
             />
@@ -265,7 +268,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 slug: item.product.slug,
                 name: item.product.name,
                 brandName: item.product.brand.name,
-                price: Number(item.product.price),
+                price: resolveProductPricing(item.product).effectivePrice,
                 imageUrl: item.product.imageUrl,
               }))}
             />

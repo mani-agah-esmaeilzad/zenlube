@@ -25,6 +25,7 @@ import {
   extractEnglishProductLabel,
 } from "@/lib/product-detail";
 import prisma from "@/lib/prisma";
+import { resolveProductPricing } from "@/lib/pricing";
 import { buildBreadcrumbStructuredData, buildProductStructuredData } from "@/lib/seo";
 import { getAppSession } from "@/lib/session";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
@@ -56,6 +57,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     include: {
       brand: true,
       category: true,
+      promotion: true,
       carMappings: {
         where: { car: storefrontVisibleCarWhere() },
         include: { car: true },
@@ -104,6 +106,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     include: {
       brand: true,
       category: true,
+      promotion: true,
       carMappings: {
         where: { car: storefrontVisibleCarWhere() },
         include: { car: true },
@@ -114,7 +117,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const baseUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.oilbar.ir").replace(/\/$/, "");
   const shippingEstimate = getShippingEstimateLabel("STANDARD");
-  const isAvailable = product.stock > 0;
+  const pricing = resolveProductPricing(product);
+  const isAvailable = product.stock > 0 && pricing.effectivePrice > 0;
   const galleryItems = buildProductGalleryItems(product);
   const hasGalleryMedia = galleryItems.length > 0;
   const specRows = buildProductSpecRows(product);
@@ -142,7 +146,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     imageUrl: product.imageUrl,
     inStock: isAvailable,
     name: product.name,
-    price: Number(product.price),
+    price: pricing.effectivePrice,
     reviewCount: product.reviewCount,
     sku: product.sku,
     slug: product.slug,
@@ -239,8 +243,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               compareHref="/products/compare"
               estimatedDeliveryLabel={shippingEstimate}
               isAvailable={isAvailable}
-              price={Number(product.price)}
+              originalPrice={pricing.hasDiscount ? pricing.basePrice : null}
+              price={pricing.effectivePrice}
               productId={product.id}
+              promotionLabel={pricing.promotionActive ? pricing.label : null}
               stock={product.stock}
               wishlistActive={Boolean(wishlistItem)}
             />

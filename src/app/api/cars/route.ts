@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { createPageInfo, getPaginationParams } from "@/lib/pagination";
-import { storefrontVisibleCarWhere } from "@/lib/storefront-visibility";
+import { resolveProductPricing } from "@/lib/pricing";
+import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -23,10 +24,12 @@ export async function GET(request: Request) {
       where,
       include: {
         productMappings: {
+          where: { product: { is: storefrontVisibleProductWhere() } },
           include: {
             product: {
               include: {
                 brand: true,
+                promotion: true,
               },
             },
           },
@@ -48,7 +51,10 @@ export async function GET(request: Request) {
       ...car,
       productMappings: car.productMappings.map(({ product, ...rest }) => ({
         ...rest,
-        product,
+        product: {
+          ...product,
+          price: resolveProductPricing(product).effectivePrice,
+        },
       })),
     })),
     pageInfo: createPageInfo(page, pageSize, total),

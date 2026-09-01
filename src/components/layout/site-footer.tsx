@@ -1,9 +1,13 @@
 import type { SVGProps } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
 import { LogoMark } from "@/components/layout/logo-mark";
 import { getAllCategoriesLite } from "@/lib/data";
+
+const ENAMAD_ID = "676134";
+const ENAMAD_CODE = "CIEFXVKystVwcAFxMw9PAkoXuIW996ra";
+const ENAMAD_HREF = `https://trustseal.enamad.ir/?id=${ENAMAD_ID}&Code=${ENAMAD_CODE}`;
+const ENAMAD_LOGO = `https://trustseal.enamad.ir/logo.aspx?id=${ENAMAD_ID}&Code=${ENAMAD_CODE}`;
 
 const trustItems = ["ضمانت اصالت کالا", "ارسال سریع", "پرداخت امن", "پشتیبانی تخصصی"];
 
@@ -100,6 +104,9 @@ export async function SiteFooter() {
               </Link>
             ))}
           </nav>
+          <div className="mt-5">
+            <EnamadSeal />
+          </div>
         </div>
 
         <div className="container-zen hidden gap-8 py-12 lg:grid lg:grid-cols-[1.15fr_2fr_0.9fr]">
@@ -141,13 +148,7 @@ export async function SiteFooter() {
               تماس با پشتیبانی
             </Link>
             <div className="mt-5 flex gap-3">
-              <Link
-                aria-label="نماد اعتماد الکترونیکی"
-                className="flex h-20 w-20 items-center justify-center rounded-xl border border-white/10 bg-white/6 p-3 sm:h-24 sm:w-24"
-                href="#"
-              >
-                <Image alt="محل قرارگیری نماد اعتماد" className="h-full w-full object-contain" height={80} src="/enamad-placeholder.svg" width={80} />
-              </Link>
+              <EnamadSeal />
               <div className="flex h-20 w-20 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-center text-xs font-bold text-white/72 sm:h-24 sm:w-24">
                 نشان ملی ثبت
               </div>
@@ -160,6 +161,29 @@ export async function SiteFooter() {
         © {new Date().getFullYear()} Oilbar - همه حقوق محفوظ است.
       </div>
     </footer>
+  );
+}
+
+function EnamadSeal() {
+  return (
+    <a
+      aria-label="نماد اعتماد الکترونیکی"
+      className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-white p-1.5 sm:h-24 sm:w-24"
+      href={ENAMAD_HREF}
+      referrerPolicy="origin"
+      rel="noopener"
+      target="_blank"
+    >
+      {/* Enamad requires a native img with origin referrer and the official logo URL. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt="نماد اعتماد الکترونیکی"
+        className="h-full w-full cursor-pointer object-contain"
+        referrerPolicy="origin"
+        src={ENAMAD_LOGO}
+        {...{ code: ENAMAD_CODE }}
+      />
+    </a>
   );
 }
 

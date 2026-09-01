@@ -1,6 +1,6 @@
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
-import { storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
+import { adminCatalogProductWhere } from "@/lib/storefront-visibility";
 import {
   mapBrand,
   mapCar,
@@ -24,6 +24,7 @@ import type {
   UsersTabData,
   ReportsTabData,
   ContentTabData,
+  SpecialOffersTabData,
 } from "./types";
 
 const LOW_STOCK_THRESHOLD = 10;
@@ -51,7 +52,7 @@ const overviewSelect = {
     },
   }),
   products: prisma.product.findMany({
-    where: storefrontVisibleProductWhere(),
+    where: adminCatalogProductWhere(),
     orderBy: { updatedAt: "desc" },
     include: {
       brand: true,
@@ -223,7 +224,7 @@ export async function getProductsTabData(options: ProductTabOptions = {}): Promi
     ? options.stockStatus
     : "all";
 
-  const where: Prisma.ProductWhereInput = storefrontVisibleProductWhere();
+  const where: Prisma.ProductWhereInput = adminCatalogProductWhere();
 
   if (search) {
     where.OR = [
@@ -253,9 +254,9 @@ export async function getProductsTabData(options: ProductTabOptions = {}): Promi
     overviewSelect.brands,
     overviewSelect.cars,
     prisma.product.count({ where }),
-    prisma.product.count({ where: storefrontVisibleProductWhere({ stock: { lt: LOW_STOCK_THRESHOLD } }) }),
+    prisma.product.count({ where: adminCatalogProductWhere({ stock: { lt: LOW_STOCK_THRESHOLD } }) }),
     prisma.product.findMany({
-      where: storefrontVisibleProductWhere({ stock: { lt: LOW_STOCK_THRESHOLD } }),
+      where: adminCatalogProductWhere({ stock: { lt: LOW_STOCK_THRESHOLD } }),
       orderBy: { stock: "asc" },
       take: 10,
       select: {
@@ -523,5 +524,93 @@ export async function getContentTabData(): Promise<ContentTabData> {
       errorMessage: log.errorMessage,
       createdAt: log.createdAt,
     })),
+  };
+}
+
+export async function getSpecialOffersTabData(): Promise<SpecialOffersTabData> {
+  const [products, offers] = await Promise.all([
+    prisma.product.findMany({
+      where: adminCatalogProductWhere(),
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+        stock: true,
+        imageUrl: true,
+        brand: { select: { name: true } },
+        category: { select: { name: true } },
+        promotion: { select: { id: true } },
+      },
+      orderBy: [{ brand: { name: "asc" } }, { name: "asc" }],
+    }),
+    prisma.productPromotion.findMany({
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            price: true,
+            stock: true,
+            imageUrl: true,
+            brand: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: [{ sortOrder: "asc" }, { updatedAt: "desc" }],
+    }),
+  ]);
+
+  const productRows = products.map((product) => {
+    const price = Number(product.price);
+    const torobReady = price > 0 && product.stock > 0 && Boolean(product.imageUrl);
+    return {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price,
+      stock: product.stock,
+      imageUrl: product.imageUrl,
+      brandName: product.brand.name,
+      categoryName: product.category.name,
+      hasPromotion: Boolean(product.promotion),
+      torobReady,
+    };
+  });
+
+  return {
+    products: productRows,
+    offers: offers.map((offer) => ({
+      id: offer.id,
+      productId: offer.productId,
+      kind: offer.kind,
+      label: offer.label,
+      specialPrice: offer.specialPrice != null ? Number(offer.specialPrice) : null,
+      startsAt: offer.startsAt,
+      endsAt: offer.endsAt,
+      sortOrder: offer.sortOrder,
+      isActive: offer.isActive,
+      updatedAt: offer.updatedAt,
+      product: {
+        id: offer.product.id,
+        name: offer.product.name,
+        slug: offer.product.slug,
+        price: Number(offer.product.price),
+        stock: offer.product.stock,
+        imageUrl: offer.product.imageUrl,
+        brandName: offer.product.brand.name,
+      },
+    })),
+    readiness: {
+      total: productRows.length,
+      priced: productRows.filter((product) => product.price > 0).length,
+      inStock: productRows.filter((product) => product.stock > 0).length,
+      withImage: productRows.filter((product) => Boolean(product.imageUrl)).length,
+      torobReady: productRows.filter((product) => product.torobReady).length,
+      missingPrice: productRows.filter((product) => product.price <= 0).length,
+      outOfStock: productRows.filter((product) => product.stock <= 0).length,
+      missingImage: productRows.filter((product) => !product.imageUrl).length,
+    },
   };
 }

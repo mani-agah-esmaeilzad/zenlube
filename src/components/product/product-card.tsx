@@ -5,6 +5,7 @@ import Link from "next/link";
 import { WishlistButton } from "@/components/product/wishlist-button";
 import { PriceBlock } from "@/components/ui/price-block";
 import { StatusPill } from "@/components/ui/status-pill";
+import { resolveProductPricing } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 import type { ProductWithRelations } from "@/types/catalog";
 
@@ -22,8 +23,15 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
   ].filter(Boolean);
 
   const rating = product.averageRating ? Number(product.averageRating).toFixed(1) : null;
-  const isAvailable = product.stock > 0;
-  const badge = product.isBestseller ? "پرفروش" : product.isFeatured ? "ویژه" : null;
+  const pricing = resolveProductPricing(product);
+  const isAvailable = product.stock > 0 && pricing.effectivePrice > 0;
+  const badge = pricing.promotionActive
+    ? pricing.label
+    : product.isBestseller
+      ? "پرفروش"
+      : product.isFeatured
+        ? "ویژه"
+        : null;
 
   return (
     <article
@@ -41,7 +49,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
           </div>
           {badge ? (
             <div className="absolute right-3 top-3 z-10 hidden sm:block">
-              <StatusPill className="px-2 py-0.5 text-[10px]" tone={product.isBestseller ? "dark" : "warning"}>
+              <StatusPill className="px-2 py-0.5 text-[10px]" tone={product.isBestseller && !pricing.promotionActive ? "dark" : "warning"}>
                 {badge}
               </StatusPill>
             </div>
@@ -65,7 +73,7 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
       ) : (
         <div className="flex min-h-11 items-center justify-between gap-3">
           {badge ? (
-            <StatusPill className="px-2 py-0.5 text-[10px]" tone={product.isBestseller ? "dark" : "warning"}>
+            <StatusPill className="px-2 py-0.5 text-[10px]" tone={product.isBestseller && !pricing.promotionActive ? "dark" : "warning"}>
               {badge}
             </StatusPill>
           ) : (
@@ -111,10 +119,15 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
         </div>
 
         <div className="mt-auto pt-1.5 sm:pt-3">
-          <PriceBlock align="start" amount={product.price} showLabel={false} size="sm" />
-          {compact ? (
+          {pricing.hasDiscount ? (
+            <del className="mb-0.5 block text-[11px] font-bold text-text-soft">
+              {pricing.basePrice.toLocaleString("fa-IR")} ریال
+            </del>
+          ) : null}
+          <PriceBlock align="start" amount={pricing.effectivePrice} showLabel={false} size="sm" />
+          {isAvailable || compact ? (
             <Link className="mt-1 inline-flex min-h-11 items-center text-xs font-extrabold text-primary-accent-strong md:min-h-9" href={`/products/${product.slug}`}>
-              مشاهده محصول
+              {isAvailable ? "مشاهده و خرید" : "مشاهده محصول"}
             </Link>
           ) : null}
         </div>

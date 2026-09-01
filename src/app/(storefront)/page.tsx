@@ -14,17 +14,19 @@ import {
   getHighlightedCategories,
   getLatestBlogPosts,
   getPopularCars,
+  getSpecialOfferProducts,
 } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function Home() {
-  const [categories, brands, cars, posts, featuredProducts, bestsellerProducts] = await Promise.all([
+  const [categories, brands, cars, posts, specialOfferProducts, featuredProducts, bestsellerProducts] = await Promise.all([
     getHighlightedCategories().catch(() => []),
     getBrandsWithProductCount().catch(() => []),
     getPopularCars(8).catch(() => []),
     getLatestBlogPosts(3).catch(() => []),
+    getSpecialOfferProducts(8).catch(() => []),
     getFeaturedProducts(8).catch(() => []),
     getBestsellerProducts(8).catch(() => []),
   ]);
@@ -119,6 +121,24 @@ export default async function Home() {
           <EmptyState description="پس از ثبت دسته‌بندی‌ها، مسیر خرید از اینجا شروع می‌شود." title="هنوز دسته‌بندی‌ای ثبت نشده است." />
         )}
       </section>
+
+      {specialOfferProducts.length ? (
+        <section className="container-zen mt-9 space-y-4 md:mt-14 md:space-y-6" id="special-offers">
+          <SectionHeader
+            compactOnMobile
+            href="/products?inStock=1"
+            subtitle="فروش ویژه، مکمل‌های اکتان و بنزین‌های مسابقه‌ای موجود"
+            title="پیشنهاد ویژه"
+          />
+          <div className="scrollbar-none -mx-2 flex snap-x snap-mandatory gap-3 overflow-x-auto px-2 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 xl:grid-cols-4">
+            {specialOfferProducts.map((product) => (
+              <div key={product.id} className="w-[calc(100vw-2.75rem)] max-w-[360px] shrink-0 snap-start md:w-auto md:min-w-0 md:max-w-none">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {selectedProducts.length ? (
         <section className="container-zen mt-9 space-y-4 md:mt-14 md:space-y-6">

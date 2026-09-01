@@ -29,6 +29,29 @@ export function storefrontVisibleProductWhere(
           },
         },
       },
+      {
+        price: {
+          gt: 0,
+        },
+      },
+    ],
+  };
+}
+
+/** Products that still belong in the admin catalog, including items awaiting pricing. */
+export function adminCatalogProductWhere(
+  where: Prisma.ProductWhereInput = {},
+): Prisma.ProductWhereInput {
+  return {
+    AND: [
+      where,
+      {
+        NOT: {
+          slug: {
+            startsWith: STOREFRONT_ARCHIVED_PRODUCT_SLUG_PREFIX,
+          },
+        },
+      },
     ],
   };
 }

@@ -158,6 +158,23 @@ export const productUpdateSchema = z.object({
   ...productFields,
 });
 
+export const productPromotionSchema = z.object({
+  productId: z.string().min(1, "انتخاب محصول الزامی است."),
+  kind: z.enum(["SALE", "OCTANE", "RACING_FUEL"]),
+  label: z.preprocess(emptyToUndefined, z.string().trim().max(60, "برچسب حداکثر ۶۰ کاراکتر است.").optional()),
+  specialPrice: optionalNumber.pipe(z.number().positive("قیمت ویژه باید بیشتر از صفر باشد.").optional()),
+  startsAt: optionalString,
+  endsAt: optionalString,
+  sortOrder: optionalNumber.pipe(z.number().int().min(0).max(999).optional()).transform((value) => value ?? 0),
+  isActive: z.boolean(),
+});
+
+export const productCommerceSchema = z.object({
+  productId: z.string().min(1, "شناسه محصول معتبر نیست."),
+  price: z.number().min(0, "قیمت نمی‌تواند منفی باشد."),
+  stock: z.number().int().min(0, "موجودی نمی‌تواند منفی باشد."),
+});
+
 export const answerQuestionSchema = z.object({
   questionId: z.string().cuid(),
   answer: z

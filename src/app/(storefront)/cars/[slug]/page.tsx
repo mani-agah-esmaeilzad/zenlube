@@ -12,6 +12,7 @@ import {
 } from "@/lib/car-notebook";
 import { resolveCarOilCapacityLabel } from "@/lib/car-manual-overrides";
 import { getCarBySlug, getRelatedBlogPostsForCar, getSiblingCars } from "@/lib/data";
+import { resolveProductPricing } from "@/lib/pricing";
 
 type CarPageProps = {
   params: Promise<{ slug: string }>;
@@ -59,7 +60,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
         slug: productSlug,
         name: product?.name ?? productSlug,
         brandName: product?.brand.name,
-        price: product ? Number(product.price) : undefined,
+        price: product ? resolveProductPricing(product).effectivePrice : undefined,
       };
     }),
   }));

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { createPageInfo, getPaginationParams } from "@/lib/pagination";
+import { resolveProductPricing } from "@/lib/pricing";
 import { storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
 
 export async function GET(request: Request) {
@@ -75,6 +76,7 @@ export async function GET(request: Request) {
       include: {
         brand: true,
         category: true,
+        promotion: true,
         carMappings: {
           include: {
             car: true,
@@ -89,13 +91,18 @@ export async function GET(request: Request) {
   ]);
 
   return NextResponse.json({
-    products: products.map((product) => ({
-      ...product,
-      carMappings: product.carMappings.map(({ car, ...rest }) => ({
-        ...rest,
-        car,
-      })),
-    })),
+    products: products.map((product) => {
+      const pricing = resolveProductPricing(product);
+      return {
+        ...product,
+        price: pricing.effectivePrice,
+        originalPrice: pricing.hasDiscount ? pricing.basePrice : null,
+        carMappings: product.carMappings.map(({ car, ...rest }) => ({
+          ...rest,
+          car,
+        })),
+      };
+    }),
     pageInfo: createPageInfo(page, pageSize, total),
   });
 }

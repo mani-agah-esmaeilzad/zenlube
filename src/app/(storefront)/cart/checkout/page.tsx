@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { CheckoutForm } from "@/components/cart/checkout-form";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import prisma from "@/lib/prisma";
+import { resolveProductPricing } from "@/lib/pricing";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
 
@@ -22,7 +23,7 @@ export default async function CheckoutPage() {
       include: {
         items: {
           include: {
-            product: { select: { id: true, name: true, price: true } },
+            product: { select: { id: true, name: true, price: true, promotion: true } },
           },
         },
       },
@@ -53,7 +54,7 @@ export default async function CheckoutPage() {
     id: item.id,
     name: item.product.name,
     quantity: item.quantity,
-    price: Number(item.product.price),
+    price: resolveProductPricing(item.product).effectivePrice,
   }));
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);

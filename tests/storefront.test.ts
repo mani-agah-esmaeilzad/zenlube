@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import {
   buildArchivedProductSlug,
+  adminCatalogProductWhere,
   isArchivedProductSlug,
   isStorefrontVisibleProduct,
   storefrontVisibleCarWhere,
@@ -29,6 +30,26 @@ test("storefrontVisibleProductWhere composes visibility with existing filters", 
   assert.deepEqual(storefrontVisibleProductWhere({ slug: "oilbar-5w30" }), {
     AND: [
       { slug: "oilbar-5w30" },
+      {
+        NOT: {
+          slug: {
+            startsWith: "deleted-",
+          },
+        },
+      },
+      {
+        price: {
+          gt: 0,
+        },
+      },
+    ],
+  });
+});
+
+test("adminCatalogProductWhere keeps unpriced products editable while excluding archived rows", () => {
+  assert.deepEqual(adminCatalogProductWhere({ price: 0 }), {
+    AND: [
+      { price: 0 },
       {
         NOT: {
           slug: {

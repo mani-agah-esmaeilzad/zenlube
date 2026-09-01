@@ -60,6 +60,10 @@ test("buildProductStructuredData adds real aggregate rating only when reviews ex
     availability: "https://schema.org/InStock",
     url: "https://www.oilbar.ir/products/shell-5w-30",
     itemCondition: "https://schema.org/NewCondition",
+    seller: {
+      "@type": "Organization",
+      name: "Oilbar",
+    },
   });
 });
 
@@ -82,6 +86,10 @@ test("buildProductStructuredData omits aggregate rating without real reviews", (
     availability: "https://schema.org/OutOfStock",
     url: "https://www.oilbar.ir/products/total-gear-oil",
     itemCondition: "https://schema.org/NewCondition",
+    seller: {
+      "@type": "Organization",
+      name: "Oilbar",
+    },
   });
 });
 

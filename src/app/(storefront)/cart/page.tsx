@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PriceBlock } from "@/components/ui/price-block";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import prisma from "@/lib/prisma";
+import { resolveProductPricing } from "@/lib/pricing";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
 
@@ -35,10 +36,13 @@ export default async function CartPage() {
 
   const cart = await prisma.cart.findUnique({
     where: { userId },
-    include: { items: { include: { product: { include: { brand: true } } } } },
+    include: { items: { include: { product: { include: { brand: true, promotion: true } } } } },
   });
 
-  const subtotal = cart?.items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0) ?? 0;
+  const subtotal = cart?.items.reduce(
+    (sum, item) => sum + resolveProductPricing(item.product).effectivePrice * item.quantity,
+    0,
+  ) ?? 0;
 
   return (
     <div className="container-zen space-y-5 py-5 sm:space-y-6 sm:py-6 md:py-8">
@@ -53,7 +57,9 @@ export default async function CartPage() {
       {cart?.items?.length ? (
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">
           <div className="divide-y divide-border border-t border-border bg-white">
-            {cart.items.map((item) => (
+            {cart.items.map((item) => {
+              const pricing = resolveProductPricing(item.product);
+              return (
               <article key={item.id} className="py-4 sm:py-5">
                 <div className={item.product.imageUrl ? "grid grid-cols-[72px_minmax(0,1fr)] gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4" : "grid grid-cols-1"}>
                   {item.product.imageUrl ? (
@@ -69,17 +75,21 @@ export default async function CartPage() {
                           {item.product.name}
                         </Link>
                         <p className="mt-1 text-xs font-medium text-text-muted">{item.product.brand.name}</p>
-                        <p className="mt-2 text-xs text-text-muted sm:mt-3 sm:text-sm">قیمت واحد: {formatPrice(item.product.price)}</p>
+                        {pricing.hasDiscount ? (
+                          <del className="mt-2 block text-[11px] font-bold text-text-soft">{formatPrice(pricing.basePrice)}</del>
+                        ) : null}
+                        <p className="mt-1 text-xs text-text-muted sm:text-sm">قیمت واحد: {formatPrice(pricing.effectivePrice)}</p>
                       </div>
                       <div className="flex flex-col gap-3 sm:items-end">
-                        <PriceBlock amount={Number(item.product.price) * item.quantity} label="جمع این کالا" size="sm" />
+                        <PriceBlock amount={pricing.effectivePrice * item.quantity} label="جمع این کالا" size="sm" />
                         <CartItemControls productId={item.productId} quantity={item.quantity} />
                       </div>
                     </div>
                   </div>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
 
           <aside className="h-fit border-t border-border pt-5 lg:sticky lg:top-28 lg:border-t-0 lg:border-r lg:px-5 lg:py-0">

@@ -1,5 +1,6 @@
 import { Prisma } from "@/generated/prisma";
 import prisma from "../prisma";
+import { isPromotionActive, resolveProductPricing } from "../pricing";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "../storefront-visibility";
 import { createEmptyPageResult, withStorefrontDataFallback } from "./storefront-fallback";
 
@@ -7,6 +8,7 @@ type ProductListItem = Prisma.ProductGetPayload<{
   include: {
     brand: true;
     category: true;
+    promotion: true;
     carMappings: {
       include: {
         car: true;
@@ -23,6 +25,7 @@ export async function getFeaturedProducts(limit = 6) {
       include: {
         brand: true,
         category: true,
+        promotion: true,
         carMappings: {
           where: {
             car: storefrontVisibleCarWhere(),
@@ -57,6 +60,7 @@ export async function getBestsellerProducts(limit = 8) {
       include: {
         brand: true,
         category: true,
+        promotion: true,
         carMappings: {
           where: {
             car: storefrontVisibleCarWhere(),
@@ -230,6 +234,7 @@ export async function getAllProductsWithFilters({
         include: {
           brand: true,
           category: true,
+          promotion: true,
           carMappings: {
             where: {
               car: storefrontVisibleCarWhere(),
@@ -268,6 +273,7 @@ export async function getProductBySlug(slug: string) {
       include: {
         brand: true,
         category: true,
+        promotion: true,
         carMappings: {
           where: {
             car: storefrontVisibleCarWhere(),
@@ -290,6 +296,34 @@ export async function getProductBySlug(slug: string) {
       },
     }),
   );
+}
+
+export async function getSpecialOfferProducts(limit = 8) {
+  return withStorefrontDataFallback("getSpecialOfferProducts", [], async () => {
+    const products = await prisma.product.findMany({
+      where: storefrontVisibleProductWhere({
+        stock: { gt: 0 },
+        imageUrl: { not: null },
+        promotion: { is: { isActive: true } },
+      }),
+      include: {
+        brand: true,
+        category: true,
+        promotion: true,
+        carMappings: {
+          where: { car: storefrontVisibleCarWhere() },
+          include: { car: true },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: Math.max(limit * 3, limit),
+    });
+
+    return products
+      .filter((product) => isPromotionActive(product.promotion))
+      .sort((left, right) => (left.promotion?.sortOrder ?? 0) - (right.promotion?.sortOrder ?? 0))
+      .slice(0, limit);
+  });
 }
 
 export async function getProductReviews(productId: string, limit = 8) {
@@ -336,6 +370,7 @@ export async function getAllProductsLite() {
         averageRating: true,
         reviewCount: true,
         price: true,
+        promotion: true,
         tags: true,
         brand: {
           select: { name: true },
@@ -350,11 +385,14 @@ export async function getAllProductsLite() {
       ],
     });
 
-    return products.map((product) => ({
-      ...product,
-      averageRating: product.averageRating != null ? Number(product.averageRating) : null,
-      price: Number(product.price),
-    }));
+    return products.map((product) => {
+      const pricing = resolveProductPricing(product);
+      return {
+        ...product,
+        averageRating: product.averageRating != null ? Number(product.averageRating) : null,
+        price: pricing.effectivePrice,
+      };
+    });
   });
 }
 
@@ -395,6 +433,7 @@ export async function getSearchSuggestions(query: string) {
             slug: true,
             imageUrl: true,
             price: true,
+            promotion: true,
             stock: true,
             viscosity: true,
             brand: { select: { name: true } },
@@ -435,16 +474,19 @@ export async function getSearchSuggestions(query: string) {
       ]);
 
       return {
-        products: products.map((item) => ({
-          id: item.id,
-          name: item.name,
-          slug: item.slug,
-          brandName: item.brand.name,
-          imageUrl: item.imageUrl,
-          price: Number(item.price),
-          stock: item.stock,
-          viscosity: item.viscosity,
-        })),
+        products: products.map((item) => {
+          const pricing = resolveProductPricing(item);
+          return {
+            id: item.id,
+            name: item.name,
+            slug: item.slug,
+            brandName: item.brand.name,
+            imageUrl: item.imageUrl,
+            price: pricing.effectivePrice,
+            stock: item.stock,
+            viscosity: item.viscosity,
+          };
+        }),
         brands,
         categories,
         cars: cars.map((item) => ({

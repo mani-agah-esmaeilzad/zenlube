@@ -16,6 +16,7 @@
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
     "seed:aidlube": "tsx prisma/seed-aidlube-products.ts",
+    "seed:catalog": "tsx prisma/seed-catalog-products.ts",
     "vehicles:bama:draft": "tsx scripts/scrape-bama-vehicles.ts",
     "vehicles:bama:details": "tsx scripts/scrape-bama-vehicle-details.ts",
     "vehicles:oil:liqui": "tsx scripts/scrape-liqui-moly-oil-specs.ts",

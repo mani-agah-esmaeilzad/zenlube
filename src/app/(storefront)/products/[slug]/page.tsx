@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { EngagementTracker } from "@/components/analytics/engagement-tracker";
@@ -115,7 +116,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     orderBy: [{ isFeatured: "desc" }, { reviewCount: "desc" }, { updatedAt: "desc" }],
   });
 
-  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.oilbar.ir").replace(/\/$/, "");
+  const requestHeaders = await headers();
+  const requestHost = (requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host"))?.split(",")[0]?.trim();
+  const requestProtocol = requestHeaders.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
+  const baseUrl = requestHost
+    ? `${requestProtocol}://${requestHost}`
+    : (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.oilbar.ir").replace(/\/$/, "");
   const shippingEstimate = getShippingEstimateLabel("STANDARD");
   const pricing = resolveProductPricing(product);
   const isAvailable = product.stock > 0 && pricing.effectivePrice > 0;

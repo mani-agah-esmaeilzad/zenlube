@@ -39,7 +39,7 @@ const productSelect = {
 } as const;
 
 function baseUrlFromRequest(request: Request) {
-  return (process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin || "https://www.oilbar.ir").replace(/\/$/, "");
+  return new URL(request.url).origin.replace(/\/$/, "");
 }
 
 function productSlugFromUrl(value: string) {

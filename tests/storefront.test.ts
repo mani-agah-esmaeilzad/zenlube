@@ -6,6 +6,7 @@ import {
   adminCatalogProductWhere,
   isArchivedProductSlug,
   isStorefrontVisibleProduct,
+  storefrontBuyableProductWhere,
   storefrontVisibleCarWhere,
   storefrontVisibleProductWhere,
 } from "@/lib/storefront-visibility";
@@ -37,9 +38,40 @@ test("storefrontVisibleProductWhere composes visibility with existing filters", 
           },
         },
       },
+    ],
+  });
+});
+
+test("storefrontVisibleProductWhere keeps unpriced and out-of-stock products visible", () => {
+  assert.deepEqual(storefrontVisibleProductWhere({ price: 0, stock: 0 }), {
+    AND: [
+      { price: 0, stock: 0 },
       {
-        price: {
-          gt: 0,
+        NOT: {
+          slug: {
+            startsWith: "deleted-",
+          },
+        },
+      },
+    ],
+  });
+});
+
+test("storefrontBuyableProductWhere still protects commerce feeds", () => {
+  assert.deepEqual(storefrontBuyableProductWhere({ imageUrl: { not: null } }), {
+    AND: [
+      {
+        AND: [
+          { imageUrl: { not: null } },
+          { price: { gt: 0 } },
+          { stock: { gt: 0 } },
+        ],
+      },
+      {
+        NOT: {
+          slug: {
+            startsWith: "deleted-",
+          },
         },
       },
     ],

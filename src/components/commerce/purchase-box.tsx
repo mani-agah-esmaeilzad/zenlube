@@ -38,7 +38,7 @@ export function PurchaseBox({
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <PriceBlock amount={price} size={compact ? "md" : "lg"} />
+        {isAvailable ? <PriceBlock amount={price} size={compact ? "md" : "lg"} /> : null}
         <StatusPill tone={isAvailable ? "success" : "danger"}>
           {isAvailable ? `${stock.toLocaleString("fa-IR")} عدد موجود` : "ناموجود"}
         </StatusPill>
@@ -48,7 +48,7 @@ export function PurchaseBox({
         <p>ضمانت اصالت و سلامت فیزیکی کالا</p>
         <p>مشاوره تخصصی قبل از خرید</p>
         <p>ارسال سریع با بسته‌بندی امن</p>
-        {estimatedDeliveryLabel ? <p className="font-bold text-[#D97706]">{estimatedDeliveryLabel}</p> : null}
+        {isAvailable && estimatedDeliveryLabel ? <p className="font-bold text-[#D97706]">{estimatedDeliveryLabel}</p> : null}
       </div>
 
       <div className="mt-4">

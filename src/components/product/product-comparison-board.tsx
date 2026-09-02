@@ -14,6 +14,7 @@ type ComparisonProduct = {
   averageRating: number | null;
   reviewCount: number;
   price: number;
+  stock: number;
   tags: string[];
   brand: { name: string };
   category: { name: string };
@@ -48,7 +49,7 @@ const comparisonRows = [
   {
     key: "price",
     label: "قیمت",
-    render: (product: ComparisonProduct) => formatCatalogPrice(product.price),
+    render: (product: ComparisonProduct) => product.stock > 0 && product.price > 0 ? formatCatalogPrice(product.price) : "ناموجود",
   },
   {
     key: "averageRating",

@@ -29,13 +29,21 @@ export function storefrontVisibleProductWhere(
           },
         },
       },
-      {
-        price: {
-          gt: 0,
-        },
-      },
     ],
   };
+}
+
+/** Products that are ready to be sold by commerce feeds such as Torob. */
+export function storefrontBuyableProductWhere(
+  where: Prisma.ProductWhereInput = {},
+): Prisma.ProductWhereInput {
+  return storefrontVisibleProductWhere({
+    AND: [
+      where,
+      { price: { gt: 0 } },
+      { stock: { gt: 0 } },
+    ],
+  });
 }
 
 /** Products that still belong in the admin catalog, including items awaiting pricing. */

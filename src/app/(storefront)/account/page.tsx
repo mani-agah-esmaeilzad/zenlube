@@ -98,6 +98,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             name: true,
             imageUrl: true,
             price: true,
+            stock: true,
             promotion: true,
             brand: { select: { name: true } },
           },
@@ -116,6 +117,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             name: true,
             imageUrl: true,
             price: true,
+            stock: true,
             promotion: true,
             brand: { select: { name: true } },
           },
@@ -254,6 +256,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 name: item.product.name,
                 brandName: item.product.brand.name,
                 price: resolveProductPricing(item.product).effectivePrice,
+                stock: item.product.stock,
                 imageUrl: item.product.imageUrl,
               }))}
             />
@@ -269,6 +272,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 name: item.product.name,
                 brandName: item.product.brand.name,
                 price: resolveProductPricing(item.product).effectivePrice,
+                stock: item.product.stock,
                 imageUrl: item.product.imageUrl,
               }))}
             />
@@ -476,7 +480,7 @@ function ProductShelf({
 }: {
   title: string;
   emptyMessage: string;
-  items: Array<{ id: string; slug: string; name: string; brandName: string; price: number; imageUrl?: string | null }>;
+  items: Array<{ id: string; slug: string; name: string; brandName: string; price: number; stock: number; imageUrl?: string | null }>;
 }) {
   return (
     <div className="py-1">
@@ -502,7 +506,11 @@ function ProductShelf({
                   <p className="font-bold leading-6 text-text-strong">{item.name}</p>
                   <p className="mt-1 text-xs text-text-muted">{item.brandName}</p>
                 </div>
-                <PriceBlock amount={item.price} label="قیمت" size="sm" />
+                {item.stock > 0 && item.price > 0 ? (
+                  <PriceBlock amount={item.price} label="قیمت" size="sm" />
+                ) : (
+                  <span className="text-xs font-bold text-error">ناموجود</span>
+                )}
               </div>
             </Link>
           ))}

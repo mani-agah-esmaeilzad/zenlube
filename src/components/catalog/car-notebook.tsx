@@ -338,7 +338,7 @@ function NotebookProductsPanel({ page, panel }: { page: NotebookPage; panel: Not
 }
 
 function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibleProduct }) {
-  const isAvailable = product.stock > 0;
+  const isAvailable = product.stock > 0 && product.price > 0;
   const specs = [
     product.viscosity,
     product.packagingSizeLit ? `${product.packagingSizeLit.toLocaleString("fa-IR")} لیتر` : null,
@@ -406,13 +406,13 @@ function NotebookCompatibleProductCard({ product }: { product: NotebookCompatibl
 
       <div className="mt-auto border-t border-[#EEF2F6] pt-3">
         <div className="flex items-center justify-between gap-3">
-          <PriceBlock amount={product.price} align="start" size="sm" />
           {product.averageRating != null && product.reviewCount > 0 ? (
             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#B54708]">
               <StarIcon className="h-3.5 w-3.5 fill-current" />
               {product.averageRating.toLocaleString("fa-IR", { maximumFractionDigits: 1 })}
             </span>
           ) : null}
+          {isAvailable ? <PriceBlock amount={product.price} align="end" size="sm" /> : null}
         </div>
 
         <Link href={`/products/${product.slug}`} className="text-link-zen mt-2 inline-flex min-h-11 items-center px-1 text-xs font-bold">

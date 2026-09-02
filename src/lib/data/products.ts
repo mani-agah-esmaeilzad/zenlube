@@ -302,7 +302,6 @@ export async function getSpecialOfferProducts(limit = 8) {
   return withStorefrontDataFallback("getSpecialOfferProducts", [], async () => {
     const products = await prisma.product.findMany({
       where: storefrontVisibleProductWhere({
-        stock: { gt: 0 },
         imageUrl: { not: null },
         promotion: { is: { isActive: true } },
       }),
@@ -370,6 +369,7 @@ export async function getAllProductsLite() {
         averageRating: true,
         reviewCount: true,
         price: true,
+        stock: true,
         promotion: true,
         tags: true,
         brand: {

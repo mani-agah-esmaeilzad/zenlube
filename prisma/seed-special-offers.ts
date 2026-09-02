@@ -35,7 +35,7 @@ async function main() {
   }
 
   console.log(`Prepared ${presets.length} octane and racing-fuel products for the special-offers section.`);
-  console.log("Products become publicly visible only after a real price and stock are saved in admin.");
+  console.log("Products stay publicly visible while unavailable; price and stock still control whether they can be purchased.");
 }
 
 main()

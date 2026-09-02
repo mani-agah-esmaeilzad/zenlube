@@ -322,7 +322,10 @@ export function SearchAutocompleteForm({
                   meta: [item.brandName, item.viscosity].filter(Boolean).join(" • "),
                   imageUrl: item.imageUrl,
                   price: item.price,
-                  available: typeof item.stock === "number" ? item.stock > 0 : undefined,
+                  available:
+                    typeof item.stock === "number" && typeof item.price === "number"
+                      ? item.stock > 0 && item.price > 0
+                      : undefined,
                 }))}
                 listboxId={listboxId}
                 onHover={setActiveIndex}
@@ -444,12 +447,14 @@ function SuggestionSection({
               </span>
               {typeof item.price === "number" ? (
                 <span className="shrink-0 text-left">
-                  <span className="block font-black text-text-strong">{formatCatalogPrice(item.price)}</span>
-                  {typeof item.available === "boolean" ? (
-                    <span className={cn("mt-1 block text-[10px] font-bold", item.available ? "text-success" : "text-error")}>
-                      {item.available ? "موجود" : "ناموجود"}
-                    </span>
-                  ) : null}
+                  {item.available === false ? (
+                    <span className="block text-[10px] font-bold text-error">ناموجود</span>
+                  ) : (
+                    <>
+                      <span className="block font-black text-text-strong">{formatCatalogPrice(item.price)}</span>
+                      {item.available === true ? <span className="mt-1 block text-[10px] font-bold text-success">موجود</span> : null}
+                    </>
+                  )}
                 </span>
               ) : null}
             </button>

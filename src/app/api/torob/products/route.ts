@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
-import { storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
+import { storefrontBuyableProductWhere } from "@/lib/storefront-visibility";
 import {
   buildTorobProduct,
   buildTorobResponse,
@@ -53,7 +53,7 @@ function productSlugFromUrl(value: string) {
 }
 
 async function queryProducts(input: TorobProductRequest) {
-  const baseWhere = storefrontVisibleProductWhere({ stock: { gt: 0 }, imageUrl: { not: null } });
+  const baseWhere = storefrontBuyableProductWhere({ imageUrl: { not: null } });
 
   if (input.type === "page") {
     const skip = (input.page - 1) * TOROB_PAGE_SIZE;
@@ -70,8 +70,7 @@ async function queryProducts(input: TorobProductRequest) {
     ? requestedValues
     : requestedValues.map(productSlugFromUrl).filter((value): value is string => Boolean(value));
   const products = await prisma.product.findMany({
-    where: storefrontVisibleProductWhere({
-      stock: { gt: 0 },
+    where: storefrontBuyableProductWhere({
       imageUrl: { not: null },
       ...(input.type === "uniques" ? { id: { in: identifiers } } : { slug: { in: identifiers } }),
     }),

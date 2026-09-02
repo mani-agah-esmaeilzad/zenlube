@@ -11,11 +11,10 @@ import type { ProductWithRelations } from "@/types/catalog";
 
 type ProductCardProps = {
   product: ProductWithRelations;
-  compact?: boolean;
   priority?: boolean;
 };
 
-export function ProductCard({ product, compact = false, priority = false }: ProductCardProps) {
+export function ProductCard({ product, priority = false }: ProductCardProps) {
   const specs = [
     product.viscosity,
     product.packagingSizeLit ? `${Number(product.packagingSizeLit).toLocaleString("fa-IR")} لیتر` : null,
@@ -118,17 +117,19 @@ export function ProductCard({ product, compact = false, priority = false }: Prod
           ) : null}
         </div>
 
-        <div className="mt-auto pt-1.5 sm:pt-3">
-          {pricing.hasDiscount ? (
-            <del className="mb-0.5 block text-[11px] font-bold text-text-soft">
-              {pricing.basePrice.toLocaleString("fa-IR")} ریال
-            </del>
-          ) : null}
-          <PriceBlock align="start" amount={pricing.effectivePrice} showLabel={false} size="sm" />
-          {isAvailable || compact ? (
-            <Link className="mt-1 inline-flex min-h-11 items-center text-xs font-extrabold text-primary-accent-strong md:min-h-9" href={`/products/${product.slug}`}>
-              {isAvailable ? "مشاهده و خرید" : "مشاهده محصول"}
-            </Link>
+        <div className="mt-auto grid min-h-11 grid-cols-[minmax(0,1fr)_auto] items-end gap-2 pt-1.5 sm:pt-3">
+          <Link className="mt-1 inline-flex min-h-11 items-center text-xs font-extrabold text-primary-accent-strong md:min-h-9" href={`/products/${product.slug}`}>
+            {isAvailable ? "مشاهده و خرید" : "مشاهده محصول"}
+          </Link>
+          {isAvailable ? (
+            <div className="flex shrink-0 flex-col items-end text-left">
+              {pricing.hasDiscount ? (
+                <del className="mb-0.5 block text-[11px] font-bold text-text-soft">
+                  {pricing.basePrice.toLocaleString("fa-IR")} ریال
+                </del>
+              ) : null}
+              <PriceBlock align="end" amount={pricing.effectivePrice} showLabel={false} size="sm" />
+            </div>
           ) : null}
         </div>
       </div>

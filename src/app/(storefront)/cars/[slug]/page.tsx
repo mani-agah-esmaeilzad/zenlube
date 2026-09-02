@@ -61,6 +61,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
         name: product?.name ?? productSlug,
         brandName: product?.brand.name,
         price: product ? resolveProductPricing(product).effectivePrice : undefined,
+        stock: product?.stock,
       };
     }),
   }));

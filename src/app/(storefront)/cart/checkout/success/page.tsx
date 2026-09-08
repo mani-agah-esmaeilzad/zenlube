@@ -3,6 +3,7 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { StatusPill } from "@/components/ui/status-pill";
+import { getAppSession } from "@/lib/session";
 
 type SuccessPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -11,9 +12,11 @@ type SuccessPageProps = {
 export default async function CheckoutSuccessPage({ searchParams }: SuccessPageProps) {
   const params = await searchParams;
   const orderId = typeof params?.orderId === "string" ? params.orderId : null;
+  const session = await getAppSession();
+  const userId = (session as { user?: { id?: string } } | null)?.user?.id;
   const order = orderId
-    ? await prisma.order.findUnique({
-        where: { id: orderId },
+    && userId ? await prisma.order.findFirst({
+        where: { id: orderId, userId },
         include: {
           items: { include: { product: { select: { name: true } } } },
           paymentTransactions: { orderBy: { createdAt: "desc" }, take: 1 },
@@ -26,6 +29,46 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
   }
 
   const latestTransaction = order.paymentTransactions[0] ?? null;
+  const needsReview = order.status !== "PAID"
+    && ["reconciliation_required", "verification_pending", "verified"].includes(latestTransaction?.status ?? "");
+
+  if (needsReview) {
+    return (
+      <div className="container-zen py-8 sm:py-10">
+        <div className="mx-auto max-w-2xl bg-white py-6 sm:py-8">
+          <div className="flex items-start gap-4 border-r-4 border-amber-500 pr-4">
+            <div className="grid size-11 shrink-0 place-items-center text-2xl font-black text-amber-600">!</div>
+            <div>
+              <h1 className="text-xl font-extrabold text-[#111827] sm:text-2xl">وضعیت پرداخت در حال بررسی است</h1>
+              <p className="mt-2 text-sm leading-7 text-[#6B7280]">
+                نتیجه نهایی درگاه هنوز به‌طور کامل ثبت نشده است. دوباره پرداخت نکنید؛ پشتیبانی سفارش را بررسی می‌کند.
+              </p>
+            </div>
+          </div>
+          <div className="mt-6 divide-y divide-border border-y border-border">
+            <Info label="شماره سفارش" value={`#${order.id.slice(0, 10).toUpperCase()}`} mono />
+            <Info label="مبلغ پرداخت" value={formatPrice(order.total)} />
+            <Info label="کد پیگیری درگاه" value={latestTransaction?.refId ?? order.paymentRefId ?? "در حال ثبت"} mono />
+          </div>
+          <div className="mt-5">
+            <StatusPill tone="warning">نیازمند بررسی پرداخت</StatusPill>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-2 sm:mt-8">
+            <Link href={`/account?orderId=${order.id}`} className="btn-primary !min-h-11 px-4 text-center text-xs">
+              پیگیری سفارش
+            </Link>
+            <Link href="/support" className="btn-ghost !min-h-11 px-3 text-center text-xs">
+              ارتباط با پشتیبانی
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (order.status !== "PAID") {
+    return <ResultShell type="missing" title="پرداخت سفارش کامل نشده" message="وضعیت این سفارش هنوز پرداخت‌شده نیست. از بخش سفارش‌ها وضعیت آن را پیگیری کنید." />;
+  }
 
   return (
     <div className="container-zen py-8 sm:py-10">
@@ -42,8 +85,11 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
           <Info label="مبلغ پرداختی" value={formatPrice(order.total)} />
           <Info label="کد پیگیری پرداخت" value={latestTransaction?.refId ?? order.paymentRefId ?? "-"} mono />
           <Info label="وضعیت سفارش" value="پرداخت شده" />
+          <Info label="روش ارسال" value={order.shippingServiceLabel ?? order.shippingCarrierLabel ?? "ثبت نشده"} />
+          <Info label="هزینه ارسال" value={formatPrice(order.shippingCost)} />
           <Info label="تحویل گیرنده" value={order.fullName} />
-          <Info label="زمان تحویل تقریبی" value={order.estimatedDeliveryLabel ?? "بعد از تایید تیم ارسال"} />
+          <Info label="آدرس ارسال" value={`${order.province}، ${order.city}، ${order.address1}${order.address2 ? `، ${order.address2}` : ""}`} />
+          {order.estimatedDeliveryLabel ? <Info label="زمان تحویل تقریبی" value={order.estimatedDeliveryLabel} /> : null}
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">

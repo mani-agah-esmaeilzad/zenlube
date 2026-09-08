@@ -12,6 +12,8 @@ import { isStorefrontVisibleProduct } from "@/lib/storefront-visibility";
 import { resolveProductPricing } from "@/lib/pricing";
 import { returnRequestSchema } from "@/lib/validators";
 import { createReturnRequest } from "@/services/admin/mutations";
+import { normalizeIranPostalCode } from "@/lib/shipping/address";
+import { resolveShippingLocationNames } from "@/lib/shipping/locations";
 
 const profileSchema = z.object({
   name: z.string().trim().min(2, "نام باید حداقل دو کاراکتر باشد."),
@@ -25,9 +27,9 @@ const addressSchema = z.object({
   phone: z.string().refine((value) => validateIranPhone(value), "شماره موبایل معتبر نیست."),
   address1: z.string().trim().min(5, "آدرس باید حداقل پنج کاراکتر باشد."),
   address2: z.string().trim().optional(),
-  city: z.string().trim().min(2, "شهر را وارد کنید."),
-  province: z.string().trim().min(2, "استان را وارد کنید."),
-  postalCode: z.string().trim().min(5, "کد پستی معتبر نیست.").max(20, "کد پستی معتبر نیست."),
+  cityCode: z.string().trim().min(1, "شهر را انتخاب کنید."),
+  provinceCode: z.string().trim().min(1, "استان را انتخاب کنید."),
+  postalCode: z.string().transform(normalizeIranPostalCode).pipe(z.string().regex(/^\d{10}$/, "کد پستی باید ۱۰ رقم باشد.")),
 });
 
 const addressBookSchema = addressSchema.extend({
@@ -94,6 +96,10 @@ export async function updateDefaultAddressAction(_prev: ActionState | undefined,
 
     const input = parsed.data;
     const normalizedPhone = normalizeIranPhone(input.phone);
+    const location = await resolveShippingLocationNames(input);
+    if (!location) {
+      return { success: false, message: "استان یا شهر انتخاب‌شده معتبر نیست.", errors: { cityCode: ["شهر را دوباره انتخاب کنید."] } };
+    }
 
     await prisma.$transaction(async (tx) => {
       const existingDefault = await tx.userAddress.findFirst({
@@ -109,8 +115,10 @@ export async function updateDefaultAddressAction(_prev: ActionState | undefined,
             phone: normalizedPhone,
             address1: input.address1,
             address2: input.address2,
-            city: input.city,
-            province: input.province,
+            city: location.city.name,
+            province: location.province.name,
+            cityCode: location.city.code,
+            provinceCode: location.province.code,
             postalCode: input.postalCode,
           },
         });
@@ -125,8 +133,10 @@ export async function updateDefaultAddressAction(_prev: ActionState | undefined,
           phone: normalizedPhone,
           address1: input.address1,
           address2: input.address2,
-          city: input.city,
-          province: input.province,
+          city: location.city.name,
+          province: location.province.name,
+          cityCode: location.city.code,
+          provinceCode: location.province.code,
           postalCode: input.postalCode,
           isDefault: true,
         },
@@ -155,6 +165,10 @@ export async function createAddressAction(_prev: ActionState | undefined, formDa
 
     const input = parsed.data;
     const normalizedPhone = normalizeIranPhone(input.phone);
+    const location = await resolveShippingLocationNames(input);
+    if (!location) {
+      return { success: false, message: "استان یا شهر انتخاب‌شده معتبر نیست.", errors: { cityCode: ["شهر را دوباره انتخاب کنید."] } };
+    }
 
     await prisma.$transaction(async (tx) => {
       if (input.setAsDefault) {
@@ -172,8 +186,10 @@ export async function createAddressAction(_prev: ActionState | undefined, formDa
           phone: normalizedPhone,
           address1: input.address1,
           address2: input.address2,
-          city: input.city,
-          province: input.province,
+          city: location.city.name,
+          province: location.province.name,
+          cityCode: location.city.code,
+          provinceCode: location.province.code,
           postalCode: input.postalCode,
           isDefault: Boolean(input.setAsDefault),
         },
@@ -289,6 +305,11 @@ export async function reorderOrderAction(formData: FormData): Promise<void> {
       where: { userId },
       update: {},
       create: { userId },
+    });
+
+    await tx.cart.update({
+      where: { id: cart.id },
+      data: { version: { increment: 1 } },
     });
 
     for (const item of order.items) {

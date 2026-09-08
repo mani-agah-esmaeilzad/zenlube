@@ -54,6 +54,18 @@ export async function updateOrderStatusAction(formData: FormData): Promise<void>
       },
     });
 
+    if (parsed.data.status === "SHIPPED") {
+      await tx.shipment.updateMany({
+        where: { orderId: updatedOrder.id, status: { in: ["SUBMITTED", "PICKED_UP"] } },
+        data: { status: "IN_TRANSIT", pickedUpAt: new Date() },
+      });
+    } else if (parsed.data.status === "DELIVERED") {
+      await tx.shipment.updateMany({
+        where: { orderId: updatedOrder.id, status: { not: "CANCELLED" } },
+        data: { status: "DELIVERED", deliveredAt: new Date() },
+      });
+    }
+
     await appendOrderStatusEvent(tx, {
       orderId: updatedOrder.id,
       status: parsed.data.status,
@@ -99,6 +111,10 @@ export async function updateOrderTrackingAction(formData: FormData): Promise<voi
     const updatedOrder = await tx.order.update({
       where: { id: parsed.data.orderId },
       data: { shippingTrackingCode: parsed.data.shippingTrackingCode },
+    });
+    await tx.shipment.updateMany({
+      where: { orderId: updatedOrder.id },
+      data: { trackingCode: parsed.data.shippingTrackingCode },
     });
 
     await appendOrderStatusEvent(tx, {

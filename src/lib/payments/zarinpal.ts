@@ -50,6 +50,18 @@ export type PaymentVerifyResult = {
   cardPan?: string;
 };
 
+/**
+ * The gateway may have processed the payment even when our server could not
+ * receive its verification response. Callers must keep the original authority
+ * for reconciliation instead of opening a second payment attempt.
+ */
+export class ZarinpalTransportError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ZarinpalTransportError";
+  }
+}
+
 type ZarinpalRequestPayload = {
   merchant_id: string;
   amount: number;
@@ -161,7 +173,7 @@ async function postJsonWithFallback<T>(path: string, payload: unknown, label: st
   }
 
   logger.error(`Zarinpal ${label} failed on all endpoints`, { failures });
-  throw new Error("ارتباط با زرین‌پال برقرار نشد. روی Vercel باید ZARINPAL_PROXY_URL را به یک پراکسی داخل ایران تنظیم کنید یا از درگاهی استفاده کنید که از خارج ایران قابل دسترسی باشد.");
+  throw new ZarinpalTransportError("ارتباط با زرین‌پال برقرار نشد. روی Vercel باید ZARINPAL_PROXY_URL را به یک پراکسی داخل ایران تنظیم کنید یا از درگاهی استفاده کنید که از خارج ایران قابل دسترسی باشد.");
 }
 
 export function buildZarinpalRequestPayload(args: PaymentRequestArgs): ZarinpalRequestPayload {

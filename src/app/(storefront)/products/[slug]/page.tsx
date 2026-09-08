@@ -15,7 +15,6 @@ import { ReviewCard } from "@/components/review/review-card";
 import { ReviewForm } from "@/components/review/review-form";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getShippingEstimateLabel } from "@/lib/commerce";
 import {
   buildCompatibilityItems,
   buildProductFaqs,
@@ -27,7 +26,7 @@ import {
 } from "@/lib/product-detail";
 import prisma from "@/lib/prisma";
 import { resolveProductPricing } from "@/lib/pricing";
-import { buildBreadcrumbStructuredData, buildProductStructuredData } from "@/lib/seo";
+import { buildBreadcrumbStructuredData, buildProductPageMetadata, buildProductStructuredData } from "@/lib/seo";
 import { getAppSession } from "@/lib/session";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
 
@@ -40,11 +39,17 @@ export async function generateMetadata({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = await prisma.product.findFirst({
     where: storefrontVisibleProductWhere({ slug }),
-    select: { name: true, description: true },
+    select: { name: true, description: true, imageUrl: true, slug: true },
   });
 
   return product
-    ? { title: `${product.name} | Oilbar`, description: product.description ?? undefined }
+    ? buildProductPageMetadata({
+        baseUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://www.oilbar.ir",
+        description: product.description,
+        imageUrl: product.imageUrl,
+        name: product.name,
+        slug: product.slug,
+      })
     : { title: "محصول یافت نشد" };
 }
 
@@ -122,7 +127,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const baseUrl = requestHost
     ? `${requestProtocol}://${requestHost}`
     : (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.oilbar.ir").replace(/\/$/, "");
-  const shippingEstimate = getShippingEstimateLabel("STANDARD");
   const pricing = resolveProductPricing(product);
   const isAvailable = product.stock > 0 && pricing.effectivePrice > 0;
   const galleryItems = buildProductGalleryItems(product);
@@ -187,7 +191,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
         />
       </div>
 
-      <section className={hasGalleryMedia ? "grid gap-5 sm:gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start" : "max-w-4xl"}>
+      <section
+        className={hasGalleryMedia ? "grid gap-5 sm:gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start" : "max-w-4xl"}
+        itemScope
+        itemType="https://schema.org/Product"
+      >
+        <meta content={`${baseUrl}/products/${product.slug}`} itemProp="url" />
+        {product.sku ? <meta content={product.sku} itemProp="sku" /> : null}
         {hasGalleryMedia ? (
           <div className="min-w-0">
             <ProductGallery items={galleryItems} title={product.name} />
@@ -205,7 +215,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </Link>
           </div>
 
-          <h1 className="t-h1 mt-3">
+          <h1 className="t-h1 mt-3" itemProp="name">
             {product.name}
           </h1>
 
@@ -247,7 +257,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="mt-6">
             <ProductPurchasePanel
               compareHref="/products/compare"
-              estimatedDeliveryLabel={shippingEstimate}
               isAvailable={isAvailable}
               originalPrice={pricing.hasDiscount ? pricing.basePrice : null}
               price={pricing.effectivePrice}

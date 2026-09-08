@@ -9,7 +9,7 @@ const OTP_EXPIRATION_MINUTES = 5;
 const OTP_RESEND_WINDOW_SECONDS = Number(process.env.OTP_RESEND_WINDOW_SECONDS ?? 20);
 const OTP_MAX_ATTEMPTS = 5;
 
-export type OtpPurpose = "checkout" | "account";
+export type OtpPurpose = "account";
 
 function generateOtpCode() {
   return randomInt(100000, 1000000).toString();
@@ -55,7 +55,7 @@ type CreateOtpRequestOptions = {
   normalizedPhoneOverride?: string;
 };
 
-export async function createOtpRequest(phone: string, purpose: OtpPurpose = "checkout", options?: CreateOtpRequestOptions) {
+export async function createOtpRequest(phone: string, purpose: OtpPurpose = "account", options?: CreateOtpRequestOptions) {
   const normalizedPhone = options?.normalizedPhoneOverride ?? normalizeIranPhone(phone);
   const now = options?.currentTime ?? new Date();
 
@@ -190,7 +190,7 @@ export async function verifyOtpCodeAndRun<T>(
   return result.value;
 }
 
-export async function verifyOtpCode(phone: string, code: string, purpose: OtpPurpose = "checkout") {
+export async function verifyOtpCode(phone: string, code: string, purpose: OtpPurpose = "account") {
   return verifyOtpCodeAndRun(phone, code, purpose, async (_transaction, normalizedPhone) => ({
     success: true,
     phone: normalizedPhone,

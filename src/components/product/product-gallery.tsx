@@ -113,6 +113,7 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
                     loadedMap[activeIndex] ? "opacity-100" : "opacity-0",
                   )}
                   fill
+                  itemProp="image"
                   priority={activeIndex === 0}
                   sizes="(max-width: 1023px) 100vw, 46vw"
                   src={activeItem.src}

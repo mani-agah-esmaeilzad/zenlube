@@ -90,6 +90,14 @@ export function mapProduct(product: Prisma.ProductGetPayload<{
     oilType: product.oilType,
     imageUrl: product.imageUrl,
     isFeatured: product.isFeatured,
+    requiresShipping: product.requiresShipping,
+    shippingWeightGrams: product.shippingWeightGrams,
+    shippingDimensionsMode: product.shippingDimensionsMode,
+    shippingLengthCm: product.shippingLengthCm,
+    shippingWidthCm: product.shippingWidthCm,
+    shippingHeightCm: product.shippingHeightCm,
+    shippingRestrictedCarriers: product.shippingRestrictedCarriers,
+    shippingIsLiquid: product.shippingIsLiquid,
     brand: {
       id: product.brand.id,
       name: product.brand.name,
@@ -134,6 +142,7 @@ export function mapOrderDetail(order: Prisma.OrderGetPayload<{
     user: { select: { email: true } };
     items: { include: { product: { select: { name: true } } } };
     paymentEvents: { select: { id: true; gateway: true; authority: true; status: true; createdAt: true } };
+    shipment: true;
   };
 }>): AdminOrderDetail {
   return {
@@ -149,6 +158,22 @@ export function mapOrderDetail(order: Prisma.OrderGetPayload<{
     paymentAuthority: order.paymentAuthority,
     paidAt: order.paidAt,
     shippingMethod: order.shippingMethod,
+    shippingCost: toNumber(order.shippingCost),
+    shippingProviderKey: order.shippingProviderKey,
+    shippingCarrierCode: order.shippingCarrierCode,
+    shippingCarrierLabel: order.shippingCarrierLabel,
+    shippingServiceLabel: order.shippingServiceLabel,
+    shippingBaseCost: order.shippingBaseCost == null ? null : toNumber(order.shippingBaseCost),
+    shippingAdjustmentAmount: toNumber(order.shippingAdjustmentAmount),
+    shippingCurrency: order.shippingCurrency,
+    shippingPackageWeightGrams: order.shippingPackageWeightGrams,
+    shippingPackageLengthCm: order.shippingPackageLengthCm,
+    shippingPackageWidthCm: order.shippingPackageWidthCm,
+    shippingPackageHeightCm: order.shippingPackageHeightCm,
+    shippingQuotedAt: order.shippingQuotedAt,
+    shippingQuoteExpiresAt: order.shippingQuoteExpiresAt,
+    shippingExternalStatus: order.shippingExternalStatus,
+    shippingTrackingUrl: order.shippingTrackingUrl,
     shippingTrackingCode: order.shippingTrackingCode,
     phone: order.phone,
     city: order.city,
@@ -170,6 +195,16 @@ export function mapOrderDetail(order: Prisma.OrderGetPayload<{
       status: event.status,
       createdAt: event.createdAt,
     })),
+    shipment: order.shipment ? {
+      id: order.shipment.id,
+      status: order.shipment.status,
+      externalStatus: order.shipment.externalStatus,
+      externalShipmentId: order.shipment.externalShipmentId,
+      trackingCode: order.shipment.trackingCode,
+      submittedAt: order.shipment.submittedAt,
+      attemptCount: order.shipment.attemptCount,
+      lastErrorMessage: order.shipment.lastErrorMessage,
+    } : null,
   };
 }
 

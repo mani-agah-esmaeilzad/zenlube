@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { reorderOrderAction } from "@/actions/account";
+import { retryOrderPaymentAction } from "@/actions/orders";
 import { AddressBookForm } from "@/components/account/address-book-form";
 import prisma from "@/lib/prisma";
 import { AddressForm } from "@/components/account/address-form";
@@ -39,13 +40,18 @@ const returnStatusLabels: Record<string, string> = {
   REFUNDED: "استرداد انجام شد",
 };
 
-const timeline = [
-  { key: "PENDING", label: "ثبت سفارش" },
-  { key: "PAID", label: "پرداخت" },
-  { key: "PAID", label: "پردازش" },
-  { key: "SHIPPED", label: "ارسال‌شده" },
-  { key: "DELIVERED", label: "تحویل‌شده" },
-];
+const shipmentStatusLabels: Record<string, string> = {
+  PENDING: "در انتظار آماده‌سازی",
+  READY_TO_SHIP: "آماده ارسال",
+  SUBMITTING: "در حال ثبت مرسوله",
+  SUBMITTED: "ثبت‌شده در شرکت حمل",
+  PICKED_UP: "تحویل شرکت حمل",
+  IN_TRANSIT: "در مسیر مقصد",
+  DELIVERED: "تحویل‌شده",
+  FAILED: "نیازمند پیگیری فروشگاه",
+  UNKNOWN: "در حال بررسی",
+  CANCELLED: "لغوشده",
+};
 
 export default async function AccountPage({ searchParams }: AccountPageProps) {
   const params = await searchParams;
@@ -68,6 +74,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         items: { include: { product: { select: { name: true, slug: true } } } },
         statusEvents: { orderBy: { createdAt: "asc" } },
         returnRequests: { orderBy: { requestedAt: "desc" } },
+        shipment: true,
       },
       skip,
       take: pageSize,
@@ -83,6 +90,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             items: { include: { product: { select: { name: true, slug: true } } } },
             statusEvents: { orderBy: { createdAt: "asc" } },
             returnRequests: { orderBy: { requestedAt: "desc" } },
+            shipment: true,
           },
         })
       : null,
@@ -233,6 +241,8 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 address2={defaultAddress?.address2}
                 city={defaultAddress?.city}
                 province={defaultAddress?.province}
+                cityCode={defaultAddress?.cityCode}
+                provinceCode={defaultAddress?.provinceCode}
                 postalCode={defaultAddress?.postalCode}
               />
             </div>
@@ -317,21 +327,36 @@ type AccountOrder = Awaited<ReturnType<typeof prisma.order.findMany>>[number] & 
     reviewedAt: Date | null;
     refundedAt: Date | null;
   }>;
+  shipment?: {
+    status: string;
+    trackingCode: string | null;
+    trackingUrl: string | null;
+    submittedAt: Date | null;
+  } | null;
 };
 
 function OrderDetail({ order }: { order: AccountOrder }) {
   const shippingCost = Number(order.shippingCost ?? 0);
   const discountAmount = Number(order.discountAmount ?? 0);
   const itemsTotal = order.items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
-  const activeIndex = order.status === "CANCELLED" ? 0 : Math.max(0, timeline.findLastIndex((item) => item.key === order.status));
+  const paid = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
+  const handedToCarrier = Boolean(order.shipment && ["SUBMITTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"].includes(order.shipment.status));
+  const inTransit = Boolean(order.shipment && ["IN_TRANSIT", "DELIVERED"].includes(order.shipment.status)) || ["SHIPPED", "DELIVERED"].includes(order.status);
+  const steps = [
+    { label: "سفارش ثبت شد", active: true },
+    { label: "پرداخت تأیید شد", active: paid },
+    { label: "آماده‌سازی", active: paid },
+    { label: "تحویل شرکت حمل", active: handedToCarrier },
+    { label: "در مسیر / تحویل", active: inTransit },
+  ];
   const canRequestReturn = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
 
   return (
     <section id="order-detail" className="scroll-mt-28 border-b border-border py-6">
       <SectionHeader title={`جزئیات سفارش #${order.id.slice(0, 10).toUpperCase()}`} subtitle={new Date(order.createdAt).toLocaleString("fa-IR")} />
       <div className="mt-5 grid grid-cols-5 divide-x divide-border border-y border-border">
-        {timeline.map((step, index) => (
-          <div key={`${step.label}-${index}`} className={`flex min-h-11 items-center justify-center px-1 py-3 text-center text-[9px] font-bold min-[390px]:text-[10px] sm:text-[11px] ${index <= activeIndex ? "bg-green-50 text-[#16A34A]" : "text-text-muted"}`}>
+        {steps.map((step, index) => (
+          <div key={`${step.label}-${index}`} className={`flex min-h-11 items-center justify-center px-1 py-3 text-center text-[9px] font-bold min-[390px]:text-[10px] sm:text-[11px] ${step.active ? "bg-green-50 text-[#16A34A]" : "text-text-muted"}`}>
             {step.label}
           </div>
         ))}
@@ -352,7 +377,9 @@ function OrderDetail({ order }: { order: AccountOrder }) {
           {discountAmount > 0 ? <Summary label="تخفیف" value={formatPrice(discountAmount)} /> : null}
           <Summary label="مبلغ نهایی" value={formatPrice(order.total)} strong />
           <Summary label="وضعیت" value={statusLabels[order.status] ?? order.status} />
-          <Summary label="کد پیگیری ارسال" value={order.shippingTrackingCode ?? "ثبت نشده"} />
+          <Summary label="روش ارسال" value={order.shippingServiceLabel ?? order.shippingCarrierLabel ?? "اطلاعات سفارش قدیمی"} />
+          <Summary label="وضعیت مرسوله" value={order.shipment ? shipmentStatusLabels[order.shipment.status] ?? order.shipment.status : paid ? "در انتظار آماده‌سازی" : "پس از پرداخت"} />
+          <Summary label="کد پیگیری ارسال" value={order.shippingTrackingCode ?? order.shipment?.trackingCode ?? "هنوز ثبت نشده"} />
           <Summary label="کد پرداخت" value={order.paymentRefId ?? "ثبت نشده"} />
           <Summary label="تحویل تقریبی" value={order.estimatedDeliveryLabel ?? "ثبت نشده"} />
           {order.couponCode ? <Summary label="کد تخفیف" value={order.couponCode} /> : null}
@@ -363,6 +390,12 @@ function OrderDetail({ order }: { order: AccountOrder }) {
           </div>
           <div className="flex flex-wrap gap-1 pt-2">
             <Link href="/support" className="btn-ghost min-h-11 px-3 text-xs">درخواست پشتیبانی</Link>
+          {order.status === "PENDING" && order.shippingQuoteOptionId ? (
+            <form action={retryOrderPaymentAction} className="inline-flex">
+              <input type="hidden" name="orderId" value={order.id} />
+              <button type="submit" className="btn-primary min-h-11 px-3 text-xs">تلاش دوباره برای پرداخت</button>
+            </form>
+          ) : null}
           <form action={reorderOrderAction} className="inline-flex">
             <input type="hidden" name="orderId" value={order.id} />
             <button type="submit" className="btn-ghost min-h-11 px-3 text-xs text-primary-accent-strong">خرید مجدد همین سفارش</button>

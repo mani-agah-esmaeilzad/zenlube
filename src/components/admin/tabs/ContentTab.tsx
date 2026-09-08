@@ -14,7 +14,7 @@ const cmsSections = [
   { title: "تنظیمات سایت", status: "نیازمند مدل", detail: "نام سایت، لوگو، شبکه‌های اجتماعی، footer و announcement برای ذخیره پایدار به SiteSetting نیاز دارد." },
   { title: "منو و مگامنو", status: "نیازمند مدل", detail: "برای reorder و parent/child منو بهتر است NavigationItem اضافه شود." },
   { title: "کد تخفیف", status: "مدل فعال", detail: "Coupon برای درصد، مبلغ ثابت، محدودیت مصرف، سقف تخفیف و تاریخ انقضا فعال شد." },
-  { title: "ارسال و تحویل", status: "منطق ثابت", detail: "ShippingMethod در سفارش وجود دارد، اما تنظیم قیمت‌ها اکنون در منطق checkout ثابت است." },
+  { title: "ارسال و تحویل", status: "بخش مستقل", detail: "مبدا، بسته‌بندی، شرکت‌های حمل و قیمت‌های زنده از بخش «ارسال» مدیریت می‌شوند." },
   { title: "پیام‌های پشتیبانی", status: "نیازمند مدل", detail: "برای inbox پشتیبانی نیاز به ContactMessage یا Ticket وجود دارد." },
 ];
 

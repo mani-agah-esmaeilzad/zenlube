@@ -13,6 +13,7 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
   const filters = {
     status: options?.status ?? "all",
     query: options?.query ?? null,
+    shipping: options?.shipping ?? "all",
     page: rawPage > 0 ? rawPage : 1,
     perPage: rawPerPage > 0 ? rawPerPage : DEFAULT_PER_PAGE,
   } as OrdersTabData["filters"];
@@ -28,6 +29,18 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
       { email: { contains: filters.query, mode: "insensitive" } },
       { phone: { contains: filters.query, mode: "insensitive" } },
     ];
+  }
+  if (filters.shipping === "POST" || filters.shipping === "TIPAX") {
+    where.shippingCarrierCode = filters.shipping;
+  } else if (filters.shipping === "UNSHIPPED") {
+    where.AND = [
+      { status: { in: ["PAID", "SHIPPED"] } },
+      { shipment: null },
+    ];
+  } else if (filters.shipping === "SHIPPED") {
+    where.shipment = { is: { status: { in: ["SUBMITTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"] } } };
+  } else if (filters.shipping === "TRACKING") {
+    where.shippingTrackingCode = { not: null };
   }
 
   const skip = (filters.page - 1) * filters.perPage;
@@ -54,6 +67,7 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
             createdAt: true,
           },
         },
+        shipment: true,
       },
       skip,
       take: filters.perPage,

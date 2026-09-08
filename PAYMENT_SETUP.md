@@ -117,7 +117,7 @@ Confirm:
 
 ## Amount Unit
 
-Oilbar stores product/order prices as toman by default.
+Oilbar stores product, shipping, discount, and order amounts in **IRR (rial)**.
 
 Use:
 
@@ -125,4 +125,6 @@ Use:
 ZARINPAL_AMOUNT_UNIT=toman
 ```
 
-Only set `rial` if your gateway account expects rial; in that case the service multiplies stored toman by 10 before calling ZarinPal.
+With `toman`, the payment layer divides the stored IRR amount by 10 and sends `IRT` to ZarinPal. Set `rial` only if the merchant account expects IRR; in that mode the stored value is sent unchanged. Do not pre-convert amounts elsewhere.
+
+Shipping setup and production checks are documented in [`docs/shipping.md`](docs/shipping.md).

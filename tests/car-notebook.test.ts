@@ -13,11 +13,12 @@ function createNotebookProduct(overrides: Partial<ProductWithRelations> & {
   brandName?: string;
 }): ProductWithRelations {
   const now = new Date();
+  const { id, slug, name, categorySlug, categoryName, brandName, ...rest } = overrides;
 
   return {
-    id: overrides.id,
-    slug: overrides.slug,
-    name: overrides.name,
+    id,
+    slug,
+    name,
     description: "محصول تستی سازگار با خودرو",
     sku: `${overrides.slug}-sku`,
     price: "1000000" as unknown as ProductWithRelations["price"],
@@ -40,12 +41,20 @@ function createNotebookProduct(overrides: Partial<ProductWithRelations> & {
     reviewCount: 12,
     reorderThreshold: 0,
     videos: [],
+    requiresShipping: true,
+    shippingWeightGrams: 1000,
+    shippingDimensionsMode: "DEFAULT",
+    shippingLengthCm: null,
+    shippingWidthCm: null,
+    shippingHeightCm: null,
+    shippingRestrictedCarriers: [],
+    shippingIsLiquid: true,
     createdAt: now,
     updatedAt: now,
     brand: {
-      id: `brand-${overrides.categorySlug}`,
-      name: overrides.brandName ?? "برند تست",
-      slug: `brand-${overrides.categorySlug}`,
+      id: `brand-${categorySlug}`,
+      name: brandName ?? "برند تست",
+      slug: `brand-${categorySlug}`,
       description: null,
       imageUrl: null,
       website: null,
@@ -53,16 +62,16 @@ function createNotebookProduct(overrides: Partial<ProductWithRelations> & {
       updatedAt: now,
     },
     category: {
-      id: `cat-${overrides.categorySlug}`,
-      name: overrides.categoryName,
-      slug: overrides.categorySlug,
+      id: `cat-${categorySlug}`,
+      name: categoryName,
+      slug: categorySlug,
       description: null,
       imageUrl: null,
       createdAt: now,
       updatedAt: now,
     },
     carMappings: [],
-    ...overrides,
+    ...rest,
   } as ProductWithRelations;
 }
 

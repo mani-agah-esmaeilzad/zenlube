@@ -66,3 +66,38 @@ test("Torob products use absolute URLs, integer Toman prices, discount, and requ
   assert.equal(rialToTorobToman(1_234_567), 123_457);
   assert.equal(buildTorobResponse([product], 1, 1).api_version, "torob_api_v3");
 });
+
+test("each Torob product exports only its own primary image", () => {
+  const sharedFields = {
+    description: null,
+    price: 1_000_000,
+    stock: 2,
+    viscosity: null,
+    oilType: null,
+    packagingSizeLit: null,
+    warranty: null,
+    createdAt: new Date("2026-09-01T00:00:00Z"),
+    updatedAt: new Date("2026-09-01T00:00:00Z"),
+    category: { name: "مکمل سوخت" },
+  };
+  const persiaSign = buildTorobProduct({
+    ...sharedFields,
+    id: "persia-sign",
+    name: "اکتان بوستر پرشیا ساین",
+    slug: "persia-sign-octane",
+    imageUrl: "/products/persia-sign/octane.webp",
+    brand: { name: "پرشیا ساین" },
+  }, "https://www.oilbar.ir");
+  const xado = buildTorobProduct({
+    ...sharedFields,
+    id: "xado",
+    name: "اکتان بوستر زادو",
+    slug: "xado-octane",
+    imageUrl: "/products/xado/octane.jpg",
+    brand: { name: "زادو" },
+  }, "https://www.oilbar.ir");
+
+  assert.deepEqual(persiaSign.image_links, ["https://www.oilbar.ir/products/persia-sign/octane.webp"]);
+  assert.deepEqual(xado.image_links, ["https://www.oilbar.ir/products/xado/octane.jpg"]);
+  assert.equal(persiaSign.image_links.includes(xado.image_links[0]), false);
+});

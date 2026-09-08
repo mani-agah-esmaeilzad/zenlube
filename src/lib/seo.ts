@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 type BreadcrumbStructuredDataItem = {
   name: string;
   url: string;
@@ -18,8 +20,61 @@ type ProductStructuredDataInput = {
   slug: string;
 };
 
+type ProductPageMetadataInput = {
+  baseUrl: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  name: string;
+  slug: string;
+};
+
 function normalizeBaseUrl(baseUrl: string) {
-  return baseUrl.replace(/\/$/, "");
+  const trimmedBaseUrl = baseUrl.replace(/\/$/, "");
+
+  try {
+    const url = new URL(trimmedBaseUrl);
+    if (url.hostname === "oilbar.ir") url.hostname = "www.oilbar.ir";
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return trimmedBaseUrl;
+  }
+}
+
+/**
+ * Keeps product crawlers pinned to the current product's canonical URL and
+ * primary image. Without product-level social metadata, image crawlers may
+ * treat images from the related-products rail as gallery media.
+ */
+export function buildProductPageMetadata(input: ProductPageMetadataInput): Metadata {
+  const baseUrl = normalizeBaseUrl(input.baseUrl);
+  const productUrl = `${baseUrl}/products/${encodeURIComponent(input.slug)}`;
+  const title = `${input.name} | Oilbar`;
+  const description = input.description?.trim() || undefined;
+  const imageUrl = input.imageUrl
+    ? new URL(input.imageUrl, `${baseUrl}/`).toString()
+    : undefined;
+  const images = imageUrl ? [{ url: imageUrl, alt: input.name }] : undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: productUrl },
+    openGraph: {
+      type: "website",
+      locale: "fa_IR",
+      siteName: "Oilbar",
+      url: productUrl,
+      title,
+      description,
+      images,
+    },
+    twitter: {
+      card: imageUrl ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+  };
 }
 
 export function buildBreadcrumbStructuredData(items: BreadcrumbStructuredDataItem[]) {

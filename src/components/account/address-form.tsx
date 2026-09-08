@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateDefaultAddressAction } from "@/actions/account";
+import { LocationSelectors } from "@/components/shipping/location-selectors";
 
 type AddressFormProps = {
   fullName?: string | null;
@@ -10,13 +11,15 @@ type AddressFormProps = {
   address2?: string | null;
   city?: string | null;
   province?: string | null;
+  cityCode?: string | null;
+  provinceCode?: string | null;
   postalCode?: string | null;
 };
 
 type FormState = Awaited<ReturnType<typeof updateDefaultAddressAction>>;
 const initialState: FormState = { success: false };
 
-export function AddressForm({ fullName, phone, address1, address2, city, province, postalCode }: AddressFormProps) {
+export function AddressForm({ fullName, phone, address1, address2, city, province, cityCode, provinceCode, postalCode }: AddressFormProps) {
   const [state, formAction] = useActionState(updateDefaultAddressAction, initialState);
 
   return (
@@ -24,8 +27,14 @@ export function AddressForm({ fullName, phone, address1, address2, city, provinc
       <Field label="نام گیرنده" name="fullName" defaultValue={fullName ?? ""} errors={state?.errors?.fullName} wide />
       <Field label="شماره موبایل گیرنده" name="phone" defaultValue={phone ?? ""} errors={state?.errors?.phone} />
       <Field label="کد پستی" name="postalCode" defaultValue={postalCode ?? ""} errors={state?.errors?.postalCode} />
-      <Field label="استان" name="province" defaultValue={province ?? ""} errors={state?.errors?.province} />
-      <Field label="شهر" name="city" defaultValue={city ?? ""} errors={state?.errors?.city} />
+      <LocationSelectors
+        defaultProvinceCode={provinceCode}
+        defaultCityCode={cityCode}
+        defaultProvinceName={province}
+        defaultCityName={city}
+        provinceErrors={state?.errors?.provinceCode}
+        cityErrors={state?.errors?.cityCode}
+      />
       <Field label="آدرس اصلی" name="address1" defaultValue={address1 ?? ""} errors={state?.errors?.address1} wide />
       <Field label="جزئیات تکمیلی" name="address2" defaultValue={address2 ?? ""} wide required={false} />
       {state?.message && (

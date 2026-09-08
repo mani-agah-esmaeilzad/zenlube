@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildBreadcrumbStructuredData, buildProductStructuredData } from "@/lib/seo";
+import { buildBreadcrumbStructuredData, buildProductPageMetadata, buildProductStructuredData } from "@/lib/seo";
 
 test("buildBreadcrumbStructuredData creates an ordered breadcrumb list", () => {
   assert.deepEqual(
@@ -110,4 +110,24 @@ test("buildProductStructuredData omits an offer until a real product price is se
   });
 
   assert.equal("offers" in structuredData, false);
+});
+
+test("buildProductPageMetadata exposes only the current product image to social crawlers", () => {
+  const metadata = buildProductPageMetadata({
+    baseUrl: "https://oilbar.ir/",
+    description: "افزاینده اکتان و تمیزکننده سیستم سوخت",
+    imageUrl: "/products/persia-sign/up-to-5-450ml-original.webp",
+    name: "اکتان بوستر پرشیا ساین Up to 5",
+    slug: "persia-sign-up-to-5-octane-booster-450ml",
+  });
+
+  const canonical = "https://www.oilbar.ir/products/persia-sign-up-to-5-octane-booster-450ml";
+  const primaryImage = "https://www.oilbar.ir/products/persia-sign/up-to-5-450ml-original.webp";
+
+  assert.equal(metadata.alternates?.canonical, canonical);
+  assert.equal(metadata.openGraph?.url, canonical);
+  assert.deepEqual(metadata.openGraph?.images, [
+    { url: primaryImage, alt: "اکتان بوستر پرشیا ساین Up to 5" },
+  ]);
+  assert.deepEqual(metadata.twitter?.images, [primaryImage]);
 });

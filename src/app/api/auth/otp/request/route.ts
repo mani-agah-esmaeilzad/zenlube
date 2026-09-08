@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { normalizeIranPhone } from "@/lib/phone";
+import { otpRequestBodySchema } from "@/lib/otp-request";
 import { createOtpRequest, discardOtpRequest, assertOtpWindowAvailability, OtpRequestWindowError } from "@/services/otp";
 import { sendOtpSms } from "@/lib/sms/service";
 import { logger } from "@/lib/logger";
@@ -10,14 +10,9 @@ import { config } from "@/lib/config";
 
 export const runtime = "nodejs";
 
-const bodySchema = z.object({
-  phone: z.string().min(10, "شماره موبایل را صحیح وارد کنید."),
-  purpose: z.enum(["checkout", "account"]).default("checkout"),
-});
-
 export async function POST(request: Request) {
   try {
-    const parsed = bodySchema.safeParse(await request.json());
+    const parsed = otpRequestBodySchema.safeParse(await request.json());
     if (!parsed.success) {
       return NextResponse.json({ success: false, errors: parsed.error.flatten().fieldErrors }, { status: 400 });
     }

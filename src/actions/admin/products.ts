@@ -10,11 +10,21 @@ import type { ActionResult } from "./types";
 function parseProductForm(formData: FormData) {
   const rawEntries = Object.fromEntries(formData);
   const carIds = formData.getAll("carIds").map(String);
+  const shippingRestrictedCarriers = formData.getAll("shippingRestrictedCarriers").map(String);
+  const optionalNumber = (value: FormDataEntryValue | undefined) => value == null || String(value).trim() === "" ? undefined : Number(value);
   return {
     ...rawEntries,
     price: rawEntries.price ? Number(rawEntries.price) : undefined,
     stock: rawEntries.stock ? Number(rawEntries.stock) : undefined,
     isFeatured: rawEntries.isFeatured === "on",
+    requiresShipping: rawEntries.requiresShipping === "on",
+    shippingWeightGrams: optionalNumber(rawEntries.shippingWeightGrams),
+    shippingDimensionsMode: rawEntries.shippingDimensionsMode || "DEFAULT",
+    shippingLengthCm: optionalNumber(rawEntries.shippingLengthCm),
+    shippingWidthCm: optionalNumber(rawEntries.shippingWidthCm),
+    shippingHeightCm: optionalNumber(rawEntries.shippingHeightCm),
+    shippingRestrictedCarriers,
+    shippingIsLiquid: rawEntries.shippingIsLiquid === "on",
     carIds,
   };
 }

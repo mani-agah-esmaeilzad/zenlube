@@ -76,6 +76,11 @@ test("admin product validation accepts repository-owned images but rejects trave
     imageUrl: "/products/aidlube/test-image.webp",
     categoryId: "cmqz8a22w0000k004y0gtq7pf",
     brandId: "cmqz9ek7w0001ie04jogiwppl",
+    requiresShipping: true,
+    shippingWeightGrams: 1000,
+    shippingDimensionsMode: "DEFAULT",
+    shippingRestrictedCarriers: [],
+    shippingIsLiquid: true,
   };
 
   assert.equal(productCreateSchema.safeParse(baseProduct).success, true);

@@ -65,6 +65,14 @@ export type AdminProduct = {
   oilType?: string | null;
   imageUrl?: string | null;
   isFeatured: boolean;
+  requiresShipping: boolean;
+  shippingWeightGrams?: number | null;
+  shippingDimensionsMode: "DEFAULT" | "CUSTOM";
+  shippingLengthCm?: number | null;
+  shippingWidthCm?: number | null;
+  shippingHeightCm?: number | null;
+  shippingRestrictedCarriers: string[];
+  shippingIsLiquid: boolean;
   brand: {
     id: string;
     name: string;
@@ -104,7 +112,23 @@ export type AdminOrderDetail = AdminOrder & {
   paymentRefId?: string | null;
   paymentAuthority?: string | null;
   paidAt?: Date | null;
-  shippingMethod: string;
+  shippingMethod?: string | null;
+  shippingCost: number;
+  shippingProviderKey?: string | null;
+  shippingCarrierCode?: string | null;
+  shippingCarrierLabel?: string | null;
+  shippingServiceLabel?: string | null;
+  shippingBaseCost?: number | null;
+  shippingAdjustmentAmount: number;
+  shippingCurrency: string;
+  shippingPackageWeightGrams?: number | null;
+  shippingPackageLengthCm?: number | null;
+  shippingPackageWidthCm?: number | null;
+  shippingPackageHeightCm?: number | null;
+  shippingQuotedAt?: Date | null;
+  shippingQuoteExpiresAt?: Date | null;
+  shippingExternalStatus?: string | null;
+  shippingTrackingUrl?: string | null;
   shippingTrackingCode?: string | null;
   phone: string;
   city: string;
@@ -121,6 +145,16 @@ export type AdminOrderDetail = AdminOrder & {
     status: string;
     createdAt: Date;
   }>;
+  shipment?: {
+    id: string;
+    status: string;
+    externalStatus?: string | null;
+    externalShipmentId?: string | null;
+    trackingCode?: string | null;
+    submittedAt?: Date | null;
+    attemptCount: number;
+    lastErrorMessage?: string | null;
+  } | null;
 };
 
 export type AdminUser = {
@@ -235,6 +269,7 @@ export type ProductsTabData = {
 export type OrdersTabFilters = {
   status: "all" | "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
   query?: string | null;
+  shipping: "all" | "POST" | "TIPAX" | "UNSHIPPED" | "SHIPPED" | "TRACKING";
   page: number;
   perPage: number;
 };
@@ -421,5 +456,73 @@ export type SpecialOffersTabData = {
     missingPrice: number;
     outOfStock: number;
     missingImage: number;
+  };
+};
+
+export type AdminShippingLocation = {
+  code: string;
+  name: string;
+  parentCode?: string | null;
+};
+
+export type ShippingTabData = {
+  settings: {
+    enabled: boolean;
+    providerKey: string;
+    providerStoreId: string;
+    providerProductTypeCode: string;
+    originProvinceCode: string;
+    originCityCode: string;
+    originAddress: string;
+    originPostalCode: string;
+    senderName: string;
+    senderMobile: string;
+    enabledCarriers: string[];
+    basePackagingWeightGrams: number;
+    extraPackagingWeightPerAdditionalItemGrams: number;
+    minimumPackageWeightGrams: number;
+    defaultLengthCm: number;
+    defaultWidthCm: number;
+    defaultHeightCm: number;
+    freeShippingEnabled: boolean;
+    freeShippingThresholdRials: number | null;
+    adjustmentFixedRials: number;
+    adjustmentPercent: number;
+    manualFallbackEnabled: boolean;
+    manualFallbackLabel: string;
+    manualFallbackCostRials: number | null;
+    quoteTtlSeconds: number;
+    providerTimeoutMs: number;
+  };
+  environment: {
+    providerMode: "amadast" | "mock" | "disabled";
+    clientCodeConfigured: boolean;
+    providerIdentityConfigured: boolean;
+    ready: boolean;
+    isProductionMock: boolean;
+  };
+  rollout: {
+    mode: "legacy" | "dynamic";
+    setupReady: boolean;
+    enabled: boolean;
+    blockers: Array<{ code: string; message: string }>;
+  };
+  capabilities: {
+    quotes: boolean;
+    locationSync: boolean;
+    createShipment: boolean;
+    trackingLookup: boolean;
+    cancelShipment: boolean;
+    label: boolean;
+  } | null;
+  provinces: AdminShippingLocation[];
+  cities: AdminShippingLocation[];
+  stats: {
+    physicalProducts: number;
+    missingWeightProducts: number;
+    mappedProvinces: number;
+    mappedCities: number;
+    originMapped: boolean;
+    lastLocationSyncAt: string | null;
   };
 };

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Oilbar | مرجع تخصصی روغن موتور و لوازم مصرفی خودرو",
   description:
     "خرید آنلاین روغن موتور اصل، فیلتر خودرو، ضدیخ و روانکار با ضمانت اصالت، مشاوره تخصصی انتخاب روغن و ارسال سریع.",
-  metadataBase: new URL("https://oilbar.ir"),
+  metadataBase: new URL("https://www.oilbar.ir"),
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

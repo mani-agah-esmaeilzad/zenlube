@@ -4,6 +4,8 @@ import {
   deleteOrderFormAction,
   updateOrderStatusAction,
   updateOrderTrackingAction,
+  createShipmentAction,
+  syncShipmentTrackingAction,
 } from "@/actions/admin";
 import { faDateTimeFormatter, faNumberFormatter } from "@/lib/formatters";
 import { formatPrice } from "@/lib/utils";
@@ -24,6 +26,19 @@ const statusStyles: Record<string, string> = {
   SHIPPED: "bg-[#EEF4FF] text-[#3538CD]",
   DELIVERED: "bg-[#ECFDF3] text-[#027A48]",
   CANCELLED: "bg-[#FFF1F3] text-[#D92D20]",
+};
+
+const shipmentStatusLabels: Record<string, string> = {
+  PENDING: "در انتظار آماده‌سازی",
+  READY_TO_SHIP: "آماده ثبت",
+  SUBMITTING: "در حال ثبت",
+  SUBMITTED: "ثبت‌شده در سرویس",
+  PICKED_UP: "تحویل شرکت حمل",
+  IN_TRANSIT: "در مسیر",
+  DELIVERED: "تحویل‌شده",
+  FAILED: "خطای ثبت",
+  UNKNOWN: "نیازمند بررسی",
+  CANCELLED: "لغوشده",
 };
 
 type OrdersTabProps = {
@@ -121,6 +136,11 @@ export function OrdersTab({ data }: OrdersTabProps) {
 
                 <div className="space-y-3 rounded-[24px] border border-[#E6EAF2] bg-[#FBFCFE] p-4">
                   <p className="text-xs font-bold text-[#667085]">پرداخت و وضعیت</p>
+                  {order.paymentEvents.some((event) => ["RECONCILIATION_REQUIRED", "VERIFICATION_PENDING"].includes(event.status)) ? (
+                    <div className="border-r-2 border-amber-500 bg-amber-50 px-3 py-2 text-[11px] font-bold leading-6 text-amber-800">
+                      نتیجهٔ درگاه نیازمند بررسی است؛ تا تعیین تکلیف، برای این سفارش پرداخت تازه ایجاد نکنید.
+                    </div>
+                  ) : null}
                   <InfoRow label="مبلغ سفارش" value={formatPrice(order.total)} strong />
                   <InfoRow label="درگاه" value={order.paymentGateway ?? "-"} />
                   <InfoRow label="Authority" value={order.paymentAuthority ?? "-"} mono />
@@ -130,6 +150,14 @@ export function OrdersTab({ data }: OrdersTabProps) {
                     label="تاریخ پرداخت"
                     value={order.paidAt ? faDateTimeFormatter.format(order.paidAt) : "-"}
                   />
+                  {order.paymentEvents.slice(0, 3).map((event) => (
+                    <InfoRow
+                      key={event.id}
+                      label="رویداد درگاه"
+                      value={`${event.status} · ${faDateTimeFormatter.format(event.createdAt)}`}
+                      mono
+                    />
+                  ))}
                 </div>
 
                 <div className="space-y-4">
@@ -149,6 +177,30 @@ export function OrdersTab({ data }: OrdersTabProps) {
                     </button>
                   </form>
                 </div>
+              </div>
+
+              <div className="mt-5 rounded-[24px] border border-[#E6EAF2] bg-[#FBFCFE] p-4">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-[#667085]">اطلاعات ارسال</p>
+                    <p className="mt-2 text-base font-black text-[#111827]">{order.shippingServiceLabel ?? order.shippingCarrierLabel ?? "اطلاعات ارسال قدیمی"}</p>
+                    <p className="mt-1 text-xs leading-6 text-[#667085]">{order.fullName} · {order.phone}</p>
+                    <p className="text-xs leading-6 text-[#667085]">{order.province}، {order.city}، {order.address1}{order.address2 ? `، ${order.address2}` : ""}</p>
+                    <p className="text-xs leading-6 text-[#667085]">کد پستی: {order.postalCode}</p>
+                  </div>
+                  <div className="grid min-w-0 gap-2 text-xs sm:grid-cols-2 lg:min-w-[420px]">
+                    <InfoRow label="هزینه مشتری" value={formatPrice(order.shippingCost)} strong />
+                    <InfoRow label="نرخ پایه" value={order.shippingBaseCost == null ? "-" : formatPrice(order.shippingBaseCost)} />
+                    <InfoRow label="وزن مرسوله" value={order.shippingPackageWeightGrams ? `${faNumberFormatter.format(order.shippingPackageWeightGrams)} گرم` : "-"} />
+                    <InfoRow label="ابعاد" value={order.shippingPackageLengthCm && order.shippingPackageWidthCm && order.shippingPackageHeightCm ? `${order.shippingPackageLengthCm}×${order.shippingPackageWidthCm}×${order.shippingPackageHeightCm} cm` : "-"} />
+                    <InfoRow label="وضعیت ارسال" value={order.shipment ? shipmentStatusLabels[order.shipment.status] ?? order.shipment.status : "ثبت نشده"} />
+                    <InfoRow label="کد رهگیری" value={order.shippingTrackingCode ?? order.shipment?.trackingCode ?? "-"} mono />
+                    <InfoRow label="زمان ثبت" value={order.shipment?.submittedAt ? faDateTimeFormatter.format(order.shipment.submittedAt) : "-"} />
+                    <InfoRow label="وضعیت سرویس" value={order.shipment?.externalStatus ?? order.shippingExternalStatus ?? "-"} />
+                  </div>
+                </div>
+                {order.shipment?.lastErrorMessage ? <p className="mt-3 border-r-2 border-red-400 px-3 py-2 text-xs leading-6 text-[#B42318]">{order.shipment.lastErrorMessage}</p> : null}
+                <ShippingActions order={order} />
               </div>
 
               <div className="mt-5 rounded-[24px] border border-[#E6EAF2] bg-[#FBFCFE] p-4">
@@ -222,6 +274,7 @@ function OrdersFilterForm({ filters, statusCounts }: FilterFormProps) {
           const params = new URLSearchParams();
           params.set("tab", "orders");
           params.set("status", key);
+          if (filters.shipping !== "all") params.set("shipping", filters.shipping);
           if (filters.query) params.set("query", filters.query);
           return (
             <Link
@@ -241,6 +294,7 @@ function OrdersFilterForm({ filters, statusCounts }: FilterFormProps) {
       <form method="get" action="/admin" className="grid gap-3 md:grid-cols-[1fr_auto]">
         <input type="hidden" name="tab" value="orders" />
         {currentStatus && currentStatus !== "all" ? <input type="hidden" name="status" value={currentStatus} /> : null}
+        {filters.shipping !== "all" ? <input type="hidden" name="shipping" value={filters.shipping} /> : null}
         <input
           type="search"
           name="query"
@@ -251,6 +305,21 @@ function OrdersFilterForm({ filters, statusCounts }: FilterFormProps) {
           جستجو
         </button>
       </form>
+      <div className="flex flex-wrap gap-2 text-xs">
+        {[
+          ["all", "همه ارسال‌ها"],
+          ["POST", "پست"],
+          ["TIPAX", "تیپاکس"],
+          ["UNSHIPPED", "آماده و ثبت‌نشده"],
+          ["SHIPPED", "ثبت‌شده"],
+          ["TRACKING", "دارای رهگیری"],
+        ].map(([key, label]) => {
+          const params = new URLSearchParams({ tab: "orders", shipping: key });
+          if (currentStatus !== "all") params.set("status", currentStatus);
+          if (filters.query) params.set("query", filters.query);
+          return <Link key={key} href={`/admin?${params}`} className={`rounded-full px-3 py-2 font-bold ${filters.shipping === key ? "bg-[#111827] text-white" : "border border-[#E6EAF2] bg-white text-[#475467]"}`}>{label}</Link>;
+        })}
+      </div>
     </div>
   );
 }
@@ -317,6 +386,22 @@ function TrackingForm({ orderId, trackingCode }: { orderId: string; trackingCode
   );
 }
 
+function ShippingActions({ order }: { order: OrdersTabData["orders"][number] }) {
+  if (!order.shippingProviderKey || !order.shippingCarrierCode || order.shippingCarrierCode === "MANUAL") return null;
+  const canCreate = order.status === "PAID" && (!order.shipment || ["PENDING", "READY_TO_SHIP", "FAILED"].includes(order.shipment.status));
+  const canSync = Boolean(order.shipment && ["SUBMITTING", "SUBMITTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED", "UNKNOWN"].includes(order.shipment.status));
+  const needsReconciliation = Boolean(order.shipment && ["SUBMITTING", "UNKNOWN"].includes(order.shipment.status));
+  if (!canCreate && !canSync) return null;
+  return (
+    <div className="mt-4 flex flex-wrap gap-2 border-t border-[#E6EAF2] pt-4">
+      {canCreate ? <form action={createShipmentAction}><input type="hidden" name="orderId" value={order.id} /><button type="submit" className="btn-primary min-h-11 px-4 text-xs">ثبت مرسوله در آمادست</button></form> : null}
+      {canSync ? <form action={syncShipmentTrackingAction}><input type="hidden" name="orderId" value={order.id} /><button type="submit" className="btn-outline min-h-11 px-4 text-xs">{needsReconciliation ? "بررسی و بازیابی مرسوله" : "دریافت اطلاعات رهگیری"}</button></form> : null}
+      {canCreate ? <p className="w-full text-[11px] leading-6 text-[#667085]">API فعلی آمادست هنگام ثبت سفارش، فیلدی برای تحمیل پست یا تیپاکس ندارد؛ روش منتخب مشتری ذخیره است و انتخاب/تطبیق نهایی شرکت حمل باید در پنل آمادست بررسی شود.</p> : null}
+      {needsReconciliation ? <p className="w-full text-[11px] leading-6 text-[#92400E]">ممکن است درخواست ثبت قبلی به آمادست رسیده باشد؛ ثبت دوباره غیرفعال است. ابتدا با دکمه بالا مرسوله را بر اساس شماره سفارش بررسی و بازیابی کنید.</p> : null}
+    </div>
+  );
+}
+
 function renderPaginationLink(
   filters: OrdersTabData["filters"],
   targetPage: number,
@@ -330,6 +415,7 @@ function renderPaginationLink(
   params.set("tab", "orders");
   params.set("page", targetPage.toString());
   if (filters.status && filters.status !== "all") params.set("status", filters.status);
+  if (filters.shipping && filters.shipping !== "all") params.set("shipping", filters.shipping);
   if (filters.query) params.set("query", filters.query);
 
   return (

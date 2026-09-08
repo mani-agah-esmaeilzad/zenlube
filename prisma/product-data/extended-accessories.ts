@@ -241,7 +241,7 @@ const persiaSignAccessories = [
     productType: "افزاینده اکتان و تمیزکننده سیستم سوخت",
     volumeLabel: "حجم ۴۵۰ میلی‌لیتر",
     packagingSizeLit: 0.45,
-    image: "/products/persia-sign/up-to-5-450ml.webp",
+    image: "/products/persia-sign/up-to-5-450ml-original.webp",
     summary:
       "نسخه Up to 5 پرشیا ساین برای افزایش عدد اکتان تا پنج واحد و کمک به پاکیزگی انژکتور در موتورهای تنفس طبیعی، توربو و GDI معرفی شده است.",
     source:

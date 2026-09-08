@@ -149,14 +149,45 @@ const productFields = {
   categoryId: z.string().cuid(),
   brandId: z.string().cuid(),
   carIds: z.array(z.string().cuid()).optional(),
+  requiresShipping: z.boolean(),
+  shippingWeightGrams: optionalNumber.pipe(z.number().int().positive("وزن باید بیشتر از صفر باشد.").optional()),
+  shippingDimensionsMode: z.enum(["DEFAULT", "CUSTOM"]),
+  shippingLengthCm: optionalNumber.pipe(z.number().int().positive("طول باید بیشتر از صفر باشد.").optional()),
+  shippingWidthCm: optionalNumber.pipe(z.number().int().positive("عرض باید بیشتر از صفر باشد.").optional()),
+  shippingHeightCm: optionalNumber.pipe(z.number().int().positive("ارتفاع باید بیشتر از صفر باشد.").optional()),
+  shippingRestrictedCarriers: z.array(z.enum(["POST", "TIPAX"])).optional(),
+  shippingIsLiquid: z.boolean(),
 };
 
-export const productCreateSchema = z.object(productFields);
+function validateProductShipping(
+  data: {
+    requiresShipping: boolean;
+    shippingWeightGrams?: number;
+    shippingDimensionsMode: "DEFAULT" | "CUSTOM";
+    shippingLengthCm?: number;
+    shippingWidthCm?: number;
+    shippingHeightCm?: number;
+  },
+  context: z.RefinementCtx,
+  requireWeight: boolean,
+) {
+  if (data.requiresShipping && requireWeight && !data.shippingWeightGrams) {
+    context.addIssue({ code: "custom", path: ["shippingWeightGrams"], message: "وزن ارسال برای محصول فیزیکی الزامی است." });
+  }
+  if (data.requiresShipping && data.shippingDimensionsMode === "CUSTOM") {
+    for (const field of ["shippingLengthCm", "shippingWidthCm", "shippingHeightCm"] as const) {
+      if (!data[field]) context.addIssue({ code: "custom", path: [field], message: "هر سه بُعد سفارشی را وارد کنید." });
+    }
+  }
+}
+
+export const productCreateSchema = z.object(productFields)
+  .superRefine((data, context) => validateProductShipping(data, context, true));
 
 export const productUpdateSchema = z.object({
   id: z.string().cuid(),
   ...productFields,
-});
+}).superRefine((data, context) => validateProductShipping(data, context, false));
 
 export const productPromotionSchema = z.object({
   productId: z.string().min(1, "انتخاب محصول الزامی است."),
@@ -234,25 +265,29 @@ export const checkoutOrderSchema = z.object({
   phone: phoneSchema,
   address1: z.string().trim().min(5, "آدرس باید حداقل ۵ کاراکتر باشد."),
   address2: optionalString,
-  city: z.string().trim().min(2, "شهر را وارد کنید."),
-  province: z.string().trim().min(2, "استان را وارد کنید."),
+  cityCode: z.string().trim().min(2, "شهر را انتخاب کنید.").max(80),
+  provinceCode: z.string().trim().min(2, "استان را انتخاب کنید.").max(80),
   postalCode: z
     .string()
     .trim()
-    .min(5, "کد پستی معتبر نیست.")
-    .max(20, "کد پستی معتبر نیست."),
-  shippingMethod: z.enum(["STANDARD", "EXPRESS", "PICKUP"]),
+    .regex(/^[0-9۰-۹٠-٩\s-]{10,16}$/, "کد پستی باید ۱۰ رقم باشد."),
+  shippingOptionId: z.string().cuid("روش ارسال معتبر نیست."),
+  checkoutIdempotencyKey: z.string().uuid("شناسه ثبت سفارش معتبر نیست."),
   couponCode: z.preprocess(emptyToUndefined, z.string().trim().max(32, "کد تخفیف معتبر نیست.").optional()),
   notes: optionalString,
-  otpCode: z
-    .string()
-    .trim()
-    .min(4, "کد تایید را وارد کنید.")
-    .max(6, "کد تایید باید ۴ تا ۶ رقم باشد."),
   saveAddress: z.preprocess(
     (value) => value === "on" || value === "true" || value === true,
     z.boolean().optional(),
   ).transform((value) => value ?? false),
+});
+
+export const shippingQuoteSchema = z.object({
+  provinceCode: z.string().trim().min(2, "استان را انتخاب کنید.").max(80),
+  cityCode: z.string().trim().min(2, "شهر را انتخاب کنید.").max(80),
+  postalCode: z.string().trim().regex(/^[0-9۰-۹٠-٩\s-]{10,16}$/, "کد پستی باید ۱۰ رقم باشد."),
+  address1: z.string().trim().min(5, "آدرس را کامل‌تر وارد کنید.").max(500),
+  address2: optionalString,
+  couponCode: z.preprocess(emptyToUndefined, z.string().trim().max(32, "کد تخفیف معتبر نیست.").optional()),
 });
 
 export const productReviewSchema = z.object({

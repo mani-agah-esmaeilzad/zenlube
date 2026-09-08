@@ -115,6 +115,14 @@ export async function saveProduct(data: {
   categoryId: string;
   brandId: string;
   carIds?: string[];
+  requiresShipping: boolean;
+  shippingWeightGrams?: number | null;
+  shippingDimensionsMode: "DEFAULT" | "CUSTOM";
+  shippingLengthCm?: number | null;
+  shippingWidthCm?: number | null;
+  shippingHeightCm?: number | null;
+  shippingRestrictedCarriers?: ("POST" | "TIPAX")[];
+  shippingIsLiquid: boolean;
 }) {
   const { id, carIds = [], ...payload } = data;
   await prisma.$transaction(async (tx) => {
@@ -521,6 +529,7 @@ export async function resetDatabaseExceptAdmin(adminUserId: string) {
   await prisma.$transaction([
     prisma.adminAuditLog.deleteMany(),
     prisma.returnRequest.deleteMany(),
+    prisma.shipment.deleteMany(),
     prisma.paymentEvent.deleteMany(),
     prisma.smsLog.deleteMany(),
     prisma.rateLimitHit.deleteMany(),
@@ -537,6 +546,8 @@ export async function resetDatabaseExceptAdmin(adminUserId: string) {
     prisma.productCar.deleteMany(),
     prisma.carMaintenanceTask.deleteMany(),
 
+    prisma.shippingQuoteOption.deleteMany(),
+    prisma.shippingQuoteRequest.deleteMany(),
     prisma.cartItem.deleteMany(),
     prisma.cart.deleteMany(),
     prisma.orderItem.deleteMany(),
@@ -550,6 +561,10 @@ export async function resetDatabaseExceptAdmin(adminUserId: string) {
     prisma.car.deleteMany(),
     prisma.category.deleteMany(),
     prisma.brand.deleteMany(),
+
+    prisma.shippingProviderLocationMap.deleteMany(),
+    prisma.shippingLocation.deleteMany(),
+    prisma.shippingSettings.deleteMany(),
 
     prisma.userAddress.deleteMany(),
     prisma.account.deleteMany({ where: { userId: { not: adminUserId } } }),

@@ -67,36 +67,49 @@ export async function addToCartAction(input: { productId: string; quantity?: num
       return { success: false, message: "موجودی این محصول کافی نیست." };
     }
 
-    const cart = await prisma.cart.upsert({
-      where: { userId: session.user.id },
-      update: {},
-      create: { userId: session.user.id },
-    });
+    const added = await prisma.$transaction(async (tx) => {
+      const cart = await tx.cart.upsert({
+        where: { userId: session.user.id },
+        update: {},
+        create: { userId: session.user.id },
+      });
 
-    const existingItem = await prisma.cartItem.findUnique({
-      where: { cartId_productId: { cartId: cart.id, productId } },
-      select: { quantity: true },
-    });
-    if ((existingItem?.quantity ?? 0) + quantity > product.stock) {
-      return { success: false, message: "تعداد این محصول در سبد از موجودی انبار بیشتر می‌شود." };
-    }
+      const existingItem = await tx.cartItem.findUnique({
+        where: { cartId_productId: { cartId: cart.id, productId } },
+        select: { quantity: true },
+      });
+      if ((existingItem?.quantity ?? 0) + quantity > product.stock) {
+        return false;
+      }
 
-    await prisma.cartItem.upsert({
-      where: {
-        cartId_productId: {
+      await tx.cart.update({
+        where: { id: cart.id },
+        data: { version: { increment: 1 } },
+      });
+
+      await tx.cartItem.upsert({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId,
+          },
+        },
+        update: {
+          quantity: { increment: quantity },
+        },
+        create: {
           cartId: cart.id,
           productId,
+          quantity,
         },
-      },
-      update: {
-        quantity: { increment: quantity },
-      },
-      create: {
-        cartId: cart.id,
-        productId,
-        quantity,
-      },
+      });
+
+      return true;
     });
+
+    if (!added) {
+      return { success: false, message: "تعداد این محصول در سبد از موجودی انبار بیشتر می‌شود." };
+    }
 
     revalidatePath("/cart");
     return { success: true };
@@ -138,17 +151,12 @@ export async function updateCartItemAction(input: { productId: string; quantity:
       return { success: false, message: "موجودی این محصول کافی نیست." };
     }
 
-    if (parsed.data.quantity <= 0) {
-      await prisma.cartItem.delete({
-        where: {
-          cartId_productId: {
-            cartId: cart.id,
-            productId: parsed.data.productId,
-          },
-        },
+    await prisma.$transaction(async (tx) => {
+      await tx.cart.update({
+        where: { id: cart.id },
+        data: { version: { increment: 1 } },
       });
-    } else {
-      await prisma.cartItem.update({
+      await tx.cartItem.update({
         where: {
           cartId_productId: {
             cartId: cart.id,
@@ -159,7 +167,7 @@ export async function updateCartItemAction(input: { productId: string; quantity:
           quantity: parsed.data.quantity,
         },
       });
-    }
+    });
 
     revalidatePath("/cart");
     return { success: true };
@@ -183,13 +191,19 @@ export async function removeCartItemAction(productId: string) {
       return { success: false, message: "سبد خرید یافت نشد." };
     }
 
-    await prisma.cartItem.delete({
-      where: {
-        cartId_productId: {
-          cartId: cart.id,
-          productId,
+    await prisma.$transaction(async (tx) => {
+      await tx.cart.update({
+        where: { id: cart.id },
+        data: { version: { increment: 1 } },
+      });
+      await tx.cartItem.delete({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId,
+          },
         },
-      },
+      });
     });
 
     revalidatePath("/cart");
@@ -214,8 +228,12 @@ export async function clearCartAction() {
       return { success: false, message: "سبد خرید خالی است." };
     }
 
-    await prisma.cartItem.deleteMany({
-      where: { cartId: cart.id },
+    await prisma.$transaction(async (tx) => {
+      await tx.cart.update({
+        where: { id: cart.id },
+        data: { version: { increment: 1 } },
+      });
+      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
     });
 
     revalidatePath("/cart");

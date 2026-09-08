@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 
 import { createAddressAction, deleteAddressAction, setDefaultAddressAction } from "@/actions/account";
+import { LocationSelectors } from "@/components/shipping/location-selectors";
 
 type FormState = Awaited<ReturnType<typeof createAddressAction>>;
 
@@ -18,6 +19,8 @@ type AddressBookFormProps = {
     address2: string | null;
     city: string;
     province: string;
+    cityCode: string | null;
+    provinceCode: string | null;
     postalCode: string;
     isDefault: boolean;
   }>;
@@ -89,8 +92,10 @@ export function AddressBookForm({ addresses }: AddressBookFormProps) {
         <Field label="نام گیرنده" name="fullName" defaultValue="" errors={state?.errors?.fullName} />
         <Field label="شماره موبایل" name="phone" defaultValue="" errors={state?.errors?.phone} />
         <Field label="کد پستی" name="postalCode" defaultValue="" errors={state?.errors?.postalCode} />
-        <Field label="استان" name="province" defaultValue="" errors={state?.errors?.province} />
-        <Field label="شهر" name="city" defaultValue="" errors={state?.errors?.city} />
+        <LocationSelectors
+          provinceErrors={state?.errors?.provinceCode}
+          cityErrors={state?.errors?.cityCode}
+        />
         <Field label="آدرس اصلی" name="address1" defaultValue="" errors={state?.errors?.address1} wide />
         <Field label="جزئیات تکمیلی" name="address2" defaultValue="" wide required={false} />
         <label className="flex min-h-11 items-center gap-2 text-xs font-bold text-[#374151] md:col-span-2">

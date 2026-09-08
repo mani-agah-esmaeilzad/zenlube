@@ -29,6 +29,16 @@ export type ZarinpalVerifyResult = {
   response: ZarinpalVerifyResponse;
 };
 
+export class ZarinpalServiceError extends Error {
+  readonly outcomeUnknown: boolean;
+
+  constructor(message: string, outcomeUnknown: boolean, cause?: unknown) {
+    super(message, cause === undefined ? undefined : { cause });
+    this.name = "ZarinpalServiceError";
+    this.outcomeUnknown = outcomeUnknown;
+  }
+}
+
 function env(name: string, fallback = "") {
   return process.env[name] ?? fallback;
 }
@@ -84,11 +94,20 @@ async function postJson<T>(path: string, payload: Record<string, unknown>): Prom
       body: JSON.stringify(payload),
       signal: controller.signal,
     });
-    const data = (await response.json().catch(() => ({}))) as T;
     if (!response.ok) {
-      throw new Error(`ZarinPal HTTP ${response.status}`);
+      throw new ZarinpalServiceError(`ZarinPal HTTP ${response.status}`, response.status >= 500);
     }
-    return data;
+    try {
+      return (await response.json()) as T;
+    } catch (error) {
+      throw new ZarinpalServiceError("پاسخ زرین‌پال قابل خواندن نبود.", true, error);
+    }
+  } catch (error) {
+    if (error instanceof ZarinpalServiceError) throw error;
+    const message = error instanceof Error && error.name === "AbortError"
+      ? "مهلت ارتباط با زرین‌پال تمام شد."
+      : "ارتباط با زرین‌پال قطع شد.";
+    throw new ZarinpalServiceError(message, true, error);
   } finally {
     clearTimeout(timeout);
   }
@@ -118,7 +137,7 @@ export async function requestZarinpalPayment(args: {
 
   const response = await postJson<ZarinpalRequestResponse>("/payment/request.json", payload);
   if (!response.data || response.data.code !== 100 || !response.data.authority) {
-    throw new Error(errorMessage(response.errors) ?? "درخواست پرداخت زرین‌پال ناموفق بود.");
+    throw new ZarinpalServiceError(errorMessage(response.errors) ?? "درخواست پرداخت زرین‌پال ناموفق بود.", false);
   }
 
   return {
@@ -138,7 +157,7 @@ export async function verifyZarinpalPayment(authority: string, amount: Prisma.De
 
   const response = await postJson<ZarinpalVerifyResponse>("/payment/verify.json", payload);
   if (!response.data || (response.data.code !== 100 && response.data.code !== 101) || !response.data.ref_id) {
-    throw new Error(errorMessage(response.errors) ?? "تایید پرداخت زرین‌پال ناموفق بود.");
+    throw new ZarinpalServiceError(errorMessage(response.errors) ?? "تایید پرداخت زرین‌پال ناموفق بود.", false);
   }
 
   return {

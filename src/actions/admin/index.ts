@@ -9,4 +9,6 @@ export * from "./products";
 export * from "./questions";
 export * from "./returns";
 export * from "./special-offers";
+export * from "./shipping";
+export * from "./shipments";
 export * from "./users";

@@ -26,6 +26,14 @@ export const config = {
   PAYMENT_API_BASE_URL: process.env.PAYMENT_API_BASE_URL ?? process.env.NEXT_PUBLIC_PAYMENT_API_BASE_URL,
   PAYMENT_SERVICE_SECRET: process.env.PAYMENT_SERVICE_SECRET,
 
+  SHIPPING_PROVIDER: (process.env.SHIPPING_PROVIDER as "amadast" | "mock" | "disabled" | undefined) ?? "disabled",
+  AMADAST_API_BASE_URL: process.env.AMADAST_API_BASE_URL ?? "https://shop-integration.amadast.com",
+  AMADAST_CLIENT_CODE: process.env.AMADAST_CLIENT_CODE,
+  AMADAST_USER_ID: process.env.AMADAST_USER_ID,
+  AMADAST_ACCESS_TOKEN: process.env.AMADAST_ACCESS_TOKEN,
+  SHIPPING_QUOTE_RATE_LIMIT_WINDOW: parseNumber(process.env.SHIPPING_QUOTE_RATE_LIMIT_WINDOW, 60),
+  SHIPPING_QUOTE_RATE_LIMIT_MAX: parseNumber(process.env.SHIPPING_QUOTE_RATE_LIMIT_MAX, 20),
+
   SMS_PROVIDER: (process.env.SMS_PROVIDER as "smsir" | "melipayamak" | "console" | "disabled" | undefined) ?? "console",
   SMS_API_KEY: process.env.SMS_API_KEY,
   SMS_SENDER_NUMBER: process.env.SMS_SENDER_NUMBER,

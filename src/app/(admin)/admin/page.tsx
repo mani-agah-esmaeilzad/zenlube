@@ -30,7 +30,9 @@ import { QuestionsTab } from "@/components/admin/tabs/QuestionsTab";
 import { ReportsTab } from "@/components/admin/tabs/ReportsTab";
 import { SpecialOffersTab } from "@/components/admin/tabs/SpecialOffersTab";
 import { UsersTab } from "@/components/admin/tabs/UsersTab";
+import { ShippingTab } from "@/components/admin/tabs/ShippingTab";
 import type { OrdersTabData } from "@/services/admin/types";
+import { getShippingTabData } from "@/services/admin/shipping";
 
 export const revalidate = 0;
 
@@ -58,6 +60,12 @@ const tabs = [
     label: "سفارش‌ها",
     description: "وضعیت سفارش، پرداخت، ارسال و پیامک مشتریان را از یک جریان کاری منظم کنترل کنید.",
     icon: CartIcon,
+  },
+  {
+    id: "shipping",
+    label: "ارسال",
+    description: "اتصال آمادست، مبدا، بسته‌بندی، پست و تیپاکس را امن و متمرکز مدیریت کنید.",
+    icon: TruckIcon,
   },
   {
     id: "cars",
@@ -117,7 +125,7 @@ type AdminPageProps = {
 };
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-  const { userId } = await requireAdminUser();
+  const { userId, role } = await requireAdminUser();
   const params = await searchParams;
 
   const requestedTabParam = params.tab;
@@ -129,7 +137,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const activeTabMeta = tabs.find((tab) => tab.id === activeTab) ?? tabs[0];
   const ActiveTabIcon = activeTabMeta.icon;
   const todayLabel = new Intl.DateTimeFormat("fa-IR", { dateStyle: "full" }).format(new Date());
-  const content = await renderActiveTab(activeTab, userId, params);
+  const content = await renderActiveTab(activeTab, userId, params, role);
 
   return (
     <div className="admin-app-bg py-6 md:py-8">
@@ -244,6 +252,7 @@ async function renderActiveTab(
   activeTab: TabKey,
   sessionUserId: string | null,
   searchParams: AdminSearchParams,
+  role: string,
 ) {
   switch (activeTab) {
     case "overview": {
@@ -276,8 +285,16 @@ async function renderActiveTab(
         perPage: typeof searchParams?.perPage === "string" ? Number(searchParams.perPage) : undefined,
         status: normalizedStatus,
         query: typeof searchParams?.query === "string" ? searchParams.query : null,
+        shipping: typeof searchParams?.shipping === "string" && ["all", "POST", "TIPAX", "UNSHIPPED", "SHIPPED", "TRACKING"].includes(searchParams.shipping)
+          ? searchParams.shipping as OrdersTabData["filters"]["shipping"]
+          : undefined,
       });
       return <OrdersTab data={data} />;
+    }
+    case "shipping": {
+      if (!["ADMIN", "OPERATIONS_MANAGER"].includes(role)) notFound();
+      const data = await getShippingTabData();
+      return <ShippingTab data={data} />;
     }
     case "cars": {
       const data = await getCarsTabData();
@@ -356,6 +373,17 @@ function CartIcon(props: SVGProps<SVGSVGElement>) {
       <circle cx={9} cy={20} r={1} />
       <circle cx={17} cy={20} r={1} />
       <path d="M3 4h2l2.4 12.2a1 1 0 0 0 1 .8h9.5a1 1 0 0 0 1-.8L21 8H7" />
+    </svg>
+  );
+}
+
+function TruckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} viewBox="0 0 24 24" {...props}>
+      <path d="M3 6h11v11H3z" />
+      <path d="M14 10h4l3 3v4h-7z" />
+      <circle cx={7} cy={19} r={2} />
+      <circle cx={18} cy={19} r={2} />
     </svg>
   );
 }

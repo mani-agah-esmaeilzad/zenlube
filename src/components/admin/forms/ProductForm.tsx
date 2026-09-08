@@ -65,6 +65,14 @@ export function ProductEditForm(
       categoryId: product.category.id,
       brandId: product.brand.id,
       isFeatured: product.isFeatured,
+      requiresShipping: product.requiresShipping,
+      shippingWeightGrams: product.shippingWeightGrams != null ? String(product.shippingWeightGrams) : "",
+      shippingDimensionsMode: product.shippingDimensionsMode,
+      shippingLengthCm: product.shippingLengthCm != null ? String(product.shippingLengthCm) : "",
+      shippingWidthCm: product.shippingWidthCm != null ? String(product.shippingWidthCm) : "",
+      shippingHeightCm: product.shippingHeightCm != null ? String(product.shippingHeightCm) : "",
+      shippingRestrictedCarriers: product.shippingRestrictedCarriers,
+      shippingIsLiquid: product.shippingIsLiquid,
       carIds: product.carMappings.map(({ car }) => car.id),
     };
   }, [props]);
@@ -97,6 +105,14 @@ type ProductDefaultValues = {
   categoryId?: string;
   brandId?: string;
   isFeatured?: boolean;
+  requiresShipping?: boolean;
+  shippingWeightGrams?: string;
+  shippingDimensionsMode?: "DEFAULT" | "CUSTOM";
+  shippingLengthCm?: string;
+  shippingWidthCm?: string;
+  shippingHeightCm?: string;
+  shippingRestrictedCarriers?: string[];
+  shippingIsLiquid?: boolean;
   carIds?: string[];
 };
 
@@ -278,6 +294,103 @@ function ProductFormFields({
           </span>
           {renderErrors("carIds")}
         </label>
+      </div>
+
+      <div className="sm:col-span-2 grid gap-4 border-t border-slate-200 pt-5 sm:grid-cols-3">
+        <div className="sm:col-span-3">
+          <h3 className="text-sm font-black text-slate-900">اطلاعات ارسال</h3>
+          <p className="mt-1 text-[11px] leading-5 text-slate-500">
+            وزن را با بسته‌بندی خود محصول و بر حسب گرم وارد کنید؛ وزن کارتن بیرونی جداگانه از تنظیمات فروشگاه اضافه می‌شود.
+          </p>
+        </div>
+        <label className="flex min-h-11 items-center gap-2 text-xs font-bold text-slate-600">
+          <input
+            type="checkbox"
+            name="requiresShipping"
+            defaultChecked={defaultValues.requiresShipping ?? true}
+            disabled={disabled}
+            className="size-4 accent-sky-500"
+          />
+          محصول فیزیکی و نیازمند ارسال است
+        </label>
+        <label className="flex min-h-11 items-center gap-2 text-xs font-bold text-slate-600">
+          <input
+            type="checkbox"
+            name="shippingIsLiquid"
+            defaultChecked={defaultValues.shippingIsLiquid ?? true}
+            disabled={disabled}
+            className="size-4 accent-sky-500"
+          />
+          مرسوله مایع است
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-slate-500">
+          وزن محصول (گرم)
+          <input
+            type="number"
+            min="1"
+            step="1"
+            inputMode="numeric"
+            name="shippingWeightGrams"
+            defaultValue={defaultValues.shippingWeightGrams ?? ""}
+            placeholder="مثال: ۴۳۵۰"
+            disabled={disabled}
+            className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
+          />
+          {renderErrors("shippingWeightGrams")}
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-slate-500">
+          ابعاد بسته
+          <select
+            name="shippingDimensionsMode"
+            defaultValue={defaultValues.shippingDimensionsMode ?? "DEFAULT"}
+            disabled={disabled}
+            className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
+          >
+            <option value="DEFAULT">ابعاد پیش‌فرض فروشگاه</option>
+            <option value="CUSTOM">ابعاد اختصاصی این محصول</option>
+          </select>
+        </label>
+        {([
+          ["shippingLengthCm", "طول (سانتی‌متر)", defaultValues.shippingLengthCm],
+          ["shippingWidthCm", "عرض (سانتی‌متر)", defaultValues.shippingWidthCm],
+          ["shippingHeightCm", "ارتفاع (سانتی‌متر)", defaultValues.shippingHeightCm],
+        ] as const).map(([name, label, value]) => (
+          <label key={name} className="flex flex-col gap-1 text-xs text-slate-500">
+            {label}
+            <input
+              type="number"
+              min="1"
+              step="1"
+              inputMode="numeric"
+              name={name}
+              defaultValue={value ?? ""}
+              disabled={disabled}
+              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-900"
+            />
+            {renderErrors(name)}
+          </label>
+        ))}
+        <fieldset className="sm:col-span-3">
+          <legend className="text-xs font-bold text-slate-600">عدم نمایش سرویس برای این محصول</legend>
+          <div className="mt-2 flex flex-wrap gap-5 text-xs text-slate-600">
+            {[["POST", "پست"], ["TIPAX", "تیپاکس"]].map(([value, label]) => (
+              <label key={value} className="flex min-h-10 items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="shippingRestrictedCarriers"
+                  value={value}
+                  defaultChecked={defaultValues.shippingRestrictedCarriers?.includes(value) ?? false}
+                  disabled={disabled}
+                  className="size-4 accent-red-500"
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+          <p className="text-[11px] leading-5 text-amber-700">
+            برای روغن، سوخت و سایر مایعات فقط سرویس‌هایی را فعال نگه دارید که قرارداد حمل آن کالا را تأیید کرده‌اند.
+          </p>
+        </fieldset>
       </div>
 
       <label className="flex items-center gap-2 text-xs text-slate-500">

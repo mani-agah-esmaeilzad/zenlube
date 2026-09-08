@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
+import { randomUUID } from "node:crypto";
 
 import { CheckoutForm } from "@/components/cart/checkout-form";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import prisma from "@/lib/prisma";
 import { resolveProductPricing } from "@/lib/pricing";
+import { getShippingRolloutState } from "@/lib/shipping/rollout";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
 
@@ -17,7 +19,7 @@ export default async function CheckoutPage() {
     redirect("/sign-in?callbackUrl=/cart/checkout");
   }
 
-  const [cart, defaultAddress, addresses] = await Promise.all([
+  const [cart, defaultAddress, addresses, shippingRollout] = await Promise.all([
     prisma.cart.findUnique({
       where: { userId: user.id },
       include: {
@@ -33,6 +35,7 @@ export default async function CheckoutPage() {
       where: { userId: user.id },
       orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
     }),
+    getShippingRolloutState(),
   ]);
 
   if (!cart || cart.items.length === 0) {
@@ -47,6 +50,8 @@ export default async function CheckoutPage() {
     address2: defaultAddress?.address2 ?? "",
     city: defaultAddress?.city ?? "",
     province: defaultAddress?.province ?? "",
+    cityCode: defaultAddress?.cityCode ?? "",
+    provinceCode: defaultAddress?.provinceCode ?? "",
     postalCode: defaultAddress?.postalCode ?? "",
   };
 
@@ -72,6 +77,8 @@ export default async function CheckoutPage() {
       <CheckoutForm
         items={items}
         defaults={defaults}
+        checkoutIdempotencyKey={randomUUID()}
+        shippingMode={shippingRollout.mode}
         addresses={addresses.map((address) => ({
           id: address.id,
           label: address.label,
@@ -81,6 +88,8 @@ export default async function CheckoutPage() {
           address2: address.address2,
           city: address.city,
           province: address.province,
+          cityCode: address.cityCode,
+          provinceCode: address.provinceCode,
           postalCode: address.postalCode,
           isDefault: address.isDefault,
         }))}

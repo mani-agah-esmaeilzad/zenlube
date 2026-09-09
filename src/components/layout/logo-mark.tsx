@@ -19,7 +19,7 @@ export function LogoMark({
   return (
     <Image
       alt="لوگوی Oilbar"
-      className={cn("h-auto w-auto object-contain", className)}
+      className={cn("object-contain", className)}
       height={LOGO_HEIGHT}
       priority={priority}
       sizes={sizes}

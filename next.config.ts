@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Serve catalog originals even when the hosted image-transform quota is exhausted.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

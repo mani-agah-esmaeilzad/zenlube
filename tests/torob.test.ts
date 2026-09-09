@@ -101,3 +101,34 @@ test("each Torob product exports only its own primary image", () => {
   assert.deepEqual(xado.image_links, ["https://www.oilbar.ir/products/xado/octane.jpg"]);
   assert.equal(persiaSign.image_links.includes(xado.image_links[0]), false);
 });
+
+test("Torob unavailable and unpriced products never expose a sale price or a free offer", () => {
+  const product = {
+    id: "unavailable-product",
+    name: "اکتان تست",
+    slug: "test-octane",
+    price: 10_000_000,
+    stock: 0,
+    packagingSizeLit: 0.355,
+    technicalSpecs: { weight: 0.5, count: 1, invalid: Number.NaN },
+    imageUrl: "/products/test.png",
+    brand: { name: "تست" },
+    category: { name: "مکمل سوخت" },
+    createdAt: new Date("2026-09-01T00:00:00Z"),
+    updatedAt: new Date("2026-09-01T00:00:00Z"),
+    promotion: { isActive: true, specialPrice: 9_000_000 },
+  };
+
+  for (const values of [{ stock: 0 }, { stock: 1, price: 0 }, { stock: 1, price: 1 }]) {
+    const result = buildTorobProduct({ ...product, ...values }, "https://www.oilbar.ir");
+    assert.equal(result.availability, false);
+    assert.equal(result.current_price, 0);
+    assert.equal("old_price" in result, false);
+    assert.equal(result.page_unique, product.id);
+    assert.deepEqual(result.image_links, ["https://www.oilbar.ir/products/test.png"]);
+    assert.equal(result.spec["حجم بسته‌بندی (لیتر)"], "0.355");
+    assert.equal(result.spec.weight, "0.5");
+    assert.equal(result.spec.count, 1);
+    assert.equal("invalid" in result.spec, false);
+  }
+});

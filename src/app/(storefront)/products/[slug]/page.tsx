@@ -99,29 +99,33 @@ export default async function ProductPage({ params }: ProductPageProps) {
       })
     : null;
 
-  const relatedProducts = await prisma.product.findMany({
-    where: storefrontVisibleProductWhere({
-      id: { not: product.id },
-      OR: [
-        { categoryId: product.categoryId },
-        { brandId: product.brandId },
-        { tags: { hasSome: product.tags.slice(0, 4) } },
-      ],
-    }),
-    take: 5,
-    include: {
-      brand: true,
-      category: true,
-      promotion: true,
-      carMappings: {
-        where: { car: storefrontVisibleCarWhere() },
-        include: { car: true },
-      },
-    },
-    orderBy: [{ isFeatured: "desc" }, { reviewCount: "desc" }, { updatedAt: "desc" }],
-  });
-
   const requestHeaders = await headers();
+  const isTorobCrawler = /torob/i.test(requestHeaders.get("user-agent") ?? "");
+  // Torob's API already receives the canonical primary image. Its HTML crawler
+  // must not mistake the five related-product cards for this product's gallery.
+  const relatedProducts = isTorobCrawler
+    ? []
+    : await prisma.product.findMany({
+        where: storefrontVisibleProductWhere({
+          id: { not: product.id },
+          OR: [
+            { categoryId: product.categoryId },
+            { brandId: product.brandId },
+            { tags: { hasSome: product.tags.slice(0, 4) } },
+          ],
+        }),
+        take: 5,
+        include: {
+          brand: true,
+          category: true,
+          promotion: true,
+          carMappings: {
+            where: { car: storefrontVisibleCarWhere() },
+            include: { car: true },
+          },
+        },
+        orderBy: [{ isFeatured: "desc" }, { reviewCount: "desc" }, { updatedAt: "desc" }],
+      });
   const requestHost = (requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host"))?.split(",")[0]?.trim();
   const requestProtocol = requestHeaders.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
   const baseUrl = requestHost
@@ -192,6 +196,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
 
       <section
+        id="product-detail"
         className={hasGalleryMedia ? "grid gap-5 sm:gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:items-start" : "max-w-4xl"}
         itemScope
         itemType="https://schema.org/Product"

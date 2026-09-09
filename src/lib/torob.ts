@@ -141,11 +141,17 @@ function buildSpecification(product: TorobSourceProduct) {
   if (product.oilType) spec["نوع روغن"] = product.oilType;
   if (product.approvals) spec["استانداردها"] = product.approvals;
   if (product.originCountry) spec["کشور سازنده"] = product.originCountry;
-  if (product.packagingSizeLit != null) spec["حجم بسته‌بندی (لیتر)"] = Number(product.packagingSizeLit);
+  if (product.packagingSizeLit != null) {
+    const volume = Number(product.packagingSizeLit);
+    // Torob's specification values accept strings and integers, not floats.
+    if (Number.isFinite(volume)) spec["حجم بسته‌بندی (لیتر)"] = Number.isInteger(volume) ? volume : String(volume);
+  }
 
   if (product.technicalSpecs && typeof product.technicalSpecs === "object" && !Array.isArray(product.technicalSpecs)) {
     for (const [key, value] of Object.entries(product.technicalSpecs as Record<string, unknown>)) {
-      if ((typeof value === "string" || typeof value === "number") && key.length <= 100) spec[key] = value;
+      if (key.length > 100) continue;
+      if (typeof value === "string") spec[key] = value;
+      else if (typeof value === "number" && Number.isFinite(value)) spec[key] = Number.isInteger(value) ? value : String(value);
     }
   }
   return spec;
@@ -153,6 +159,8 @@ function buildSpecification(product: TorobSourceProduct) {
 
 export function buildTorobProduct(product: TorobSourceProduct, baseUrl: string, now = new Date()) {
   const pricing = resolveProductPricing(product, now);
+  const currentPrice = rialToTorobToman(pricing.effectivePrice);
+  const availability = product.stock > 0 && currentPrice > 0;
   const pageUrl = absoluteStorefrontUrl(`/products/${encodeURIComponent(product.slug)}`, baseUrl);
   const imageLinks = product.imageUrl ? [absoluteStorefrontUrl(product.imageUrl, baseUrl)] : [];
 
@@ -161,9 +169,11 @@ export function buildTorobProduct(product: TorobSourceProduct, baseUrl: string, 
     page_url: pageUrl,
     title: product.name.slice(0, 500),
     subtitle: [product.brand.name, product.viscosity, product.oilType].filter(Boolean).join("، ").slice(0, 500) || undefined,
-    current_price: rialToTorobToman(pricing.effectivePrice),
-    ...(pricing.hasDiscount ? { old_price: rialToTorobToman(pricing.basePrice) } : {}),
-    availability: product.stock > 0 && pricing.effectivePrice > 0,
+    // Torob requires zero for unavailable items; a zero-priced available item
+    // would be advertised as free. Keep unavailable products in the catalog.
+    current_price: availability ? currentPrice : 0,
+    ...(availability && pricing.hasDiscount ? { old_price: rialToTorobToman(pricing.basePrice) } : {}),
+    availability,
     category_name: product.category.name.slice(0, 200),
     image_links: imageLinks,
     spec: buildSpecification(product),

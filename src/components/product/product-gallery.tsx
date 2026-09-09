@@ -5,7 +5,6 @@ import Image from "next/image";
 import { createPortal } from "react-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import type { ProductGalleryItem } from "@/lib/product-detail";
 
@@ -29,7 +28,6 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
   );
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [loadedMap, setLoadedMap] = useState<Record<number, boolean>>({});
   const [mounted, setMounted] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
@@ -89,7 +87,7 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
 
   return (
     <>
-      <section>
+      <section id="product-gallery" aria-label={`تصاویر ${title}`}>
         <div
           className={cn(
             "relative overflow-hidden rounded-xl bg-surface-secondary",
@@ -105,19 +103,15 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
               </div>
             ) : (
               <>
-                {!loadedMap[activeIndex] ? <Skeleton className="absolute inset-0 rounded-none" /> : null}
                 <Image
+                  id="product-primary-image"
                   alt={activeItem.alt}
-                  className={cn(
-                    "object-contain p-6 transition duration-200 sm:p-8 lg:p-10",
-                    loadedMap[activeIndex] ? "opacity-100" : "opacity-0",
-                  )}
+                  className="object-contain p-6 sm:p-8 lg:p-10"
                   fill
                   itemProp="image"
                   priority={activeIndex === 0}
                   sizes="(max-width: 1023px) 100vw, 46vw"
                   src={activeItem.src}
-                  onLoad={() => setLoadedMap((current) => ({ ...current, [activeIndex]: true }))}
                 />
               </>
             )}

@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 
-import prisma from "@/lib/prisma";
-import { storefrontBuyableProductWhere } from "@/lib/storefront-visibility";
+import { queryTorobProducts } from "@/lib/torob-catalog";
 import {
   buildTorobProduct,
   buildTorobResponse,
   parseTorobProductRequest,
-  TOROB_PAGE_SIZE,
   TorobRequestError,
   type TorobProductRequest,
   verifyTorobJwt,
@@ -16,73 +14,12 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const runtime = "nodejs";
 
-const productSelect = {
-  id: true,
-  name: true,
-  slug: true,
-  description: true,
-  price: true,
-  stock: true,
-  imageUrl: true,
-  viscosity: true,
-  oilType: true,
-  approvals: true,
-  originCountry: true,
-  packagingSizeLit: true,
-  warranty: true,
-  technicalSpecs: true,
-  createdAt: true,
-  updatedAt: true,
-  brand: { select: { name: true } },
-  category: { select: { name: true } },
-  promotion: true,
-} as const;
-
 function baseUrlFromRequest(request: Request) {
   return new URL(request.url).origin.replace(/\/$/, "");
 }
 
-function productSlugFromUrl(value: string) {
-  try {
-    const segments = new URL(value).pathname.split("/").filter(Boolean);
-    const productIndex = segments.lastIndexOf("products");
-    return productIndex >= 0 && segments[productIndex + 1] ? decodeURIComponent(segments[productIndex + 1]) : null;
-  } catch {
-    return null;
-  }
-}
-
-async function queryProducts(input: TorobProductRequest) {
-  const baseWhere = storefrontBuyableProductWhere({ imageUrl: { not: null } });
-
-  if (input.type === "page") {
-    const skip = (input.page - 1) * TOROB_PAGE_SIZE;
-    const orderBy = input.sort === "date_updated_desc" ? { updatedAt: "desc" as const } : { createdAt: "desc" as const };
-    const [products, total] = await prisma.$transaction([
-      prisma.product.findMany({ where: baseWhere, select: productSelect, orderBy, skip, take: TOROB_PAGE_SIZE }),
-      prisma.product.count({ where: baseWhere }),
-    ]);
-    return { products, total, currentPage: input.page };
-  }
-
-  const requestedValues = input.values.slice(0, TOROB_PAGE_SIZE);
-  const identifiers = input.type === "uniques"
-    ? requestedValues
-    : requestedValues.map(productSlugFromUrl).filter((value): value is string => Boolean(value));
-  const products = await prisma.product.findMany({
-    where: storefrontBuyableProductWhere({
-      imageUrl: { not: null },
-      ...(input.type === "uniques" ? { id: { in: identifiers } } : { slug: { in: identifiers } }),
-    }),
-    select: productSelect,
-  });
-  const indexOf = (product: (typeof products)[number]) => identifiers.indexOf(input.type === "uniques" ? product.id : product.slug);
-  products.sort((left, right) => indexOf(left) - indexOf(right));
-  return { products, total: products.length, currentPage: 1 };
-}
-
 async function createResponse(request: Request, input: TorobProductRequest) {
-  const { products, total, currentPage } = await queryProducts(input);
+  const { products, total, currentPage } = await queryTorobProducts(input);
   const baseUrl = baseUrlFromRequest(request);
   const response = NextResponse.json(
     buildTorobResponse(products.map((product) => buildTorobProduct(product, baseUrl)), total, currentPage),
@@ -92,7 +29,21 @@ async function createResponse(request: Request, input: TorobProductRequest) {
 }
 
 export async function GET(request: Request) {
-  return createResponse(request, { type: "page", page: 1, sort: "date_added_desc" });
+  const params = new URL(request.url).searchParams;
+  if (!params.has("page") && !params.has("sort")) {
+    return createResponse(request, { type: "page", page: 1, sort: "date_added_desc" });
+  }
+
+  try {
+    const input = parseTorobProductRequest({
+      ...(params.has("page") ? { page: Number(params.get("page")) } : {}),
+      ...(params.has("sort") ? { sort: params.get("sort") } : {}),
+    });
+    return await createResponse(request, input);
+  } catch (error) {
+    if (!(error instanceof TorobRequestError)) throw error;
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
 }
 
 export async function POST(request: Request) {

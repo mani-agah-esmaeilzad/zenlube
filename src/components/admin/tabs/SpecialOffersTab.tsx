@@ -39,7 +39,7 @@ export function SpecialOffersTab({ data }: { data: SpecialOffersTabData }) {
             <div>
               <h2 className="text-lg font-black text-[#111827]">آمادگی فروش و اتصال ترب</h2>
               <p className="mt-1 text-xs leading-6 text-[#667085]">
-                فقط کالای دارای قیمت، موجودی و تصویر وارد خروجی ترب می‌شود. قیمت‌ها را به ریال وارد کنید.
+                همه محصولات فعال در خروجی ترب هستند؛ کالاهای بدون موجودی یا قیمت با وضعیت ناموجود ارسال می‌شوند. قیمت‌ها را به ریال وارد کنید.
               </p>
             </div>
             <a
@@ -54,7 +54,7 @@ export function SpecialOffersTab({ data }: { data: SpecialOffersTabData }) {
         </div>
 
         <div className="grid grid-cols-2 divide-x divide-x-reverse divide-y border-b border-[#E5E7EB] sm:grid-cols-4 sm:divide-y-0">
-          <ReadinessStat label="آماده ترب" value={data.readiness.torobReady} total={data.readiness.total} tone="success" />
+          <ReadinessStat label="آماده فروش در ترب" value={data.readiness.torobReady} total={data.readiness.total} tone="success" />
           <ReadinessStat label="بدون قیمت" value={data.readiness.missingPrice} tone="warning" />
           <ReadinessStat label="ناموجود" value={data.readiness.outOfStock} tone="warning" />
           <ReadinessStat label="بدون تصویر" value={data.readiness.missingImage} tone="warning" />
@@ -62,10 +62,10 @@ export function SpecialOffersTab({ data }: { data: SpecialOffersTabData }) {
 
         {data.readiness.torobReady < data.readiness.total ? (
           <div className="bg-amber-50 px-5 py-3 text-xs font-bold leading-6 text-amber-900">
-            سایت از نظر فنی آماده است؛ برای ارسال دوباره به ترب باید قیمت و موجودی واقعی کالاهای مدنظر را پایین همین صفحه تکمیل کنید.
+            خروجی ترب شامل {data.readiness.total.toLocaleString("fa-IR")} محصول است. برای قابل‌خرید شدن کالاهای ناموجود، قیمت و موجودی واقعی را تکمیل کنید؛ تغییرات پس از همگام‌سازی بعدی ترب نمایش داده می‌شوند.
           </div>
         ) : (
-          <div className="bg-emerald-50 px-5 py-3 text-xs font-bold text-emerald-800">همه محصولات فعال برای خروجی ترب آماده‌اند.</div>
+          <div className="bg-emerald-50 px-5 py-3 text-xs font-bold text-emerald-800">همه محصولات فعال قیمت، موجودی و تصویر لازم برای فروش در ترب را دارند.</div>
         )}
       </section>
 
@@ -97,7 +97,7 @@ export function SpecialOffersTab({ data }: { data: SpecialOffersTabData }) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-lg font-black text-[#111827]">تکمیل سریع قیمت و موجودی</h2>
-            <p className="mt-1 text-xs leading-6 text-[#667085]">محصولات ناقص از فروشگاه عمومی مخفی می‌مانند، اما برای ویرایش اینجا در دسترس‌اند.</p>
+            <p className="mt-1 text-xs leading-6 text-[#667085]">محصولات بدون قیمت یا موجودی در فروشگاه و خروجی ترب ناموجود نمایش داده می‌شوند؛ اطلاعات فروش آن‌ها را اینجا تکمیل کنید.</p>
           </div>
           <input
             className="input-zen sm:max-w-xs"

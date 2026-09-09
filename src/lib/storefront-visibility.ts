@@ -33,7 +33,7 @@ export function storefrontVisibleProductWhere(
   };
 }
 
-/** Products that are ready to be sold by commerce feeds such as Torob. */
+/** Products that can currently be purchased; discovery feeds may include unavailable items. */
 export function storefrontBuyableProductWhere(
   where: Prisma.ProductWhereInput = {},
 ): Prisma.ProductWhereInput {

@@ -2,11 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  amadastProvider,
   classifyAmadastCreateDispatchError,
   normalizeAmadastCreateOrderPayload,
   normalizeAmadastEstimatePayload,
+  normalizeAmadastLocationPayload,
   resolveAmadastPackageType,
 } from "@/lib/shipping/providers/amadast";
+import { config } from "@/lib/config";
 import { ShippingProviderError } from "@/lib/shipping/providers/provider";
 
 test("Amadast estimate normalization keeps only supported Post and Tipax services", () => {
@@ -36,6 +39,86 @@ test("Amadast estimate normalization rejects malformed paid-rate responses", () 
     () => normalizeAmadastEstimatePayload({ success: true, data: { data: { items: [{ id: 1, price: "not-money" }] } } }, "request-2"),
     (error: unknown) => error instanceof ShippingProviderError && error.code === "INVALID_RESPONSE",
   );
+});
+
+test("Amadast location normalization accepts the documented null parent for provinces", () => {
+  const provinces = normalizeAmadastLocationPayload({
+    success: true,
+    data: [
+      { id: 4, title: "اصفهان", parent: null, location: null },
+      { id: 8, title: "تهران", parent: null, location: null },
+    ],
+  });
+
+  assert.deepEqual(provinces, [
+    { externalId: 4, name: "اصفهان", externalParentId: 0 },
+    { externalId: 8, name: "تهران", externalParentId: 0 },
+  ]);
+});
+
+test("Amadast location normalization keeps city hierarchy and tolerates a null city parent", () => {
+  const province = { externalId: 8, name: "تهران", externalParentId: 0 };
+  assert.deepEqual(normalizeAmadastLocationPayload({
+    success: true,
+    data: [
+      { id: 360, title: "تهران", parent: 8, location: null },
+      { id: 349, title: "اسلامشهر", parent: null, location: null },
+    ],
+  }, province), [
+    { externalId: 360, name: "تهران", externalParentId: 8 },
+    { externalId: 349, name: "اسلامشهر", externalParentId: 8 },
+  ]);
+});
+
+test("Amadast locations reject empty, failed, paginated, duplicate and wrong-parent responses", () => {
+  const province = { externalId: 8, name: "تهران", externalParentId: 0 };
+  const city = { id: 360, title: "تهران", parent: 8 };
+  for (const payload of [
+    { success: true, data: [] },
+    { success: false, data: [city] },
+    { result: false, data: [city] },
+    { data: [city], next_page_url: "/v1/cities?page=2" },
+    { data: [city], meta: { current_page: 1, last_page: 2 } },
+    { data: [city], current_page: 2, last_page: 2 },
+    { data: [city, city] },
+    { data: [{ ...city, parent: 9 }] },
+    { data: [{ ...city, title: "  " }] },
+  ]) {
+    assert.throws(() => normalizeAmadastLocationPayload(payload, province),
+      (error: unknown) => error instanceof ShippingProviderError && error.code === "INVALID_RESPONSE");
+  }
+});
+
+test("Amadast location fetching has one overall deadline and bounded concurrency", async (t) => {
+  const previousConfig = {
+    AMADAST_CLIENT_CODE: config.AMADAST_CLIENT_CODE,
+    AMADAST_ACCESS_TOKEN: config.AMADAST_ACCESS_TOKEN,
+  };
+  Object.assign(config, { AMADAST_CLIENT_CODE: "test-client", AMADAST_ACCESS_TOKEN: "test-token" });
+  t.after(() => Object.assign(config, previousConfig));
+  let now = 0;
+  let requests = 0;
+  let active = 0;
+  let maximumActive = 0;
+  t.mock.method(Date, "now", () => now);
+  t.mock.method(globalThis, "fetch", async (input: string) => {
+    requests++;
+    now += 1_000;
+    active++;
+    maximumActive = Math.max(maximumActive, active);
+    await new Promise((resolve) => setImmediate(resolve));
+    active--;
+    const provinceId = new URL(input).searchParams.get("province_id");
+    const data = provinceId
+      ? [{ id: Number(provinceId) + 100, title: "شهر", parent: Number(provinceId) }]
+      : Array.from({ length: 31 }, (_, i) => ({ id: i + 1, title: `استان ${i}`, parent: null }));
+    return Response.json({ success: true, data });
+  });
+
+  await assert.rejects(amadastProvider.listLocations(10_000),
+    (error: unknown) => error instanceof ShippingProviderError && error.code === "TIMEOUT");
+  assert.ok(requests <= 20, `Expected a shared deadline, received ${requests} requests`);
+  assert.ok(maximumActive <= 6);
 });
 
 test("Amadast package mapping is deterministic at documented size boundaries", () => {

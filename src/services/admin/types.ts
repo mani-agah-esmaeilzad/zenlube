@@ -106,7 +106,18 @@ export type AdminOrderItem = {
   price: number;
 };
 
+export type AdminOrderSmsFeedback = {
+  status: "sent" | "failed" | "disabled" | "sending" | "uncertain" | "sandbox" | "absent" | "unknown";
+  label: string;
+  errorSummary?: string;
+};
+
 export type AdminOrderDetail = AdminOrder & {
+  smsNotifications?: {
+    status: AdminOrderSmsFeedback | null;
+    tracking: AdminOrderSmsFeedback | null;
+    merchant: AdminOrderSmsFeedback;
+  };
   paymentMethod: string;
   paymentGateway?: string | null;
   paymentRefId?: string | null;

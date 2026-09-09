@@ -2,7 +2,7 @@ import { config } from "@/lib/config";
 import { validateIranPhone } from "@/lib/phone";
 import prisma from "@/lib/prisma";
 import { resolveShippingLocation } from "@/lib/shipping/locations";
-import { storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
+import { storefrontBuyablePhysicalProductWhere } from "@/lib/storefront-visibility";
 
 export type ShippingRolloutMode = "legacy" | "dynamic";
 
@@ -167,7 +167,7 @@ export function evaluateShippingRollout(input: {
   if (stats.missingWeightProducts > 0) {
     blockers.push({
       code: "PRODUCT_WEIGHTS_MISSING",
-      message: `وزن ${stats.missingWeightProducts.toLocaleString("fa-IR")} محصول فیزیکی هنوز ثبت نشده است.`,
+      message: `وزن ${stats.missingWeightProducts.toLocaleString("fa-IR")} محصول موجود و قابل خرید هنوز ثبت نشده است.`,
     });
   }
   if (stats.mappedProvinces === 0 || stats.mappedCities === 0) {
@@ -210,8 +210,7 @@ export async function getShippingRolloutState(
     : Promise.resolve(null);
   const [missingWeightProducts, mappedProvinces, mappedCities, originMapping] = await Promise.all([
     prisma.product.count({
-      where: storefrontVisibleProductWhere({
-        requiresShipping: true,
+      where: storefrontBuyablePhysicalProductWhere({
         OR: [
           { shippingWeightGrams: null },
           { shippingWeightGrams: { lte: 0 } },

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 
 import { Prisma } from "@/generated/prisma";
 import { appendOrderStatusEvent, calculateCouponDiscount } from "@/lib/commerce";
@@ -13,6 +14,7 @@ import { normalizeIranPhone } from "@/lib/phone";
 import prisma from "@/lib/prisma";
 import { resolveProductPricing } from "@/lib/pricing";
 import { getAppSession } from "@/lib/session";
+import { notifyMerchantOfNewOrder } from "@/lib/sms/merchant-order";
 import { normalizeIranPostalCode } from "@/lib/shipping/address";
 import { findReplacementShippingOption, pendingOrderCartMatches } from "@/lib/shipping/quote-validation";
 import { requestShippingQuote, validateShippingSelection, ShippingServiceError } from "@/lib/shipping/service";
@@ -181,7 +183,7 @@ async function startPaymentForOrder(order: PaymentOrder) {
       });
     });
 
-    await sendTemplateSms(
+    after(() => sendTemplateSms(
       order.phone,
       "payment_started",
       { orderNumber: smsOrderNumber(order.id) },
@@ -191,7 +193,7 @@ async function startPaymentForOrder(order: PaymentOrder) {
         orderId: order.id,
         error: error instanceof Error ? error.message : "unknown",
       });
-    });
+    }));
     return payment.paymentUrl;
   } catch (error) {
     const message = error instanceof Error ? error.message : "اتصال به درگاه پرداخت ناموفق بود.";
@@ -439,7 +441,7 @@ export async function createCheckoutOrderAction(
     revalidatePath("/cart");
     revalidatePath("/account");
 
-    await sendTemplateSms(
+    after(() => sendTemplateSms(
       createdOrder.phone,
       "order_created",
       { orderNumber: smsOrderNumber(createdOrder.id) },
@@ -449,7 +451,8 @@ export async function createCheckoutOrderAction(
         orderId: createdOrder.id,
         error: error instanceof Error ? error.message : "unknown",
       });
-    });
+    }));
+    after(() => notifyMerchantOfNewOrder(createdOrder.id));
     const paymentUrl = await startPaymentForOrder(createdOrder);
     return { success: true, message: "در حال انتقال به درگاه پرداخت...", redirectUrl: paymentUrl, orderId };
   } catch (error) {

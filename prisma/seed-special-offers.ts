@@ -6,6 +6,7 @@ const presets: Array<{ slug: string; kind: PromotionKind; label: string; sortOrd
   { slug: "persia-sign-up-to-5-octane-booster-450ml", kind: "OCTANE", label: "افزایش اکتان", sortOrder: 20 },
   { slug: "xado-octane-booster-f8-250ml", kind: "OCTANE", label: "اکتان حرفه‌ای", sortOrder: 21 },
   { slug: "xado-verylube-octane-booster-250ml", kind: "OCTANE", label: "مکمل سوخت", sortOrder: 22 },
+  { slug: "unium-octane-booster-ba29ex-355ml", kind: "OCTANE", label: "اکتان بوستر", sortOrder: 23 },
   { slug: "woofer-c16-racing-fuel-5l", kind: "RACING_FUEL", label: "بنزین مسابقه‌ای C16", sortOrder: 30 },
   { slug: "woofer-c45-racing-fuel-5l", kind: "RACING_FUEL", label: "بنزین مسابقه‌ای C45", sortOrder: 31 },
 ];

@@ -1,6 +1,6 @@
 import { catalogProduct, type CatalogCategorySlug, type CatalogProductSeed } from "./catalog-types";
 
-type BrandInfo = { slug: string; name: string; website: string; origin: string };
+type BrandInfo = { slug: string; name: string; website: string; origin: string | null };
 type AccessoryDef = {
   title: string;
   latinName: string;
@@ -42,6 +42,12 @@ const brands = {
     name: "پرشیا ساین",
     website: "https://persiamobility.com",
     origin: "آلمان (سفارش پرشیا خودرو)",
+  },
+  unium: {
+    slug: "unium",
+    name: "یونیوم",
+    website: "https://www.petrosharlub.com/product/150",
+    origin: null,
   },
   xado: { slug: "xado", name: "زادو", website: "https://xado.com", origin: "اوکراین" },
   zic: {
@@ -251,6 +257,31 @@ const persiaSignAccessories = [
       ترکیبات: "فاقد سرب، فروسن و MMT طبق اعلام عرضه‌کننده",
       "سازگاری اعلام‌شده": "موتورهای تنفس طبیعی، توربو و تزریق مستقیم",
     },
+  }),
+];
+
+const uniumAccessories = [
+  accessory(brands.unium, {
+    title: "اکتان بوستر یونیوم BA-29EX",
+    latinName: "Unium Octane Booster BA-29EX",
+    slug: "octane-booster-ba29ex-355ml",
+    sku: "UNI-OCT-BA29EX-355",
+    productType: "افزاینده اکتان و پاک‌کننده سیستم سوخت",
+    volumeLabel: "حجم ۳۵۵ میلی‌لیتر",
+    packagingSizeLit: 0.355,
+    approvals: "فاقد الکل؛ ایمن برای مبدل کاتالیستی و سنسور اکسیژن طبق اعلام سازنده",
+    image: "/products/unium/octane-booster-ba29ex-355ml.png",
+    summary:
+      "اکتان بوستر یونیوم برای کاهش ناک ناشی از بنزین کم‌اکتان فرموله شده و هم‌زمان با افزایش عدد اکتان به پاکیزگی مسیر سوخت کمک می‌کند.",
+    source: "https://www.petrosharlub.com/product/150",
+    specs: {
+      "کد محصول": "BA-29EX",
+      "حجم درج‌شده روی بسته": "۳۵۵ میلی‌لیتر",
+      "حجم سوخت قابل تیمار": "تا ۲۰ گالن آمریکا (حدود ۷۶ لیتر)",
+      "روش مصرف": "تمام محتویات قوطی داخل باک بنزین ریخته شود",
+      "سازگاری اعلام‌شده": "بنزین سرب‌دار و بدون سرب؛ ایمن برای کاتالیست و سنسور اکسیژن",
+    },
+    tags: ["اکتان بوستر", "مکمل بنزین", "ضد ناک", "BA-29EX"],
   }),
 ];
 
@@ -755,6 +786,7 @@ export const extendedAccessories: CatalogProductSeed[] = [
   ...wooferAccessories,
   ...aidlubeAccessories,
   ...persiaSignAccessories,
+  ...uniumAccessories,
   ...xadoAccessories,
   ...zicAccessories,
   ...caspianAccessories,

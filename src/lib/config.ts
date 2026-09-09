@@ -37,6 +37,7 @@ export const config = {
   SMS_PROVIDER: (process.env.SMS_PROVIDER as "smsir" | "melipayamak" | "console" | "disabled" | undefined) ?? "console",
   SMS_API_KEY: process.env.SMS_API_KEY,
   SMS_SENDER_NUMBER: process.env.SMS_SENDER_NUMBER,
+  MERCHANT_ORDER_SMS_PHONE: process.env.MERCHANT_ORDER_SMS_PHONE,
   SMS_ENABLED: parseBoolean(process.env.SMS_ENABLED, false),
   SMS_SANDBOX_MODE: parseBoolean(process.env.SMS_SANDBOX_MODE, true),
 

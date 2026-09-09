@@ -8,6 +8,8 @@ import { createAuditLog } from "@/lib/admin-audit";
 import { ensureAdminAction, ensureRoleAccess } from "@/lib/auth";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { notifyCustomerOfTrackingCode } from "@/lib/sms/order-notifications";
+import { smsOrderNumber } from "@/lib/sms/service";
 import { resolveShippingLocation } from "@/lib/shipping/locations";
 import { getShippingProvider, ShippingProviderError } from "@/lib/shipping/providers";
 import { resolveAmadastPackageType } from "@/lib/shipping/providers/amadast";
@@ -254,20 +256,49 @@ export async function syncShipmentTrackingAction(formData: FormData): Promise<vo
           submittedAt: shipment.submittedAt ?? new Date(),
         },
       });
-      await tx.order.update({
-        where: { id: shipment.orderId },
+      const trackingUpdate = await tx.order.updateMany({
+        where: {
+          id: shipment.orderId,
+          OR: [
+            { shippingTrackingCode: null },
+            { shippingTrackingCode: { not: trackingCode } },
+          ],
+        },
         data: {
           shippingTrackingCode: trackingCode,
-          ...(promoted.count === 1 ? { shippingExternalStatus: "TRACKING_AVAILABLE" } : {}),
         },
       });
-      await appendOrderStatusEvent(tx, {
-        orderId: shipment.orderId,
-        status: "TRACKING_UPDATED",
-        title: "کد رهگیری دریافت شد",
-        detail: `کد رهگیری ${trackingCode} از سرویس ارسال دریافت شد.`,
-      });
+      if (promoted.count === 1) {
+        await tx.order.update({
+          where: { id: shipment.orderId },
+          data: { shippingExternalStatus: "TRACKING_AVAILABLE" },
+        });
+      }
+      if (trackingUpdate.count === 1) {
+        await appendOrderStatusEvent(tx, {
+          orderId: shipment.orderId,
+          status: "TRACKING_UPDATED",
+          title: "کد رهگیری دریافت شد",
+          detail: `کد رهگیری ${trackingCode} از سرویس ارسال دریافت شد.`,
+        });
+      }
+      return { trackingChanged: trackingUpdate.count === 1 };
     });
+    if (trackingCode) {
+      await notifyCustomerOfTrackingCode(shipment.order.phone, {
+        orderId: shipment.orderId,
+        orderNumber: smsOrderNumber(shipment.orderId),
+        previousTrackingCode: shipment.order.shippingTrackingCode,
+        nextTrackingCode: trackingCode,
+        retryUndelivered: true,
+      }).catch((error) => {
+        logger.warn("Shipment tracking SMS could not be sent", {
+          orderId: shipment.orderId,
+          provider: shipment.providerKey,
+          error: error instanceof Error ? error.message : "unknown",
+        });
+      });
+    }
     try {
       await createAuditLog({ actorUserId: userId, targetType: "shipment", targetId: shipment.id, action: "tracking_sync", summary: `رهگیری سفارش ${shipment.orderId} به‌روزرسانی شد.` });
     } catch (error) {

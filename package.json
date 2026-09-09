@@ -18,6 +18,7 @@
     "seed:aidlube": "tsx prisma/seed-aidlube-products.ts",
     "seed:catalog": "tsx prisma/seed-catalog-products.ts",
     "seed:special-offers": "tsx prisma/seed-special-offers.ts",
+    "seed:unium": "tsx prisma/seed-unium-octane-booster.ts",
     "vehicles:bama:draft": "tsx scripts/scrape-bama-vehicles.ts",
     "vehicles:bama:details": "tsx scripts/scrape-bama-vehicle-details.ts",
     "vehicles:oil:liqui": "tsx scripts/scrape-liqui-moly-oil-specs.ts",

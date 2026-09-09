@@ -6,7 +6,7 @@ import {
 } from "@/lib/shipping/origin-defaults";
 import { getShippingProvider } from "@/lib/shipping/providers";
 import { evaluateShippingRollout, getShippingRolloutEnvironment } from "@/lib/shipping/rollout";
-import { storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
+import { storefrontBuyablePhysicalProductWhere } from "@/lib/storefront-visibility";
 
 import type { ShippingTabData } from "./types";
 
@@ -66,10 +66,9 @@ export async function getShippingTabData(): Promise<ShippingTabData> {
       select: { code: true, name: true, parentCode: true },
       orderBy: [{ parentCode: "asc" }, { name: "asc" }],
     }),
-    prisma.product.count({ where: storefrontVisibleProductWhere({ requiresShipping: true }) }),
+    prisma.product.count({ where: storefrontBuyablePhysicalProductWhere() }),
     prisma.product.count({
-      where: storefrontVisibleProductWhere({
-        requiresShipping: true,
+      where: storefrontBuyablePhysicalProductWhere({
         OR: [
           { shippingWeightGrams: null },
           { shippingWeightGrams: { lte: 0 } },

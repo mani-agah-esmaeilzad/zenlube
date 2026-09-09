@@ -1,10 +1,12 @@
+import { randomUUID } from "node:crypto";
+
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { config } from "@/lib/config";
 import { normalizeIranPhone, validateIranPhone } from "@/lib/phone";
 import { logger } from "@/lib/logger";
-import { sendMelipayamakOtp, sendMelipayamakText } from "./melipayamak";
-import { sendSmsIrOtp, sendSmsIrText } from "./smsir";
+import { MelipayamakSendRejectedError, sendMelipayamakOtp, sendMelipayamakText } from "./melipayamak";
+import { SmsIrSendRejectedError, sendSmsIrOtp, sendSmsIrText } from "./smsir";
 
 type SmsTokens = Record<string, string | number | null | undefined>;
 type RuntimeSmsProvider = "smsir" | "melipayamak" | "console" | "disabled";
@@ -20,12 +22,15 @@ type SendSmsArgs = {
 const templates: Record<string, string> = {
   otp: "کد تایید اویل‌بار: {code}",
   order_created: "سفارش شما در اویل‌بار ثبت شد. شماره سفارش: {orderNumber}",
+  merchant_order_created: "یک سفارش جدید در اویل‌بار ثبت شد. شماره سفارش: {orderNumber}. برای بررسی وارد پنل مدیریت شوید.",
   payment_started: "درخواست پرداخت سفارش {orderNumber} در اویل‌بار ایجاد شد.",
   payment_success: "پرداخت سفارش {orderNumber} با موفقیت انجام شد.",
   payment_failed: "پرداخت سفارش {orderNumber} ناموفق بود. لطفا دوباره تلاش کنید.",
   status_processing: "سفارش {orderNumber} در اویل‌بار در حال پردازش است.",
   status_ready: "سفارش {orderNumber} آماده ارسال شد.",
   status_shipped: "سفارش {orderNumber} ارسال شد. کد پیگیری: {trackingCode}",
+  status_shipped_pending_tracking: "سفارش {orderNumber} ارسال شد. کد پیگیری پس از ثبت برای شما پیامک می‌شود.",
+  tracking_code_added: "کد پیگیری سفارش {orderNumber}: {trackingCode}",
   status_delivered: "سفارش {orderNumber} با موفقیت تحویل شد. ممنون از خرید شما از اویل‌بار.",
   status_cancelled: "سفارش {orderNumber} لغو شد. برای اطلاعات بیشتر با پشتیبانی اویل‌بار تماس بگیرید.",
 };
@@ -69,7 +74,7 @@ function resolveSmsRuntime({ requireOtpTemplate = false } = {}) {
   return { provider, enabled, sandbox };
 }
 
-async function logSms(args: {
+type SmsLogDetails = {
   phone: string;
   eventType: string;
   templateName?: string;
@@ -79,58 +84,143 @@ async function logSms(args: {
   providerResponse?: unknown;
   dedupeKey?: string;
   errorMessage?: string;
-}) {
-  try {
-    const storedMessage = args.eventType === "otp"
-      ? "کد تایید اویل‌بار: [محافظت‌شده]"
-      : args.message;
+};
 
+function smsLogData(args: SmsLogDetails) {
+  const storedMessage = args.eventType === "otp"
+    ? "کد تایید اویل‌بار: [محافظت‌شده]"
+    : args.message;
+
+  return {
+    phone: args.phone,
+    eventType: args.eventType,
+    templateName: args.templateName,
+    message: storedMessage,
+    status: args.status,
+    provider: args.provider,
+    providerResponse: args.providerResponse == null ? Prisma.JsonNull : (args.providerResponse as Prisma.InputJsonValue),
+    dedupeKey: args.dedupeKey,
+    errorMessage: args.errorMessage ?? null,
+  };
+}
+
+async function logSms(args: SmsLogDetails) {
+  try {
     await prisma.smsLog.create({
-      data: {
-        phone: args.phone,
-        eventType: args.eventType,
-        templateName: args.templateName,
-        message: storedMessage,
-        status: args.status,
-        provider: args.provider,
-        providerResponse: args.providerResponse == null ? Prisma.JsonNull : (args.providerResponse as Prisma.InputJsonValue),
-        dedupeKey: args.dedupeKey,
-        errorMessage: args.errorMessage,
-      },
+      data: smsLogData(args),
     });
   } catch (error) {
     logger.warn("SMS log failed", { error: error instanceof Error ? error.message : error, dedupeKey: args.dedupeKey });
   }
 }
 
-async function alreadySent(dedupeKey?: string) {
-  if (!dedupeKey) return false;
-  const count = await prisma.smsLog.count({ where: { dedupeKey, status: { in: ["sent", "sandbox"] } } });
-  return count > 0;
+type SmsClaim =
+  | { state: "claimed"; id: string; token: string }
+  | { state: "completed" }
+  | { state: "in-flight" }
+  | { state: "uncertain" };
+
+/**
+ * Reserve a deduplicated notification before calling the provider. The unique
+ * key makes the reservation atomic across concurrent serverless instances.
+ * Only attempts known not to have sent a message can be retried. An abandoned
+ * in-flight claim may already have reached the provider, so it never expires.
+ * The token also prevents a late completion from overwriting a newer attempt.
+ */
+async function claimSms(args: SmsLogDetails): Promise<SmsClaim> {
+  if (!args.dedupeKey) return { state: "claimed", id: "", token: "" };
+
+  const now = new Date();
+  const token = randomUUID();
+  const claimData = smsLogData({ ...args, status: "sending", providerResponse: { claimToken: token } });
+  try {
+    const created = await prisma.smsLog.create({
+      data: {
+        id: randomUUID(),
+        ...claimData,
+      },
+      select: { id: true },
+    });
+    return { state: "claimed", id: created.id, token };
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2002") throw error;
+    const existing = await prisma.smsLog.findUnique({
+      where: { dedupeKey: args.dedupeKey },
+      select: { id: true, status: true },
+    });
+    if (!existing) throw new Error("ارسال پیامک قابل رزرو نیست.");
+    if (existing.status === "sent") return { state: "completed" };
+    if (existing.status === "uncertain") return { state: "uncertain" };
+
+    const retryable = ["failed", "disabled", "sandbox"].includes(existing.status);
+    if (!retryable) return { state: "in-flight" };
+
+    const updated = await prisma.smsLog.updateMany({
+      where: {
+        id: existing.id,
+        status: { in: ["failed", "disabled", "sandbox"] },
+      },
+      data: {
+        ...claimData,
+        createdAt: now,
+      },
+    });
+    return updated.count === 1 ? { state: "claimed", id: existing.id, token } : { state: "in-flight" };
+  }
+}
+
+async function finishSms(claim: Extract<SmsClaim, { state: "claimed" }>, args: SmsLogDetails) {
+  if (!claim.id) {
+    await logSms(args);
+    return;
+  }
+  try {
+    await prisma.smsLog.updateMany({
+      where: {
+        id: claim.id,
+        status: "sending",
+        providerResponse: { path: ["claimToken"], equals: claim.token },
+      },
+      data: smsLogData(args),
+    });
+  } catch (error) {
+    logger.warn("SMS log update failed", { error: error instanceof Error ? error.message : error, dedupeKey: args.dedupeKey });
+  }
 }
 
 export async function sendSms({ phone, message, eventType = "manual", templateName, dedupeKey }: SendSmsArgs) {
   const runtime = resolveSmsRuntime();
   const normalizedPhone = normalizeIranPhone(phone);
 
+  const claim = await claimSms({
+    phone: validateIranPhone(normalizedPhone) ? normalizedPhone : phone,
+    eventType,
+    templateName,
+    message,
+    status: "sending",
+    dedupeKey,
+  });
+  if (claim.state === "completed" || claim.state === "in-flight") {
+    logger.info("Duplicate or in-flight SMS skipped", { eventType, dedupeKey, state: claim.state });
+    return { success: true, skipped: true } as const;
+  }
+  if (claim.state === "uncertain") {
+    return { success: false, skipped: true, error: "نتیجه ارسال قبلی مشخص نیست؛ وضعیت پیامک باید در پنل ارائه‌دهنده بررسی شود." } as const;
+  }
+
   if (!validateIranPhone(normalizedPhone)) {
-    await logSms({ phone, eventType, templateName, message, status: "failed", dedupeKey, errorMessage: "شماره موبایل معتبر نیست." });
+    await finishSms(claim, { phone, eventType, templateName, message, status: "failed", dedupeKey, errorMessage: "شماره موبایل معتبر نیست." });
     return { success: false, skipped: true, error: "شماره موبایل معتبر نیست." } as const;
   }
 
-  if (await alreadySent(dedupeKey)) {
-    logger.info("Duplicate SMS skipped", { eventType, dedupeKey });
-    return { success: true, skipped: true } as const;
-  }
-
   if (!runtime.enabled || runtime.provider === "disabled") {
-    await logSms({ phone: normalizedPhone, eventType, templateName, message, status: "disabled", provider: runtime.provider, dedupeKey });
+    await finishSms(claim, { phone: normalizedPhone, eventType, templateName, message, status: "disabled", provider: runtime.provider, dedupeKey });
     return { success: true, skipped: true } as const;
   }
 
   if (runtime.sandbox || runtime.provider === "console") {
     logger.info("SMS sandbox", { phone: normalizedPhone, eventType, message });
-    await logSms({ phone: normalizedPhone, eventType, templateName, message, status: "sandbox", provider: runtime.provider, dedupeKey });
+    await finishSms(claim, { phone: normalizedPhone, eventType, templateName, message, status: "sandbox", provider: runtime.provider, dedupeKey });
     return { success: true, sandbox: true } as const;
   }
 
@@ -140,7 +230,7 @@ export async function sendSms({ phone, message, eventType = "manual", templateNa
         ? await sendMelipayamakText({ phone: normalizedPhone, message })
         : await sendSmsIrText({ phone: normalizedPhone, message });
 
-    await logSms({
+    await finishSms(claim, {
       phone: normalizedPhone,
       eventType,
       templateName,
@@ -154,12 +244,13 @@ export async function sendSms({ phone, message, eventType = "manual", templateNa
   } catch (error) {
     const messageText = error instanceof Error ? error.message : "ارسال پیامک ناموفق بود.";
     logger.warn("SMS send failed", { phone: normalizedPhone, eventType, error: messageText });
-    await logSms({
+    const definitelyNotSent = error instanceof SmsIrSendRejectedError || error instanceof MelipayamakSendRejectedError;
+    await finishSms(claim, {
       phone: normalizedPhone,
       eventType,
       templateName,
       message,
-      status: "failed",
+      status: definitelyNotSent ? "failed" : "uncertain",
       provider: runtime.provider,
       dedupeKey,
       errorMessage: messageText,

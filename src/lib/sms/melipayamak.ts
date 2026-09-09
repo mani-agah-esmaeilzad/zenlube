@@ -23,26 +23,42 @@ type MelipayamakResponse = {
   [key: string]: unknown;
 };
 
+const SMS_REQUEST_TIMEOUT_MS = 8_000;
+
+/** A response proving the provider did not accept a message. */
+export class MelipayamakSendRejectedError extends Error {}
+
 function ensureCredentials() {
   if (!config.MELIPAYAMAK_USERNAME || !config.MELIPAYAMAK_PASSWORD || !config.MELIPAYAMAK_FROM) {
-    throw new Error("تنظیمات ملی‌پیامک کامل نیست.");
+    throw new MelipayamakSendRejectedError("تنظیمات ملی‌پیامک کامل نیست.");
   }
 }
 
-async function postToMelipayamak(payload: Record<string, unknown>) {
+async function postToMelipayamak(payload: Record<string, unknown>, requireAcceptanceConfirmation = false) {
   ensureCredentials();
   const response = await fetch(config.MELIPAYAMAK_ENDPOINT ?? DEFAULT_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(SMS_REQUEST_TIMEOUT_MS),
   });
 
   const data = (await response.json().catch(() => ({}))) as MelipayamakResponse;
   if (!response.ok || data.error || data.ErrorMessage) {
-    throw new Error(data.error ?? data.ErrorMessage ?? `ارسال پیامک با وضعیت ${response.status} ناموفق بود.`);
+    const message = data.error ?? data.ErrorMessage ?? `ارسال پیامک با وضعیت ${response.status} ناموفق بود.`;
+    if ((response.status >= 400 && response.status < 500 && response.status !== 408) || response.ok) {
+      throw new MelipayamakSendRejectedError(message);
+    }
+    throw new Error(message);
   }
 
-  return { messageId: data.messageId ?? data.MessageId ?? null, raw: data } as const;
+  const messageId = data.messageId ?? data.MessageId ?? null;
+  const acceptedStatus = ["success", "sent", "ok", "1", "200"].includes(String(data.status ?? "").toLowerCase());
+  if (requireAcceptanceConfirmation && !messageId && !acceptedStatus) {
+    throw new Error("پاسخ تایید ارسال ملی‌پیامک معتبر نیست؛ وضعیت پیامک باید بررسی شود.");
+  }
+
+  return { messageId, raw: data } as const;
 }
 
 export async function sendMelipayamakOtp({ phone, code, expiresAt, templateId }: SendOtpArgs) {
@@ -64,5 +80,5 @@ export async function sendMelipayamakText({ phone, message }: SendTextArgs) {
     to: [phone],
     text: message,
     from: config.MELIPAYAMAK_FROM,
-  });
+  }, true);
 }

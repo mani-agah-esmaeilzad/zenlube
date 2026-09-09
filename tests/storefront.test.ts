@@ -6,6 +6,7 @@ import {
   adminCatalogProductWhere,
   isArchivedProductSlug,
   isStorefrontVisibleProduct,
+  storefrontBuyablePhysicalProductWhere,
   storefrontBuyableProductWhere,
   storefrontVisibleCarWhere,
   storefrontVisibleProductWhere,
@@ -63,6 +64,39 @@ test("storefrontBuyableProductWhere still protects commerce feeds", () => {
       {
         AND: [
           { imageUrl: { not: null } },
+          { price: { gt: 0 } },
+          { stock: { gt: 0 } },
+        ],
+      },
+      {
+        NOT: {
+          slug: {
+            startsWith: "deleted-",
+          },
+        },
+      },
+    ],
+  });
+});
+
+test("storefrontBuyablePhysicalProductWhere limits shipping readiness to sellable physical products", () => {
+  const missingWeight = {
+    OR: [
+      { shippingWeightGrams: null },
+      { shippingWeightGrams: { lte: 0 } },
+    ],
+  };
+
+  assert.deepEqual(storefrontBuyablePhysicalProductWhere(missingWeight), {
+    AND: [
+      {
+        AND: [
+          {
+            AND: [
+              missingWeight,
+              { requiresShipping: true },
+            ],
+          },
           { price: { gt: 0 } },
           { stock: { gt: 0 } },
         ],

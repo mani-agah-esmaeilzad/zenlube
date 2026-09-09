@@ -48,7 +48,7 @@ export function ShippingTab({ data }: { data: ShippingTabData }) {
             value={`${data.stats.mappedProvinces.toLocaleString("fa-IR")} / ${data.stats.mappedCities.toLocaleString("fa-IR")} / ${data.stats.originMapped ? "متصل" : "نامتصل"}`}
             ok={data.stats.mappedCities > 0 && data.stats.originMapped}
           />
-          <Metric label="محصول بدون وزن" value={data.stats.missingWeightProducts.toLocaleString("fa-IR")} ok={data.stats.missingWeightProducts === 0} />
+          <Metric label="محصول موجود بدون وزن" value={data.stats.missingWeightProducts.toLocaleString("fa-IR")} ok={data.stats.missingWeightProducts === 0} />
         </div>
 
         {!dynamicActive ? (
@@ -81,7 +81,7 @@ export function ShippingTab({ data }: { data: ShippingTabData }) {
       </section>
 
       <form action={settingsAction} className="admin-panel p-5 md:p-6">
-        <Section title="وضعیت و سرویس‌ها" description="این کلید پس از کامل‌شدن اتصال، مبدا، شهرها و وزن محصولات، تسویه‌حساب را از روش قبلی به نرخ زنده تغییر می‌دهد.">
+        <Section title="وضعیت و سرویس‌ها" description="این کلید پس از کامل‌شدن اتصال، مبدا، شهرها و وزن محصولات موجود، تسویه‌حساب را از روش قبلی به نرخ زنده تغییر می‌دهد.">
           <div className="grid gap-3 sm:grid-cols-3">
             <Checkbox name="enabled" label="ارسال آنلاین فعال باشد" defaultChecked={data.settings.enabled} />
             <Checkbox name="enabledCarriers" value="POST" label="پست" defaultChecked={data.settings.enabledCarriers.includes("POST")} />

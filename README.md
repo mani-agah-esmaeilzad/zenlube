@@ -89,6 +89,7 @@ Oilbar یک فروشگاه کامل برای فروش آنلاین روغن مو
    - `MELIPAYAMAK_USERNAME`
    - `MELIPAYAMAK_PASSWORD`
    - `MELIPAYAMAK_FROM`
+   - `MERCHANT_ORDER_SMS_PHONE` (شماره مدیر برای اعلان سفارش جدید)
    - `STORAGE_DRIVER`
    - `STORAGE_BUCKET` + کلیدهای AWS (در صورت انتخاب `s3`)
    - `CRON_SECRET`

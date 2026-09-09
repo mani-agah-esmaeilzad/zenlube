@@ -18,6 +18,9 @@ import {
 const AMADAST_POST_ID = 13;
 const AMADAST_TIPAX_ID = 4;
 const POLL_INTERVAL_MS = 250;
+const LOCATION_SYNC_DEADLINE_MS = 20_000;
+const LOCATION_REQUEST_TIMEOUT_MS = 6_000;
+const LOCATION_REQUEST_CONCURRENCY = 6;
 
 const responseEnvelopeSchema = z.object({
   success: z.boolean().optional(),
@@ -46,20 +49,19 @@ const estimateItemSchema = z.object({
   discount_percent: nonnegativeIntegerLikeSchema.nullish(),
 }).passthrough();
 
+const cityItemSchema = z.object({
+  id: z.number().int().positive(),
+  title: z.string().min(1),
+  // Province rows in Amadast's official response example use `null` here.
+  // City rows contain the numeric province id.
+  parent: z.number().int().nonnegative().nullable(),
+  location: z.string().nullish(),
+}).passthrough();
+
 const cityEnvelopeSchema = responseEnvelopeSchema.extend({
   data: z.union([
-    z.array(z.object({
-      id: z.number().int().positive(),
-      title: z.string().min(1),
-      parent: z.number().int().nonnegative(),
-      location: z.string().nullish(),
-    }).passthrough()),
-    z.object({
-      id: z.number().int().positive(),
-      title: z.string().min(1),
-      parent: z.number().int().nonnegative(),
-      location: z.string().nullish(),
-    }).passthrough(),
+    z.array(cityItemSchema),
+    cityItemSchema,
   ]),
 });
 
@@ -117,13 +119,21 @@ async function requestJson(
   init: RequestInit,
   timeoutMs: number,
   retrySafe = false,
+  deadlineAt?: number,
 ) {
   const attempts = retrySafe ? 2 : 1;
   let lastError: unknown;
 
   for (let attempt = 0; attempt < attempts; attempt += 1) {
+    init.signal?.throwIfAborted();
+    const remainingMs = deadlineAt == null ? Infinity : deadlineAt - Date.now();
+    if (remainingMs <= 0) {
+      throw new ShippingProviderError("TIMEOUT", "زمان همگام‌سازی شهرهای آمادست به پایان رسید.", true);
+    }
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), Math.max(250, timeoutMs));
+    const abort = () => controller.abort();
+    init.signal?.addEventListener("abort", abort, { once: true });
+    const timeout = setTimeout(abort, Math.min(remainingMs, Math.max(1, timeoutMs)));
     try {
       const response = await fetch(`${safeBaseUrl()}${path}`, {
         ...init,
@@ -151,6 +161,7 @@ async function requestJson(
       if (attempt + 1 < attempts) continue;
     } finally {
       clearTimeout(timeout);
+      init.signal?.removeEventListener("abort", abort);
     }
   }
 
@@ -348,44 +359,79 @@ async function quote(request: ProviderQuoteRequest, timeoutMs: number) {
   throw new ShippingProviderError("TIMEOUT", "استعلام هزینه ارسال در زمان مقرر کامل نشد.", true);
 }
 
-async function fetchLocationsForProvince(province: ProviderLocation, timeoutMs: number) {
-  const payload = await requestJson(
-    `/v1/cities?province_id=${province.externalId}`,
-    { method: "GET", headers: await authenticatedHeaders(timeoutMs) },
-    timeoutMs,
-    true,
-  );
+export function normalizeAmadastLocationPayload(payload: unknown, province?: ProviderLocation) {
   const parsed = cityEnvelopeSchema.safeParse(payload);
-  if (!parsed.success) throw new ShippingProviderError("INVALID_RESPONSE", "فهرست شهرهای آمادست معتبر نیست.");
-  return (Array.isArray(parsed.data.data) ? parsed.data.data : [parsed.data.data]).map((item) => ({
+  if (!parsed.success || parsed.data.success === false || parsed.data.result === false) {
+    throw new ShippingProviderError(
+      "INVALID_RESPONSE",
+      province ? "فهرست شهرهای آمادست معتبر نیست." : "فهرست استان‌های آمادست معتبر نیست.",
+    );
+  }
+  const items = Array.isArray(parsed.data.data) ? parsed.data.data : [parsed.data.data];
+  const meta = parsed.data.meta as { current_page?: number; last_page?: number } | undefined;
+  const lastPage = Number(parsed.data.last_page ?? meta?.last_page ?? 1);
+  const currentPage = Number(parsed.data.current_page ?? meta?.current_page ?? 1);
+  if (!items.length || parsed.data.next_page_url
+    || !Number.isSafeInteger(lastPage) || !Number.isSafeInteger(currentPage)
+    || currentPage !== 1 || lastPage !== 1
+    || new Set(items.map((item) => item.id)).size !== items.length
+    || items.some((item) => !item.title.trim()
+      || (province ? item.parent != null && item.parent !== province.externalId : item.parent != null && item.parent !== 0))) {
+    throw new ShippingProviderError("INVALID_RESPONSE", "فهرست مکان‌های آمادست ناقص یا نامعتبر است.");
+  }
+  return items.map((item): ProviderLocation => ({
     externalId: item.id,
     name: item.title,
-    externalParentId: item.parent || province.externalId,
+    // Provinces have no parent. Internally we use 0 as their root marker.
+    // For a city response, fall back to the requested province if the provider
+    // returns a null parent value.
+    externalParentId: item.parent ?? province?.externalId ?? 0,
   }));
 }
 
 async function listLocations(timeoutMs: number): Promise<ProviderLocationTree> {
-  const payload = await requestJson(
-    "/v1/cities",
-    { method: "GET", headers: await authenticatedHeaders(timeoutMs) },
-    timeoutMs,
-    true,
-  );
-  const parsed = cityEnvelopeSchema.safeParse(payload);
-  if (!parsed.success) throw new ShippingProviderError("INVALID_RESPONSE", "فهرست استان‌های آمادست معتبر نیست.");
-  const provinces = (Array.isArray(parsed.data.data) ? parsed.data.data : [parsed.data.data]).map((item) => ({
-    externalId: item.id,
-    name: item.title,
-    externalParentId: item.parent,
-  }));
-
-  const cities: ProviderLocation[] = [];
-  for (let index = 0; index < provinces.length; index += 4) {
-    const batch = provinces.slice(index, index + 4);
-    const result = await Promise.all(batch.map((province) => fetchLocationsForProvince(province, timeoutMs)));
-    cities.push(...result.flat());
+  const deadlineAt = Date.now() + LOCATION_SYNC_DEADLINE_MS;
+  const requestTimeoutMs = Math.min(Math.max(1, timeoutMs), LOCATION_REQUEST_TIMEOUT_MS);
+  const controller = new AbortController();
+  const deadlineTimer = setTimeout(() => controller.abort(), LOCATION_SYNC_DEADLINE_MS);
+  try {
+    // Authenticate once; all location calls share a total deadline and headers.
+    const headers = await authenticatedHeaders(requestTimeoutMs);
+    const fetchLocations = (path: string) => requestJson(
+      path,
+      { method: "GET", headers, signal: controller.signal },
+      requestTimeoutMs,
+      true,
+      deadlineAt,
+    );
+    const provinces = normalizeAmadastLocationPayload(await fetchLocations("/v1/cities"));
+    if (provinces.length > 100) {
+      throw new ShippingProviderError("INVALID_RESPONSE", "تعداد استان‌های دریافتی نامعتبر است.");
+    }
+    const cityLists: ProviderLocation[][] = new Array(provinces.length);
+    let nextIndex = 0;
+    const worker = async () => {
+      while (nextIndex < provinces.length) {
+        controller.signal.throwIfAborted();
+        const index = nextIndex++;
+        const province = provinces[index]!;
+        cityLists[index] = normalizeAmadastLocationPayload(
+          await fetchLocations(`/v1/cities?province_id=${province.externalId}`),
+          province,
+        );
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(LOCATION_REQUEST_CONCURRENCY, provinces.length) }, worker));
+    return { provinces, cities: cityLists.flat() };
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new ShippingProviderError("TIMEOUT", "زمان همگام‌سازی شهرهای آمادست به پایان رسید؛ دوباره تلاش کنید.", true);
+    }
+    throw error;
+  } finally {
+    clearTimeout(deadlineTimer);
+    controller.abort();
   }
-  return { provinces, cities };
 }
 
 async function createShipment(request: ProviderShipmentRequest, timeoutMs: number): Promise<ProviderShipmentResult> {

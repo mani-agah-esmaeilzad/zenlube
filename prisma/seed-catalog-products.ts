@@ -28,8 +28,8 @@ const categoryDefinitions = {
 } as const;
 
 function assertCatalog() {
-  if (catalogProducts.length !== 122) {
-    throw new Error(`Expected exactly 122 catalog products, received ${catalogProducts.length}.`);
+  if (catalogProducts.length !== 123) {
+    throw new Error(`Expected exactly 123 catalog products, received ${catalogProducts.length}.`);
   }
 
   const slugs = new Set(catalogProducts.map((product) => product.slug));
@@ -86,6 +86,7 @@ async function upsertTaxonomy() {
     caspian: "محصولات نگهداری و روانکار خودرویی کاسپین",
     woofer: "سوخت و افزودنی پرفورمنس ووفر",
     "persia-sign": "مکمل سوخت Persia Sign عرضه‌شده توسط پرشیا خودرو",
+    unium: "افزودنی اکتان و پاک‌کننده سیستم سوخت یونیوم",
   };
 
   const brandRows = await Promise.all(

@@ -7,9 +7,10 @@ import {
   createShipmentAction,
   syncShipmentTrackingAction,
 } from "@/actions/admin";
+import { retryMerchantOrderSmsAction } from "@/actions/admin/orders";
 import { faDateTimeFormatter, faNumberFormatter } from "@/lib/formatters";
 import { formatPrice } from "@/lib/utils";
-import type { OrdersTabData } from "@/services/admin/types";
+import type { AdminOrderSmsFeedback, OrdersTabData } from "@/services/admin/types";
 
 const statusLabels: Record<string, string> = {
   all: "همه",
@@ -112,6 +113,19 @@ export function OrdersTab({ data }: OrdersTabProps) {
                     </span>
                   </div>
                   <p className="mt-2 text-xs text-[#98A2B3]">{faDateTimeFormatter.format(order.createdAt)}</p>
+                  {order.smsNotifications ? (
+                    <div className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <SmsFeedbackLine label="پیامک سفارش جدید به مدیر" feedback={order.smsNotifications.merchant} />
+                      {["absent", "failed", "disabled", "sandbox"].includes(order.smsNotifications.merchant.status) ? (
+                        <form action={retryMerchantOrderSmsAction}>
+                          <input type="hidden" name="orderId" value={order.id} />
+                          <button type="submit" className="text-[11px] font-bold text-[#175CD3] underline underline-offset-4">
+                            ارسال مجدد به مدیر
+                          </button>
+                        </form>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="text-left">
@@ -164,9 +178,9 @@ export function OrdersTab({ data }: OrdersTabProps) {
                   <StatusForm
                     orderId={order.id}
                     currentStatus={order.status}
-                    trackingCode={order.shippingTrackingCode}
+                    smsFeedback={order.smsNotifications?.status}
                   />
-                  <TrackingForm orderId={order.id} trackingCode={order.shippingTrackingCode} />
+                  <TrackingForm orderId={order.id} trackingCode={order.shippingTrackingCode} smsFeedback={order.smsNotifications?.tracking} />
                   <form action={deleteOrderFormAction} className="rounded-[22px] border border-[#FECACA] bg-[#FFF1F3] p-3">
                     <input type="hidden" name="orderId" value={order.id} />
                     <button
@@ -258,6 +272,22 @@ function InfoRow({
   );
 }
 
+function SmsFeedbackLine({ label, feedback }: { label: string; feedback?: AdminOrderSmsFeedback | null }) {
+  if (!feedback) return null;
+  const color = feedback.status === "sent"
+    ? "text-[#027A48]"
+    : ["failed", "uncertain", "unknown"].includes(feedback.status)
+      ? "text-[#B42318]"
+      : "text-[#667085]";
+
+  return (
+    <p className={`text-[11px] leading-5 ${color}`}>
+      {label}: {feedback.label}
+      {feedback.errorSummary ? <span className="block">{feedback.errorSummary}</span> : null}
+    </p>
+  );
+}
+
 type FilterFormProps = {
   filters: OrdersTabData["filters"];
   statusCounts: OrdersTabData["statusCounts"];
@@ -327,17 +357,12 @@ function OrdersFilterForm({ filters, statusCounts }: FilterFormProps) {
 function StatusForm({
   orderId,
   currentStatus,
-  trackingCode,
+  smsFeedback,
 }: {
   orderId: string;
   currentStatus: string;
-  trackingCode?: string | null;
+  smsFeedback?: AdminOrderSmsFeedback | null;
 }) {
-  const nextText =
-    currentStatus === "SHIPPED"
-      ? `سفارش آماده ارسال پیامک با کد ${trackingCode ?? "ثبت نشده"}`
-      : "پیامک وضعیت برای مشتری ارسال شود";
-
   return (
     <form action={updateOrderStatusAction} className="rounded-[22px] border border-[#E6EAF2] bg-[#FBFCFE] p-3 text-xs text-[#667085]">
       <label className="font-bold text-[#475467]">
@@ -350,10 +375,10 @@ function StatusForm({
           <option value="CANCELLED">لغو شده</option>
         </select>
       </label>
-      <label className="mt-3 flex items-center gap-2 text-[11px]">
-        <input type="checkbox" name="sendSms" value="true" className="size-4 accent-[#F59E0B]" />
-        {nextText}
-      </label>
+      <p className="mt-3 text-[11px] leading-5 text-[#667085]">
+        پیامک وضعیت خودکار ارسال می‌شود. اگر ارسال ناموفق بود، دوباره ذخیره کنید؛ پیامک موفق تکرار نمی‌شود.
+      </p>
+      <SmsFeedbackLine label="پیامک وضعیت فعلی" feedback={smsFeedback} />
       <input type="hidden" name="orderId" value={orderId} />
       <button type="submit" className="btn-primary mt-3 min-h-10 w-full text-xs">
         ذخیره وضعیت
@@ -362,7 +387,7 @@ function StatusForm({
   );
 }
 
-function TrackingForm({ orderId, trackingCode }: { orderId: string; trackingCode?: string | null }) {
+function TrackingForm({ orderId, trackingCode, smsFeedback }: { orderId: string; trackingCode?: string | null; smsFeedback?: AdminOrderSmsFeedback | null }) {
   return (
     <form action={updateOrderTrackingAction} className="rounded-[22px] border border-[#E6EAF2] bg-[#FBFCFE] p-3 text-xs text-[#667085]">
       <input type="hidden" name="orderId" value={orderId} />
@@ -375,10 +400,10 @@ function TrackingForm({ orderId, trackingCode }: { orderId: string; trackingCode
           className="mt-2"
         />
       </label>
-      <label className="mt-3 flex items-center gap-2 text-[11px]">
-        <input type="checkbox" name="sendSms" value="true" className="size-4 accent-[#F59E0B]" />
-        ارسال پیامک کد پیگیری به مشتری
-      </label>
+      <p className="mt-3 text-[11px] leading-5 text-[#667085]">
+        کد پیگیری خودکار پیامک می‌شود. اگر ارسال ناموفق بود، دوباره ذخیره کنید؛ پیامک موفق تکرار نمی‌شود.
+      </p>
+      <SmsFeedbackLine label="پیامک کد فعلی" feedback={smsFeedback} />
       <button type="submit" className="btn-outline mt-3 min-h-10 w-full text-xs">
         ذخیره کد پیگیری
       </button>

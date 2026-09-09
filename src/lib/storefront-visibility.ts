@@ -46,6 +46,18 @@ export function storefrontBuyableProductWhere(
   });
 }
 
+/** Physical products that can currently be added to a customer order. */
+export function storefrontBuyablePhysicalProductWhere(
+  where: Prisma.ProductWhereInput = {},
+): Prisma.ProductWhereInput {
+  return storefrontBuyableProductWhere({
+    AND: [
+      where,
+      { requiresShipping: true },
+    ],
+  });
+}
+
 /** Products that still belong in the admin catalog, including items awaiting pricing. */
 export function adminCatalogProductWhere(
   where: Prisma.ProductWhereInput = {},

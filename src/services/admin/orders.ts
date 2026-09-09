@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma";
 
 import { mapOrderDetail } from "./mappers";
+import { mapOrderSmsFeedback } from "./order-sms";
 import type { OrdersTabData } from "./types";
 
 const DEFAULT_PER_PAGE = 12;
@@ -95,8 +96,36 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
 
   const totalPages = Math.max(1, Math.ceil(total / filters.perPage));
 
+  const notificationKeys = orders.map((order) => ({
+    status: order.status === "PENDING" ? null : `order_status:${order.id}:${order.status}`,
+    tracking: order.shippingTrackingCode?.trim()
+      ? `tracking:${order.id}:${order.shippingTrackingCode.trim()}`
+      : null,
+    merchant: `merchant_order_created:${order.id}`,
+  }));
+  const dedupeKeys = notificationKeys.flatMap(({ status, tracking, merchant }) =>
+    [status, tracking, merchant].filter((key): key is string => key !== null),
+  );
+  const smsLogs = dedupeKeys.length
+    ? await prisma.smsLog.findMany({
+        where: { dedupeKey: { in: dedupeKeys } },
+        select: { dedupeKey: true, status: true, errorMessage: true },
+      })
+    : [];
+  const smsLogsByKey = new Map(smsLogs.map((log) => [log.dedupeKey, log]));
+
   return {
-    orders: orders.map(mapOrderDetail),
+    orders: orders.map((order, index) => {
+      const keys = notificationKeys[index];
+      return {
+        ...mapOrderDetail(order),
+        smsNotifications: {
+          status: keys.status ? mapOrderSmsFeedback(smsLogsByKey.get(keys.status)) : null,
+          tracking: keys.tracking ? mapOrderSmsFeedback(smsLogsByKey.get(keys.tracking)) : null,
+          merchant: mapOrderSmsFeedback(smsLogsByKey.get(keys.merchant)),
+        },
+      };
+    }),
     filters,
     pagination: {
       page: filters.page,

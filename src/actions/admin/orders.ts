@@ -3,21 +3,26 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { Prisma, type OrderStatus } from "@/generated/prisma";
 import { ensureAdminAction } from "@/lib/auth";
 import { appendOrderStatusEvent } from "@/lib/commerce";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { sendTemplateSms, smsOrderNumber } from "@/lib/sms/service";
+import { notifyMerchantOfNewOrder } from "@/lib/sms/merchant-order";
+import {
+  notifyCustomerOfOrderStatusChange,
+  notifyCustomerOfTrackingCode,
+} from "@/lib/sms/order-notifications";
+import { smsOrderNumber } from "@/lib/sms/service";
 import { deleteOrderSafely } from "@/services/admin/mutations";
 
 const statusSchema = z.object({
   orderId: z.string().cuid(),
   status: z.enum(["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"]),
-  sendSms: z.coerce.boolean().optional(),
 });
 
 const trackingSchema = z.object({
   orderId: z.string().cuid(),
-  sendSms: z.coerce.boolean().optional(),
   shippingTrackingCode: z
     .string()
     .trim()
@@ -25,13 +30,14 @@ const trackingSchema = z.object({
     .max(60, "کد پیگیری حداکثر ۶۰ کاراکتر است."),
 });
 
-const smsTemplateByStatus: Record<string, string | null> = {
-  PENDING: null,
-  PAID: "status_processing",
-  SHIPPED: "status_shipped",
-  DELIVERED: "status_delivered",
-  CANCELLED: "status_cancelled",
-};
+export async function retryMerchantOrderSmsAction(formData: FormData): Promise<void> {
+  await ensureAdminAction();
+  const orderId = z.string().cuid().parse(formData.get("orderId"));
+  const order = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true } });
+  if (!order) throw new Error("سفارش پیدا نشد.");
+  await notifyMerchantOfNewOrder(order.id);
+  revalidatePath("/admin");
+}
 
 export async function updateOrderStatusAction(formData: FormData): Promise<void> {
   await ensureAdminAction();
@@ -45,7 +51,24 @@ export async function updateOrderStatusAction(formData: FormData): Promise<void>
     throw new Error(firstError);
   }
 
-  const order = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
+    const [currentOrder] = await tx.$queryRaw<Array<{
+      id: string;
+      status: OrderStatus;
+      phone: string;
+      shippingTrackingCode: string | null;
+    }>>(Prisma.sql`
+      SELECT "id", "status"::text AS "status", "phone", "shippingTrackingCode"
+      FROM "Order"
+      WHERE "id" = ${parsed.data.orderId}
+      FOR UPDATE
+    `);
+
+    if (!currentOrder) throw new Error("سفارش پیدا نشد.");
+    if (currentOrder.status === parsed.data.status) {
+      return { changed: false as const, order: currentOrder, previousStatus: currentOrder.status };
+    }
+
     const updatedOrder = await tx.order.update({
       where: { id: parsed.data.orderId },
       data: {
@@ -73,23 +96,23 @@ export async function updateOrderStatusAction(formData: FormData): Promise<void>
       detail: "این تغییر توسط مدیر فروشگاه ثبت شد.",
     });
 
-    return updatedOrder;
+    return { changed: true as const, order: updatedOrder, previousStatus: currentOrder.status };
   });
 
-  if (parsed.data.sendSms) {
-    const templateName = smsTemplateByStatus[parsed.data.status];
-    if (templateName) {
-      await sendTemplateSms(
-        order.phone,
-        templateName,
-        {
-          orderNumber: smsOrderNumber(order.id),
-          trackingCode: order.shippingTrackingCode ?? "ثبت نشده",
-        },
-        { eventType: "order_status_changed", dedupeKey: `order_status:${order.id}:${parsed.data.status}:${order.updatedAt.getTime()}` },
-      );
-    }
-  }
+  await notifyCustomerOfOrderStatusChange(result.order.phone, {
+    orderId: result.order.id,
+    orderNumber: smsOrderNumber(result.order.id),
+    previousStatus: result.previousStatus,
+    nextStatus: parsed.data.status,
+    trackingCode: result.order.shippingTrackingCode,
+    retryUndelivered: true,
+  }).catch((error) => {
+    logger.warn("Order status SMS could not be sent", {
+      orderId: result.order.id,
+      status: parsed.data.status,
+      error: error instanceof Error ? error.message : "unknown",
+    });
+  });
 
   revalidatePath("/admin");
   revalidatePath("/account");
@@ -107,7 +130,35 @@ export async function updateOrderTrackingAction(formData: FormData): Promise<voi
     throw new Error(firstError);
   }
 
-  const order = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
+    const [currentOrder] = await tx.$queryRaw<Array<{
+      id: string;
+      phone: string;
+      shippingTrackingCode: string | null;
+    }>>(Prisma.sql`
+      SELECT "id", "phone", "shippingTrackingCode"
+      FROM "Order"
+      WHERE "id" = ${parsed.data.orderId}
+      FOR UPDATE
+    `);
+
+    if (!currentOrder) throw new Error("سفارش پیدا نشد.");
+
+    const trackingChanged = currentOrder.shippingTrackingCode !== parsed.data.shippingTrackingCode;
+    if (!trackingChanged) {
+      await tx.shipment.updateMany({
+        where: {
+          orderId: currentOrder.id,
+          OR: [
+            { trackingCode: null },
+            { trackingCode: { not: parsed.data.shippingTrackingCode } },
+          ],
+        },
+        data: { trackingCode: parsed.data.shippingTrackingCode },
+      });
+      return { changed: false as const, order: currentOrder, previousTrackingCode: currentOrder.shippingTrackingCode };
+    }
+
     const updatedOrder = await tx.order.update({
       where: { id: parsed.data.orderId },
       data: { shippingTrackingCode: parsed.data.shippingTrackingCode },
@@ -124,17 +175,21 @@ export async function updateOrderTrackingAction(formData: FormData): Promise<voi
       detail: `کد پیگیری ${parsed.data.shippingTrackingCode} برای سفارش ثبت شد.`,
     });
 
-    return updatedOrder;
+    return { changed: true as const, order: updatedOrder, previousTrackingCode: currentOrder.shippingTrackingCode };
   });
 
-  if (parsed.data.sendSms) {
-    await sendTemplateSms(
-      order.phone,
-      "status_shipped",
-      { orderNumber: smsOrderNumber(order.id), trackingCode: parsed.data.shippingTrackingCode },
-      { eventType: "tracking_code_added", dedupeKey: `tracking:${order.id}:${parsed.data.shippingTrackingCode}` },
-    );
-  }
+  await notifyCustomerOfTrackingCode(result.order.phone, {
+    orderId: result.order.id,
+    orderNumber: smsOrderNumber(result.order.id),
+    previousTrackingCode: result.previousTrackingCode,
+    nextTrackingCode: parsed.data.shippingTrackingCode,
+    retryUndelivered: true,
+  }).catch((error) => {
+    logger.warn("Order tracking SMS could not be sent", {
+      orderId: result.order.id,
+      error: error instanceof Error ? error.message : "unknown",
+    });
+  });
 
   revalidatePath("/admin");
   revalidatePath("/account");

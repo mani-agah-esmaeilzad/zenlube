@@ -17,7 +17,7 @@ import {
 } from "@/lib/shipping/locations";
 import { getShippingProvider } from "@/lib/shipping/providers";
 import { evaluateShippingRollout, getShippingRolloutEnvironment } from "@/lib/shipping/rollout";
-import { storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
+import { storefrontBuyablePhysicalProductWhere } from "@/lib/storefront-visibility";
 
 import type { ActionResult } from "./types";
 
@@ -139,8 +139,7 @@ export async function saveShippingSettingsAction(
         : Promise.resolve(null);
       const [missingWeightProducts, mappedProvinces, mappedCities, originMapping] = await Promise.all([
         prisma.product.count({
-          where: storefrontVisibleProductWhere({
-            requiresShipping: true,
+          where: storefrontBuyablePhysicalProductWhere({
             OR: [
               { shippingWeightGrams: null },
               { shippingWeightGrams: { lte: 0 } },

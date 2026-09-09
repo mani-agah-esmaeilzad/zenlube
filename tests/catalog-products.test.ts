@@ -4,6 +4,10 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 import { catalogProducts } from "../prisma/product-data/catalog-products";
+import {
+  isUniumCatalogPlaceholder,
+  UNIUM_INITIAL_COMMERCE,
+} from "../prisma/product-data/unium-seed-policy";
 
 const productsBySlug = new Map(catalogProducts.map((product) => [product.slug, product]));
 
@@ -14,15 +18,15 @@ function countsBy(field: "categorySlug" | "brandSlug") {
   }, {});
 }
 
-test("complete requested catalog contains 122 unique products", () => {
-  assert.equal(catalogProducts.length, 122);
-  assert.equal(new Set(catalogProducts.map((product) => product.slug)).size, 122);
-  assert.equal(new Set(catalogProducts.map((product) => product.sku)).size, 122);
+test("complete requested catalog contains 123 unique products", () => {
+  assert.equal(catalogProducts.length, 123);
+  assert.equal(new Set(catalogProducts.map((product) => product.slug)).size, 123);
+  assert.equal(new Set(catalogProducts.map((product) => product.sku)).size, 123);
 
   assert.deepEqual(countsBy("categorySlug"), {
     "engine-oil": 34,
     "gear-oil": 41,
-    accessories: 44,
+    accessories: 45,
     "brake-oil": 3,
   });
 });
@@ -52,6 +56,7 @@ test("brand quantities match the supplied inventory list", () => {
     caspian: 12,
     woofer: 2,
     "persia-sign": 1,
+    unium: 1,
   };
   assert.deepEqual(countsBy("brandSlug"), expected);
 });
@@ -62,6 +67,38 @@ test("ambiguous labels are normalized without creating duplicate products", () =
   assert.ok(productsBySlug.has("fosser-dexron-d-vi-1l"));
   assert.ok(productsBySlug.has("xado-atomic-atf-3-4-5-1l"));
   assert.equal(catalogProducts.some((product) => /\bdat\b/i.test(product.name)), false);
+});
+
+test("Unium octane booster uses the official BA-29EX product identity", () => {
+  const product = productsBySlug.get("unium-octane-booster-ba29ex-355ml");
+
+  assert.equal(product?.brandSlug, "unium");
+  assert.equal(product?.sku, "UNI-OCT-BA29EX-355");
+  assert.equal(product?.imageUrl, "/products/unium/octane-booster-ba29ex-355ml.png");
+  assert.equal(product?.technicalSpecs["حجم درج‌شده روی بسته"], "۳۵۵ میلی‌لیتر");
+  assert.equal(product?.productSourceUrl, "https://www.petrosharlub.com/product/150");
+});
+
+test("Unium commerce values initialize only the untouched catalog placeholder", () => {
+  assert.deepEqual(UNIUM_INITIAL_COMMERCE, {
+    priceRials: 10_000_000,
+    stock: 1,
+    shippingWeightGrams: 500,
+  });
+  assert.equal(
+    isUniumCatalogPlaceholder({ priceRials: 0, stock: 0, shippingWeightGrams: null }),
+    true,
+  );
+
+  assert.equal(
+    isUniumCatalogPlaceholder({ priceRials: 12_500_000, stock: 7, shippingWeightGrams: 540 }),
+    false,
+  );
+  assert.equal(
+    isUniumCatalogPlaceholder({ priceRials: 0, stock: 0, shippingWeightGrams: 620 }),
+    false,
+    "an admin-set shipping weight makes the row managed and must be preserved",
+  );
 });
 
 test("MG product mappings are strict and exclude the electric MG4", () => {

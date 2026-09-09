@@ -21,16 +21,22 @@ type SmsIrResponse = {
   data?: {
     verificationCodeId?: string | number;
     messageId?: string | number;
+    messageIds?: Array<string | number>;
   } | null;
   [key: string]: unknown;
 };
+
+const SMS_REQUEST_TIMEOUT_MS = 8_000;
+
+/** A response proving the provider did not accept a text message. */
+export class SmsIrSendRejectedError extends Error {}
 
 function createClient() {
   const apiKey = config.SMSIR_API_KEY ?? config.SMS_API_KEY;
   const lineNumber = config.SMSIR_LINE_NUMBER ?? Number(config.SMS_SENDER_NUMBER);
 
   if (!apiKey || !lineNumber || !Number.isFinite(lineNumber)) {
-    throw new Error("تنظیمات sms.ir کامل نیست.");
+    throw new SmsIrSendRejectedError("تنظیمات sms.ir کامل نیست.");
   }
 
   return new Smsir(apiKey, lineNumber);
@@ -80,7 +86,7 @@ export async function sendSmsIrText({ phone, message }: SendTextArgs) {
   const lineNumber = config.SMSIR_LINE_NUMBER ?? Number(config.SMS_SENDER_NUMBER);
 
   if (!apiKey || !lineNumber || !Number.isFinite(lineNumber)) {
-    throw new Error("تنظیمات sms.ir کامل نیست.");
+    throw new SmsIrSendRejectedError("تنظیمات sms.ir کامل نیست.");
   }
 
   const response = await fetch("https://api.sms.ir/v1/send/bulk", {
@@ -96,14 +102,26 @@ export async function sendSmsIrText({ phone, message }: SendTextArgs) {
       mobiles: [phone],
       sendDateTime: null,
     }),
+    signal: AbortSignal.timeout(SMS_REQUEST_TIMEOUT_MS),
   });
 
   const data = (await response.json().catch(() => ({}))) as SmsIrResponse;
 
   if (!response.ok || isErrorStatus(data.status)) {
     logger.warn("sms.ir text send failed", { status: response.status, data });
-    throw new Error(data.message ?? "ارسال پیامک توسط sms.ir ناموفق بود.");
+    const messageText = data.message ?? "ارسال پیامک توسط sms.ir ناموفق بود.";
+    // A timeout or server error may happen after acceptance. Retrying it could
+    // send the same customer notification twice.
+    if ((response.status >= 400 && response.status < 500 && response.status !== 408) || response.ok) {
+      throw new SmsIrSendRejectedError(messageText);
+    }
+    throw new Error(messageText);
   }
 
-  return { messageId: data.data?.messageId ?? null, raw: data } as const;
+  const messageId = data.data?.messageId ?? data.data?.messageIds?.[0] ?? null;
+  if (Number(data.status) !== 1 && Number(data.status) !== 200 && !messageId) {
+    throw new Error("پاسخ تایید ارسال sms.ir معتبر نیست؛ وضعیت پیامک باید بررسی شود.");
+  }
+
+  return { messageId, raw: data } as const;
 }

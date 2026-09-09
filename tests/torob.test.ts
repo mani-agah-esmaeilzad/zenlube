@@ -21,8 +21,16 @@ test("Torob request parser accepts every official request shape and rejects miss
   assert.deepEqual(parseTorobProductRequest({ page: 2, sort: "date_updated_desc" }), { type: "page", page: 2, sort: "date_updated_desc" });
   assert.deepEqual(parseTorobProductRequest({ page_urls: ["https://www.oilbar.ir/products/a"] }), { type: "urls", values: ["https://www.oilbar.ir/products/a"] });
   assert.deepEqual(parseTorobProductRequest({ page_uniques: ["p1"] }), { type: "uniques", values: ["p1"] });
+  assert.deepEqual(parseTorobProductRequest({ sort: "product_id_desc" }), { type: "cursor", sort: "product_id_desc" });
+  assert.deepEqual(parseTorobProductRequest({ cursor: "opaque", sort: "product_id_desc" }), {
+    type: "cursor",
+    cursor: "opaque",
+    sort: "product_id_desc",
+  });
   assert.throws(() => parseTorobProductRequest({ page: 1 }), /sort parameter/);
   assert.throws(() => parseTorobProductRequest({}), /page parameter/);
+  assert.throws(() => parseTorobProductRequest({ page: 1, sort: "product_id_desc" }), /must not include/);
+  assert.throws(() => parseTorobProductRequest({ cursor: "opaque", sort: "date_added_desc" }), /require product_id_desc/);
 });
 
 test("Torob JWT verification validates Ed25519 signature, time, and exact audience", () => {
@@ -61,10 +69,19 @@ test("Torob products use absolute URLs, integer Toman prices, discount, and requ
   assert.equal(product.current_price, 175_000);
   assert.equal(product.old_price, 200_000);
   assert.equal(product.availability, true);
+  assert.equal(product.category_name, "روغن موتور خودرو");
   assert.equal(product.spec["گرانروی"], "5W-30");
   assert.match(product.date_added, /\+03:30$/);
   assert.equal(rialToTorobToman(1_234_567), 123_457);
   assert.equal(buildTorobResponse([product], 1, 1).api_version, "torob_api_v3");
+  assert.deepEqual(buildTorobResponse([product], null, 2, null), {
+    api_version: "torob_api_v3",
+    current_page: 2,
+    total: null,
+    max_pages: null,
+    next_cursor: null,
+    products: [product],
+  });
 });
 
 test("each Torob product exports only its own primary image", () => {

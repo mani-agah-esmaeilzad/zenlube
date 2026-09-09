@@ -16,10 +16,11 @@ function matches(product: Product, where: Where = {}): boolean {
     if (key === "NOT") return !matches(product, value as Where);
     const actual = product[key as keyof Product];
     if (!value || typeof value !== "object") return actual === value;
-    const filter = value as { in?: unknown[]; startsWith?: string; gt?: number; not?: unknown };
+    const filter = value as { in?: unknown[]; startsWith?: string; gt?: number; lt?: string; not?: unknown };
     if (filter.in) return filter.in.includes(actual);
     if (filter.startsWith != null) return String(actual).startsWith(filter.startsWith);
     if (filter.gt != null) return Number(actual) > filter.gt;
+    if (filter.lt != null) return String(actual) < filter.lt;
     if ("not" in filter) return actual !== filter.not;
     throw new Error(`Unsupported test filter: ${key}`);
   });
@@ -91,6 +92,34 @@ test("Torob paginated catalog retains every visible product with stable page bou
   }
 });
 
+test("Torob cursor catalog traverses every product once with an opaque cursor", async (t) => {
+  setupCatalog(t);
+  const first = await queryTorobProducts({ type: "cursor", sort: "product_id_desc" });
+  assert.equal(first.total, null);
+  assert.equal(first.currentPage, 1);
+  assert.equal(first.products.length, 100);
+  assert.equal(typeof first.nextCursor, "string");
+
+  const second = await queryTorobProducts({
+    type: "cursor",
+    sort: "product_id_desc",
+    cursor: first.nextCursor!,
+  });
+  assert.equal(second.total, null);
+  assert.equal(second.currentPage, 2);
+  assert.equal(second.products.length, 23);
+  assert.equal(second.nextCursor, null);
+  const ids = [...first.products, ...second.products].map((product) => product.id);
+  assert.equal(ids.length, 123);
+  assert.equal(new Set(ids).size, 123);
+  assert.deepEqual(ids, [...ids].sort().reverse());
+
+  await assert.rejects(
+    queryTorobProducts({ type: "cursor", sort: "product_id_desc", cursor: "not-a-valid-cursor" }),
+    /cursor is invalid/,
+  );
+});
+
 test("Torob direct lookups retain unavailable products and do not truncate identifier batches", async (t) => {
   const products = setupCatalog(t);
   const identifiers = products.map((product) => product.id);
@@ -118,7 +147,23 @@ test("Torob public preview exposes both pages and rejects malformed pagination",
   assert.equal(body.max_pages, 2);
   assert.equal(body.products.length, 23);
   assert.match(response.headers.get("Cache-Control") ?? "", /no-store/);
-  for (const query of ["page=0&sort=date_added_desc", "page=2", "sort=invalid"]) {
+  const cursorResponse = await GET(new Request("https://www.oilbar.ir/api/torob/products?sort=product_id_desc"));
+  const cursorBody = await cursorResponse.json();
+  assert.equal(cursorResponse.status, 200);
+  assert.equal(cursorBody.current_page, 1);
+  assert.equal(cursorBody.total, null);
+  assert.equal(cursorBody.max_pages, null);
+  assert.equal(cursorBody.products.length, 100);
+  assert.equal(typeof cursorBody.next_cursor, "string");
+  const cursorNextResponse = await GET(new Request(
+    `https://www.oilbar.ir/api/torob/products?sort=product_id_desc&cursor=${encodeURIComponent(cursorBody.next_cursor)}`,
+  ));
+  const cursorNextBody = await cursorNextResponse.json();
+  assert.equal(cursorNextBody.current_page, 2);
+  assert.equal(cursorNextBody.products.length, 23);
+  assert.equal(cursorNextBody.next_cursor, null);
+
+  for (const query of ["page=0&sort=date_added_desc", "page=2", "sort=invalid", "cursor=bad", "sort=product_id_desc&page=1"]) {
     assert.equal((await GET(new Request(`https://www.oilbar.ir/api/torob/products?${query}`))).status, 400);
   }
 });

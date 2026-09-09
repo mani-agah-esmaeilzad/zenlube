@@ -19,10 +19,15 @@ function baseUrlFromRequest(request: Request) {
 }
 
 async function createResponse(request: Request, input: TorobProductRequest) {
-  const { products, total, currentPage } = await queryTorobProducts(input);
+  const { products, total, currentPage, nextCursor } = await queryTorobProducts(input);
   const baseUrl = baseUrlFromRequest(request);
   const response = NextResponse.json(
-    buildTorobResponse(products.map((product) => buildTorobProduct(product, baseUrl)), total, currentPage),
+    buildTorobResponse(
+      products.map((product) => buildTorobProduct(product, baseUrl)),
+      total,
+      currentPage,
+      nextCursor,
+    ),
   );
   response.headers.set("Cache-Control", "private, no-store, max-age=0");
   return response;
@@ -30,7 +35,7 @@ async function createResponse(request: Request, input: TorobProductRequest) {
 
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
-  if (!params.has("page") && !params.has("sort")) {
+  if (!["page", "sort", "cursor", "limit", "size"].some((key) => params.has(key))) {
     return createResponse(request, { type: "page", page: 1, sort: "date_added_desc" });
   }
 
@@ -38,6 +43,9 @@ export async function GET(request: Request) {
     const input = parseTorobProductRequest({
       ...(params.has("page") ? { page: Number(params.get("page")) } : {}),
       ...(params.has("sort") ? { sort: params.get("sort") } : {}),
+      ...(params.has("cursor") ? { cursor: params.get("cursor") } : {}),
+      ...(params.has("limit") ? { limit: params.get("limit") } : {}),
+      ...(params.has("size") ? { size: params.get("size") } : {}),
     });
     return await createResponse(request, input);
   } catch (error) {

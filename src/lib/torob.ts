@@ -11,7 +11,8 @@ MCowBQYDK2VwAyEAt6Mu4T0pBORY11W+QeM35UsmLO3vsf+6yKpFDEImFk0=
 export type TorobProductRequest =
   | { type: "urls"; values: string[] }
   | { type: "uniques"; values: string[] }
-  | { type: "page"; page: number; sort: "date_added_desc" | "date_updated_desc" };
+  | { type: "page"; page: number; sort: "date_added_desc" | "date_updated_desc" }
+  | { type: "cursor"; cursor?: string; sort: "product_id_desc" };
 
 export class TorobRequestError extends Error {
   constructor(message: string) {
@@ -37,6 +38,21 @@ export function parseTorobProductRequest(value: unknown): TorobProductRequest {
   if ("page_uniques" in input) {
     if (!isNonEmptyStringArray(input.page_uniques)) throw new TorobRequestError("page_uniques must be a non-empty list of strings");
     return { type: "uniques", values: input.page_uniques };
+  }
+
+  if (input.sort === "product_id_desc" || "cursor" in input) {
+    if (input.sort !== "product_id_desc") throw new TorobRequestError("cursor requests require product_id_desc sort");
+    if ("page" in input || "limit" in input || "size" in input) {
+      throw new TorobRequestError("cursor requests must not include page, limit, or size");
+    }
+    if ("cursor" in input && (typeof input.cursor !== "string" || input.cursor.length === 0 || input.cursor.length > 2048)) {
+      throw new TorobRequestError("cursor must be a non-empty string");
+    }
+    return {
+      type: "cursor",
+      sort: "product_id_desc",
+      ...(typeof input.cursor === "string" ? { cursor: input.cursor } : {}),
+    };
   }
 
   if (!("page" in input)) throw new TorobRequestError("page parameter is not provided");
@@ -157,6 +173,19 @@ function buildSpecification(product: TorobSourceProduct) {
   return spec;
 }
 
+function torobCategoryName(product: TorobSourceProduct) {
+  const searchable = `${product.category.name} ${product.name}`.replace(/\u200c/g, " ");
+  if (searchable.includes("روغن موتور")) return "روغن موتور خودرو";
+  if (searchable.includes("روغن گیربکس")) return "روغن گیربکس خودرو";
+  if (searchable.includes("روغن ترمز")) return "روغن ترمز خودرو";
+  if (/اکتان|بنزین مسابقه|مکمل سوخت|بهینه سوخت|سیستم سوخت|انژکتور|کاتالیست/.test(searchable)) {
+    return "مکمل سوخت و روغن";
+  }
+  if (/ضد ?یخ|کولانت|آب رادیاتور/.test(searchable)) return "ضدیخ و آب رادیاتور خودرو";
+  if (/شیشه ?شوی/.test(searchable)) return "شیشه شوی خودرو";
+  return product.category.name;
+}
+
 export function buildTorobProduct(product: TorobSourceProduct, baseUrl: string, now = new Date()) {
   const pricing = resolveProductPricing(product, now);
   const currentPrice = rialToTorobToman(pricing.effectivePrice);
@@ -174,7 +203,7 @@ export function buildTorobProduct(product: TorobSourceProduct, baseUrl: string, 
     current_price: availability ? currentPrice : 0,
     ...(availability && pricing.hasDiscount ? { old_price: rialToTorobToman(pricing.basePrice) } : {}),
     availability,
-    category_name: product.category.name.slice(0, 200),
+    category_name: torobCategoryName(product).slice(0, 200),
     image_links: imageLinks,
     spec: buildSpecification(product),
     guarantee: (product.warranty || "ضمانت اصالت کالا").slice(0, 200),
@@ -184,12 +213,18 @@ export function buildTorobProduct(product: TorobSourceProduct, baseUrl: string, 
   };
 }
 
-export function buildTorobResponse<T>(products: T[], total: number, currentPage: number) {
-  return {
+export function buildTorobResponse<T>(
+  products: T[],
+  total: number | null,
+  currentPage: number,
+  nextCursor?: string | null,
+) {
+  const response = {
     api_version: TOROB_API_VERSION,
     current_page: currentPage,
     total,
-    max_pages: Math.max(1, Math.ceil(total / TOROB_PAGE_SIZE)),
+    max_pages: total == null ? null : Math.max(1, Math.ceil(total / TOROB_PAGE_SIZE)),
     products,
   };
+  return nextCursor === undefined ? response : { ...response, next_cursor: nextCursor };
 }

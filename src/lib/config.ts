@@ -27,7 +27,9 @@ export const config = {
   PAYMENT_SERVICE_SECRET: process.env.PAYMENT_SERVICE_SECRET,
 
   SHIPPING_PROVIDER: (process.env.SHIPPING_PROVIDER as "amadast" | "mock" | "disabled" | undefined) ?? "disabled",
+  SHIPPING_FULFILLMENT_MODE: (process.env.SHIPPING_FULFILLMENT_MODE as "manual" | "amadast" | undefined) ?? "manual",
   AMADAST_API_BASE_URL: process.env.AMADAST_API_BASE_URL ?? "https://shop-integration.amadast.com",
+  AMADAST_CALCULATOR_BASE_URL: process.env.AMADAST_CALCULATOR_BASE_URL ?? "https://api.amadast.com/api/v2.0/tool/shipping-calculator",
   AMADAST_CLIENT_CODE: process.env.AMADAST_CLIENT_CODE,
   AMADAST_USER_ID: process.env.AMADAST_USER_ID,
   AMADAST_ACCESS_TOKEN: process.env.AMADAST_ACCESS_TOKEN,

@@ -26,6 +26,7 @@ const responseEnvelopeSchema = z.object({
   success: z.boolean().optional(),
   result: z.boolean().optional(),
   message: z.union([z.string(), z.array(z.string()), z.null()]).optional(),
+  errors: z.union([z.string(), z.array(z.string()), z.null()]).optional(),
   data: z.unknown().optional(),
 }).passthrough();
 
@@ -100,6 +101,22 @@ function safeBaseUrl() {
   return url.toString().replace(/\/$/, "");
 }
 
+function safeCalculatorBaseUrl() {
+  const url = new URL(config.AMADAST_CALCULATOR_BASE_URL);
+  if (url.protocol !== "https:" && config.NODE_ENV === "production") {
+    throw new ShippingProviderError("INVALID_CONFIG", "آدرس محاسبه‌گر آمادست باید امن باشد.");
+  }
+  return url.toString().replace(/\/$/, "");
+}
+
+function storefrontOrigin() {
+  try {
+    return new URL(config.NEXT_PUBLIC_APP_URL).origin;
+  } catch {
+    throw new ShippingProviderError("INVALID_CONFIG", "آدرس عمومی فروشگاه معتبر نیست.");
+  }
+}
+
 function clientCode() {
   if (!config.AMADAST_CLIENT_CODE?.trim()) {
     throw new ShippingProviderError("NOT_CONFIGURED", "کلید اتصال آمادست تنظیم نشده است.");
@@ -109,7 +126,7 @@ function clientCode() {
 
 function providerMessage(payload: unknown) {
   const parsed = responseEnvelopeSchema.safeParse(payload);
-  const message = parsed.success ? parsed.data.message : null;
+  const message = parsed.success ? parsed.data.message ?? parsed.data.errors : null;
   if (Array.isArray(message)) return message.join(" ").slice(0, 300);
   return typeof message === "string" ? message.slice(0, 300) : null;
 }
@@ -120,6 +137,7 @@ async function requestJson(
   timeoutMs: number,
   retrySafe = false,
   deadlineAt?: number,
+  baseUrl = safeBaseUrl(),
 ) {
   const attempts = retrySafe ? 2 : 1;
   let lastError: unknown;
@@ -135,7 +153,7 @@ async function requestJson(
     init.signal?.addEventListener("abort", abort, { once: true });
     const timeout = setTimeout(abort, Math.min(remainingMs, Math.max(1, timeoutMs)));
     try {
-      const response = await fetch(`${safeBaseUrl()}${path}`, {
+      const response = await fetch(`${baseUrl}${path}`, {
         ...init,
         cache: "no-store",
         signal: controller.signal,
@@ -178,6 +196,17 @@ function baseHeaders(withJson = false): Record<string, string> {
   return {
     Accept: "application/json",
     "X-Client-Code": clientCode(),
+    ...(withJson ? { "Content-Type": "application/json" } : {}),
+  };
+}
+
+function calculatorHeaders(withJson = false): Record<string, string> {
+  const origin = storefrontOrigin();
+  return {
+    Accept: "application/json",
+    "User-Agent": "Oilbar/1.0",
+    Origin: origin,
+    Referer: `${origin}/`,
     ...(withJson ? { "Content-Type": "application/json" } : {}),
   };
 }
@@ -314,21 +343,32 @@ export function normalizeAmadastEstimatePayload(payload: unknown, providerReques
 
 async function quote(request: ProviderQuoteRequest, timeoutMs: number) {
   const startedAt = Date.now();
+  const calculatorBaseUrl = safeCalculatorBaseUrl();
+  const courierIds = request.carrierCodes.map((carrier) => (
+    carrier === "POST" ? AMADAST_POST_ID : AMADAST_TIPAX_ID
+  ));
   const startPayload = await requestJson(
-    "/v1/shipping/estimates",
+    "",
     {
       method: "POST",
-      headers: baseHeaders(true),
+      headers: calculatorHeaders(true),
       body: JSON.stringify({
         from_city: request.originExternalCityId,
         to_city: request.destinationExternalCityId,
         weight: request.weightGrams,
         value: request.declaredValueRials,
         package_type: request.packageType,
+        couriers: courierIds,
+        meta_data: {
+          integration: "oilbar",
+          site_url: storefrontOrigin(),
+        },
       }),
     },
     timeoutMs,
     false,
+    undefined,
+    calculatorBaseUrl,
   );
   const start = estimateStartSchema.safeParse(startPayload);
   if (!start.success) {
@@ -339,10 +379,12 @@ async function quote(request: ProviderQuoteRequest, timeoutMs: number) {
   while (Date.now() - startedAt < timeoutMs) {
     const remaining = Math.max(500, timeoutMs - (Date.now() - startedAt));
     const pollPayload = await requestJson(
-      `/v1/shipping/estimates/${encodeURIComponent(requestId)}`,
-      { method: "GET", headers: baseHeaders() },
+      `/${encodeURIComponent(requestId)}`,
+      { method: "GET", headers: calculatorHeaders() },
       remaining,
       true,
+      undefined,
+      calculatorBaseUrl,
     );
     const state = normalizeAmadastEstimatePayload(pollPayload, requestId);
     if (state.complete) {

@@ -33,7 +33,7 @@ export function ShippingTab({ data }: { data: ShippingTabData }) {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h2 className="text-xl font-black text-[#111827]">تنظیمات ارسال</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-[#667085]">محاسبه هزینه پست و تیپاکس از سرور انجام می‌شود. کلیدهای اتصال فقط در تنظیمات امن سرور نگهداری می‌شوند.</p>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-[#667085]">هزینه پست و تیپاکس در لحظه محاسبه و انتخاب مشتری روی سفارش ذخیره می‌شود. تحویل بسته و ثبت کد پیگیری از همین پنل و به‌صورت دستی انجام می‌شود.</p>
           </div>
           <span className={`self-start rounded-full px-3 py-1.5 text-xs font-black ${dynamicActive || readyForActivation ? "bg-[#ECFDF3] text-[#027A48]" : "bg-[#FFF7E8] text-[#B54708]"}`}>
             {dynamicActive ? "ارسال واقعی فعال" : readyForActivation ? "آماده فعال‌سازی" : "خرید با روش قبلی فعال"}
@@ -42,7 +42,7 @@ export function ShippingTab({ data }: { data: ShippingTabData }) {
 
         <div className="mt-6 grid gap-x-6 gap-y-4 border-y border-[#E6EAF2] py-5 sm:grid-cols-2 xl:grid-cols-4">
           <Metric label="حالت تسویه‌حساب" value={dynamicActive ? "نرخ واقعی" : "روش قبلی"} ok={dynamicActive} />
-          <Metric label="اطلاعات اتصال" value={data.environment.clientCodeConfigured && data.environment.providerIdentityConfigured ? "کامل" : "ناقص"} ok={data.environment.ready} />
+          <Metric label="همگام‌سازی شهرها" value={data.environment.clientCodeConfigured && data.environment.providerIdentityConfigured ? "متصل" : "نیازمند اتصال"} ok={data.environment.ready} />
           <Metric
             label="استان / شهر / مبدا"
             value={`${data.stats.mappedProvinces.toLocaleString("fa-IR")} / ${data.stats.mappedCities.toLocaleString("fa-IR")} / ${data.stats.originMapped ? "متصل" : "نامتصل"}`}
@@ -53,7 +53,7 @@ export function ShippingTab({ data }: { data: ShippingTabData }) {
 
         {!dynamicActive ? (
           <Notice tone="warning">
-            تا کامل‌شدن موارد زیر، خرید مشتری بسته نمی‌شود و همان روش‌های قبلی فروشگاه نمایش داده می‌شوند. پس از رفع همه موارد و فعال‌کردن ارسال آنلاین، فقط نرخ واقعی شرکت حمل پذیرفته می‌شود.
+            تا کامل‌شدن موارد زیر، خرید مشتری بسته نمی‌شود و همان روش‌های قبلی فروشگاه نمایش داده می‌شوند. پس از رفع همه موارد و فعال‌کردن ارسال آنلاین، فقط نرخ واقعی آمادست پذیرفته می‌شود.
           </Notice>
         ) : null}
         {data.rollout.blockers.length ? (
@@ -81,27 +81,24 @@ export function ShippingTab({ data }: { data: ShippingTabData }) {
       </section>
 
       <form action={settingsAction} className="admin-panel p-5 md:p-6">
-        <Section title="وضعیت و سرویس‌ها" description="این کلید پس از کامل‌شدن اتصال، مبدا، شهرها و وزن محصولات موجود، تسویه‌حساب را از روش قبلی به نرخ زنده تغییر می‌دهد.">
+        <Section title="وضعیت و سرویس‌ها" description="این کلید پس از کامل‌شدن مبدأ، شهرها و وزن محصولات موجود، تسویه‌حساب را از روش قبلی به نرخ زنده تغییر می‌دهد.">
           <div className="grid gap-3 sm:grid-cols-3">
             <Checkbox name="enabled" label="ارسال آنلاین فعال باشد" defaultChecked={data.settings.enabled} />
             <Checkbox name="enabledCarriers" value="POST" label="پست" defaultChecked={data.settings.enabledCarriers.includes("POST")} />
             <Checkbox name="enabledCarriers" value="TIPAX" label="تیپاکس" defaultChecked={data.settings.enabledCarriers.includes("TIPAX")} />
           </div>
-          <p className="mt-3 text-[11px] leading-6 text-[#667085]">برای محصولات مایع، تیپاکس طبق محدودیت حمل آن سرویس نمایش داده نمی‌شود؛ محدودیت اختصاصی هر محصول نیز در فرم محصول قابل تنظیم است.</p>
+          <p className="mt-3 text-[11px] leading-6 text-[#667085]">فقط سرویس‌هایی نمایش داده می‌شوند که آمادست برای وزن و مقصد همان سفارش قیمت معتبر برگرداند. محدودیت اختصاصی هر محصول نیز در فرم محصول قابل تنظیم است.</p>
         </Section>
 
-        <Section title="مبدا و فرستنده" description="شناسه‌های فروشگاه و نوع محصول را از پنل آمادست بردارید؛ کلید API در این فرم وارد نمی‌شود.">
+        <Section title="مبدأ محاسبه نرخ" description="این نشانی فقط مرجع داخلی فروشگاه است و در پاسخ نرخ یا صفحه مشتری نمایش داده نمی‌شود.">
           <div className="grid gap-4 md:grid-cols-2">
-            <Field name="providerStoreId" label="شناسه فروشگاه آمادست" defaultValue={data.settings.providerStoreId} errors={settingsState.success ? undefined : settingsState.errors?.providerStoreId} inputMode="numeric" />
-            <Field name="providerProductTypeCode" label="شناسه نوع محصول آمادست" defaultValue={data.settings.providerProductTypeCode} errors={settingsState.success ? undefined : settingsState.errors?.providerProductTypeCode} inputMode="numeric" />
             <label className="text-xs font-bold text-[#374151]">استان مبدا<select name="originProvinceCode" value={provinceCode} onChange={(event) => { setProvinceCode(event.target.value); setCityCode(""); }} className="mt-2"><option value="">انتخاب استان</option>{data.provinces.map((province) => <option key={province.code} value={province.code}>{province.name}</option>)}</select></label>
             <label className="text-xs font-bold text-[#374151]">شهر مبدا<select name="originCityCode" value={cityCode} onChange={(event) => setCityCode(event.target.value)} className="mt-2" disabled={!provinceCode}><option value="">انتخاب شهر</option>{cities.map((city) => <option key={city.code} value={city.code}>{city.name}</option>)}</select>{!settingsState.success && settingsState.errors?.originCityCode?.map((error) => <ErrorText key={error} text={error} />)}</label>
-            <Field name="senderName" label="نام فرستنده" defaultValue={data.settings.senderName} errors={settingsState.success ? undefined : settingsState.errors?.senderName} />
-            <Field name="senderMobile" label="موبایل فرستنده" defaultValue={data.settings.senderMobile} errors={settingsState.success ? undefined : settingsState.errors?.senderMobile} inputMode="tel" />
-            <Field name="originPostalCode" label="کد پستی ۱۰ رقمی مبدا" defaultValue={data.settings.originPostalCode} errors={settingsState.success ? undefined : settingsState.errors?.originPostalCode} inputMode="numeric" />
-            <Field name="originAddress" label="آدرس کامل مبدا" defaultValue={data.settings.originAddress} errors={settingsState.success ? undefined : settingsState.errors?.originAddress} />
+            <div className="md:col-span-2">
+              <Field name="originAddress" label="نشانی داخلی مبدأ" defaultValue={data.settings.originAddress} errors={settingsState.success ? undefined : settingsState.errors?.originAddress} />
+            </div>
           </div>
-          <p className="mt-3 text-[11px] leading-6 text-[#667085]">مبدا پیشنهادی فروشگاه «البرز، کرج، عظیمیه» است. کد پستی، نام و موبایل فرستنده عمداً باید با اطلاعات واقعی تکمیل شوند.</p>
+          <p className="mt-3 text-[11px] leading-6 text-[#667085]">مبدأ ثبت‌شده: اتوسرویس مانی، کرج، عظیمیه، خیابان پاسداران. محاسبه نرخ فقط با شناسه شهر کرج انجام می‌شود و مشتری نیازی به دیدن یا تأیید این آدرس ندارد.</p>
         </Section>
 
         <Section title="بسته‌بندی" description="وزن مرسوله از جمع وزن کالاها و این مقادیر ساخته می‌شود.">

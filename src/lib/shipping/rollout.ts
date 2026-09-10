@@ -1,5 +1,4 @@
 import { config } from "@/lib/config";
-import { validateIranPhone } from "@/lib/phone";
 import prisma from "@/lib/prisma";
 import { resolveShippingLocation } from "@/lib/shipping/locations";
 import { storefrontBuyablePhysicalProductWhere } from "@/lib/storefront-visibility";
@@ -52,10 +51,6 @@ function hasText(value: string | null | undefined) {
   return Boolean(value?.trim());
 }
 
-function isPositiveIntegerText(value: string | null | undefined) {
-  return Boolean(value?.trim() && /^\d+$/.test(value.trim()) && Number(value) > 0);
-}
-
 const SUPPORTED_LIVE_CARRIERS = new Set(["POST", "TIPAX"]);
 
 export function getShippingRolloutEnvironment(): ShippingRolloutEnvironment {
@@ -92,19 +87,6 @@ export function evaluateShippingRollout(input: {
       code: "PRODUCTION_MOCK",
       message: "حالت آزمایشی mock در محیط اصلی مجاز نیست.",
     });
-  } else if (environment.providerMode === "amadast") {
-    if (!environment.clientCodeConfigured) {
-      blockers.push({
-        code: "CLIENT_CODE_MISSING",
-        message: "AMADAST_CLIENT_CODE در تنظیمات امن سرور ثبت نشده است.",
-      });
-    }
-    if (!environment.providerIdentityConfigured) {
-      blockers.push({
-        code: "PROVIDER_IDENTITY_MISSING",
-        message: "AMADAST_USER_ID یا AMADAST_ACCESS_TOKEN در تنظیمات امن سرور ثبت نشده است.",
-      });
-    }
   }
 
   if (!settings) {
@@ -119,28 +101,10 @@ export function evaluateShippingRollout(input: {
         message: "سرویس ذخیره‌شده در پنل با سرویس محیط اجرا یکسان نیست.",
       });
     }
-    if (!isPositiveIntegerText(settings.providerStoreId) || !isPositiveIntegerText(settings.providerProductTypeCode)) {
-      blockers.push({
-        code: "PROVIDER_FIELDS_MISSING",
-        message: "شناسه فروشگاه و نوع محصول آمادست باید با عدد معتبر تکمیل شوند.",
-      });
-    }
     if (!hasText(settings.originProvinceCode) || !hasText(settings.originCityCode)) {
       blockers.push({
         code: "ORIGIN_LOCATION_MISSING",
         message: "استان و شهر مبدا ارسال کامل نشده است.",
-      });
-    }
-    if (!hasText(settings.originAddress) || !/^\d{10}$/.test(settings.originPostalCode?.trim() ?? "")) {
-      blockers.push({
-        code: "ORIGIN_ADDRESS_MISSING",
-        message: "آدرس و کد پستی ۱۰ رقمی مبدا کامل نشده است.",
-      });
-    }
-    if (!hasText(settings.senderName) || !settings.senderMobile || !validateIranPhone(settings.senderMobile)) {
-      blockers.push({
-        code: "SENDER_MISSING",
-        message: "نام و شماره موبایل معتبر فرستنده کامل نشده است.",
       });
     }
     if (

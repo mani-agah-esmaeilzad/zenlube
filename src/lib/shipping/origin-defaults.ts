@@ -1,7 +1,7 @@
 export const DEFAULT_SHIPPING_ORIGIN = {
   provinceName: "البرز",
   cityName: "کرج",
-  address: "کرج، عظیمیه",
+  address: "کرج، عظیمیه، خیابان پاسداران، اتوسرویس مانی، کد مکان R2J7+G9P",
 } as const;
 
 type ShippingLocationChoice = {

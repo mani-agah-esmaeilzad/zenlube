@@ -97,6 +97,7 @@ export type ProviderQuoteRequest = {
   weightGrams: number;
   declaredValueRials: number;
   packageType: number;
+  carrierCodes: Array<Exclude<ShippingCarrierCode, "MANUAL">>;
 };
 
 export type NormalizedProviderQuote = {

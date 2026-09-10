@@ -18,14 +18,14 @@ const liveEnvironment: ShippingRolloutEnvironment = {
 const completeSettings: ShippingRolloutSettings = {
   enabled: true,
   providerKey: "amadast",
-  providerStoreId: "12",
-  providerProductTypeCode: "3",
+  providerStoreId: null,
+  providerProductTypeCode: null,
   originProvinceCode: "IR-P-tehran",
   originCityCode: "IR-C-tehran",
-  originAddress: "تهران، خیابان آزمایشی، پلاک ۱۲",
-  originPostalCode: "1234567890",
-  senderName: "فروشگاه اویل‌بار",
-  senderMobile: "+989121234567",
+  originAddress: null,
+  originPostalCode: null,
+  senderName: null,
+  senderMobile: null,
   enabledCarriers: ["POST"],
 };
 
@@ -57,6 +57,20 @@ test("shipping rollout activates dynamic rates only when every setup blocker is 
   assert.deepEqual(state.blockers, []);
 });
 
+test("live quotes stay available after locations are synced even if sync credentials are later absent", () => {
+  const state = evaluateShippingRollout({
+    settings: completeSettings,
+    environment: {
+      ...liveEnvironment,
+      clientCodeConfigured: false,
+      providerIdentityConfigured: false,
+    },
+    stats: completeStats,
+  });
+  assert.equal(state.setupReady, true);
+  assert.equal(state.mode, "dynamic");
+});
+
 test("missing provider config, locations, or a single product weight safely retain legacy checkout", () => {
   const state = evaluateShippingRollout({
     settings: completeSettings,
@@ -82,11 +96,10 @@ test("an unmapped selected origin cannot activate live rates even after a locati
   assert.ok(state.blockers.some((blocker) => blocker.code === "ORIGIN_MAPPING_MISSING"));
 });
 
-test("invalid persisted sender or carrier values fail closed", () => {
+test("invalid persisted carrier values fail closed", () => {
   const state = evaluateShippingRollout({
     settings: {
       ...completeSettings,
-      senderMobile: "0912",
       enabledCarriers: ["UNSUPPORTED"],
     },
     environment: liveEnvironment,
@@ -95,7 +108,7 @@ test("invalid persisted sender or carrier values fail closed", () => {
   assert.equal(state.mode, "legacy");
   assert.deepEqual(
     new Set(state.blockers.map((blocker) => blocker.code)),
-    new Set(["SENDER_MISSING", "CARRIERS_MISSING"]),
+    new Set(["CARRIERS_MISSING"]),
   );
 });
 

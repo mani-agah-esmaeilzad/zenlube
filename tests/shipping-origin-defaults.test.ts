@@ -20,7 +20,10 @@ test("shipping admin suggests Alborz and Karaj only when stored codes are empty"
     provinceCode: "province-alborz",
     cityCode: "city-karaj",
   });
-  assert.equal(DEFAULT_SHIPPING_ORIGIN.address, "کرج، عظیمیه");
+  assert.equal(
+    DEFAULT_SHIPPING_ORIGIN.address,
+    "کرج، عظیمیه، خیابان پاسداران، اتوسرویس مانی، کد مکان R2J7+G9P",
+  );
 });
 
 test("shipping admin preserves an explicitly stored origin", () => {

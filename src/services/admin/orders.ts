@@ -34,12 +34,9 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
   if (filters.shipping === "POST" || filters.shipping === "TIPAX") {
     where.shippingCarrierCode = filters.shipping;
   } else if (filters.shipping === "UNSHIPPED") {
-    where.AND = [
-      { status: { in: ["PAID", "SHIPPED"] } },
-      { shipment: null },
-    ];
+    where.status = "PAID";
   } else if (filters.shipping === "SHIPPED") {
-    where.shipment = { is: { status: { in: ["SUBMITTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"] } } };
+    where.status = { in: ["SHIPPED", "DELIVERED"] };
   } else if (filters.shipping === "TRACKING") {
     where.shippingTrackingCode = { not: null };
   }

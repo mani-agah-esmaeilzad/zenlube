@@ -18,6 +18,7 @@ import { getCarHierarchy } from "@/lib/data/cars";
 import { createPageInfo, getPaginationParams } from "@/lib/pagination";
 import { resolveProductPricing } from "@/lib/pricing";
 import { getAppSession } from "@/lib/session";
+import { isOrderHandedToCarrier, manualShippingStatusLabel } from "@/lib/shipping/manual-fulfillment";
 import { formatPrice } from "@/lib/utils";
 
 type AccountPageProps = {
@@ -340,7 +341,8 @@ function OrderDetail({ order }: { order: AccountOrder }) {
   const discountAmount = Number(order.discountAmount ?? 0);
   const itemsTotal = order.items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
   const paid = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
-  const handedToCarrier = Boolean(order.shipment && ["SUBMITTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"].includes(order.shipment.status));
+  const handedToCarrier = isOrderHandedToCarrier(order.status)
+    || Boolean(order.shipment && ["SUBMITTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"].includes(order.shipment.status));
   const inTransit = Boolean(order.shipment && ["IN_TRANSIT", "DELIVERED"].includes(order.shipment.status)) || ["SHIPPED", "DELIVERED"].includes(order.status);
   const steps = [
     { label: "سفارش ثبت شد", active: true },
@@ -378,7 +380,7 @@ function OrderDetail({ order }: { order: AccountOrder }) {
           <Summary label="مبلغ نهایی" value={formatPrice(order.total)} strong />
           <Summary label="وضعیت" value={statusLabels[order.status] ?? order.status} />
           <Summary label="روش ارسال" value={order.shippingServiceLabel ?? order.shippingCarrierLabel ?? "اطلاعات سفارش قدیمی"} />
-          <Summary label="وضعیت مرسوله" value={order.shipment ? shipmentStatusLabels[order.shipment.status] ?? order.shipment.status : paid ? "در انتظار آماده‌سازی" : "پس از پرداخت"} />
+          <Summary label="وضعیت مرسوله" value={order.shipment ? shipmentStatusLabels[order.shipment.status] ?? order.shipment.status : manualShippingStatusLabel(order.status)} />
           <Summary label="کد پیگیری ارسال" value={order.shippingTrackingCode ?? order.shipment?.trackingCode ?? "هنوز ثبت نشده"} />
           <Summary label="کد پرداخت" value={order.paymentRefId ?? "ثبت نشده"} />
           <Summary label="تحویل تقریبی" value={order.estimatedDeliveryLabel ?? "ثبت نشده"} />

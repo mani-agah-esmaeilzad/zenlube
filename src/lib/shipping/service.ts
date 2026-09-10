@@ -293,9 +293,6 @@ async function loadContext(userId: string, destination: ShippingDestinationInput
   });
 
   const restrictedCarriers = new Set(items.flatMap((item) => item.product.shippingRestrictedCarriers));
-  // Tipax's published acceptance rules exclude liquid consignments. Keeping
-  // this restriction server-side prevents a client from forcing the carrier.
-  if (items.some((item) => item.product.shippingIsLiquid)) restrictedCarriers.add("TIPAX");
   const enabledCarriers = new Set(
     rollout.mode === "dynamic"
       ? settings!.enabledCarriers.filter((carrier) => !restrictedCarriers.has(carrier))
@@ -455,6 +452,10 @@ export async function requestShippingQuote(
   const provider = context.provider;
   const settings = context.settings;
 
+  if (context.enabledCarriers.size === 0) {
+    throw new ShippingServiceError("NO_CARRIER_AVAILABLE", "برای کالاهای این سبد روش ارسال فعالی وجود ندارد.", 409);
+  }
+
   let providerOptions: NormalizedProviderQuote[] = [];
   let providerError: ShippingProviderError | null = null;
   try {
@@ -464,6 +465,7 @@ export async function requestShippingQuote(
       weightGrams: context.shippingPackage.weightGrams,
       declaredValueRials: Math.max(10_000, context.declaredValueRials),
       packageType: resolveAmadastPackageType(context.shippingPackage),
+      carrierCodes: [...context.enabledCarriers] as Array<"POST" | "TIPAX">,
     }, settings.providerTimeoutMs);
   } catch (error) {
     providerError = error instanceof ShippingProviderError

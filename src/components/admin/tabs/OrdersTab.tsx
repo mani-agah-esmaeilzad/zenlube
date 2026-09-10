@@ -4,11 +4,10 @@ import {
   deleteOrderFormAction,
   updateOrderStatusAction,
   updateOrderTrackingAction,
-  createShipmentAction,
-  syncShipmentTrackingAction,
 } from "@/actions/admin";
 import { retryMerchantOrderSmsAction } from "@/actions/admin/orders";
 import { faDateTimeFormatter, faNumberFormatter } from "@/lib/formatters";
+import { manualShippingStatusLabel } from "@/lib/shipping/manual-fulfillment";
 import { formatPrice } from "@/lib/utils";
 import type { AdminOrderSmsFeedback, OrdersTabData } from "@/services/admin/types";
 
@@ -207,14 +206,18 @@ export function OrdersTab({ data }: OrdersTabProps) {
                     <InfoRow label="نرخ پایه" value={order.shippingBaseCost == null ? "-" : formatPrice(order.shippingBaseCost)} />
                     <InfoRow label="وزن مرسوله" value={order.shippingPackageWeightGrams ? `${faNumberFormatter.format(order.shippingPackageWeightGrams)} گرم` : "-"} />
                     <InfoRow label="ابعاد" value={order.shippingPackageLengthCm && order.shippingPackageWidthCm && order.shippingPackageHeightCm ? `${order.shippingPackageLengthCm}×${order.shippingPackageWidthCm}×${order.shippingPackageHeightCm} cm` : "-"} />
-                    <InfoRow label="وضعیت ارسال" value={order.shipment ? shipmentStatusLabels[order.shipment.status] ?? order.shipment.status : "ثبت نشده"} />
+                    <InfoRow label="وضعیت ارسال" value={order.shipment ? shipmentStatusLabels[order.shipment.status] ?? order.shipment.status : manualShippingStatusLabel(order.status)} />
                     <InfoRow label="کد رهگیری" value={order.shippingTrackingCode ?? order.shipment?.trackingCode ?? "-"} mono />
                     <InfoRow label="زمان ثبت" value={order.shipment?.submittedAt ? faDateTimeFormatter.format(order.shipment.submittedAt) : "-"} />
                     <InfoRow label="وضعیت سرویس" value={order.shipment?.externalStatus ?? order.shippingExternalStatus ?? "-"} />
                   </div>
                 </div>
                 {order.shipment?.lastErrorMessage ? <p className="mt-3 border-r-2 border-red-400 px-3 py-2 text-xs leading-6 text-[#B42318]">{order.shipment.lastErrorMessage}</p> : null}
-                <ShippingActions order={order} />
+                {order.status === "PAID" ? (
+                  <p className="mt-4 border-r-2 border-[#F59E0B] px-3 py-2 text-xs leading-6 text-[#92400E]">
+                    پس از تحویل بسته به {order.shippingCarrierLabel ?? "شرکت حمل منتخب مشتری"}، وضعیت سفارش را «ارسال شده» کنید و کد پیگیری را در فرم سفارش ذخیره کنید؛ پیامک آن برای مشتری ارسال می‌شود.
+                  </p>
+                ) : null}
               </div>
 
               <div className="mt-5 rounded-[24px] border border-[#E6EAF2] bg-[#FBFCFE] p-4">
@@ -340,8 +343,8 @@ function OrdersFilterForm({ filters, statusCounts }: FilterFormProps) {
           ["all", "همه ارسال‌ها"],
           ["POST", "پست"],
           ["TIPAX", "تیپاکس"],
-          ["UNSHIPPED", "آماده و ثبت‌نشده"],
-          ["SHIPPED", "ثبت‌شده"],
+          ["UNSHIPPED", "آماده تحویل"],
+          ["SHIPPED", "تحویل شرکت حمل"],
           ["TRACKING", "دارای رهگیری"],
         ].map(([key, label]) => {
           const params = new URLSearchParams({ tab: "orders", shipping: key });
@@ -408,22 +411,6 @@ function TrackingForm({ orderId, trackingCode, smsFeedback }: { orderId: string;
         ذخیره کد پیگیری
       </button>
     </form>
-  );
-}
-
-function ShippingActions({ order }: { order: OrdersTabData["orders"][number] }) {
-  if (!order.shippingProviderKey || !order.shippingCarrierCode || order.shippingCarrierCode === "MANUAL") return null;
-  const canCreate = order.status === "PAID" && (!order.shipment || ["PENDING", "READY_TO_SHIP", "FAILED"].includes(order.shipment.status));
-  const canSync = Boolean(order.shipment && ["SUBMITTING", "SUBMITTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED", "UNKNOWN"].includes(order.shipment.status));
-  const needsReconciliation = Boolean(order.shipment && ["SUBMITTING", "UNKNOWN"].includes(order.shipment.status));
-  if (!canCreate && !canSync) return null;
-  return (
-    <div className="mt-4 flex flex-wrap gap-2 border-t border-[#E6EAF2] pt-4">
-      {canCreate ? <form action={createShipmentAction}><input type="hidden" name="orderId" value={order.id} /><button type="submit" className="btn-primary min-h-11 px-4 text-xs">ثبت مرسوله در آمادست</button></form> : null}
-      {canSync ? <form action={syncShipmentTrackingAction}><input type="hidden" name="orderId" value={order.id} /><button type="submit" className="btn-outline min-h-11 px-4 text-xs">{needsReconciliation ? "بررسی و بازیابی مرسوله" : "دریافت اطلاعات رهگیری"}</button></form> : null}
-      {canCreate ? <p className="w-full text-[11px] leading-6 text-[#667085]">API فعلی آمادست هنگام ثبت سفارش، فیلدی برای تحمیل پست یا تیپاکس ندارد؛ روش منتخب مشتری ذخیره است و انتخاب/تطبیق نهایی شرکت حمل باید در پنل آمادست بررسی شود.</p> : null}
-      {needsReconciliation ? <p className="w-full text-[11px] leading-6 text-[#92400E]">ممکن است درخواست ثبت قبلی به آمادست رسیده باشد؛ ثبت دوباره غیرفعال است. ابتدا با دکمه بالا مرسوله را بر اساس شماره سفارش بررسی و بازیابی کنید.</p> : null}
-    </div>
   );
 }
 

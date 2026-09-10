@@ -41,6 +41,63 @@ test("Amadast estimate normalization rejects malformed paid-rate responses", () 
   );
 });
 
+test("Amadast live quote uses the official calculator endpoint and requested couriers", async (t) => {
+  const previousConfig = {
+    AMADAST_CALCULATOR_BASE_URL: config.AMADAST_CALCULATOR_BASE_URL,
+    NEXT_PUBLIC_APP_URL: config.NEXT_PUBLIC_APP_URL,
+  };
+  Object.assign(config, {
+    AMADAST_CALCULATOR_BASE_URL: "https://calculator.example.test/api/v2.0/tool/shipping-calculator",
+    NEXT_PUBLIC_APP_URL: "https://www.oilbar.ir",
+  });
+  t.after(() => Object.assign(config, previousConfig));
+
+  let requestCount = 0;
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request, init?: RequestInit) => {
+    requestCount += 1;
+    const url = String(input);
+    const headers = new Headers(init?.headers);
+    assert.equal(headers.has("Authorization"), false);
+    assert.equal(headers.has("X-Client-Code"), false);
+    assert.equal(headers.get("Origin"), "https://www.oilbar.ir");
+
+    if (requestCount === 1) {
+      assert.equal(url, "https://calculator.example.test/api/v2.0/tool/shipping-calculator");
+      assert.equal(init?.method, "POST");
+      const body = JSON.parse(String(init?.body));
+      assert.deepEqual(body.couriers, [13, 4]);
+      assert.equal(body.from_city, 279);
+      assert.equal(body.to_city, 360);
+      return Response.json({ result: true, data: { request_id: "quote-1" } });
+    }
+
+    assert.equal(url, "https://calculator.example.test/api/v2.0/tool/shipping-calculator/quote-1");
+    return Response.json({
+      result: true,
+      data: {
+        data: {
+          items: [{ id: "4", shipping_method: 4, title: "تیپاکس", price: 350000 }],
+        },
+        progress_detail: { percent: 100 },
+      },
+    });
+  });
+
+  const quotes = await amadastProvider.quote({
+    originExternalCityId: 279,
+    destinationExternalCityId: 360,
+    weightGrams: 4500,
+    declaredValueRials: 10_000_000,
+    packageType: 2,
+    carrierCodes: ["POST", "TIPAX"],
+  }, 2000);
+
+  assert.equal(requestCount, 2);
+  assert.equal(quotes.length, 1);
+  assert.equal(quotes[0]?.carrierCode, "TIPAX");
+  assert.equal(quotes[0]?.basePriceRials, 350000);
+});
+
 test("Amadast location normalization accepts the documented null parent for provinces", () => {
   const provinces = normalizeAmadastLocationPayload({
     success: true,

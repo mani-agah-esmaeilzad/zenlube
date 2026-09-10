@@ -6,6 +6,7 @@ import { z } from "zod";
 import { appendOrderStatusEvent } from "@/lib/commerce";
 import { createAuditLog } from "@/lib/admin-audit";
 import { ensureAdminAction, ensureRoleAccess } from "@/lib/auth";
+import { config } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { notifyCustomerOfTrackingCode } from "@/lib/sms/order-notifications";
@@ -37,6 +38,9 @@ function positiveInteger(value: string | null | undefined, label: string) {
 
 export async function createShipmentAction(formData: FormData): Promise<void> {
   const { userId } = await requireOperationsUser();
+  if (config.SHIPPING_FULFILLMENT_MODE !== "amadast") {
+    throw new Error("ثبت مرسوله خودکار غیرفعال است؛ سفارش را دستی تحویل شرکت حمل دهید.");
+  }
   const parsed = orderSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) throw new Error("شناسه سفارش معتبر نیست.");
 
@@ -216,6 +220,9 @@ export async function createShipmentAction(formData: FormData): Promise<void> {
 
 export async function syncShipmentTrackingAction(formData: FormData): Promise<void> {
   const { userId } = await requireOperationsUser();
+  if (config.SHIPPING_FULFILLMENT_MODE !== "amadast") {
+    throw new Error("رهگیری خودکار غیرفعال است؛ کد پیگیری را از بخش سفارش وارد کنید.");
+  }
   const parsed = orderSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) throw new Error("شناسه سفارش معتبر نیست.");
 

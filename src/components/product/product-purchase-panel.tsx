@@ -43,7 +43,7 @@ export function ProductPurchasePanel({
 
   return (
     <>
-      <section className="border-y border-border bg-surface-tint px-4 py-4 sm:px-5 sm:py-5">
+      <section className="rounded-2xl border border-border bg-white px-4 py-4 shadow-[0_12px_28px_rgba(17,24,39,0.06)] sm:px-5 sm:py-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           {isAvailable ? (
             <div>
@@ -110,7 +110,7 @@ export function ProductPurchasePanel({
           </button>
         </div>
 
-        <div className="mt-5 grid gap-2 border-t border-[rgba(217,119,6,0.12)] pt-4 text-sm text-text min-[420px]:grid-cols-2">
+        <div className="mt-5 grid gap-2 border-t border-border pt-4 text-sm text-text min-[420px]:grid-cols-2">
           {benefits.map((benefit) => (
             <div key={benefit} className="flex items-center gap-2">
               <CheckIcon className="h-4 w-4 shrink-0 text-primary-accent-strong" />

@@ -90,13 +90,13 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
       <section id="product-gallery" aria-label={`تصاویر ${title}`}>
         <div
           className={cn(
-            "relative overflow-hidden rounded-xl bg-surface-secondary",
+            "relative overflow-hidden rounded-2xl border border-border bg-[#f7f8fa] shadow-[0_12px_28px_rgba(17,24,39,0.04)]",
             !activeItem.src && "rounded-none bg-transparent",
           )}
           onTouchEnd={handleTouchEnd}
           onTouchStart={handleTouchStart}
         >
-          <div className={cn("relative", activeItem.src ? "min-h-[280px] min-[390px]:min-h-[320px] sm:min-h-[380px] lg:min-h-[460px]" : "min-h-20")}>
+          <div className={cn("relative", activeItem.src ? "min-h-[300px] min-[390px]:min-h-[340px] sm:min-h-[420px] lg:min-h-[560px]" : "min-h-20")}>
             {!activeItem.src ? (
               <div className="flex min-h-20 items-center justify-start py-4 text-sm font-bold text-text-soft">
                 تصویر محصول موجود نیست
@@ -106,7 +106,7 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
                 <Image
                   id="product-primary-image"
                   alt={activeItem.alt}
-                  className="object-contain p-6 sm:p-8 lg:p-10"
+                  className="object-contain p-6 drop-shadow-[0_24px_24px_rgba(28,36,51,0.12)] sm:p-8 lg:p-10"
                   fill
                   itemProp="image"
                   priority={activeIndex === 0}

@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { QuantitySelector } from "@/components/product/quantity-selector";
 import { WishlistButton } from "@/components/product/wishlist-button";
-import { formatCatalogPrice } from "@/lib/utils";
+import { formatProductCardPrice } from "@/lib/product-card-content";
 
 type ProductPurchasePanelProps = {
   compareHref: string;
@@ -39,7 +39,7 @@ export function ProductPurchasePanel({
   wishlistActive = false,
 }: ProductPurchasePanelProps) {
   const [quantity, setQuantity] = useState(1);
-  const finalPrice = useMemo(() => formatCatalogPrice(price), [price]);
+  const finalPrice = useMemo(() => formatProductCardPrice(Number(price)), [price]);
 
   return (
     <>
@@ -56,9 +56,13 @@ export function ProductPurchasePanel({
                 ) : null}
               </div>
               {originalPrice && originalPrice > Number(price) ? (
-                <del className="mt-2 block text-xs font-bold text-text-soft">{formatCatalogPrice(originalPrice)}</del>
+                <del className="mt-2 block text-xs font-bold text-text-soft">
+                  {formatProductCardPrice(Number(originalPrice))} <span className="mr-1 text-[10px]">تومان</span>
+                </del>
               ) : null}
-              <p className="mt-2 text-2xl font-black text-text-strong sm:text-[2rem]">{finalPrice}</p>
+              <p className="mt-2 text-2xl font-black text-text-strong sm:text-[2rem]">
+                {finalPrice} <span className="mr-1 text-sm font-bold text-text-muted">تومان</span>
+              </p>
               {estimatedDeliveryLabel ? (
                 <p className="mt-2 text-xs font-bold text-success">{estimatedDeliveryLabel}</p>
               ) : null}
@@ -126,9 +130,13 @@ export function ProductPurchasePanel({
             <div className="min-w-0 shrink-0">
               <p className="text-[11px] font-bold text-text-muted">قیمت</p>
               {originalPrice && originalPrice > Number(price) ? (
-                <del className="block text-[10px] font-bold text-text-soft">{formatCatalogPrice(originalPrice)}</del>
+                <del className="block text-[10px] font-bold text-text-soft">
+                  {formatProductCardPrice(Number(originalPrice))} <span className="mr-1">تومان</span>
+                </del>
               ) : null}
-              <p className="mt-1 text-sm font-black text-text-strong">{finalPrice}</p>
+              <p className="mt-1 text-sm font-black text-text-strong">
+                {finalPrice} <span className="mr-1 text-[10px] font-bold text-text-muted">تومان</span>
+              </p>
             </div>
           ) : null}
           <AddToCartButton className="w-full" disabled={!isAvailable} productId={productId} quantity={quantity} size="md" />

@@ -124,7 +124,7 @@ export function buildStoreStructuredData() {
     name: "Oilbar",
     alternateName: "اویل‌بار",
     url: SITE_URL,
-    logo: `${SITE_URL}/oilbar-logo-optimized.png`,
+    logo: `${SITE_URL}/oilbar-logo-optimized.webp`,
     telephone: "+989190810910",
     email: "support@oilbar.ir",
     address: {

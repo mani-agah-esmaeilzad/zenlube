@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export const LOGO_SRC = "/oilbar-logo-optimized.png";
+export const LOGO_SRC = "/oilbar-logo-optimized.webp";
 const LOGO_WIDTH = 676;
 const LOGO_HEIGHT = 264;
 

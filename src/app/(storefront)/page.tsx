@@ -28,7 +28,7 @@ export const metadata = buildPageMetadata({
   title: "اویل‌بار | خرید روغن موتور، روغن گیربکس و اکتان بوستر اصل",
   description: "خرید روغن موتور، روغن گیربکس، اکتان بوستر و محصولات مصرفی خودرو با تضمین اصالت. انتخاب روغن براساس مشخصات خودرو و مشاوره فنی اویل‌بار در کرج عظیمیه.",
   pathname: "/",
-  imageUrl: "/oilbar-logo-optimized.png",
+  imageUrl: "/oilbar-logo-optimized.webp",
 });
 
 export default async function Home() {
@@ -77,7 +77,7 @@ export default async function Home() {
                 height={1024}
                 priority
                 sizes="(max-width: 767px) 62vw, 50vw"
-                src="/generated/oilbar-hero-products.png"
+                src="/generated/oilbar-hero-products.webp"
                 width={1536}
               />
             </div>

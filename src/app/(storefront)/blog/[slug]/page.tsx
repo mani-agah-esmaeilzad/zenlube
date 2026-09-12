@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { BlogArticle } from "@/components/blog/blog-article";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { getBlogPostBySlug } from "@/lib/data";
+import { StructuredData } from "@/components/seo/structured-data";
+import { buildArticleStructuredData, buildBreadcrumbStructuredData, buildPageMetadata, SITE_URL } from "@/lib/seo";
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
@@ -17,13 +19,17 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   if (!post) {
     return {
       title: "مقاله یافت نشد",
+      robots: { index: false, follow: true },
     };
   }
 
-  return {
+  return buildPageMetadata({
     title: `${post.title} | وبلاگ Oilbar`,
     description: post.excerpt,
-  };
+    pathname: `/blog/${encodeURIComponent(post.slug)}`,
+    imageUrl: post.coverImage,
+    type: "article",
+  });
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -40,6 +46,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="container-zen py-5 sm:py-6 md:py-8">
+      <StructuredData data={buildArticleStructuredData(post)} />
+      <StructuredData data={buildBreadcrumbStructuredData([
+        { name: "خانه", url: SITE_URL },
+        { name: "وبلاگ", url: `${SITE_URL}/blog` },
+        { name: post.title, url: `${SITE_URL}/blog/${encodeURIComponent(post.slug)}` },
+      ])} />
       <div className="mx-auto max-w-4xl space-y-5 text-text-strong sm:space-y-8">
         <Breadcrumb items={[{ href: "/", label: "خانه" }, { href: "/blog", label: "وبلاگ" }, { label: post.title }]} />
         <header className="border-r-4 border-primary-accent-strong py-2 pr-4 sm:pr-6">

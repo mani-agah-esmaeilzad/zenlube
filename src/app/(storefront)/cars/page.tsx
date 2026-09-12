@@ -5,15 +5,15 @@ import { Pagination } from "@/components/ui/pagination";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getCarHierarchy, getPaginatedCarsWithProducts } from "@/lib/data";
 import { getPaginationParams } from "@/lib/pagination";
+import { buildCollectionMetadata } from "@/lib/seo";
 
 type CarsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export const metadata = {
-  title: "دفترچه راهنمای خودروها | Oilbar",
-  description: "مشخصات فنی، روغن مناسب، حجم روغن، فیلترها و نکات نگهداری خودروها در Oilbar.",
-};
+export async function generateMetadata({ searchParams }: CarsPageProps) {
+  return buildCollectionMetadata({ pathname: "/cars", title: "انتخاب روغن مناسب خودرو و دفترچه‌های فنی | اویل‌بار", description: "روغن موتور مناسب، گرانروی و استاندارد روغن، حجم سرویس، روغن گیربکس و محصولات سازگار را براساس مدل و نسخه خودرو در دفترچه‌های اویل‌بار بررسی کنید.", searchParams: await searchParams });
+}
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

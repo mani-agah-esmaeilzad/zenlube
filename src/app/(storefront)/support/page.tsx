@@ -1,6 +1,9 @@
 import Link from "next/link";
 
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata = buildPageMetadata({ title: "تماس و مشاوره تخصصی خودرو | اویل‌بار کرج عظیمیه", description: "تماس با اویل‌بار و اتوسرویس مانی در کرج عظیمیه برای مشاوره انتخاب روغن، سؤال فنی و پیگیری سفارش. تلفن: ۰۹۱۹۰۸۱۰۹۱۰.", pathname: "/support" });
 
 export default function SupportPage() {
   return (

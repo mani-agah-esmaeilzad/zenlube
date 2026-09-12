@@ -1,4 +1,5 @@
 import { Prisma } from "@/generated/prisma";
+import { cache } from "react";
 import prisma from "../prisma";
 import { createPageInfo } from "../pagination";
 import { storefrontVisibleProductWhere } from "../storefront-visibility";
@@ -14,7 +15,7 @@ type BrandWithProductCount = Prisma.BrandGetPayload<{
   };
 }>;
 
-export async function getBrandsWithProductCount() {
+export const getBrandsWithProductCount = cache(async function getBrandsWithProductCount() {
   return withStorefrontDataFallback("getBrandsWithProductCount", [], () =>
     prisma.brand.findMany({
       include: {
@@ -27,7 +28,7 @@ export async function getBrandsWithProductCount() {
       orderBy: { name: "asc" },
     }),
   );
-}
+});
 
 export async function getPaginatedBrandsWithProductCount({ page = 1, pageSize = 12 }: { page?: number; pageSize?: number }) {
   return withStorefrontDataFallback(

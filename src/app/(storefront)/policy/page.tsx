@@ -1,6 +1,9 @@
 import Link from "next/link";
 
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata = buildPageMetadata({ title: "حریم خصوصی مشتریان | اویل‌بار", description: "اطلاعات مربوط به حریم خصوصی، نگهداری اطلاعات حساب و استفاده از داده‌های مشتریان در فروشگاه اویل‌بار.", pathname: "/policy" });
 
 export default function PolicyPage() {
   return (

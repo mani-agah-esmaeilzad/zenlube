@@ -4,6 +4,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getPaginatedCategoriesWithProductCount } from "@/lib/data";
 import { getPaginationParams } from "@/lib/pagination";
+import { buildCollectionMetadata } from "@/lib/seo";
 
 type CategoriesPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -11,6 +12,10 @@ type CategoriesPageProps = {
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export async function generateMetadata({ searchParams }: CategoriesPageProps) {
+  return buildCollectionMetadata({ pathname: "/categories", title: "دسته‌بندی روغن، روانکار و مکمل خودرو | اویل‌بار", description: "انتخاب دسته‌بندی روغن موتور، روغن گیربکس، ضدیخ، روغن ترمز و مکمل سوخت؛ مشاهده مشخصات، قیمت و موجودی محصولات اویل‌بار.", searchParams: await searchParams });
+}
 
 export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
   const params = await searchParams;

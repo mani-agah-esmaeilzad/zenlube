@@ -64,7 +64,7 @@ export function catalogProduct(input: CatalogProductInput): CatalogProductSeed {
     name: `${input.title} ${input.volumeLabel}`,
     slug: input.slug,
     sku: input.sku,
-    description: `${input.summary} این رکورد برای ${packageName(input.volumeLabel)} ساخته شده و تصویر آن از محصول واقعی همین خانواده انتخاب شده است. ${compatibilityNote}`,
+    description: `${input.summary} این محصول در ${packageName(input.volumeLabel)} عرضه می‌شود. ${compatibilityNote}`,
     viscosity: input.viscosity,
     oilType: input.oilType,
     imageUrl: input.imageUrl,

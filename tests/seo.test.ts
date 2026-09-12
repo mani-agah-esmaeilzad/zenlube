@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildBreadcrumbStructuredData, buildProductPageMetadata, buildProductStructuredData } from "@/lib/seo";
+import { buildArticleStructuredData, buildBreadcrumbStructuredData, buildCarPageMetadata, buildCollectionMetadata, buildPageMetadata, buildProductPageMetadata, buildProductStructuredData, buildStoreStructuredData, serializeStructuredData, summarizeSeoDescription } from "@/lib/seo";
+import { cleanProductDescription } from "@/lib/product-description";
 
 test("buildBreadcrumbStructuredData creates an ordered breadcrumb list", () => {
   assert.deepEqual(
@@ -67,7 +68,7 @@ test("buildProductStructuredData adds real aggregate rating only when reviews ex
   });
 });
 
-test("buildProductStructuredData omits aggregate rating without real reviews", () => {
+test("buildProductStructuredData omits both fake ratings and hidden prices for unavailable products", () => {
   const structuredData = buildProductStructuredData({
     baseUrl: "https://www.oilbar.ir",
     brandName: "Total",
@@ -79,18 +80,85 @@ test("buildProductStructuredData omits aggregate rating without real reviews", (
   });
 
   assert.equal("aggregateRating" in structuredData, false);
-  assert.deepEqual(structuredData.offers, {
-    "@type": "Offer",
-    priceCurrency: "IRR",
-    price: 980000,
-    availability: "https://schema.org/OutOfStock",
-    url: "https://www.oilbar.ir/products/total-gear-oil",
-    itemCondition: "https://schema.org/NewCondition",
-    seller: {
-      "@type": "Organization",
-      name: "Oilbar",
-    },
-  });
+  assert.equal("offers" in structuredData, false);
+});
+
+test("collection pagination is self-canonical and strips default and tracking parameters", () => {
+  const metadata = buildCollectionMetadata({ pathname: "/products", title: "فروشگاه", description: "روانکار خودرو", searchParams: { page: "2", pageSize: "12", sort: "latest", utm_source: "instagram" }, maxPageSize: 12 });
+  assert.equal(metadata.alternates?.canonical, "https://www.oilbar.ir/products?page=2");
+  assert.deepEqual(metadata.robots, { index: true, follow: true });
+  assert.match(String(metadata.title), /۲/);
+});
+
+test("single category and brand collections are indexable but combinations and searches are not", () => {
+  const common = { pathname: "/products", title: "فروشگاه", description: "روانکار خودرو" };
+  const category = buildCollectionMetadata({ ...common, searchParams: { category: "engine-oil", page: "3" }, indexableFilter: "category" });
+  assert.equal(category.alternates?.canonical, "https://www.oilbar.ir/products?category=engine-oil&page=3");
+  assert.deepEqual(category.robots, { index: true, follow: true });
+  const brand = buildCollectionMetadata({ ...common, searchParams: { brand: "aidlube" }, indexableFilter: "brand" });
+  assert.deepEqual(brand.robots, { index: true, follow: true });
+  for (const params of [{ category: "engine-oil", brand: "aidlube" }, { search: "MG6" }, { sort: "price-asc" }, { inStock: "1" }, { viscosity: "5W-30" }, { pageSize: "24" }]) {
+    assert.deepEqual(buildCollectionMetadata({ ...common, searchParams: params, indexableFilter: "category" }).robots, { index: false, follow: true });
+  }
+});
+
+test("collection canonical normalizes invalid page and keeps non-default page sizes", () => {
+  const common = { pathname: "/blog", title: "وبلاگ", description: "راهنما", defaultPageSize: 10, maxPageSize: 30 };
+  for (const page of ["-2", "NaN", "0"]) {
+    assert.equal(buildCollectionMetadata({ ...common, searchParams: { page } }).alternates?.canonical, "https://www.oilbar.ir/blog");
+  }
+  assert.equal(buildCollectionMetadata({ ...common, searchParams: { page: "2", pageSize: "20" } }).alternates?.canonical, "https://www.oilbar.ir/blog?page=2&pageSize=20");
+});
+
+test("product descriptions remove import boilerplate but preserve customer information", () => {
+  assert.equal(cleanProductDescription("اکتان بوستر برای کاهش ناک. این رکورد برای بسته حجم ۴۵۰ میلی‌لیتر ساخته شده و تصویر آن از محصول واقعی همین خانواده انتخاب شده است. طبق دوز روی بسته مصرف شود."), "اکتان بوستر برای کاهش ناک. طبق دوز روی بسته مصرف شود.");
+  assert.equal(cleanProductDescription("ویسکوزیته 5W-30 و استاندارد ACEA C3."), "ویسکوزیته 5W-30 و استاندارد ACEA C3.");
+  assert.equal(cleanProductDescription(null), "");
+});
+
+test("SEO summaries are bounded plain text and product metadata has a useful fallback", () => {
+  const summary = summarizeSeoDescription(`<b>روغن موتور</b> ${"اطلاعات فنی محصول ".repeat(30)}`);
+  assert.ok(summary.length <= 170);
+  assert.equal(summary.includes("<b>"), false);
+  assert.equal(summary.endsWith("…"), true);
+  assert.ok(buildProductPageMetadata({ baseUrl: "https://www.oilbar.ir", name: "محصول", slug: "test" }).description);
+});
+
+test("JSON-LD cannot terminate its script tag even with merchant supplied text", () => {
+  const value = { description: '</script><script>alert("x")</script>\u2028\u2029' };
+  const json = serializeStructuredData(value);
+  assert.equal(json.includes("<"), false);
+  assert.deepEqual(JSON.parse(json), value);
+});
+
+test("schema keeps numeric prices in IRR and includes only visible technical facts", () => {
+  const data = buildProductStructuredData({ baseUrl: "https://www.oilbar.ir", brandName: "ایدلوب", name: "روغن", slug: "روغن", inStock: true, price: 10_000_000, reviewCount: 0, specifications: [{ label: "گرانروی SAE", value: "5W-30" }] });
+  assert.equal((data.offers as Record<string, unknown>).priceCurrency, "IRR");
+  assert.equal((data.offers as Record<string, unknown>).price, 10_000_000);
+  assert.equal(data.url, "https://www.oilbar.ir/products/%D8%B1%D9%88%D8%BA%D9%86");
+  assert.deepEqual(data.additionalProperty, [{ "@type": "PropertyValue", name: "گرانروی SAE", value: "5W-30" }]);
+});
+
+test("car metadata differentiates engine and year and does not recommend engine oil for EVs", () => {
+  const car = { slug: "mg6", manufacturer: "ام جی", model: "MG6", engineCode: "18K4G", yearFrom: 2012, yearTo: 2016, viscosity: "5W-30", specification: "API SN" };
+  const metadata = buildCarPageMetadata(car);
+  assert.match(String(metadata.title), /18K4G.*2012/);
+  assert.match(metadata.description ?? "", /5W-30/);
+  assert.equal(metadata.alternates?.canonical, "https://www.oilbar.ir/cars/mg6");
+  const electric = buildCarPageMetadata({ ...car, model: "MG4", engineType: "تمام‌برقی" });
+  assert.equal(String(electric.title).includes("روغن مناسب"), false);
+  assert.equal(electric.description?.includes("5W-30"), false);
+});
+
+test("article and store schema use real author dates and existing public contact details", () => {
+  const article = buildArticleStructuredData({ title: "راهنما", slug: "guide", excerpt: "انتخاب روغن", authorName: "تیم تحریریه Oilbar", publishedAt: new Date("2026-01-01"), updatedAt: new Date("2026-01-02"), coverImage: "/guide.webp" });
+  assert.equal(article.datePublished, "2026-01-01T00:00:00.000Z");
+  assert.deepEqual(article.image, ["https://www.oilbar.ir/guide.webp"]);
+  assert.equal(article.author["@type"], "Organization");
+  const store = buildStoreStructuredData();
+  assert.equal(store.telephone, "+989190810910");
+  assert.equal(store.address.addressLocality, "کرج");
+  assert.equal(buildPageMetadata({ title: "تماس", description: "تماس", pathname: "/support" }).alternates?.canonical, "https://www.oilbar.ir/support");
 });
 
 test("buildProductStructuredData omits an offer until a real product price is set", () => {

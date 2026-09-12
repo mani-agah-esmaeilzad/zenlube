@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 import { EngagementTracker } from "@/components/analytics/engagement-tracker";
 import { QuestionForm } from "@/components/forms/question-form";
@@ -15,6 +16,7 @@ import { ReviewCard } from "@/components/review/review-card";
 import { ReviewForm } from "@/components/review/review-form";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { EmptyState } from "@/components/ui/empty-state";
+import { StructuredData } from "@/components/seo/structured-data";
 import {
   buildCompatibilityItems,
   buildProductFaqs,
@@ -26,7 +28,8 @@ import {
 } from "@/lib/product-detail";
 import prisma from "@/lib/prisma";
 import { resolveProductPricing } from "@/lib/pricing";
-import { buildBreadcrumbStructuredData, buildProductPageMetadata, buildProductStructuredData } from "@/lib/seo";
+import { buildBreadcrumbStructuredData, buildProductPageMetadata, buildProductStructuredData, SITE_URL } from "@/lib/seo";
+import { cleanProductDescription } from "@/lib/product-description";
 import { getAppSession } from "@/lib/session";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
 
@@ -37,27 +40,20 @@ export const revalidate = 0;
 
 export async function generateMetadata({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = await prisma.product.findFirst({
-    where: storefrontVisibleProductWhere({ slug }),
-    select: { name: true, description: true, imageUrl: true, slug: true },
-  });
+  const product = await getProductPageData(slug);
 
   return product
     ? buildProductPageMetadata({
-        baseUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://www.oilbar.ir",
+        baseUrl: SITE_URL,
         description: product.description,
         imageUrl: product.imageUrl,
         name: product.name,
         slug: product.slug,
       })
-    : { title: "محصول یافت نشد" };
+    : { title: "محصول یافت نشد", robots: { index: false, follow: true } };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params;
-  const session = await getAppSession();
-  const userId = (session as { user?: { id?: string } } | null)?.user?.id;
-
+const getProductPageData = cache(async (slug: string) => {
   const product = await prisma.product.findFirst({
     where: storefrontVisibleProductWhere({ slug }),
     include: {
@@ -90,6 +86,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
   });
 
+  return product ? { ...product, description: cleanProductDescription(product.description) } : null;
+});
+
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { slug } = await params;
+  const [session, product, requestHeaders] = await Promise.all([getAppSession(), getProductPageData(slug), headers()]);
+  const userId = (session as { user?: { id?: string } } | null)?.user?.id;
+
   if (!product) notFound();
 
   const wishlistItem = userId
@@ -99,7 +103,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
       })
     : null;
 
-  const requestHeaders = await headers();
   const isTorobCrawler = /torob/i.test(requestHeaders.get("user-agent") ?? "");
   // Torob's API already receives the canonical primary image. Its HTML crawler
   // must not mistake the five related-product cards for this product's gallery.
@@ -126,11 +129,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         },
         orderBy: [{ isFeatured: "desc" }, { reviewCount: "desc" }, { updatedAt: "desc" }],
       });
-  const requestHost = (requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host"))?.split(",")[0]?.trim();
-  const requestProtocol = requestHeaders.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
-  const baseUrl = requestHost
-    ? `${requestProtocol}://${requestHost}`
-    : (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.oilbar.ir").replace(/\/$/, "");
+  const baseUrl = SITE_URL;
   const pricing = resolveProductPricing(product);
   const isAvailable = product.stock > 0 && pricing.effectivePrice > 0;
   const galleryItems = buildProductGalleryItems(product);
@@ -146,9 +145,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const breadcrumbStructuredData = buildBreadcrumbStructuredData([
     { name: "خانه", url: baseUrl },
-    { name: product.category.name, url: `${baseUrl}/categories/${product.category.slug}` },
-    { name: product.brand.name, url: `${baseUrl}/products?brand=${product.brand.slug}` },
-    { name: product.name, url: `${baseUrl}/products/${product.slug}` },
+    { name: product.category.name, url: `${baseUrl}/products?category=${encodeURIComponent(product.category.slug)}` },
+    { name: product.brand.name, url: `${baseUrl}/products?brand=${encodeURIComponent(product.brand.slug)}` },
+    { name: product.name, url: `${baseUrl}/products/${encodeURIComponent(product.slug)}` },
   ]);
 
   const productStructuredData = buildProductStructuredData({
@@ -164,6 +163,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     reviewCount: product.reviewCount,
     sku: product.sku,
     slug: product.slug,
+    specifications: specRows,
   });
 
   const questionItems = (product.questions ?? []).map((question) => ({
@@ -178,8 +178,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="container-zen pb-[calc(11rem+env(safe-area-inset-bottom,0px))] pt-5 sm:pt-6 md:pt-8 lg:pb-8">
-      <script dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }} type="application/ld+json" />
-      <script dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }} type="application/ld+json" />
+      <StructuredData data={productStructuredData} />
+      <StructuredData data={breadcrumbStructuredData} />
 
       <EngagementTracker entityType="product" entityId={product.id} eventType="product_view" metadata={{ slug: product.slug }} />
       <RecentlyViewedTracker productId={product.id} />

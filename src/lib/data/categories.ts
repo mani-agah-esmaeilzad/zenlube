@@ -1,4 +1,5 @@
 import { Prisma } from "@/generated/prisma";
+import { cache } from "react";
 import prisma from "../prisma";
 import { createPageInfo } from "../pagination";
 import { storefrontVisibleProductWhere } from "../storefront-visibility";
@@ -28,7 +29,7 @@ type HeaderCategory = Prisma.CategoryGetPayload<{
   };
 }>;
 
-export async function getHighlightedCategories() {
+export const getHighlightedCategories = cache(async function getHighlightedCategories() {
   return withStorefrontDataFallback("getHighlightedCategories", [], () =>
     prisma.category.findMany({
       include: {
@@ -41,7 +42,7 @@ export async function getHighlightedCategories() {
       orderBy: { name: "asc" },
     }),
   );
-}
+});
 
 export async function getPaginatedCategoriesWithProductCount({ page = 1, pageSize = 12 }: { page?: number; pageSize?: number }) {
   return withStorefrontDataFallback(

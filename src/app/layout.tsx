@@ -1,12 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast-provider";
+import { SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Oilbar | مرجع تخصصی روغن موتور و لوازم مصرفی خودرو",
   description:
     "خرید آنلاین روغن موتور اصل، فیلتر خودرو، ضدیخ و روانکار با ضمانت اصالت، مشاوره تخصصی انتخاب روغن و ارسال سریع.",
-  metadataBase: new URL("https://www.oilbar.ir"),
+  metadataBase: new URL(SITE_URL),
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION || undefined },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

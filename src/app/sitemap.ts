@@ -2,20 +2,24 @@ import type { MetadataRoute } from "next";
 
 import prisma from "@/lib/prisma";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
-
-const SITE_URL = "https://www.oilbar.ir";
+import { SITE_URL } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, categories, cars, posts] = await Promise.all([
+  const [products, categories, brands, cars, posts] = await Promise.all([
     prisma.product.findMany({
       where: storefrontVisibleProductWhere(),
       select: { slug: true, updatedAt: true },
       orderBy: { id: "desc" },
     }),
     prisma.category.findMany({
+      where: { products: { some: storefrontVisibleProductWhere() } },
+      select: { slug: true, updatedAt: true },
+      orderBy: { slug: "asc" },
+    }),
+    prisma.brand.findMany({
       where: { products: { some: storefrontVisibleProductWhere() } },
       select: { slug: true, updatedAt: true },
       orderBy: { slug: "asc" },
@@ -52,8 +56,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })),
     ...categories.map((category) => ({
-      url: `${SITE_URL}/categories/${encodeURIComponent(category.slug)}`,
+      url: `${SITE_URL}/products?category=${encodeURIComponent(category.slug)}`,
       lastModified: category.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
+    ...brands.map((brand) => ({
+      url: `${SITE_URL}/products?brand=${encodeURIComponent(brand.slug)}`,
+      lastModified: brand.updatedAt,
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })),

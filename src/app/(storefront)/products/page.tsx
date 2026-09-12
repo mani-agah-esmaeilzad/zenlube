@@ -9,6 +9,8 @@ import { Pagination } from "@/components/ui/pagination";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getAllProductsWithFilters, getBrandsWithProductCount, getHighlightedCategories, getProductFilterFacets } from "@/lib/data";
 import type { ProductSort } from "@/lib/data";
+import { buildCollectionMetadata } from "@/lib/seo";
+import { getPaginationParams } from "@/lib/pagination";
 
 type ProductsPageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
@@ -24,6 +26,26 @@ const sorts: { value: ProductSort; label: string }[] = [
 ];
 const allowedSorts = sorts.map((item) => item.value);
 
+export async function generateMetadata({ searchParams }: ProductsPageProps) {
+  const params = await searchParams;
+  const [categories, brands] = await Promise.all([getHighlightedCategories(), getBrandsWithProductCount()]);
+  const category = categories.find(item => item.slug === params.category);
+  const brand = brands.find(item => item.slug === params.brand);
+  const singleCategory = category && !params.brand;
+  const singleBrand = brand && !params.category;
+  return buildCollectionMetadata({
+    pathname: "/products",
+    title: singleCategory ? `خرید ${category.name} | اویل‌بار` : singleBrand ? `خرید محصولات ${brand.name} | اویل‌بار` : "خرید روغن موتور، روانکار و مکمل خودرو | اویل‌بار",
+    description: singleCategory
+      ? `بررسی مشخصات فنی، قیمت و موجودی ${category.name} در اویل‌بار. ${category.description ?? "مقایسه برندها و انتخاب محصول مطابق دفترچه خودرو."}`
+      : singleBrand ? `محصولات ${brand.name} در فروشگاه اویل‌بار؛ بررسی مشخصات، حجم بسته، قیمت و موجودی و مقایسه محصولات این برند.`
+      : "مشخصات، قیمت و موجودی روغن موتور، روغن گیربکس، ضدیخ و اکتان بوستر را بررسی کنید و براساس استاندارد و سازگاری خودرو انتخاب کنید.",
+    searchParams: params,
+    maxPageSize: 12,
+    indexableFilter: singleCategory ? "category" : singleBrand ? "brand" : undefined,
+  });
+}
+
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
   const search = typeof params.search === "string" ? params.search : undefined;
@@ -37,7 +59,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const inStock = params.inStock === "1";
   const minRating = typeof params.minRating === "string" ? Number(params.minRating) || undefined : undefined;
   const sort = typeof params.sort === "string" && allowedSorts.includes(params.sort as ProductSort) ? (params.sort as ProductSort) : "latest";
-  const page = Number(params.page ?? "1") || 1;
+  const { page } = getPaginationParams(params, { defaultPageSize: 12, maxPageSize: 12 });
 
   const [categories, brands, facets, productsResult] = await Promise.all([
     getHighlightedCategories(),

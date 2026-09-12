@@ -23,6 +23,7 @@ export function Pagination({ pageInfo, pathname, searchParams = {}, className = 
         className={pageInfo.hasPreviousPage ? "btn-outline" : "pointer-events-none opacity-40 btn-outline"}
         href={hrefFor(Math.max(1, pageInfo.page - 1))}
         aria-disabled={!pageInfo.hasPreviousPage}
+        rel={pageInfo.hasPreviousPage ? "prev" : undefined}
       >
         قبلی
       </Link>
@@ -52,6 +53,7 @@ export function Pagination({ pageInfo, pathname, searchParams = {}, className = 
         className={pageInfo.hasNextPage ? "btn-outline" : "pointer-events-none opacity-40 btn-outline"}
         href={hrefFor(Math.min(pageInfo.totalPages, pageInfo.page + 1))}
         aria-disabled={!pageInfo.hasNextPage}
+        rel={pageInfo.hasNextPage ? "next" : undefined}
       >
         بعدی
       </Link>

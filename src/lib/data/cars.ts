@@ -1,4 +1,5 @@
 import prisma from "../prisma";
+import { cache } from "react";
 import { applyCarManualOverrides } from "../car-manual-overrides";
 import { createPageInfo } from "../pagination";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "../storefront-visibility";
@@ -218,7 +219,7 @@ export async function getCarHierarchy(): Promise<CarHierarchy[]> {
   });
 }
 
-export async function getCarBySlug(slug: string) {
+export const getCarBySlug = cache(async function getCarBySlug(slug: string) {
   return withStorefrontDataFallback("getCarBySlug", null, async () => {
     const car = await prisma.car.findFirst({
       where: storefrontVisibleCarWhere({ slug }),
@@ -257,7 +258,7 @@ export async function getCarBySlug(slug: string) {
 
     return car ? applyCarManualOverrides(car) : null;
   });
-}
+});
 
 export async function getSiblingCars(manufacturer: string, currentSlug: string, limit = 4) {
   return withStorefrontDataFallback("getSiblingCars", [], async () => {

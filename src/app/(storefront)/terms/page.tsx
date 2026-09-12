@@ -1,6 +1,9 @@
 import Link from "next/link";
 
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata = buildPageMetadata({ title: "قوانین و شرایط استفاده | اویل‌بار", description: "قوانین استفاده از خدمات فروشگاه اویل‌بار و مسئولیت‌های کاربران را پیش از خرید مطالعه کنید.", pathname: "/terms" });
 
 export default function TermsPage() {
   return (

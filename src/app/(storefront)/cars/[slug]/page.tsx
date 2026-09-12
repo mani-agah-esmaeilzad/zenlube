@@ -13,6 +13,8 @@ import {
 import { resolveCarOilCapacityLabel } from "@/lib/car-manual-overrides";
 import { getCarBySlug, getRelatedBlogPostsForCar, getSiblingCars } from "@/lib/data";
 import { resolveProductPricing } from "@/lib/pricing";
+import { StructuredData } from "@/components/seo/structured-data";
+import { buildBreadcrumbStructuredData, buildCarPageMetadata, SITE_URL } from "@/lib/seo";
 
 type CarPageProps = {
   params: Promise<{ slug: string }>;
@@ -25,12 +27,8 @@ export async function generateMetadata({ params }: CarPageProps) {
   const { slug } = await params;
   const car = await getCarBySlug(slug);
 
-  if (!car) return { title: "خودرو یافت نشد" };
-
-  return {
-    title: `${car.manufacturer} ${car.model} | دفترچه راهنمای خودرو در Oilbar`,
-    description: `روغن مناسب، حجم روغن و فیلترهای سازگار ${car.manufacturer} ${car.model} در Oilbar.`,
-  };
+  if (!car) return { title: "خودرو یافت نشد", robots: { index: false, follow: true } };
+  return buildCarPageMetadata(car);
 }
 
 export default async function CarDetailPage({ params }: CarPageProps) {
@@ -39,8 +37,10 @@ export default async function CarDetailPage({ params }: CarPageProps) {
   if (!car) notFound();
 
   const recommendedProducts = car.productMappings.map((mapping) => mapping.product);
-  const siblings = await getSiblingCars(car.manufacturer, car.slug, 4);
-  const relatedPosts = await getRelatedBlogPostsForCar(car.manufacturer, car.model, 3);
+  const [siblings, relatedPosts] = await Promise.all([
+    getSiblingCars(car.manufacturer, car.slug, 4),
+    getRelatedBlogPostsForCar(car.manufacturer, car.model, 3),
+  ]);
   const title = `${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""}`;
   const years = car.yearFrom || car.yearTo ? `${car.yearFrom ?? "نامشخص"} تا ${car.yearTo ?? "نامشخص"}` : "نامشخص";
   const oilCapacity = resolveCarOilCapacityLabel(car);
@@ -136,11 +136,16 @@ export default async function CarDetailPage({ params }: CarPageProps) {
   const faqs = [
     ["چه روغنی برای این خودرو مناسب است؟", car.viscosity ? `روغن با ویسکوزیته ${car.viscosity} و استاندارد ${car.specification ?? "مطابق دفترچه خودرو"} پیشنهاد می‌شود.` : "برای این خودرو هنوز ویسکوزیته پیشنهادی ثبت نشده است."],
     ["حجم روغن موتور چقدر است؟", `حجم روغن موتور برای این مدل ${oilCapacity} ثبت شده است.`],
-    ["هر چند کیلومتر روغن باید تعویض شود؟", "برای رانندگی شهری معمولاً هر ۸ تا ۱۰ هزار کیلومتر یا سالی یک‌بار بررسی و تعویض روغن پیشنهاد می‌شود."],
+    ["هر چند کیلومتر روغن باید تعویض شود؟", "بازه تعویض را از برنامه سرویس همین نسخه خودرو بررسی کنید؛ نوع موتور، شرایط رانندگی و کارکرد زمانی می‌توانند این بازه را تغییر دهند. عدد عمومی برای همه خودروها مناسب نیست."],
   ];
 
   return (
     <div className="container-zen space-y-8 py-6 md:py-8">
+      <StructuredData data={buildBreadcrumbStructuredData([
+        { name: "خانه", url: SITE_URL },
+        { name: "دفترچه خودروها", url: `${SITE_URL}/cars` },
+        { name: title, url: `${SITE_URL}/cars/${encodeURIComponent(car.slug)}` },
+      ])} />
       <EngagementTracker entityType="car" entityId={car.id} eventType="notebook_view" metadata={{ slug: car.slug }} />
 
       <Breadcrumb items={[{ href: "/", label: "خانه" }, { href: "/cars", label: "دفترچه خودروها" }, { label: title }]} />

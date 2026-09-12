@@ -4,6 +4,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getPaginatedBrandsWithProductCount } from "@/lib/data";
 import { getPaginationParams } from "@/lib/pagination";
+import { buildCollectionMetadata } from "@/lib/seo";
 
 type BrandsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -11,6 +12,10 @@ type BrandsPageProps = {
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export async function generateMetadata({ searchParams }: BrandsPageProps) {
+  return buildCollectionMetadata({ pathname: "/brands", title: "برندهای روغن موتور و محصولات مصرفی خودرو | اویل‌بار", description: "برندهای روغن موتور، روغن گیربکس و مکمل خودرو در اویل‌بار؛ انتخاب برند و مشاهده مشخصات و موجودی محصولات.", searchParams: await searchParams });
+}
 
 export default async function BrandsPage({ searchParams }: BrandsPageProps) {
   const params = await searchParams;

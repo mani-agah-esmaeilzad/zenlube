@@ -1,4 +1,5 @@
 import { Prisma } from "@/generated/prisma";
+import { cache } from "react";
 import prisma from "../prisma";
 import { createPageInfo } from "../pagination";
 import { createEmptyPageResult, withStorefrontDataFallback } from "./storefront-fallback";
@@ -77,10 +78,10 @@ export async function getPaginatedBlogPosts({ page = 1, pageSize = 10 }: { page?
   );
 }
 
-export async function getBlogPostBySlug(slug: string) {
+export const getBlogPostBySlug = cache(async function getBlogPostBySlug(slug: string) {
   return withStorefrontDataFallback("getBlogPostBySlug", null, () =>
     prisma.blogPost.findUnique({
       where: { slug },
     }),
   );
-}
+});

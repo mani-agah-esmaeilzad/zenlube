@@ -8,6 +8,7 @@ import { OilSelectionGuide } from "@/components/home/oil-selection-guide";
 import { HeroVehicleFinder } from "@/components/layout/hero-vehicle-finder";
 import { ProductCard } from "@/components/product/product-card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { buildPageMetadata } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/section-header";
 import {
   getBestsellerProducts,
@@ -21,6 +22,13 @@ import {
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export const metadata = buildPageMetadata({
+  title: "اویل‌بار | خرید روغن موتور، روغن گیربکس و اکتان بوستر اصل",
+  description: "خرید روغن موتور، روغن گیربکس، اکتان بوستر و محصولات مصرفی خودرو با تضمین اصالت. انتخاب روغن براساس مشخصات خودرو و مشاوره فنی اویل‌بار در کرج عظیمیه.",
+  pathname: "/",
+  imageUrl: "/oilbar-logo-optimized.png",
+});
 
 export default async function Home() {
   const [categories, brands, cars, posts, specialOfferProducts, featuredProducts, bestsellerProducts] = await Promise.all([

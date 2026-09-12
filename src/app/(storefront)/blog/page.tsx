@@ -5,16 +5,15 @@ import { Pagination } from "@/components/ui/pagination";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getPaginatedBlogPosts } from "@/lib/data";
 import { getPaginationParams } from "@/lib/pagination";
+import { buildCollectionMetadata } from "@/lib/seo";
 
 type BlogPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export const metadata = {
-  title: "وبلاگ Oilbar | راهنمای تخصصی روغن موتور",
-  description:
-    "جدیدترین مقالات آموزشی و تخصصی درباره انتخاب، نگهداری و مقایسه روغن موتور برای خودروهای مدرن.",
-};
+export async function generateMetadata({ searchParams }: BlogPageProps) {
+  return buildCollectionMetadata({ pathname: "/blog", title: "راهنمای خرید و نگهداری روغن موتور | وبلاگ اویل‌بار", description: "مقالات تخصصی انتخاب، نگهداری و مقایسه روغن موتور، روانکار و محصولات مصرفی خودرو در وبلاگ اویل‌بار.", searchParams: await searchParams, defaultPageSize: 10, maxPageSize: 30 });
+}
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

@@ -4,6 +4,7 @@ import type { ReactNode, SVGProps } from "react";
 
 import { BlogCard } from "@/components/blog/blog-card";
 import { FuelRevivalBanner } from "@/components/home/fuel-revival-banner";
+import { OilSelectionGuide } from "@/components/home/oil-selection-guide";
 import { HeroVehicleFinder } from "@/components/layout/hero-vehicle-finder";
 import { ProductCard } from "@/components/product/product-card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -178,28 +179,7 @@ export default async function Home() {
         </section>
       ) : null}
 
-      <section className="container-zen mt-9 md:mt-14">
-        <div className="grid gap-7 border-y border-[rgba(217,119,6,0.18)] bg-surface-tint py-7 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div>
-            <h2 className="section-title">راهنمای انتخاب روغن</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-text-muted md:text-base md:leading-8">
-              ویسکوزیته، استاندارد و تأییدیهٔ سازنده را با دفترچهٔ خودرو تطبیق دهید. انتخاب‌گر خودرو فقط بر پایهٔ اطلاعات ثبت‌شده، پیشنهاد سازگار نمایش می‌دهد.
-            </p>
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <Link className="text-link-zen inline-flex min-h-11 items-center px-1 text-sm font-extrabold" href="/cars">
-                انتخاب بر اساس خودرو
-              </Link>
-              <Link className="text-sm font-extrabold text-primary-accent-strong" href="/blog">
-                مطالعه راهنماهای فنی ←
-              </Link>
-            </div>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <GuideNote number="۱" title="ویسکوزیته" text="گریدی مثل 5W-30 را با توصیهٔ سازندهٔ خودرو مطابقت دهید." />
-            <GuideNote number="۲" title="استاندارد" text="API، ACEA و تأییدیهٔ سازنده را در صفحهٔ محصول بررسی کنید." />
-          </div>
-        </div>
-      </section>
+      <OilSelectionGuide />
 
       {!!posts.length && (
         <section className="container-zen mt-9 space-y-4 md:mt-14 md:space-y-6">
@@ -222,18 +202,6 @@ function HeroAssurance({ className = "", icon, label }: { className?: string; ic
     <div className={`flex min-w-0 items-center justify-center gap-2.5 px-2 text-xs font-extrabold text-text sm:text-sm ${className}`}>
       <span className="shrink-0 text-primary-accent-strong">{icon}</span>
       <span className="line-clamp-2">{label}</span>
-    </div>
-  );
-}
-
-function GuideNote({ number, title, text }: { number: string; title: string; text: string }) {
-  return (
-    <div className="border-t border-[rgba(217,119,6,0.18)] px-1 py-4 first:border-t-0 sm:first:border-t">
-      <div className="flex items-center gap-3">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-dark text-xs font-black text-white">{number}</span>
-        <p className="text-sm font-extrabold text-text-strong">{title}</p>
-      </div>
-      <p className="mt-3 text-sm leading-7 text-text-muted">{text}</p>
     </div>
   );
 }

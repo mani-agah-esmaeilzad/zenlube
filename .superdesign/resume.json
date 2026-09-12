@@ -39,13 +39,15 @@
         "src/lib/data/categories.ts",
         "src/components/home/fuel-revival-banner.tsx",
         "src/components/layout/technical-consultation.tsx",
-        "public/illustrations/fuel-revival-gift.svg"
+        "public/illustrations/fuel-revival-gift.svg",
+        "src/components/home/oil-selection-guide.tsx",
+        "public/illustrations/oil-selection-guide.svg"
       ],
       "fingerprints": {
-        ".superdesign/design-system.md": "fb444398ab422573f7ac80f3f845814927d622a0fc03182bc4e92376452629b7",
-        "src/app/globals.css": "49ff154b4270bd8a13eaadf0197ce0105e4edc9b3d3eeca1e1ae48a3f2113a3e",
+        ".superdesign/design-system.md": "13dc489695c8fb7fe4daf0a67173216c63f9fcf04699b80d8cdaa29e9dd5e391",
+        "src/app/globals.css": "5b1d83f7354fa45d8b32e8a00d19661f6d9bdbedf07085def2655b968308ae77",
         "src/app/(storefront)/layout.tsx": "9921a3fca493ffe4a513d9d30a2c4f16ffd62d1a6a73e5479e4045f248b996cd",
-        "src/app/(storefront)/page.tsx": "c296a08e13f05bf9ab3f4842848ab44fadc6f49385c1a964dec14de4b7d1cbc3",
+        "src/app/(storefront)/page.tsx": "1de227257bbe24f5e4cd0f5dbe971c44a2b6da34a2f42970a382c6205611ce2e",
         "src/components/layout/site-header.tsx": "8e061cd9777fd89df028bebf39c8d9019c99187f99209c8dbebfdd6f779daabf",
         "src/components/layout/category-dropdown.tsx": "69f00afb199629cb2df7432c8df1071a0d9471d7b5f970c2b2c88c2bd3b1be4b",
         "src/components/layout/mobile-nav.tsx": "8fdd89c775dc18758ee41f5a098bea4907ad0d4790f540bd8be4f4cfb0383a81",
@@ -60,7 +62,9 @@
         "src/lib/data/categories.ts": "154f35f1a32689d7162cb2201df75f0681ad1d2adf3cdf82b6eae76012a7c5ba",
         "src/components/home/fuel-revival-banner.tsx": "7f327e45f53c980f8d9b76ec16b8f76d35bb024bdd16d208dbff300078b5435f",
         "src/components/layout/technical-consultation.tsx": "5d0e91024faec78e2f2c8bb94a8b5338095d86fd8e2d3bc28e53509383f8c81e",
-        "public/illustrations/fuel-revival-gift.svg": "7ed34cde97175982194e182dc6784b134d47bbe27bc6fb8bef5a8e8c65bf2ccb"
+        "public/illustrations/fuel-revival-gift.svg": "7ed34cde97175982194e182dc6784b134d47bbe27bc6fb8bef5a8e8c65bf2ccb",
+        "src/components/home/oil-selection-guide.tsx": "648258784dec2b1f23f8428fe9b834e6d658154e09d983bc0b50c31d526a4b4f",
+        "public/illustrations/oil-selection-guide.svg": "974a6825f6293aefb68353a7a132f093339a4f9ac0561de14864a6f8c2c62079"
       },
       "components": [
         {
@@ -95,12 +99,12 @@
         },
         "bd147ef3-3f8e-4755-a64e-1415f7fad25b": {
           "title": "فروشگاه تخصصی Oilbar | کمپین احیای سوخت و مشاوره فنی",
-          "visualDirection": "Charcoal-and-amber fuel revival gift campaign banner with a smiling fuel additive illustration and a compact floating automotive consultation phone panel",
+          "visualDirection": "Charcoal-and-amber campaign and floating technical consultation, with an open white image-led oil guide, an educational manual/bottle illustration and compact vehicle-manual and blog actions",
           "parentDraftId": "f38327be-8589-44c0-bdfc-3c37283bf3bc",
-          "currentVersion": 4
+          "currentVersion": 6
         }
       },
-      "updatedAt": "2026-09-12T08:35:03.429Z"
+      "updatedAt": "2026-09-12T09:03:55.273Z"
     }
   }
 }

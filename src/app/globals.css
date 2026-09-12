@@ -504,6 +504,14 @@ textarea.input-zen {
   color: #fff;
 }
 
+.oil-guide-secondary {
+  color: var(--zen-muted);
+}
+
+.oil-guide-secondary:hover {
+  color: var(--zen-orange-dark);
+}
+
 .divider-zen {
   border-color: rgba(230, 232, 238, 0.9);
 }

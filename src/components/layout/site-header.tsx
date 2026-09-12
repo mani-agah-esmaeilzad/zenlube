@@ -35,7 +35,7 @@ export async function SiteHeader() {
   const searchSuggestions = categories.slice(0, 4).map((category) => category.name);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-white/96 backdrop-blur-xl">
+    <header className="site-header border-b border-border/80 bg-white lg:backdrop-blur-xl">
       <div className="hidden border-b border-white/8 bg-primary text-white lg:block">
         <div className="container-zen flex items-center justify-between py-2 text-[11px]">
           <div className="flex items-center gap-3 text-white/88">

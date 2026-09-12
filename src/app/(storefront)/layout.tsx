@@ -14,7 +14,7 @@ export default function StorefrontLayout({ children }: Readonly<{ children: Reac
       >
         رفتن به محتوای اصلی
       </a>
-      <div className="site-chrome">
+      <div className="site-header-shell">
         <SiteHeader />
       </div>
       <main className="site-main flex-1 focus:outline-none" id="site-main-content" tabIndex={-1}>

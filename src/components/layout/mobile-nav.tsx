@@ -182,7 +182,8 @@ export function MobileNav({ links, isAuthenticated, accountHref, categories }: M
       {mounted && !open
         ? createPortal(
             <nav
-              className="fixed inset-x-0 bottom-0 z-[90] grid grid-cols-4 border-t border-border bg-white/95 px-1 pt-0.5 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] text-[10px] font-bold text-text-muted shadow-[0_-8px_24px_rgba(17,24,39,0.05)] backdrop-blur-xl lg:hidden"
+              aria-label="ناوبری پایین موبایل"
+              className="mobile-bottom-nav grid grid-cols-4 border-t border-border bg-white px-1 text-[10px] font-bold text-text-muted shadow-[0_-8px_24px_rgba(17,24,39,0.05)] lg:hidden"
               dir="rtl"
             >
               <BottomLink active={pathname === "/"} href="/" icon={<HomeIcon className="h-5 w-5" />} label="خانه" />

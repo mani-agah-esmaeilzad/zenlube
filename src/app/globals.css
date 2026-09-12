@@ -31,6 +31,8 @@
   --zen-error-soft: #fef3f2;
   --zen-info: #2563eb;
   --zen-focus: rgba(217, 119, 6, 0.28);
+  --mobile-header-height: 61px;
+  --mobile-bottom-nav-height: 55px;
   --zen-radius-sm: 6px;
   --zen-radius: 10px;
   --zen-radius-lg: 12px;
@@ -186,6 +188,38 @@ a {
 .site-shell {
   position: relative;
   background: var(--background);
+}
+
+.site-header-shell {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 90;
+  min-height: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+  padding-top: 0.125rem;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.25rem);
+}
+
+@media (max-width: 1023px) {
+  .site-shell {
+    padding-top: calc(var(--mobile-header-height) + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .site-header-shell {
+    position: fixed;
+    inset-inline: 0;
+  }
+
+  .site-header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
 }
 
 .card-zen,

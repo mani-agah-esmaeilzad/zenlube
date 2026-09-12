@@ -9,14 +9,14 @@ import nextConfig from "../next.config";
 
 test("sitemap includes the entire visible catalog and canonical category and brand collections", async (t) => {
   const updatedAt = new Date("2026-09-12T00:00:00Z");
-  const products = Array.from({ length: 123 }, (_, index) => ({ slug: `product-${index}`, updatedAt }));
+  const products = Array.from({ length: 123 }, (_, index) => ({ slug: `product-${index}`, updatedAt, categoryId: "category-1", brandId: "brand-1" }));
   let productQuery: unknown;
   const delegates = [prisma.product, prisma.category, prisma.brand, prisma.car, prisma.blogPost];
   const originals = delegates.map(delegate => delegate.findMany);
   t.after(() => delegates.forEach((delegate, index) => Object.assign(delegate, { findMany: originals[index] })));
   Object.assign(prisma.product, { findMany: async (args: unknown) => { productQuery = args; return products; } });
-  Object.assign(prisma.category, { findMany: async () => [{ slug: "engine-oil", updatedAt }] });
-  Object.assign(prisma.brand, { findMany: async () => [{ slug: "aidlube", updatedAt }] });
+  Object.assign(prisma.category, { findMany: async () => [{ id: "category-1", slug: "engine-oil", updatedAt }] });
+  Object.assign(prisma.brand, { findMany: async () => [{ id: "brand-1", slug: "aidlube", updatedAt }] });
   Object.assign(prisma.car, { findMany: async () => [{ slug: "mg6", updatedAt }] });
   Object.assign(prisma.blogPost, { findMany: async () => [{ slug: "oil-guide", updatedAt }] });
 
@@ -30,6 +30,31 @@ test("sitemap includes the entire visible catalog and canonical category and bra
   const queryJson = JSON.stringify(productQuery);
   assert.match(queryJson, /deleted-/);
   assert.equal(/"(?:take|skip|price|stock)"/.test(queryJson), false, "Sitemap must not truncate or hide unavailable products");
+});
+
+test("collection sitemap dates follow real product updates without extra per-collection queries", async (t) => {
+  const older = new Date("2026-08-01T00:00:00Z");
+  const newer = new Date("2026-09-10T00:00:00Z");
+  const newest = new Date("2026-09-11T00:00:00Z");
+  const delegates = [prisma.product, prisma.category, prisma.brand, prisma.car, prisma.blogPost];
+  const originals = delegates.map(delegate => delegate.findMany);
+  t.after(() => delegates.forEach((delegate, index) => Object.assign(delegate, { findMany: originals[index] })));
+  let queries = 0;
+  const results = [
+    [{ slug: "oil", updatedAt: newer, categoryId: "engine", brandId: "aidlube" }],
+    [{ id: "engine", slug: "engine-oil", updatedAt: older }],
+    [{ id: "aidlube", slug: "aidlube", updatedAt: older }, { id: "new-brand", slug: "new-brand", updatedAt: newest }],
+    [],
+    [],
+  ];
+  delegates.forEach((delegate, index) => Object.assign(delegate, { findMany: async () => { queries++; return results[index]; } }));
+  const entries = await sitemap();
+  for (const path of ["/products", "/products/oil", "/products?category=engine-oil", "/products?brand=aidlube"]) {
+    assert.equal(entries.find(entry => entry.url === `${SITE_URL}${path}`)?.lastModified, newer, path);
+  }
+  assert.equal(entries.find(entry => entry.url === `${SITE_URL}/products?brand=new-brand`)?.lastModified, newest);
+  assert.equal(entries.find(entry => entry.url === SITE_URL)?.lastModified, undefined, "Do not fabricate today's date for unchanged static content");
+  assert.equal(queries, 5);
 });
 
 test("robots advertises the canonical sitemap and preserves Torob feed access", () => {

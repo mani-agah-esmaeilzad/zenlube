@@ -137,6 +137,19 @@ export function buildStoreStructuredData() {
   };
 }
 
+export function buildWebsiteStructuredData() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    name: "اویل‌بار",
+    alternateName: "Oilbar",
+    url: SITE_URL,
+    inLanguage: "fa-IR",
+    publisher: { "@id": `${SITE_URL}/#organization` },
+  };
+}
+
 export function buildArticleStructuredData(input: {
   title: string; slug: string; excerpt: string; authorName: string;
   publishedAt: Date; updatedAt: Date; coverImage?: string | null;

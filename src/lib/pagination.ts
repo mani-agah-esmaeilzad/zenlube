@@ -15,11 +15,19 @@ export function getPaginationParams(
   const maxPageSize = options.maxPageSize ?? 60;
   const rawPage = typeof params.page === "string" ? Number(params.page) : 1;
   const rawPageSize = typeof params.pageSize === "string" ? Number(params.pageSize) : defaultPageSize;
-  const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
+  const normalizedPageSize = Math.floor(rawPageSize);
   const pageSize =
-    Number.isFinite(rawPageSize) && rawPageSize > 0
-      ? Math.min(Math.floor(rawPageSize), maxPageSize)
+    Number.isFinite(normalizedPageSize) && normalizedPageSize >= 1
+      ? Math.min(normalizedPageSize, maxPageSize)
       : defaultPageSize;
+
+  // Keep database offsets in a signed 32-bit range. Malformed URLs must not
+  // send zero-sized pages, negative offsets or unbounded offsets to Prisma.
+  const normalizedPage = Math.floor(rawPage);
+  const maxPage = Math.floor(2_147_483_647 / pageSize) + 1;
+  const page = Number.isSafeInteger(normalizedPage) && normalizedPage >= 1 && normalizedPage <= maxPage
+    ? normalizedPage
+    : 1;
 
   return { page, pageSize, skip: (page - 1) * pageSize };
 }

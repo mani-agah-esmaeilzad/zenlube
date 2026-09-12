@@ -8,7 +8,8 @@ import { OilSelectionGuide } from "@/components/home/oil-selection-guide";
 import { HeroVehicleFinder } from "@/components/layout/hero-vehicle-finder";
 import { ProductCard } from "@/components/product/product-card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { buildPageMetadata } from "@/lib/seo";
+import { StructuredData } from "@/components/seo/structured-data";
+import { buildPageMetadata, buildWebsiteStructuredData } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/section-header";
 import {
   getBestsellerProducts,
@@ -53,6 +54,7 @@ export default async function Home() {
 
   return (
     <div className="pb-6 md:pb-12">
+      <StructuredData data={buildWebsiteStructuredData()} />
       <section className="container-zen pt-4 md:pt-8">
         <div className="relative overflow-hidden border-b border-border bg-white">
           <div className="relative grid min-h-[350px] grid-cols-[minmax(0,1.25fr)_minmax(105px,0.75fr)] items-center gap-0 pt-3 sm:min-h-[400px] md:min-h-0 md:grid-cols-2 md:gap-8 md:py-8 lg:py-10">

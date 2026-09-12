@@ -7,21 +7,29 @@ import { SITE_URL } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+function latestDate(dates: Iterable<Date>) {
+  let latest: Date | undefined;
+  for (const date of dates) {
+    if (!latest || date > latest) latest = date;
+  }
+  return latest;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, categories, brands, cars, posts] = await Promise.all([
     prisma.product.findMany({
       where: storefrontVisibleProductWhere(),
-      select: { slug: true, updatedAt: true },
+      select: { slug: true, updatedAt: true, categoryId: true, brandId: true },
       orderBy: { id: "desc" },
     }),
     prisma.category.findMany({
       where: { products: { some: storefrontVisibleProductWhere() } },
-      select: { slug: true, updatedAt: true },
+      select: { id: true, slug: true, updatedAt: true },
       orderBy: { slug: "asc" },
     }),
     prisma.brand.findMany({
       where: { products: { some: storefrontVisibleProductWhere() } },
-      select: { slug: true, updatedAt: true },
+      select: { id: true, slug: true, updatedAt: true },
       orderBy: { slug: "asc" },
     }),
     prisma.car.findMany({
@@ -35,9 +43,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   ]);
 
+  // Reuse the catalog scan rather than querying every collection separately.
+  // Changing a product's content, price or availability also changes its lists.
+  const categoryDates = new Map(categories.map(category => [category.id, category.updatedAt]));
+  const brandDates = new Map(brands.map(brand => [brand.id, brand.updatedAt]));
+  for (const product of products) {
+    const categoryDate = categoryDates.get(product.categoryId);
+    const brandDate = brandDates.get(product.brandId);
+    if (categoryDate && product.updatedAt > categoryDate) categoryDates.set(product.categoryId, product.updatedAt);
+    if (brandDate && product.updatedAt > brandDate) brandDates.set(product.brandId, product.updatedAt);
+  }
+
   const staticEntries: MetadataRoute.Sitemap = [
     { url: SITE_URL, changeFrequency: "daily", priority: 1 },
-    { url: `${SITE_URL}/products`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/products`, lastModified: latestDate(products.map(product => product.updatedAt)), changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/categories`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE_URL}/brands`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/cars`, changeFrequency: "weekly", priority: 0.7 },
@@ -57,13 +76,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...categories.map((category) => ({
       url: `${SITE_URL}/products?category=${encodeURIComponent(category.slug)}`,
-      lastModified: category.updatedAt,
+      lastModified: categoryDates.get(category.id),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })),
     ...brands.map((brand) => ({
       url: `${SITE_URL}/products?brand=${encodeURIComponent(brand.slug)}`,
-      lastModified: brand.updatedAt,
+      lastModified: brandDates.get(brand.id),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })),

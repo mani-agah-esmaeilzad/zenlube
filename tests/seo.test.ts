@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildArticleStructuredData, buildBreadcrumbStructuredData, buildCarPageMetadata, buildCollectionMetadata, buildPageMetadata, buildProductPageMetadata, buildProductStructuredData, buildStoreStructuredData, serializeStructuredData, summarizeSeoDescription } from "@/lib/seo";
+import { buildArticleStructuredData, buildBreadcrumbStructuredData, buildCarPageMetadata, buildCollectionMetadata, buildPageMetadata, buildProductPageMetadata, buildProductStructuredData, buildStoreStructuredData, buildWebsiteStructuredData, serializeStructuredData, summarizeSeoDescription } from "@/lib/seo";
 import { cleanProductDescription } from "@/lib/product-description";
 
 test("buildBreadcrumbStructuredData creates an ordered breadcrumb list", () => {
@@ -104,10 +104,20 @@ test("single category and brand collections are indexable but combinations and s
 
 test("collection canonical normalizes invalid page and keeps non-default page sizes", () => {
   const common = { pathname: "/blog", title: "وبلاگ", description: "راهنما", defaultPageSize: 10, maxPageSize: 30 };
-  for (const page of ["-2", "NaN", "0"]) {
+  for (const page of ["-2", "NaN", "0", "0.5", "1e300", "999999999999"]) {
     assert.equal(buildCollectionMetadata({ ...common, searchParams: { page } }).alternates?.canonical, "https://www.oilbar.ir/blog");
   }
   assert.equal(buildCollectionMetadata({ ...common, searchParams: { page: "2", pageSize: "20" } }).alternates?.canonical, "https://www.oilbar.ir/blog?page=2&pageSize=20");
+});
+
+test("website schema identifies the existing Persian brand on the canonical homepage", () => {
+  const website = buildWebsiteStructuredData();
+  assert.equal(website["@type"], "WebSite");
+  assert.equal(website.name, "اویل‌بار");
+  assert.equal(website.alternateName, "Oilbar");
+  assert.equal(website.url, "https://www.oilbar.ir");
+  assert.deepEqual(website.publisher, { "@id": "https://www.oilbar.ir/#organization" });
+  assert.equal("potentialAction" in website, false, "Do not add obsolete sitelinks search box markup");
 });
 
 test("product descriptions remove import boilerplate but preserve customer information", () => {

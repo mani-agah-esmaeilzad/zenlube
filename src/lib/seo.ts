@@ -240,6 +240,11 @@ export function buildBreadcrumbStructuredData(items: BreadcrumbStructuredDataIte
   };
 }
 
+/** Informational pages without a visible offer or genuine reviews are not product rich results. */
+export function hasProductRichResultData(data: Record<string, unknown>) {
+  return Boolean(data.offers || data.aggregateRating || data.review);
+}
+
 export function buildProductStructuredData(input: ProductStructuredDataInput) {
   const baseUrl = normalizeBaseUrl(input.baseUrl);
   const productUrl = `${baseUrl}/products/${encodeURIComponent(input.slug)}`;

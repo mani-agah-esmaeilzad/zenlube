@@ -108,7 +108,6 @@ export function ProductGallery({ items, title }: ProductGalleryProps) {
                   alt={activeItem.alt}
                   className="object-contain p-6 drop-shadow-[0_24px_24px_rgba(28,36,51,0.12)] sm:p-8 lg:p-10"
                   fill
-                  itemProp="image"
                   priority={activeIndex === 0}
                   sizes="(max-width: 1023px) 100vw, 46vw"
                   src={activeItem.src}

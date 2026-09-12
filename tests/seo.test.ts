@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildArticleStructuredData, buildBreadcrumbStructuredData, buildCarPageMetadata, buildCollectionMetadata, buildPageMetadata, buildProductPageMetadata, buildProductStructuredData, buildStoreStructuredData, buildWebsiteStructuredData, serializeStructuredData, summarizeSeoDescription } from "@/lib/seo";
+import { buildArticleStructuredData, buildBreadcrumbStructuredData, buildCarPageMetadata, buildCollectionMetadata, buildPageMetadata, buildProductPageMetadata, buildProductStructuredData, buildStoreStructuredData, buildWebsiteStructuredData, hasProductRichResultData, serializeStructuredData, summarizeSeoDescription } from "@/lib/seo";
 import { cleanProductDescription } from "@/lib/product-description";
 
 test("buildBreadcrumbStructuredData creates an ordered breadcrumb list", () => {
@@ -81,6 +81,15 @@ test("buildProductStructuredData omits both fake ratings and hidden prices for u
 
   assert.equal("aggregateRating" in structuredData, false);
   assert.equal("offers" in structuredData, false);
+  assert.equal(hasProductRichResultData(structuredData), false);
+});
+
+test("only emit product rich result markup when visible offers or real reviews support it", () => {
+  const product = { baseUrl: "https://www.oilbar.ir", brandName: "پرشیا ساین", name: "اکتان", slug: "octane", price: 12_000_000, reviewCount: 0 };
+  assert.equal(hasProductRichResultData(buildProductStructuredData({ ...product, inStock: true })), true);
+  assert.equal(hasProductRichResultData(buildProductStructuredData({ ...product, inStock: false })), false);
+  assert.equal(hasProductRichResultData(buildProductStructuredData({ ...product, inStock: true, price: 0 })), false);
+  assert.equal(hasProductRichResultData(buildProductStructuredData({ ...product, inStock: false, reviewCount: 2, averageRating: 4.5 })), true);
 });
 
 test("collection pagination is self-canonical and strips default and tracking parameters", () => {

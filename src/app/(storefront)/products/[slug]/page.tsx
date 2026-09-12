@@ -28,7 +28,7 @@ import {
 } from "@/lib/product-detail";
 import prisma from "@/lib/prisma";
 import { resolveProductPricing } from "@/lib/pricing";
-import { buildBreadcrumbStructuredData, buildProductPageMetadata, buildProductStructuredData, SITE_URL } from "@/lib/seo";
+import { buildBreadcrumbStructuredData, buildProductPageMetadata, buildProductStructuredData, hasProductRichResultData, SITE_URL } from "@/lib/seo";
 import { cleanProductDescription } from "@/lib/product-description";
 import { getAppSession } from "@/lib/session";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
@@ -178,7 +178,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="container-zen pb-[calc(11rem+env(safe-area-inset-bottom,0px))] pt-5 sm:pt-6 md:pt-8 lg:pb-8">
-      <StructuredData data={productStructuredData} />
+      {hasProductRichResultData(productStructuredData) ? <StructuredData data={productStructuredData} /> : null}
       <StructuredData data={breadcrumbStructuredData} />
 
       <EngagementTracker entityType="product" entityId={product.id} eventType="product_view" metadata={{ slug: product.slug }} />
@@ -198,11 +198,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <section
         id="product-detail"
         className={hasGalleryMedia ? "grid gap-8 sm:gap-10 xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] xl:gap-14 xl:items-start" : "max-w-4xl"}
-        itemScope
-        itemType="https://schema.org/Product"
       >
-        <meta content={`${baseUrl}/products/${product.slug}`} itemProp="url" />
-        {product.sku ? <meta content={product.sku} itemProp="sku" /> : null}
         {hasGalleryMedia ? (
           <div className="min-w-0">
             <ProductGallery items={galleryItems} title={product.name} />
@@ -220,7 +216,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </Link>
           </div>
 
-          <h1 className="mt-3 text-[clamp(1.7rem,1.25vw+1.1rem,2.35rem)] font-black leading-[1.5] tracking-[-0.04em] text-text-strong" itemProp="name">
+          <h1 className="mt-3 text-[clamp(1.7rem,1.25vw+1.1rem,2.35rem)] font-black leading-[1.5] tracking-[-0.04em] text-text-strong">
             {product.name}
           </h1>
 

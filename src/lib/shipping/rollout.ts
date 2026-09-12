@@ -207,5 +207,16 @@ export async function getShippingRolloutState(
       originMapped: Boolean(originMapping),
     },
   });
+  // Manual fulfillment is intentionally display-only: the storefront shows
+  // the Mahex cash-on-delivery option and never calls a carrier API.
+  if (config.SHIPPING_FULFILLMENT_MODE === "manual") {
+    return {
+      ...state,
+      mode: "legacy",
+      setupReady: true,
+      enabled: false,
+      blockers: [],
+    };
+  }
   return state;
 }

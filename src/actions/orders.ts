@@ -253,7 +253,7 @@ export async function createCheckoutOrderAction(
 
     const existingOrder = await prisma.order.findUnique({
       where: { userId_checkoutIdempotencyKey: { userId, checkoutIdempotencyKey: input.checkoutIdempotencyKey } },
-      select: { id: true, total: true, email: true, phone: true, status: true, shippingQuoteOptionId: true },
+      select: { id: true, total: true, email: true, phone: true, status: true, paymentMethod: true, shippingQuoteOptionId: true },
     });
     if (existingOrder) {
       if (existingOrder.shippingQuoteOptionId !== input.shippingOptionId) {
@@ -483,6 +483,7 @@ export async function retryOrderPaymentAction(formData: FormData): Promise<void>
       email: true,
       phone: true,
       status: true,
+      paymentMethod: true,
       shippingQuoteOptionId: true,
       provinceCode: true,
       cityCode: true,

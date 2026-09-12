@@ -33,6 +33,18 @@ const statusLabels: Record<string, string> = {
   CANCELLED: "لغو شده",
 };
 
+function orderStatusLabel(status: string, paymentMethod?: string | null) {
+  if (status === "PENDING" && paymentMethod === "COD") return "ثبت شد؛ پرداخت در محل";
+  return statusLabels[status] ?? status;
+}
+
+function shippingChargeLabel(order: { shippingCost: unknown; shippingServiceCode?: string | null; shippingServiceLabel?: string | null }) {
+  if (order.shippingServiceCode === "MAHEX_COD" && Number(order.shippingCost) === 0 && !order.shippingServiceLabel?.includes("رایگان")) {
+    return "پس‌کرایه هنگام تحویل";
+  }
+  return formatPrice(Number(order.shippingCost));
+}
+
 const returnStatusLabels: Record<string, string> = {
   REQUESTED: "ثبت شده",
   APPROVED: "تایید شده",
@@ -218,7 +230,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                         <p className="font-mono text-sm font-black text-text-strong">#{order.id.slice(0, 10).toUpperCase()}</p>
                         <p className="mt-1 text-xs text-text-muted">{new Date(order.createdAt).toLocaleString("fa-IR")}</p>
                       </div>
-                      <Badge status={order.status} />
+                      <Badge status={order.status} paymentMethod={order.paymentMethod} />
                       <p className="text-sm font-black text-text-strong">{formatPrice(order.total)}</p>
                       <span className="text-xs font-bold text-primary-accent-strong">مشاهده جزئیات</span>
                     </div>
@@ -337,7 +349,6 @@ type AccountOrder = Awaited<ReturnType<typeof prisma.order.findMany>>[number] & 
 };
 
 function OrderDetail({ order }: { order: AccountOrder }) {
-  const shippingCost = Number(order.shippingCost ?? 0);
   const discountAmount = Number(order.discountAmount ?? 0);
   const itemsTotal = order.items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
   const paid = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
@@ -375,10 +386,11 @@ function OrderDetail({ order }: { order: AccountOrder }) {
         </div>
         <div className="space-y-3 border-y border-border py-4 text-xs">
           <Summary label="جمع کالاها" value={formatPrice(itemsTotal)} />
-          <Summary label="هزینه ارسال" value={formatPrice(shippingCost)} />
+          <Summary label="هزینه ارسال" value={shippingChargeLabel(order)} />
           {discountAmount > 0 ? <Summary label="تخفیف" value={formatPrice(discountAmount)} /> : null}
           <Summary label="مبلغ نهایی" value={formatPrice(order.total)} strong />
-          <Summary label="وضعیت" value={statusLabels[order.status] ?? order.status} />
+          <Summary label="وضعیت" value={orderStatusLabel(order.status, order.paymentMethod)} />
+          <Summary label="روش پرداخت" value={order.paymentMethod === "COD" ? "پرداخت در محل" : "درگاه آنلاین"} />
           <Summary label="روش ارسال" value={order.shippingServiceLabel ?? order.shippingCarrierLabel ?? "اطلاعات سفارش قدیمی"} />
           <Summary label="وضعیت مرسوله" value={order.shipment ? shipmentStatusLabels[order.shipment.status] ?? order.shipment.status : manualShippingStatusLabel(order.status)} />
           <Summary label="کد پیگیری ارسال" value={order.shippingTrackingCode ?? order.shipment?.trackingCode ?? "هنوز ثبت نشده"} />
@@ -392,7 +404,7 @@ function OrderDetail({ order }: { order: AccountOrder }) {
           </div>
           <div className="flex flex-wrap gap-1 pt-2">
             <Link href="/support" className="btn-ghost min-h-11 px-3 text-xs">درخواست پشتیبانی</Link>
-          {order.status === "PENDING" && order.shippingQuoteOptionId ? (
+          {order.status === "PENDING" && order.paymentMethod !== "COD" && order.shippingQuoteOptionId ? (
             <form action={retryOrderPaymentAction} className="inline-flex">
               <input type="hidden" name="orderId" value={order.id} />
               <button type="submit" className="btn-primary min-h-11 px-3 text-xs">تلاش دوباره برای پرداخت</button>
@@ -492,11 +504,11 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
   );
 }
 
-function Badge({ status }: { status: string }) {
+function Badge({ status, paymentMethod }: { status: string; paymentMethod?: string | null }) {
   const tone =
     status === "CANCELLED" ? "danger" : status === "DELIVERED" ? "success" : status === "PENDING" ? "neutral" : "warning";
 
-  return <StatusPill tone={tone}>{statusLabels[status] ?? status}</StatusPill>;
+  return <StatusPill tone={tone}>{orderStatusLabel(status, paymentMethod)}</StatusPill>;
 }
 
 function Summary({ label, value, strong }: { label: string; value: string; strong?: boolean }) {

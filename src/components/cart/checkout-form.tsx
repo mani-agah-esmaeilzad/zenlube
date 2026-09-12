@@ -160,7 +160,12 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
         }
         setQuote(payload.data);
         if (payload.data.mode === "legacy") {
-          setSelectedOptionId(payload.data.options.find((option) => option.serviceCode === "STANDARD")?.id ?? "");
+          setSelectedOptionId(
+            payload.data.options.find((option) => option.serviceCode === "MAHEX_COD")?.id
+              ?? payload.data.options.find((option) => option.serviceCode === "STANDARD")?.id
+              ?? payload.data.options[0]?.id
+              ?? "",
+          );
         }
         if (payload.data.options.length === 0) {
           setQuoteError("متأسفانه در حال حاضر روش ارسالی برای این آدرس در دسترس نیست.");
@@ -270,7 +275,7 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
               title="روش ارسال"
               subtitle={shippingMode === "dynamic"
                 ? "نرخ‌ها مستقیماً از سرویس حمل دریافت می‌شوند؛ یک روش معتبر را انتخاب کنید."
-                : "تا زمان راه‌اندازی نرخ زنده، روش‌ها و هزینه‌های قبلی فروشگاه برقرار هستند."}
+                : "ارسال سفارش با ماهکس انجام می‌شود و پرداخت هزینه حمل هنگام تحویل خواهد بود."}
             />
             {!destinationReady && !quoteLoading ? <p className="mt-4 text-xs leading-6 text-text-muted">برای مشاهده روش‌ها و هزینه ارسال، استان، شهر، آدرس و کد پستی را کامل کنید.</p> : null}
             {quoteLoading ? <ShippingSkeleton /> : null}
@@ -281,7 +286,7 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
                   <label key={option.id} className={`flex min-h-14 cursor-pointer items-start gap-3 border-r-2 px-3 py-4 text-xs transition ${selectedOptionId === option.id ? "border-primary-accent-strong bg-surface-tint" : "border-transparent bg-white hover:bg-surface-secondary"}`}>
                     <input type="radio" name="shipping-choice" value={option.id} checked={selectedOptionId === option.id} onChange={() => setSelectedOptionId(option.id)} className="mt-1 size-4 shrink-0 accent-[#F59E0B]" />
                     <span className="min-w-0 flex-1"><span className="block font-black text-text-strong">{option.serviceLabel || option.carrierLabel}</span>{option.estimatedDeliveryLabel ? <span className="mt-1 block text-text-muted">{option.estimatedDeliveryLabel}</span> : null}</span>
-                    <span className={`shrink-0 font-black ${option.isFree ? "text-[#16803C]" : "text-primary-accent-strong"}`}>{option.isFree ? "ارسال رایگان" : formatPrice(option.customerPriceRials)}</span>
+                    <span className={`shrink-0 font-black ${option.isFree ? "text-[#16803C]" : "text-primary-accent-strong"}`}>{option.isFree ? "ارسال رایگان" : option.serviceCode === "MAHEX_COD" ? "پس‌کرایه" : formatPrice(option.customerPriceRials)}</span>
                   </label>
                 ))}
               </div>
@@ -301,7 +306,7 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
             {items.map((item) => <div key={item.id} className="flex items-start justify-between gap-3 text-xs text-text-muted"><span className="line-clamp-2 min-w-0">{item.name}<span className="mr-1 text-text-soft">×{item.quantity.toLocaleString("fa-IR")}</span></span><span className="shrink-0 font-bold text-[#374151]">{formatPrice(item.price * item.quantity)}</span></div>)}
             <SummaryRow label="جمع کالاها" value={formatPrice(subtotal)} />
             {discount > 0 ? <SummaryRow label="تخفیف" value={`− ${formatPrice(discount)}`} /> : null}
-            <SummaryRow label="هزینه ارسال" value={selectedOption ? (selectedOption.isFree ? "رایگان" : formatPrice(shippingCost)) : "پس از انتخاب روش"} />
+            <SummaryRow label="هزینه ارسال" value={selectedOption ? (selectedOption.isFree ? "رایگان" : selectedOption.serviceCode === "MAHEX_COD" ? "پس‌کرایه" : formatPrice(shippingCost)) : "پس از انتخاب روش"} />
             {selectedOption?.estimatedDeliveryLabel ? <SummaryRow label="تحویل تقریبی" value={selectedOption.estimatedDeliveryLabel} /> : null}
             <div className="flex justify-between border-t border-[rgba(245,158,11,0.16)] pt-3 text-base font-extrabold text-text-strong"><span>مبلغ قابل پرداخت</span><span>{formatPrice(total)}</span></div>
           </div>
@@ -309,7 +314,7 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
           {state.success && state.message && <p className="mt-4 border-r-2 border-blue-400 px-3 py-2 text-xs leading-6 text-blue-700">{state.message}</p>}
           <SubmitButton disabled={paymentDisabled} />
           {paymentDisabled ? <p className="mt-2 text-[11px] leading-5 text-text-muted">برای پرداخت، آدرس را کامل و یک روش ارسال معتبر انتخاب کنید.</p> : null}
-          <p className="mt-3 text-xs leading-6 text-text-muted">{shippingMode === "dynamic" ? "مبلغ نهایی و نرخ واقعی ارسال پیش از اتصال به درگاه دوباره در سرور بررسی می‌شود." : "مبلغ نهایی و هزینه روش انتخاب‌شده پیش از اتصال به درگاه دوباره در سرور بررسی می‌شود."}</p>
+          <p className="mt-3 text-xs leading-6 text-text-muted">{shippingMode === "dynamic" ? "مبلغ نهایی و نرخ واقعی ارسال پیش از اتصال به درگاه دوباره در سرور بررسی می‌شود." : "مبلغ کالاها در زرین‌پال پرداخت می‌شود؛ هزینه حمل ماهکس هنگام تحویل به‌صورت پس‌کرایه دریافت خواهد شد."}</p>
         </section>
       </aside>
     </form>
@@ -335,7 +340,7 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
 
 function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
-  return <button type="submit" className="btn-primary mt-5 !min-h-11 w-full" disabled={pending || disabled}>{pending ? "در حال انتقال به درگاه پرداخت..." : "ادامه و پرداخت"}</button>;
+  return <button type="submit" className="btn-primary mt-5 !min-h-11 w-full" disabled={pending || disabled}>{pending ? "در حال انتقال به درگاه پرداخت..." : "ادامه و پرداخت آنلاین"}</button>;
 }
 
 type CheckoutFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "value"> & { label: string; name: string; value?: string; onChange?: (value: string) => void; errors?: string[] };

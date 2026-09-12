@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 
 import { Prisma } from "@/generated/prisma";
 import { calculateCouponDiscount, findActiveCouponByCode } from "@/lib/commerce";
+import { config } from "@/lib/config";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { resolveProductPricing } from "@/lib/pricing";
@@ -84,6 +85,9 @@ export function sanitizePublicShippingQuote(
 const LEGACY_PROVIDER_KEY = "legacy-checkout-v1";
 const LEGACY_SETTINGS_VERSION = "legacy-checkout-v1";
 const LEGACY_QUOTE_TTL_SECONDS = 24 * 60 * 60;
+export const MANUAL_SHIPPING_PROVIDER_KEY = "manual-mahex-cod-v1";
+export const MANUAL_FREE_SHIPPING_THRESHOLD_RIALS = 100_000_000;
+const MANUAL_SETTINGS_VERSION = "manual-mahex-cod-v1";
 
 export const LEGACY_SHIPPING_OPTIONS = [
   {
@@ -287,7 +291,9 @@ async function loadContext(userId: string, destination: ShippingDestinationInput
       postalCode,
       addressHash,
     },
-    settingsVersion: rollout.mode === "dynamic" ? settings!.updatedAt : LEGACY_SETTINGS_VERSION,
+    settingsVersion: rollout.mode === "dynamic"
+      ? settings!.updatedAt
+      : config.SHIPPING_FULFILLMENT_MODE === "manual" ? MANUAL_SETTINGS_VERSION : LEGACY_SETTINGS_VERSION,
     shippingPackage,
     pricingContext: { couponCode: normalizedCoupon, discountRials, declaredValueRials },
   });
@@ -422,6 +428,77 @@ async function createLegacyShippingQuote(
   return publicResult(created, context.subtotalRials, context.discountRials, "legacy");
 }
 
+async function createManualShippingQuote(
+  userId: string,
+  destination: ShippingDestinationInput,
+  context: Awaited<ReturnType<typeof loadContext>>,
+  now: Date,
+) {
+  const expiresAt = new Date(now.getTime() + LEGACY_QUOTE_TTL_SECONDS * 1000);
+  const cacheBucket = String(Math.floor(now.getTime() / (LEGACY_QUOTE_TTL_SECONDS * 1000)));
+  const isFree = context.subtotalRials >= MANUAL_FREE_SHIPPING_THRESHOLD_RIALS;
+  const serviceLabel = isFree ? "ماهکس — ارسال رایگان" : "ماهکس — پرداخت در محل (پس‌کرایه)";
+  const estimatedDeliveryLabel = isFree
+    ? "ارسال برای خریدهای بالای ۱۰ میلیون تومان رایگان است."
+    : "هزینه ارسال هنگام تحویل توسط ماهکس دریافت می‌شود.";
+  let created: Prisma.ShippingQuoteRequestGetPayload<{ include: { options: true } }>;
+  try {
+    created = await prisma.shippingQuoteRequest.create({
+      data: {
+        userId,
+        cartId: context.cart.id,
+        cartVersion: context.cart.version,
+        providerKey: MANUAL_SHIPPING_PROVIDER_KEY,
+        fingerprint: context.fingerprint,
+        cacheBucket,
+        destinationProvinceCode: destination.provinceCode.trim(),
+        destinationCityCode: destination.cityCode.trim(),
+        destinationPostalCode: context.postalCode,
+        destinationAddressHash: context.addressHash,
+        declaredValue: new Prisma.Decimal(context.declaredValueRials),
+        packageWeightGrams: context.shippingPackage.weightGrams,
+        packageLengthCm: context.shippingPackage.lengthCm,
+        packageWidthCm: context.shippingPackage.widthCm,
+        packageHeightCm: context.shippingPackage.heightCm,
+        packageTypeCode: "manual",
+        status: "READY",
+        providerRequestId: null,
+        quotedAt: now,
+        expiresAt,
+        providerErrors: Prisma.JsonNull,
+        options: {
+          create: [{
+            carrierCode: "MANUAL",
+            carrierLabel: "ماهکس",
+            serviceCode: "MAHEX_COD",
+            serviceLabel,
+            externalQuoteId: null,
+            baseCost: new Prisma.Decimal(0),
+            adjustmentAmount: new Prisma.Decimal(0),
+            customerCost: new Prisma.Decimal(0),
+            currency: "IRR",
+            isFree: isFree,
+            estimatedDeliveryLabel,
+            estimatedMinDays: null,
+            estimatedMaxDays: null,
+            providerMetadata: { rollout: "manual", source: "mahex-cod-display-only", freeThresholdRials: MANUAL_FREE_SHIPPING_THRESHOLD_RIALS },
+          }],
+        },
+      },
+      include: { options: { orderBy: { createdAt: "asc" } } },
+    });
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2002") throw error;
+    const raced = await prisma.shippingQuoteRequest.findUnique({
+      where: { userId_fingerprint_cacheBucket: { userId, fingerprint: context.fingerprint, cacheBucket } },
+      include: { options: { orderBy: { createdAt: "asc" } } },
+    });
+    if (!raced) throw error;
+    created = raced;
+  }
+  return publicResult(created, context.subtotalRials, context.discountRials, "legacy");
+}
+
 export async function requestShippingQuote(
   userId: string,
   destination: ShippingDestinationInput,
@@ -442,6 +519,9 @@ export async function requestShippingQuote(
   });
   if (cached?.options.length) {
     return publicResult(cached, context.subtotalRials, context.discountRials, context.rollout.mode);
+  }
+  if (config.SHIPPING_FULFILLMENT_MODE === "manual") {
+    return createManualShippingQuote(userId, destination, context, now);
   }
   if (context.rollout.mode === "legacy") {
     return createLegacyShippingQuote(userId, destination, context, now);
@@ -583,8 +663,10 @@ export async function validateShippingSelection(input: {
   const initialValidation = inspectShippingQuoteSnapshot(snapshot, { userId: input.userId, orderId: input.orderId });
   if (!initialValidation.valid) throw new ShippingServiceError(initialValidation.code, initialValidation.message, initialValidation.retryable ? 409 : 400, initialValidation.retryable);
   const context = await loadContext(input.userId, input.destination, input.couponCode);
-  const expectedProviderKey = context.rollout.mode === "legacy"
-    ? LEGACY_PROVIDER_KEY
+  const expectedProviderKey = config.SHIPPING_FULFILLMENT_MODE === "manual"
+    ? MANUAL_SHIPPING_PROVIDER_KEY
+    : context.rollout.mode === "legacy"
+      ? LEGACY_PROVIDER_KEY
     : context.provider?.key;
   if (!expectedProviderKey || option.request.providerKey !== expectedProviderKey) {
     throw new ShippingServiceError(

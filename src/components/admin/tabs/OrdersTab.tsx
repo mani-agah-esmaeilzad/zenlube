@@ -28,6 +28,18 @@ const statusStyles: Record<string, string> = {
   CANCELLED: "bg-[#FFF1F3] text-[#D92D20]",
 };
 
+function orderStatusLabel(status: string, paymentMethod?: string | null) {
+  if (status === "PENDING" && paymentMethod === "COD") return "ثبت شد؛ پرداخت در محل";
+  return statusLabels[status] ?? status;
+}
+
+function shippingChargeLabel(order: { shippingCost: number; shippingServiceCode?: string | null; shippingServiceLabel?: string | null }) {
+  if (order.shippingServiceCode === "MAHEX_COD" && order.shippingCost === 0 && !order.shippingServiceLabel?.includes("رایگان")) {
+    return "پس‌کرایه هنگام تحویل";
+  }
+  return formatPrice(order.shippingCost);
+}
+
 const shipmentStatusLabels: Record<string, string> = {
   PENDING: "در انتظار آماده‌سازی",
   READY_TO_SHIP: "آماده ثبت",
@@ -108,7 +120,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono text-sm font-black text-[#111827]">#{order.id.slice(0, 10)}</span>
                     <span className={`rounded-full px-3 py-1 text-[11px] font-bold ${statusStyles[order.status] ?? "bg-[#F4F4F5] text-[#344054]"}`}>
-                      {statusLabels[order.status] ?? order.status}
+                      {orderStatusLabel(order.status, order.paymentMethod)}
                     </span>
                   </div>
                   <p className="mt-2 text-xs text-[#98A2B3]">{faDateTimeFormatter.format(order.createdAt)}</p>
@@ -129,7 +141,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
 
                 <div className="text-left">
                   <p className="text-sm font-black text-[#111827]">{formatPrice(order.total)}</p>
-                  <p className="mt-1 text-[11px] text-[#667085]">{order.paymentGateway ?? "بدون درگاه ثبت شده"}</p>
+                  <p className="mt-1 text-[11px] text-[#667085]">{order.paymentMethod === "COD" ? "پرداخت در محل" : order.paymentGateway ?? "بدون درگاه ثبت شده"}</p>
                 </div>
               </div>
 
@@ -155,7 +167,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
                     </div>
                   ) : null}
                   <InfoRow label="مبلغ سفارش" value={formatPrice(order.total)} strong />
-                  <InfoRow label="درگاه" value={order.paymentGateway ?? "-"} />
+                  <InfoRow label="روش پرداخت" value={order.paymentMethod === "COD" ? "پرداخت در محل" : order.paymentGateway ?? "-"} />
                   <InfoRow label="Authority" value={order.paymentAuthority ?? "-"} mono />
                   <InfoRow label="Ref ID" value={order.paymentRefId ?? "-"} mono />
                   <InfoRow label="کد پیگیری" value={order.shippingTrackingCode ?? "-"} />
@@ -177,6 +189,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
                   <StatusForm
                     orderId={order.id}
                     currentStatus={order.status}
+                    paymentMethod={order.paymentMethod}
                     smsFeedback={order.smsNotifications?.status}
                   />
                   <TrackingForm orderId={order.id} trackingCode={order.shippingTrackingCode} smsFeedback={order.smsNotifications?.tracking} />
@@ -202,7 +215,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
                     <p className="text-xs leading-6 text-[#667085]">کد پستی: {order.postalCode}</p>
                   </div>
                   <div className="grid min-w-0 gap-2 text-xs sm:grid-cols-2 lg:min-w-[420px]">
-                    <InfoRow label="هزینه مشتری" value={formatPrice(order.shippingCost)} strong />
+                    <InfoRow label="هزینه مشتری" value={shippingChargeLabel(order)} strong />
                     <InfoRow label="نرخ پایه" value={order.shippingBaseCost == null ? "-" : formatPrice(order.shippingBaseCost)} />
                     <InfoRow label="وزن مرسوله" value={order.shippingPackageWeightGrams ? `${faNumberFormatter.format(order.shippingPackageWeightGrams)} گرم` : "-"} />
                     <InfoRow label="ابعاد" value={order.shippingPackageLengthCm && order.shippingPackageWidthCm && order.shippingPackageHeightCm ? `${order.shippingPackageLengthCm}×${order.shippingPackageWidthCm}×${order.shippingPackageHeightCm} cm` : "-"} />
@@ -360,10 +373,12 @@ function OrdersFilterForm({ filters, statusCounts }: FilterFormProps) {
 function StatusForm({
   orderId,
   currentStatus,
+  paymentMethod,
   smsFeedback,
 }: {
   orderId: string;
   currentStatus: string;
+  paymentMethod?: string | null;
   smsFeedback?: AdminOrderSmsFeedback | null;
 }) {
   return (
@@ -371,7 +386,7 @@ function StatusForm({
       <label className="font-bold text-[#475467]">
         تغییر وضعیت
         <select name="status" defaultValue={currentStatus} className="mt-2">
-          <option value="PENDING">در انتظار پرداخت</option>
+          <option value="PENDING">{paymentMethod === "COD" ? "ثبت شد؛ پرداخت در محل" : "در انتظار پرداخت"}</option>
           <option value="PAID">پرداخت شده / در حال پردازش</option>
           <option value="SHIPPED">ارسال شده</option>
           <option value="DELIVERED">تحویل شده</option>

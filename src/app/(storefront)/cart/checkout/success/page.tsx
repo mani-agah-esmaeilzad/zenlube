@@ -29,7 +29,12 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
   }
 
   const latestTransaction = order.paymentTransactions[0] ?? null;
-  const needsReview = order.status !== "PAID"
+  const isCashOnDelivery = order.paymentMethod === "COD";
+  const isMahexCashShipping = order.shippingServiceCode === "MAHEX_COD";
+  const shippingDisplay = isMahexCashShipping && Number(order.shippingCost) === 0 && !order.shippingServiceLabel?.includes("رایگان")
+    ? "پس‌کرایه هنگام تحویل"
+    : formatPrice(order.shippingCost);
+  const needsReview = !isCashOnDelivery && order.status !== "PAID"
     && ["reconciliation_required", "verification_pending", "verified"].includes(latestTransaction?.status ?? "");
 
   if (needsReview) {
@@ -66,34 +71,34 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
     );
   }
 
-  if (order.status !== "PAID") {
+  if (order.status !== "PAID" && !isCashOnDelivery) {
     return <ResultShell type="missing" title="پرداخت سفارش کامل نشده" message="وضعیت این سفارش هنوز پرداخت‌شده نیست. از بخش سفارش‌ها وضعیت آن را پیگیری کنید." />;
   }
 
   return (
     <div className="container-zen py-8 sm:py-10">
       <div className="mx-auto max-w-3xl bg-white py-6 sm:py-8">
-        <div className="flex items-start gap-4 border-r-4 border-emerald-500 pr-4">
-          <div className="grid size-11 shrink-0 place-items-center text-2xl font-black text-[#16A34A]">✓</div>
+        <div className={`flex items-start gap-4 border-r-4 pr-4 ${isCashOnDelivery ? "border-amber-500" : "border-emerald-500"}`}>
+          <div className={`grid size-11 shrink-0 place-items-center text-2xl font-black ${isCashOnDelivery ? "text-amber-600" : "text-[#16A34A]"}`}>{isCashOnDelivery ? "✓" : "✓"}</div>
           <div>
-            <h1 className="text-xl font-extrabold text-[#111827] sm:text-2xl">پرداخت با موفقیت انجام شد</h1>
-            <p className="mt-2 text-sm leading-7 text-[#6B7280]">سفارش #{order.id.slice(0, 10).toUpperCase()} ثبت شد و برای پردازش آماده است.</p>
+            <h1 className="text-xl font-extrabold text-[#111827] sm:text-2xl">{isCashOnDelivery ? "سفارش با موفقیت ثبت شد" : "پرداخت با موفقیت انجام شد"}</h1>
+            <p className="mt-2 text-sm leading-7 text-[#6B7280]">{isCashOnDelivery ? `سفارش #${order.id.slice(0, 10).toUpperCase()} ثبت شد. مبلغ کالا هنگام تحویل توسط ماهکس دریافت می‌شود.` : `سفارش #${order.id.slice(0, 10).toUpperCase()} ثبت شد و برای پردازش آماده است.`}</p>
           </div>
         </div>
 
         <div className="mt-6 divide-y divide-border border-t border-border sm:mt-8">
           <Info label="مبلغ پرداختی" value={formatPrice(order.total)} />
-          <Info label="کد پیگیری پرداخت" value={latestTransaction?.refId ?? order.paymentRefId ?? "-"} mono />
-          <Info label="وضعیت سفارش" value="پرداخت شده" />
+          <Info label={isCashOnDelivery ? "وضعیت پرداخت" : "کد پیگیری پرداخت"} value={isCashOnDelivery ? "پرداخت در محل" : latestTransaction?.refId ?? order.paymentRefId ?? "-"} mono={!isCashOnDelivery} />
+          <Info label="وضعیت سفارش" value={isCashOnDelivery ? "ثبت شد؛ در انتظار ارسال" : "پرداخت شده"} />
           <Info label="روش ارسال" value={order.shippingServiceLabel ?? order.shippingCarrierLabel ?? "ثبت نشده"} />
-          <Info label="هزینه ارسال" value={formatPrice(order.shippingCost)} />
+          <Info label="هزینه ارسال" value={shippingDisplay} />
           <Info label="تحویل گیرنده" value={order.fullName} />
           <Info label="آدرس ارسال" value={`${order.province}، ${order.city}، ${order.address1}${order.address2 ? `، ${order.address2}` : ""}`} />
           {order.estimatedDeliveryLabel ? <Info label="زمان تحویل تقریبی" value={order.estimatedDeliveryLabel} /> : null}
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
-          <StatusPill tone="success">پرداخت تایید شد</StatusPill>
+          <StatusPill tone={isCashOnDelivery ? "warning" : "success"}>{isCashOnDelivery ? "پرداخت هنگام تحویل" : "پرداخت تایید شد"}</StatusPill>
           {latestTransaction?.cardPan ? <StatusPill tone="neutral">{latestTransaction.cardPan}</StatusPill> : null}
         </div>
 

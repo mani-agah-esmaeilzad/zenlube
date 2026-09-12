@@ -40,6 +40,8 @@ Use Vazirmatn only (400–900) with Persian-appropriate line height. Mobile H1: 
 8. Mobile footer is concise: contact, collapsible navigation, legal; it respects bottom-nav safe area.
 
 ## Component rules
+- Fuel-revival campaign: one cheerful charcoal-and-amber image-led banner below the homepage hero, with a decorative smiling additive bottle and gift illustration. Clearly advertise one campaign gift and free shipping for orders over ۱۰ میلیون تومان without naming an unspecified gift or inventing dates. Use a compact product link and inline benefits, with no nested cards or countdowns.
+- Technical consultation: a compact bottom-left launcher across the storefront opens an accessible non-modal phone panel for free automotive technical advice. Display 09190810910 left-to-right and link to `tel:+989190810910`. Keep it above mobile navigation and the product purchase bar, below drawers and galleries; support close, outside-click and Escape dismissal with no automatic opening.
 - Primary button: visually compact at 38–40px on desktop and a 44px minimum tap target on mobile, with an 8–10px radius. Use amber or charcoal and make it full-width only for the dominant purchase or form submission.
 - Secondary action: prefer a text/icon link or a quiet borderless surface; use an outline only when a control boundary is functionally necessary. Do not stack two equally heavy full-width CTAs.
 - Category shortcut: icon/image in a circular frame with a text label; open rail, not a bordered card grid.

@@ -1,5 +1,6 @@
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { TechnicalConsultation } from "@/components/layout/technical-consultation";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -22,6 +23,7 @@ export default function StorefrontLayout({ children }: Readonly<{ children: Reac
       <div className="site-chrome">
         <SiteFooter />
       </div>
+      <TechnicalConsultation />
     </div>
   );
 }

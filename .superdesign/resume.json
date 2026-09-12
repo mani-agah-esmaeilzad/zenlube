@@ -36,25 +36,31 @@
         "src/components/product/product-card.tsx",
         "src/components/ui/section-header.tsx",
         "src/components/ui/mobile-sheet.tsx",
-        "src/lib/data/categories.ts"
+        "src/lib/data/categories.ts",
+        "src/components/home/fuel-revival-banner.tsx",
+        "src/components/layout/technical-consultation.tsx",
+        "public/illustrations/fuel-revival-gift.svg"
       ],
       "fingerprints": {
-        ".superdesign/design-system.md": "ec50f01350a4451977be1f979f9306412a5c342875baeb727b9c9f8f4e82418d",
-        "src/app/globals.css": "d5266e436f24f2fca43d9a75f9a13026d26f4d5fa348a53bada76f505ef26730",
-        "src/app/(storefront)/layout.tsx": "33119901bb3c232fafb2e3f3162a7dc96fc966578cb5055855cb890effcfbfec",
-        "src/app/(storefront)/page.tsx": "4066d7deb79228c197c25564650c3eea3c9b908e8637c6608201978d7e35ea48",
+        ".superdesign/design-system.md": "fb444398ab422573f7ac80f3f845814927d622a0fc03182bc4e92376452629b7",
+        "src/app/globals.css": "49ff154b4270bd8a13eaadf0197ce0105e4edc9b3d3eeca1e1ae48a3f2113a3e",
+        "src/app/(storefront)/layout.tsx": "9921a3fca493ffe4a513d9d30a2c4f16ffd62d1a6a73e5479e4045f248b996cd",
+        "src/app/(storefront)/page.tsx": "c296a08e13f05bf9ab3f4842848ab44fadc6f49385c1a964dec14de4b7d1cbc3",
         "src/components/layout/site-header.tsx": "8e061cd9777fd89df028bebf39c8d9019c99187f99209c8dbebfdd6f779daabf",
         "src/components/layout/category-dropdown.tsx": "69f00afb199629cb2df7432c8df1071a0d9471d7b5f970c2b2c88c2bd3b1be4b",
         "src/components/layout/mobile-nav.tsx": "8fdd89c775dc18758ee41f5a098bea4907ad0d4790f540bd8be4f4cfb0383a81",
         "src/components/layout/mobile-search.tsx": "950a63582dca87df00b33b8392a064d28b48b9980175477aa4c649d74a253608",
         "src/components/layout/site-footer.tsx": "f8c1f801bfd68c87b5fa2f3a15dbd0c3e197c8cf4a3ab410698d16cfc33e0056",
         "src/components/layout/hero-vehicle-finder.tsx": "ac04aa464347d250e423e2fda72d3d3cb1fb0384008c8839c3e6aba8cc368570",
-        "src/components/layout/logo-mark.tsx": "82e09f15561d579980dfdf09aef1692aa3c177cd09e95d439a7988ad7716008b",
+        "src/components/layout/logo-mark.tsx": "8da9396e3c7a0bbd908f140e23eaed5df0b5137694f566fe0cf6a7049672e334",
         "src/components/layout/cart-indicator.tsx": "3f97a0dba8a0d769729cd8b609d79c3684ead9bc7e0ea34fc070fae3b21f93a2",
-        "src/components/product/product-card.tsx": "42752435305a4912b22d04cfe777880c6225644ae01d7b65aebb4a48677d4808",
+        "src/components/product/product-card.tsx": "92eab89795660234c3ba85fd0336e7782e4ef5f7f846677e829c361cf86d0254",
         "src/components/ui/section-header.tsx": "fc94748e66295bfca399f5f4b0ae28d86e8fc7814ace69d4edea2396f6ad4cc3",
         "src/components/ui/mobile-sheet.tsx": "795b0e3b59e9335fcb4790618e145e8adfb803fc568dcd14f1b9d484931e09ee",
-        "src/lib/data/categories.ts": "154f35f1a32689d7162cb2201df75f0681ad1d2adf3cdf82b6eae76012a7c5ba"
+        "src/lib/data/categories.ts": "154f35f1a32689d7162cb2201df75f0681ad1d2adf3cdf82b6eae76012a7c5ba",
+        "src/components/home/fuel-revival-banner.tsx": "7f327e45f53c980f8d9b76ec16b8f76d35bb024bdd16d208dbff300078b5435f",
+        "src/components/layout/technical-consultation.tsx": "5d0e91024faec78e2f2c8bb94a8b5338095d86fd8e2d3bc28e53509383f8c81e",
+        "public/illustrations/fuel-revival-gift.svg": "7ed34cde97175982194e182dc6784b134d47bbe27bc6fb8bef5a8e8c65bf2ccb"
       },
       "components": [
         {
@@ -88,13 +94,13 @@
           "currentVersion": 1
         },
         "bd147ef3-3f8e-4755-a64e-1415f7fad25b": {
-          "title": "Oilbar homepage with special offers",
-          "visualDirection": "open image-led storefront with compact single-row mobile special offers for sales, octane boosters and racing fuels, plus an Enamad footer trust seal",
+          "title": "فروشگاه تخصصی Oilbar | کمپین احیای سوخت و مشاوره فنی",
+          "visualDirection": "Charcoal-and-amber fuel revival gift campaign banner with a smiling fuel additive illustration and a compact floating automotive consultation phone panel",
           "parentDraftId": "f38327be-8589-44c0-bdfc-3c37283bf3bc",
-          "currentVersion": 3
+          "currentVersion": 4
         }
       },
-      "updatedAt": "2026-09-01T15:01:25Z"
+      "updatedAt": "2026-09-12T08:35:03.429Z"
     }
   }
 }

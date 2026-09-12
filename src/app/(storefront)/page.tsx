@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode, SVGProps } from "react";
 
 import { BlogCard } from "@/components/blog/blog-card";
+import { FuelRevivalBanner } from "@/components/home/fuel-revival-banner";
 import { HeroVehicleFinder } from "@/components/layout/hero-vehicle-finder";
 import { ProductCard } from "@/components/product/product-card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -77,6 +78,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <FuelRevivalBanner />
 
       {cars.length ? (
         <section className="mt-10 md:mt-12">

@@ -495,6 +495,15 @@ textarea.input-zen {
   color: var(--zen-orange-deep);
 }
 
+.fuel-revival-cta {
+  color: var(--zen-orange);
+}
+
+.fuel-revival-cta:hover,
+.technical-consultation-call {
+  color: #fff;
+}
+
 .divider-zen {
   border-color: rgba(230, 232, 238, 0.9);
 }

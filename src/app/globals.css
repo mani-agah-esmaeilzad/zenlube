@@ -145,6 +145,29 @@ a {
   text-decoration: none;
 }
 
+.product-card-brand {
+  color: var(--zen-muted);
+}
+
+.product-card-title,
+.product-card-action {
+  color: var(--zen-text-strong);
+}
+
+.product-card-brand:hover,
+.product-card-title:hover,
+.product-card-action:hover {
+  color: var(--zen-orange-deep);
+}
+
+.product-card-wishlist {
+  background: transparent;
+}
+
+.product-card-wishlist:hover {
+  background: var(--zen-bg-soft);
+}
+
 ::selection {
   background-color: rgba(245, 158, 11, 0.2);
   color: var(--zen-charcoal);

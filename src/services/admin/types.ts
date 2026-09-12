@@ -128,6 +128,7 @@ export type AdminOrderDetail = AdminOrder & {
   shippingProviderKey?: string | null;
   shippingCarrierCode?: string | null;
   shippingCarrierLabel?: string | null;
+  shippingServiceCode?: string | null;
   shippingServiceLabel?: string | null;
   shippingBaseCost?: number | null;
   shippingAdjustmentAmount: number;

@@ -87,7 +87,7 @@ const LEGACY_SETTINGS_VERSION = "legacy-checkout-v1";
 const LEGACY_QUOTE_TTL_SECONDS = 24 * 60 * 60;
 export const MANUAL_SHIPPING_PROVIDER_KEY = "manual-mahex-cod-v1";
 export const MANUAL_FREE_SHIPPING_THRESHOLD_RIALS = 100_000_000;
-const MANUAL_SETTINGS_VERSION = "manual-mahex-cod-v1";
+const MANUAL_SETTINGS_VERSION = "manual-mahex-pickup-v2";
 
 export const LEGACY_SHIPPING_OPTIONS = [
   {
@@ -333,13 +333,15 @@ function publicResult(
   discountRials: number,
   mode: ShippingRolloutMode,
 ): ShippingQuotePublicResult {
-  const legacyOptionOrder = new Map<string, number>(
-    LEGACY_SHIPPING_OPTIONS.map((option, index) => [option.serviceCode, index]),
-  );
+  const optionOrder = request.providerKey === MANUAL_SHIPPING_PROVIDER_KEY
+    ? new Map([["MAHEX_COD", 0], ["PICKUP", 1]])
+    : new Map<string, number>(
+        LEGACY_SHIPPING_OPTIONS.map((option, index) => [option.serviceCode, index]),
+      );
   const options = mode === "legacy"
     ? [...request.options].sort((left, right) =>
-        (legacyOptionOrder.get(left.serviceCode) ?? Number.MAX_SAFE_INTEGER)
-        - (legacyOptionOrder.get(right.serviceCode) ?? Number.MAX_SAFE_INTEGER))
+        (optionOrder.get(left.serviceCode) ?? Number.MAX_SAFE_INTEGER)
+        - (optionOrder.get(right.serviceCode) ?? Number.MAX_SAFE_INTEGER))
     : request.options;
   return sanitizePublicShippingQuote({
     quoteId: request.id,
@@ -467,22 +469,40 @@ async function createManualShippingQuote(
         expiresAt,
         providerErrors: Prisma.JsonNull,
         options: {
-          create: [{
-            carrierCode: "MANUAL",
-            carrierLabel: "ماهکس",
-            serviceCode: "MAHEX_COD",
-            serviceLabel,
-            externalQuoteId: null,
-            baseCost: new Prisma.Decimal(0),
-            adjustmentAmount: new Prisma.Decimal(0),
-            customerCost: new Prisma.Decimal(0),
-            currency: "IRR",
-            isFree: isFree,
-            estimatedDeliveryLabel,
-            estimatedMinDays: null,
-            estimatedMaxDays: null,
-            providerMetadata: { rollout: "manual", source: "mahex-cod-display-only", freeThresholdRials: MANUAL_FREE_SHIPPING_THRESHOLD_RIALS },
-          }],
+          create: [
+            {
+              carrierCode: "MANUAL",
+              carrierLabel: "ماهکس",
+              serviceCode: "MAHEX_COD",
+              serviceLabel,
+              externalQuoteId: null,
+              baseCost: new Prisma.Decimal(0),
+              adjustmentAmount: new Prisma.Decimal(0),
+              customerCost: new Prisma.Decimal(0),
+              currency: "IRR",
+              isFree,
+              estimatedDeliveryLabel,
+              estimatedMinDays: null,
+              estimatedMaxDays: null,
+              providerMetadata: { rollout: "manual", source: "mahex-cod-display-only", freeThresholdRials: MANUAL_FREE_SHIPPING_THRESHOLD_RIALS },
+            },
+            {
+              carrierCode: "PICKUP",
+              carrierLabel: "مراجعه حضوری",
+              serviceCode: "PICKUP",
+              serviceLabel: "مراجعه حضوری",
+              externalQuoteId: null,
+              baseCost: new Prisma.Decimal(0),
+              adjustmentAmount: new Prisma.Decimal(0),
+              customerCost: new Prisma.Decimal(0),
+              currency: "IRR",
+              isFree: true,
+              estimatedDeliveryLabel: "هماهنگی تلفنی برای زمان تحویل حضوری",
+              estimatedMinDays: null,
+              estimatedMaxDays: null,
+              providerMetadata: { rollout: "manual", source: "store-pickup-display-only" },
+            },
+          ],
         },
       },
       include: { options: { orderBy: { createdAt: "asc" } } },

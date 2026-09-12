@@ -162,6 +162,7 @@ export function mapOrderDetail(order: Prisma.OrderGetPayload<{
     shippingProviderKey: order.shippingProviderKey,
     shippingCarrierCode: order.shippingCarrierCode,
     shippingCarrierLabel: order.shippingCarrierLabel,
+    shippingServiceCode: order.shippingServiceCode,
     shippingServiceLabel: order.shippingServiceLabel,
     shippingBaseCost: order.shippingBaseCost == null ? null : toNumber(order.shippingBaseCost),
     shippingAdjustmentAmount: toNumber(order.shippingAdjustmentAmount),

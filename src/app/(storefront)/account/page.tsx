@@ -39,6 +39,7 @@ function orderStatusLabel(status: string, paymentMethod?: string | null) {
 }
 
 function shippingChargeLabel(order: { shippingCost: unknown; shippingServiceCode?: string | null; shippingServiceLabel?: string | null }) {
+  if (order.shippingServiceCode === "PICKUP") return "بدون هزینه حمل";
   if (order.shippingServiceCode === "MAHEX_COD" && Number(order.shippingCost) === 0 && !order.shippingServiceLabel?.includes("رایگان")) {
     return "پس‌کرایه هنگام تحویل";
   }

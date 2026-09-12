@@ -34,6 +34,7 @@ function orderStatusLabel(status: string, paymentMethod?: string | null) {
 }
 
 function shippingChargeLabel(order: { shippingCost: number; shippingServiceCode?: string | null; shippingServiceLabel?: string | null }) {
+  if (order.shippingServiceCode === "PICKUP") return "بدون هزینه حمل";
   if (order.shippingServiceCode === "MAHEX_COD" && order.shippingCost === 0 && !order.shippingServiceLabel?.includes("رایگان")) {
     return "پس‌کرایه هنگام تحویل";
   }
@@ -228,7 +229,9 @@ export function OrdersTab({ data }: OrdersTabProps) {
                 {order.shipment?.lastErrorMessage ? <p className="mt-3 border-r-2 border-red-400 px-3 py-2 text-xs leading-6 text-[#B42318]">{order.shipment.lastErrorMessage}</p> : null}
                 {order.status === "PAID" ? (
                   <p className="mt-4 border-r-2 border-[#F59E0B] px-3 py-2 text-xs leading-6 text-[#92400E]">
-                    پس از تحویل بسته به {order.shippingCarrierLabel ?? "شرکت حمل منتخب مشتری"}، وضعیت سفارش را «ارسال شده» کنید و کد پیگیری را در فرم سفارش ذخیره کنید؛ پیامک آن برای مشتری ارسال می‌شود.
+                    {order.shippingServiceCode === "PICKUP"
+                      ? "پس از هماهنگی و تحویل حضوری سفارش، وضعیت آن را در فرم سفارش به «ارسال شده» یا «تحویل شده» تغییر دهید."
+                      : `پس از تحویل بسته به ${order.shippingCarrierLabel ?? "شرکت حمل منتخب مشتری"}، وضعیت سفارش را «ارسال شده» کنید و کد پیگیری را در فرم سفارش ذخیره کنید؛ پیامک آن برای مشتری ارسال می‌شود.`}
                   </p>
                 ) : null}
               </div>

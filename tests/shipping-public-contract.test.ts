@@ -60,3 +60,37 @@ test("customer shipping quote allowlist excludes origin, sender and provider met
   assert.equal(serialized.includes("+989111111111"), false);
   assert.equal(serialized.includes("privateOriginId"), false);
 });
+
+test("store pickup remains a zero-cost customer-visible option", () => {
+  const payload = sanitizePublicShippingQuote({
+    quoteId: "quote-pickup",
+    mode: "legacy",
+    expiresAt: "2030-01-01T00:10:00.000Z",
+    subtotalRials: 2_000_000,
+    discountRials: 0,
+    unavailableCarriers: [],
+    options: [{
+      id: "option-pickup",
+      carrierCode: "PICKUP",
+      carrierLabel: "مراجعه حضوری",
+      serviceCode: "PICKUP",
+      serviceLabel: "مراجعه حضوری",
+      customerPriceRials: 0,
+      currency: "IRR",
+      isFree: true,
+      estimatedDeliveryLabel: "هماهنگی تلفنی برای زمان تحویل حضوری",
+    }],
+  });
+
+  assert.deepEqual(payload.options[0], {
+    id: "option-pickup",
+    carrierCode: "PICKUP",
+    carrierLabel: "مراجعه حضوری",
+    serviceCode: "PICKUP",
+    serviceLabel: "مراجعه حضوری",
+    customerPriceRials: 0,
+    currency: "IRR",
+    isFree: true,
+    estimatedDeliveryLabel: "هماهنگی تلفنی برای زمان تحویل حضوری",
+  });
+});

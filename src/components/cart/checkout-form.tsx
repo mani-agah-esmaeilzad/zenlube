@@ -286,7 +286,7 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
                   <label key={option.id} className={`flex min-h-14 cursor-pointer items-start gap-3 border-r-2 px-3 py-4 text-xs transition ${selectedOptionId === option.id ? "border-primary-accent-strong bg-surface-tint" : "border-transparent bg-white hover:bg-surface-secondary"}`}>
                     <input type="radio" name="shipping-choice" value={option.id} checked={selectedOptionId === option.id} onChange={() => setSelectedOptionId(option.id)} className="mt-1 size-4 shrink-0 accent-[#F59E0B]" />
                     <span className="min-w-0 flex-1"><span className="block font-black text-text-strong">{option.serviceLabel || option.carrierLabel}</span>{option.estimatedDeliveryLabel ? <span className="mt-1 block text-text-muted">{option.estimatedDeliveryLabel}</span> : null}</span>
-                    <span className={`shrink-0 font-black ${option.isFree ? "text-[#16803C]" : "text-primary-accent-strong"}`}>{option.isFree ? "ارسال رایگان" : option.serviceCode === "MAHEX_COD" ? "پس‌کرایه" : formatPrice(option.customerPriceRials)}</span>
+                    <span className={`shrink-0 font-black ${option.isFree ? "text-[#16803C]" : "text-primary-accent-strong"}`}>{option.serviceCode === "PICKUP" ? "بدون هزینه حمل" : option.isFree ? "ارسال رایگان" : option.serviceCode === "MAHEX_COD" ? "پس‌کرایه" : formatPrice(option.customerPriceRials)}</span>
                   </label>
                 ))}
               </div>
@@ -306,7 +306,7 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
             {items.map((item) => <div key={item.id} className="flex items-start justify-between gap-3 text-xs text-text-muted"><span className="line-clamp-2 min-w-0">{item.name}<span className="mr-1 text-text-soft">×{item.quantity.toLocaleString("fa-IR")}</span></span><span className="shrink-0 font-bold text-[#374151]">{formatPrice(item.price * item.quantity)}</span></div>)}
             <SummaryRow label="جمع کالاها" value={formatPrice(subtotal)} />
             {discount > 0 ? <SummaryRow label="تخفیف" value={`− ${formatPrice(discount)}`} /> : null}
-            <SummaryRow label="هزینه ارسال" value={selectedOption ? (selectedOption.isFree ? "رایگان" : selectedOption.serviceCode === "MAHEX_COD" ? "پس‌کرایه" : formatPrice(shippingCost)) : "پس از انتخاب روش"} />
+            <SummaryRow label="هزینه ارسال" value={selectedOption ? (selectedOption.serviceCode === "PICKUP" ? "بدون هزینه حمل" : selectedOption.isFree ? "رایگان" : selectedOption.serviceCode === "MAHEX_COD" ? "پس‌کرایه" : formatPrice(shippingCost)) : "پس از انتخاب روش"} />
             {selectedOption?.estimatedDeliveryLabel ? <SummaryRow label="تحویل تقریبی" value={selectedOption.estimatedDeliveryLabel} /> : null}
             <div className="flex justify-between border-t border-[rgba(245,158,11,0.16)] pt-3 text-base font-extrabold text-text-strong"><span>مبلغ قابل پرداخت</span><span>{formatPrice(total)}</span></div>
           </div>

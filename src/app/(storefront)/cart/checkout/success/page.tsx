@@ -31,9 +31,12 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
   const latestTransaction = order.paymentTransactions[0] ?? null;
   const isCashOnDelivery = order.paymentMethod === "COD";
   const isMahexCashShipping = order.shippingServiceCode === "MAHEX_COD";
+  const isStorePickup = order.shippingServiceCode === "PICKUP";
   const shippingDisplay = isMahexCashShipping && Number(order.shippingCost) === 0 && !order.shippingServiceLabel?.includes("رایگان")
     ? "پس‌کرایه هنگام تحویل"
-    : formatPrice(order.shippingCost);
+    : isStorePickup
+      ? "بدون هزینه حمل"
+      : formatPrice(order.shippingCost);
   const needsReview = !isCashOnDelivery && order.status !== "PAID"
     && ["reconciliation_required", "verification_pending", "verified"].includes(latestTransaction?.status ?? "");
 

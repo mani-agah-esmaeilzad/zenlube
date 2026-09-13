@@ -103,11 +103,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           <div className="min-w-0 text-left" data-product-price>
             {pricing.hasDiscount ? (
               <del className="mb-0.5 block text-[11px] text-text-soft">
-                <bdi dir="ltr">{formatProductCardPrice(pricing.basePrice)}</bdi> تومان
+                <bdi dir="ltr">{formatProductCardPrice(pricing.basePrice)}</bdi> ریال
               </del>
             ) : null}
             <p className="inline-flex max-w-full items-baseline gap-1.5 whitespace-nowrap" dir="ltr">
-              <span className="text-[11px] font-medium text-text-muted" dir="rtl">تومان</span>
+              <span className="text-[11px] font-medium text-text-muted" dir="rtl">ریال</span>
               <bdi className="text-xl font-extrabold leading-8 text-text-strong sm:text-[22px]" dir="ltr">
                 {formatProductCardPrice(pricing.effectivePrice)}
               </bdi>

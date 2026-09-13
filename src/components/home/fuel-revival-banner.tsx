@@ -15,7 +15,7 @@ export function FuelRevivalBanner() {
             حال خوبِ موتور، <span className="inline-block text-primary-accent">هدیه‌اش با ما!</span>
           </h2>
           <p className="mt-2 text-[13px] leading-7 text-white/75 md:text-sm">
-            با سفارش <strong className="font-extrabold text-white">بالای ۱۰ میلیون تومان</strong>، این دو هدیه را از ما بگیر:
+            با سفارش <strong className="font-extrabold text-white">بالای ۱۰۰ میلیون ریال</strong>، این دو هدیه را از ما بگیر:
           </p>
           <div className="mt-5 flex max-w-[64%] flex-col gap-3 text-xs font-bold leading-6 sm:text-[13px] md:max-w-none lg:flex-row lg:gap-6">
             <span className="flex items-start gap-2">

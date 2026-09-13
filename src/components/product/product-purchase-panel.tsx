@@ -57,11 +57,11 @@ export function ProductPurchasePanel({
               </div>
               {originalPrice && originalPrice > Number(price) ? (
                 <del className="mt-2 block text-xs font-bold text-text-soft">
-                  {formatProductCardPrice(Number(originalPrice))} <span className="mr-1 text-[10px]">تومان</span>
+                  {formatProductCardPrice(Number(originalPrice))} <span className="mr-1 text-[10px]">ریال</span>
                 </del>
               ) : null}
               <p className="mt-2 text-2xl font-black text-text-strong sm:text-[2rem]">
-                {finalPrice} <span className="mr-1 text-sm font-bold text-text-muted">تومان</span>
+                {finalPrice} <span className="mr-1 text-sm font-bold text-text-muted">ریال</span>
               </p>
               {estimatedDeliveryLabel ? (
                 <p className="mt-2 text-xs font-bold text-success">{estimatedDeliveryLabel}</p>
@@ -131,11 +131,11 @@ export function ProductPurchasePanel({
               <p className="text-[11px] font-bold text-text-muted">قیمت</p>
               {originalPrice && originalPrice > Number(price) ? (
                 <del className="block text-[10px] font-bold text-text-soft">
-                  {formatProductCardPrice(Number(originalPrice))} <span className="mr-1">تومان</span>
+                  {formatProductCardPrice(Number(originalPrice))} <span className="mr-1">ریال</span>
                 </del>
               ) : null}
               <p className="mt-1 text-sm font-black text-text-strong">
-                {finalPrice} <span className="mr-1 text-[10px] font-bold text-text-muted">تومان</span>
+                {finalPrice} <span className="mr-1 text-[10px] font-bold text-text-muted">ریال</span>
               </p>
             </div>
           ) : null}

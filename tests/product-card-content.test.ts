@@ -4,9 +4,9 @@ import assert from "node:assert/strict";
 import { formatProductCardPrice, getProductCardContent } from "../src/lib/product-card-content";
 import { catalogProducts } from "../prisma/product-data/catalog-products";
 
-test("card display converts rials to Persian Toman digits without changing stored amounts", () => {
-  assert.equal(formatProductCardPrice(12_000_000), "۱٬۲۰۰٬۰۰۰");
-  assert.equal(formatProductCardPrice(1_234_567), "۱۲۳٬۴۵۷");
+test("card display keeps rial amounts in Persian digits without changing stored amounts", () => {
+  assert.equal(formatProductCardPrice(12_000_000), "۱۲٬۰۰۰٬۰۰۰");
+  assert.equal(formatProductCardPrice(1_234_567), "۱٬۲۳۴٬۵۶۷");
 });
 
 test("approved Persia Sign card separates short title, model and exact pack size", () => {

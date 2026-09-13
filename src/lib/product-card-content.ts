@@ -10,7 +10,7 @@ const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
 const numberFormatter = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 0 });
 
 export function formatProductCardPrice(amountRials: number) {
-  return numberFormatter.format(Math.round(amountRials / 10));
+  return numberFormatter.format(Math.round(amountRials));
 }
 
 export function getProductCardContent(product: ProductCardContentInput) {

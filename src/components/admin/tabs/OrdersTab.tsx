@@ -14,8 +14,9 @@ import type { AdminOrderSmsFeedback, OrdersTabData } from "@/services/admin/type
 const statusLabels: Record<string, string> = {
   all: "همه",
   PENDING: "در انتظار پرداخت",
-  PAID: "پرداخت شده",
-  SHIPPED: "ارسال شده",
+  PAID: "پرداخت تأیید شده",
+  PREPARING: "در حال آماده‌سازی",
+  SHIPPED: "تحویل شرکت حمل",
   DELIVERED: "تحویل شده",
   CANCELLED: "لغو شده",
 };
@@ -23,6 +24,7 @@ const statusLabels: Record<string, string> = {
 const statusStyles: Record<string, string> = {
   PENDING: "bg-[#FFF7E8] text-[#D97706]",
   PAID: "bg-[#EFF8FF] text-[#175CD3]",
+  PREPARING: "bg-[#F5F3FF] text-[#6D28D9]",
   SHIPPED: "bg-[#EEF4FF] text-[#3538CD]",
   DELIVERED: "bg-[#ECFDF3] text-[#027A48]",
   CANCELLED: "bg-[#FFF1F3] text-[#D92D20]",
@@ -73,9 +75,9 @@ export function OrdersTab({ data }: OrdersTabProps) {
       helper: "سفارش‌های نیازمند پیگیری",
     },
     {
-      label: "ارسال شده",
-      value: faNumberFormatter.format(statusCounts.SHIPPED ?? 0),
-      helper: "مرسوله‌های دارای کد پیگیری",
+      label: "در حال آماده‌سازی",
+      value: faNumberFormatter.format(statusCounts.PREPARING ?? 0),
+      helper: "سفارش‌هایی که باید بسته‌بندی شوند",
     },
     {
       label: "فروش ۳۰ روز اخیر",
@@ -227,7 +229,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
                   </div>
                 </div>
                 {order.shipment?.lastErrorMessage ? <p className="mt-3 border-r-2 border-red-400 px-3 py-2 text-xs leading-6 text-[#B42318]">{order.shipment.lastErrorMessage}</p> : null}
-                {order.status === "PAID" ? (
+                {order.status === "PAID" || order.status === "PREPARING" ? (
                   <p className="mt-4 border-r-2 border-[#F59E0B] px-3 py-2 text-xs leading-6 text-[#92400E]">
                     {order.shippingServiceCode === "PICKUP"
                       ? "پس از هماهنگی و تحویل حضوری سفارش، وضعیت آن را در فرم سفارش به «ارسال شده» یا «تحویل شده» تغییر دهید."
@@ -390,8 +392,9 @@ function StatusForm({
         تغییر وضعیت
         <select name="status" defaultValue={currentStatus} className="mt-2">
           <option value="PENDING">{paymentMethod === "COD" ? "ثبت شد؛ پرداخت در محل" : "در انتظار پرداخت"}</option>
-          <option value="PAID">پرداخت شده / در حال پردازش</option>
-          <option value="SHIPPED">ارسال شده</option>
+          <option value="PAID">پرداخت تأیید شده</option>
+          <option value="PREPARING">در حال آماده‌سازی</option>
+          <option value="SHIPPED">تحویل شرکت حمل / ارسال شده</option>
           <option value="DELIVERED">تحویل شده</option>
           <option value="CANCELLED">لغو شده</option>
         </select>

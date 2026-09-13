@@ -5,7 +5,8 @@ import { isOrderHandedToCarrier, manualShippingStatusLabel } from "@/lib/shippin
 
 test("manual fulfillment derives the customer shipping state from the order", () => {
   assert.equal(manualShippingStatusLabel("PENDING"), "پس از پرداخت");
-  assert.equal(manualShippingStatusLabel("PAID"), "در حال آماده‌سازی");
+  assert.equal(manualShippingStatusLabel("PAID"), "پرداخت تأیید شده");
+  assert.equal(manualShippingStatusLabel("PREPARING"), "در حال آماده‌سازی");
   assert.equal(manualShippingStatusLabel("SHIPPED"), "تحویل شرکت حمل");
   assert.equal(manualShippingStatusLabel("DELIVERED"), "تحویل‌شده");
   assert.equal(isOrderHandedToCarrier("PAID"), false);

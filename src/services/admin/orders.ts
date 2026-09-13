@@ -34,7 +34,7 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
   if (filters.shipping === "POST" || filters.shipping === "TIPAX") {
     where.shippingCarrierCode = filters.shipping;
   } else if (filters.shipping === "UNSHIPPED") {
-    where.status = "PAID";
+    where.status = { in: ["PAID", "PREPARING"] };
   } else if (filters.shipping === "SHIPPED") {
     where.status = { in: ["SHIPPED", "DELIVERED"] };
   } else if (filters.shipping === "TRACKING") {
@@ -78,7 +78,7 @@ export async function getOrdersTabData(options?: Partial<OrdersTabData["filters"
     prisma.order.aggregate({
       _sum: { total: true },
       where: {
-        status: { in: ["PAID", "SHIPPED", "DELIVERED"] },
+        status: { in: ["PAID", "PREPARING", "SHIPPED", "DELIVERED"] },
         createdAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
         },

@@ -32,11 +32,29 @@ test("order status notifications use a stable per-order status dedupe key", () =
   const notification = buildOrderStatusNotification(baseStatusInput);
 
   assert.deepEqual(notification, {
-    templateName: "status_processing",
+    templateName: "status_paid",
     eventType: "order_status_changed",
     dedupeKey: "order_status:order-123:PAID",
     tokens: { orderNumber: "ORDER-123" },
   });
+});
+
+test("preparing status has its own customer notification", () => {
+  const notification = buildOrderStatusNotification({
+    ...baseStatusInput,
+    previousStatus: "PAID",
+    nextStatus: "PREPARING",
+  });
+  assert.deepEqual(notification, {
+    templateName: "status_preparing",
+    eventType: "order_status_changed",
+    dedupeKey: "order_status:order-123:PREPARING",
+    tokens: { orderNumber: "ORDER-123" },
+  });
+  assert.equal(
+    renderSmsTemplate(notification!.templateName, notification!.tokens),
+    "سفارش ORDER-123 در حال آماده‌سازی و بسته‌بندی است. به‌محض تحویل به شرکت حمل، کد پیگیری برایتان ارسال می‌شود.",
+  );
 });
 
 test("saving unchanged order data can retry undelivered SMS with the original dedupe key", () => {
@@ -71,7 +89,7 @@ test("shipped notification never substitutes a fake tracking code", () => {
   assert.equal(withoutTracking?.templateName, "status_shipped_pending_tracking");
   assert.equal(
     renderSmsTemplate(withoutTracking!.templateName, withoutTracking!.tokens),
-    "سفارش ORDER-123 ارسال شد. کد پیگیری پس از ثبت برای شما پیامک می‌شود.",
+    "سفارش ORDER-123 تحویل شرکت حمل شد. کد پیگیری پس از ثبت برای شما پیامک می‌شود.",
   );
 
   const withTracking = buildOrderStatusNotification({
@@ -113,6 +131,6 @@ test("tracking notifications only send for a newly available or changed code", (
   });
   assert.equal(
     renderSmsTemplate(notification!.templateName, notification!.tokens),
-    "کد پیگیری سفارش ORDER-123: POST-9988",
+    "کد پیگیری سفارش ORDER-123: POST-9988. برای پیگیری مرسوله از همین کد استفاده کنید.",
   );
 });

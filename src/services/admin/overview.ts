@@ -384,7 +384,7 @@ export async function getReportsTabData(): Promise<ReportsTabData> {
     overviewSelect.products,
     overviewSelect.cars,
     prisma.order.aggregate({
-      where: { status: { in: ["PAID", "SHIPPED", "DELIVERED"] } },
+      where: { status: { in: ["PAID", "PREPARING", "SHIPPED", "DELIVERED"] } },
       _count: { _all: true },
       _sum: { total: true },
     }),

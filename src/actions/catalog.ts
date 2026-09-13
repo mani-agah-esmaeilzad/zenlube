@@ -138,7 +138,7 @@ export async function createProductReviewAction(
           productId: input.productId,
           order: {
             userId: user.id,
-            status: { in: ["PAID", "SHIPPED", "DELIVERED"] },
+            status: { in: ["PAID", "PREPARING", "SHIPPED", "DELIVERED"] },
           },
         },
         select: { id: true },

@@ -277,7 +277,7 @@ async function renderActiveTab(
     case "orders": {
       const statusParam = typeof searchParams?.status === "string" ? searchParams.status : undefined;
       const normalizedStatus = statusParam &&
-        ["all", "PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"].includes(statusParam)
+        ["all", "PENDING", "PAID", "PREPARING", "SHIPPED", "DELIVERED", "CANCELLED"].includes(statusParam)
         ? (statusParam as OrdersTabData["filters"]["status"])
         : undefined;
       const data = await getOrdersTabData({

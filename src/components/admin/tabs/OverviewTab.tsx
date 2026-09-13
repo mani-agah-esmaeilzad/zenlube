@@ -12,6 +12,7 @@ import type { OverviewTabData } from "@/services/admin/types";
 const orderStatusLabels: Record<string, string> = {
   PENDING: "در انتظار",
   PAID: "پرداخت‌شده",
+  PREPARING: "آماده‌سازی",
   SHIPPED: "ارسال‌شده",
   DELIVERED: "تحویل‌شده",
   CANCELLED: "لغوشده",
@@ -20,6 +21,7 @@ const orderStatusLabels: Record<string, string> = {
 const orderStatusColors: Record<string, string> = {
   PENDING: "bg-amber-400",
   PAID: "bg-sky-500",
+  PREPARING: "bg-violet-500",
   SHIPPED: "bg-indigo-500",
   DELIVERED: "bg-emerald-500",
   CANCELLED: "bg-rose-400",
@@ -46,6 +48,7 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
   const totalOrders = Object.values(ordersByStatus).reduce((acc, value) => acc + value, 0);
   const successfulOrders =
     (ordersByStatus.PAID ?? 0) +
+    (ordersByStatus.PREPARING ?? 0) +
     (ordersByStatus.SHIPPED ?? 0) +
     (ordersByStatus.DELIVERED ?? 0);
   const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;

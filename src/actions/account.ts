@@ -364,7 +364,7 @@ export async function createReturnRequestAction(_prev: ActionState | undefined, 
       where: {
         id: parsed.data.orderId,
         userId,
-        status: { in: ["PAID", "SHIPPED", "DELIVERED"] },
+        status: { in: ["PAID", "PREPARING", "SHIPPED", "DELIVERED"] },
       },
       select: { id: true },
     });

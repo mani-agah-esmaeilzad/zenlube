@@ -25,6 +25,7 @@ enum Role {
 enum OrderStatus {
   PENDING
   PAID
+  PREPARING
   SHIPPED
   DELIVERED
   CANCELLED

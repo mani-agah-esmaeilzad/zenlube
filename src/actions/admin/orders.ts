@@ -18,7 +18,7 @@ import { deleteOrderSafely } from "@/services/admin/mutations";
 
 const statusSchema = z.object({
   orderId: z.string().cuid(),
-  status: z.enum(["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"]),
+  status: z.enum(["PENDING", "PAID", "PREPARING", "SHIPPED", "DELIVERED", "CANCELLED"]),
 });
 
 const trackingSchema = z.object({

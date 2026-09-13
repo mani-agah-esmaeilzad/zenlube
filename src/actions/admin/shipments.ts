@@ -52,7 +52,7 @@ export async function createShipmentAction(formData: FormData): Promise<void> {
     prisma.shippingSettings.findUnique({ where: { id: "default" } }),
   ]);
   if (!order) throw new Error("سفارش پیدا نشد.");
-  if (order.status !== "PAID") throw new Error("ثبت مرسوله فقط برای سفارش پرداخت‌شده مجاز است.");
+  if (!["PAID", "PREPARING"].includes(order.status)) throw new Error("ثبت مرسوله فقط برای سفارش پرداخت‌شده یا در حال آماده‌سازی مجاز است.");
   if (!settings?.enabled) throw new Error("ارسال آنلاین در تنظیمات فعال نیست.");
   if (!order.shippingProviderKey || !order.shippingCarrierCode || order.shippingCarrierCode === "MANUAL") {
     throw new Error("این سفارش روش ارسال قابل ثبت در آمادست ندارد.");

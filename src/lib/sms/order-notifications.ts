@@ -39,15 +39,18 @@ export function buildOrderStatusNotification(
   }
 
   const trackingCode = normalizedTrackingCode(input.trackingCode);
-  const templateName = input.nextStatus === "PAID"
-    ? "status_processing"
-    : input.nextStatus === "SHIPPED"
-      ? trackingCode
-        ? "status_shipped"
-        : "status_shipped_pending_tracking"
-      : input.nextStatus === "DELIVERED"
-        ? "status_delivered"
-        : "status_cancelled";
+  const templateName =
+    input.nextStatus === "PAID"
+      ? "status_paid"
+      : input.nextStatus === "PREPARING"
+        ? "status_preparing"
+        : input.nextStatus === "SHIPPED"
+          ? trackingCode
+            ? "status_shipped"
+            : "status_shipped_pending_tracking"
+          : input.nextStatus === "DELIVERED"
+            ? "status_delivered"
+            : "status_cancelled";
 
   return {
     templateName,

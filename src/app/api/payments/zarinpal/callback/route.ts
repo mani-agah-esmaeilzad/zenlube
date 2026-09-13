@@ -16,6 +16,11 @@ export const runtime = "nodejs";
 const RECONCILIATION_STATUS = "reconciliation_required";
 const VERIFICATION_PENDING_STATUS = "verification_pending";
 const PROTECTED_PAYMENT_STATUSES = ["paid", "verified", RECONCILIATION_STATUS, VERIFICATION_PENDING_STATUS] as const;
+const PAID_ORDER_STATUSES = ["PAID", "PREPARING", "SHIPPED", "DELIVERED"] as const;
+
+function isPaidOrderStatus(status?: string | null) {
+  return PAID_ORDER_STATUSES.some((paidStatus) => paidStatus === status);
+}
 
 type OrderPaymentItem = {
   productId: string;
@@ -134,11 +139,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL(`/cart/checkout/failure?reason=not-found&orderId=${orderId}`, request.nextUrl.origin));
   }
 
-  if (transaction.status === RECONCILIATION_STATUS || (transaction.status === "verified" && order.status !== "PAID")) {
+  if (transaction.status === RECONCILIATION_STATUS || (transaction.status === "verified" && !isPaidOrderStatus(order.status))) {
     logger.warn("Payment callback is awaiting reconciliation", { orderId, authority });
     return NextResponse.redirect(new URL(`/cart/checkout/success?orderId=${order.id}&review=1`, request.nextUrl.origin));
   }
-  if (transaction.status === "paid" || order.status === "PAID") {
+  if (transaction.status === "paid" || isPaidOrderStatus(order.status)) {
     logger.info("Duplicate payment callback ignored", { orderId, authority });
     return NextResponse.redirect(new URL(`/cart/checkout/success?orderId=${order.id}`, request.nextUrl.origin));
   }
@@ -158,7 +163,7 @@ export async function GET(request: NextRequest) {
       const locked = await tx.$queryRaw<Array<{ status: string }>>(
         Prisma.sql`SELECT "status"::text FROM "Order" WHERE "id" = ${order.id} FOR UPDATE`,
       );
-      if (locked[0]?.status === "PAID") return "paid" as const;
+      if (isPaidOrderStatus(locked[0]?.status)) return "paid" as const;
       const freshTransaction = await tx.paymentTransaction.findUnique({ where: { id: transaction.id } });
       if (!freshTransaction || freshTransaction.orderId !== order.id || freshTransaction.authority !== authority) {
         return "missing" as const;
@@ -266,7 +271,7 @@ export async function GET(request: NextRequest) {
       );
       const lockedOrder = lockedOrders[0];
       if (!lockedOrder) throw new Error("سفارش پیدا نشد.");
-      if (lockedOrder.status === "PAID") return false;
+      if (isPaidOrderStatus(lockedOrder.status)) return false;
       if (lockedOrder.status !== "PENDING") {
         throw new Error(`پرداخت تایید شد، اما وضعیت سفارش ${lockedOrder.status} اجازه تسویه خودکار نمی‌دهد.`);
       }
@@ -359,7 +364,7 @@ async function recordVerificationPending(input: {
     const locked = await tx.$queryRaw<Array<{ status: string }>>(
       Prisma.sql`SELECT "status"::text FROM "Order" WHERE "id" = ${input.orderId} FOR UPDATE`,
     );
-    if (locked[0]?.status === "PAID") return "paid" as const;
+    if (isPaidOrderStatus(locked[0]?.status)) return "paid" as const;
     const freshTransaction = await tx.paymentTransaction.findUnique({ where: { id: input.transactionId } });
     if (!freshTransaction || freshTransaction.orderId !== input.orderId || freshTransaction.authority !== input.authority) {
       return "missing" as const;
@@ -407,7 +412,7 @@ async function recordVerificationFailure(input: {
     const locked = await tx.$queryRaw<Array<{ status: string }>>(
       Prisma.sql`SELECT "status"::text FROM "Order" WHERE "id" = ${input.orderId} FOR UPDATE`,
     );
-    if (locked[0]?.status === "PAID") return "paid" as const;
+    if (isPaidOrderStatus(locked[0]?.status)) return "paid" as const;
     const freshTransaction = await tx.paymentTransaction.findUnique({ where: { id: input.transactionId } });
     if (!freshTransaction || freshTransaction.orderId !== input.orderId || freshTransaction.authority !== input.authority) {
       return "missing" as const;

@@ -24,15 +24,15 @@ const templates: Record<string, string> = {
   order_created: "سفارش شما در اویل‌بار ثبت شد. شماره سفارش: {orderNumber}",
   merchant_order_created: "یک سفارش جدید در اویل‌بار ثبت شد. شماره سفارش: {orderNumber}. برای بررسی وارد پنل مدیریت شوید.",
   payment_started: "درخواست پرداخت سفارش {orderNumber} در اویل‌بار ایجاد شد.",
-  payment_success: "پرداخت سفارش {orderNumber} با موفقیت انجام شد.",
+  payment_success: "پرداخت سفارش {orderNumber} با موفقیت تأیید شد. سفارش شما وارد صف آماده‌سازی اویل‌بار شد.",
   payment_failed: "پرداخت سفارش {orderNumber} ناموفق بود. لطفا دوباره تلاش کنید.",
-  status_processing: "سفارش {orderNumber} در اویل‌بار در حال پردازش است.",
-  status_ready: "سفارش {orderNumber} آماده ارسال شد.",
-  status_shipped: "سفارش {orderNumber} ارسال شد. کد پیگیری: {trackingCode}",
-  status_shipped_pending_tracking: "سفارش {orderNumber} ارسال شد. کد پیگیری پس از ثبت برای شما پیامک می‌شود.",
-  tracking_code_added: "کد پیگیری سفارش {orderNumber}: {trackingCode}",
-  status_delivered: "سفارش {orderNumber} با موفقیت تحویل شد. ممنون از خرید شما از اویل‌بار.",
-  status_cancelled: "سفارش {orderNumber} لغو شد. برای اطلاعات بیشتر با پشتیبانی اویل‌بار تماس بگیرید.",
+  status_paid: "پرداخت سفارش {orderNumber} تأیید شد و سفارش شما در صف بررسی اویل‌بار قرار گرفت.",
+  status_preparing: "سفارش {orderNumber} در حال آماده‌سازی و بسته‌بندی است. به‌محض تحویل به شرکت حمل، کد پیگیری برایتان ارسال می‌شود.",
+  status_shipped: "سفارش {orderNumber} تحویل شرکت حمل شد. کد پیگیری: {trackingCode}",
+  status_shipped_pending_tracking: "سفارش {orderNumber} تحویل شرکت حمل شد. کد پیگیری پس از ثبت برای شما پیامک می‌شود.",
+  tracking_code_added: "کد پیگیری سفارش {orderNumber}: {trackingCode}. برای پیگیری مرسوله از همین کد استفاده کنید.",
+  status_delivered: "سفارش {orderNumber} تحویل داده شد. ممنونیم که اویل‌بار را انتخاب کردید.",
+  status_cancelled: "سفارش {orderNumber} لغو شد. اگر سوالی دارید با پشتیبانی اویل‌بار تماس بگیرید.",
 };
 
 export function renderSmsTemplate(templateName: string, tokens: SmsTokens = {}) {

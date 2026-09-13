@@ -1,6 +1,7 @@
 const MANUAL_SHIPPING_STATUS_LABELS: Record<string, string> = {
   PENDING: "پس از پرداخت",
-  PAID: "در حال آماده‌سازی",
+  PAID: "پرداخت تأیید شده",
+  PREPARING: "در حال آماده‌سازی",
   SHIPPED: "تحویل شرکت حمل",
   DELIVERED: "تحویل‌شده",
   CANCELLED: "لغوشده",

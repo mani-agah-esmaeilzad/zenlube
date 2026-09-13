@@ -279,7 +279,7 @@ export type ProductsTabData = {
 };
 
 export type OrdersTabFilters = {
-  status: "all" | "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  status: "all" | "PENDING" | "PAID" | "PREPARING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
   query?: string | null;
   shipping: "all" | "POST" | "TIPAX" | "UNSHIPPED" | "SHIPPED" | "TRACKING";
   page: number;

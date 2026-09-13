@@ -259,7 +259,7 @@ export async function createCheckoutOrderAction(
       if (existingOrder.shippingQuoteOptionId !== input.shippingOptionId) {
         return { success: false, message: "اطلاعات این تلاش پرداخت با سفارش ذخیره‌شده یکسان نیست." };
       }
-      if (existingOrder.status === "PAID") {
+      if (["PAID", "PREPARING", "SHIPPED", "DELIVERED"].includes(existingOrder.status)) {
         return { success: true, message: "این سفارش قبلاً پرداخت شده است.", redirectUrl: `/cart/checkout/success?orderId=${existingOrder.id}` };
       }
       if (existingOrder.status !== "PENDING") {
@@ -498,7 +498,7 @@ export async function retryOrderPaymentAction(formData: FormData): Promise<void>
     },
   });
   if (!order) throw new Error("سفارش پیدا نشد.");
-  if (order.status === "PAID") redirect(`/cart/checkout/success?orderId=${order.id}`);
+  if (["PAID", "PREPARING", "SHIPPED", "DELIVERED"].includes(order.status)) redirect(`/cart/checkout/success?orderId=${order.id}`);
   if (order.status !== "PENDING" || !order.shippingQuoteOptionId || !order.provinceCode || !order.cityCode) {
     throw new Error("این سفارش قابل پرداخت مجدد نیست.");
   }

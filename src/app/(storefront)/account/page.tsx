@@ -27,8 +27,9 @@ type AccountPageProps = {
 
 const statusLabels: Record<string, string> = {
   PENDING: "در انتظار پرداخت",
-  PAID: "در حال پردازش",
-  SHIPPED: "ارسال شده",
+  PAID: "پرداخت تأیید شده",
+  PREPARING: "در حال آماده‌سازی",
+  SHIPPED: "تحویل شرکت حمل",
   DELIVERED: "تحویل شده",
   CANCELLED: "لغو شده",
 };
@@ -96,7 +97,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     prisma.order.count({ where: { userId: user.id } }),
     prisma.order.count({ where: { userId: user.id, status: "PENDING" } }),
     prisma.order.count({ where: { userId: user.id, status: "DELIVERED" } }),
-    prisma.order.count({ where: { userId: user.id, status: { in: ["PAID", "SHIPPED", "DELIVERED"] } } }),
+    prisma.order.count({ where: { userId: user.id, status: { in: ["PAID", "PREPARING", "SHIPPED", "DELIVERED"] } } }),
     selectedOrderId
       ? prisma.order.findFirst({
           where: { id: selectedOrderId, userId: user.id },
@@ -352,18 +353,19 @@ type AccountOrder = Awaited<ReturnType<typeof prisma.order.findMany>>[number] & 
 function OrderDetail({ order }: { order: AccountOrder }) {
   const discountAmount = Number(order.discountAmount ?? 0);
   const itemsTotal = order.items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
-  const paid = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
+  const paid = ["PAID", "PREPARING", "SHIPPED", "DELIVERED"].includes(order.status);
+  const preparing = ["PREPARING", "SHIPPED", "DELIVERED"].includes(order.status);
   const handedToCarrier = isOrderHandedToCarrier(order.status)
     || Boolean(order.shipment && ["SUBMITTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"].includes(order.shipment.status));
   const inTransit = Boolean(order.shipment && ["IN_TRANSIT", "DELIVERED"].includes(order.shipment.status)) || ["SHIPPED", "DELIVERED"].includes(order.status);
   const steps = [
     { label: "سفارش ثبت شد", active: true },
     { label: "پرداخت تأیید شد", active: paid },
-    { label: "آماده‌سازی", active: paid },
+    { label: "آماده‌سازی", active: preparing },
     { label: "تحویل شرکت حمل", active: handedToCarrier },
     { label: "در مسیر / تحویل", active: inTransit },
   ];
-  const canRequestReturn = ["PAID", "SHIPPED", "DELIVERED"].includes(order.status);
+  const canRequestReturn = ["PAID", "PREPARING", "SHIPPED", "DELIVERED"].includes(order.status);
 
   return (
     <section id="order-detail" className="scroll-mt-28 border-b border-border py-6">

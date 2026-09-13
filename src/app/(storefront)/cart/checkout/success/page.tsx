@@ -37,7 +37,18 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
     : isStorePickup
       ? "بدون هزینه حمل"
       : formatPrice(order.shippingCost);
-  const needsReview = !isCashOnDelivery && order.status !== "PAID"
+  const isPaidOrder = ["PAID", "PREPARING", "SHIPPED", "DELIVERED"].includes(order.status);
+  const orderStatusDisplay =
+    isCashOnDelivery
+      ? "ثبت شد؛ پرداخت در محل"
+      : order.status === "PREPARING"
+        ? "در حال آماده‌سازی"
+        : order.status === "SHIPPED"
+          ? "تحویل شرکت حمل"
+          : order.status === "DELIVERED"
+            ? "تحویل شده"
+            : "پرداخت تأیید شده";
+  const needsReview = !isCashOnDelivery && !isPaidOrder
     && ["reconciliation_required", "verification_pending", "verified"].includes(latestTransaction?.status ?? "");
 
   if (needsReview) {
@@ -74,7 +85,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
     );
   }
 
-  if (order.status !== "PAID" && !isCashOnDelivery) {
+  if (!isPaidOrder && !isCashOnDelivery) {
     return <ResultShell type="missing" title="پرداخت سفارش کامل نشده" message="وضعیت این سفارش هنوز پرداخت‌شده نیست. از بخش سفارش‌ها وضعیت آن را پیگیری کنید." />;
   }
 
@@ -85,14 +96,14 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
           <div className={`grid size-11 shrink-0 place-items-center text-2xl font-black ${isCashOnDelivery ? "text-amber-600" : "text-[#16A34A]"}`}>{isCashOnDelivery ? "✓" : "✓"}</div>
           <div>
             <h1 className="text-xl font-extrabold text-[#111827] sm:text-2xl">{isCashOnDelivery ? "سفارش با موفقیت ثبت شد" : "پرداخت با موفقیت انجام شد"}</h1>
-            <p className="mt-2 text-sm leading-7 text-[#6B7280]">{isCashOnDelivery ? `سفارش #${order.id.slice(0, 10).toUpperCase()} ثبت شد. مبلغ کالا هنگام تحویل توسط ماهکس دریافت می‌شود.` : `سفارش #${order.id.slice(0, 10).toUpperCase()} ثبت شد و برای پردازش آماده است.`}</p>
+            <p className="mt-2 text-sm leading-7 text-[#6B7280]">{isCashOnDelivery ? `سفارش #${order.id.slice(0, 10).toUpperCase()} ثبت شد. مبلغ کالا هنگام تحویل توسط ماهکس دریافت می‌شود.` : `سفارش #${order.id.slice(0, 10).toUpperCase()} ثبت شد و وارد صف آماده‌سازی اویل‌بار شد.`}</p>
           </div>
         </div>
 
         <div className="mt-6 divide-y divide-border border-t border-border sm:mt-8">
           <Info label="مبلغ پرداختی" value={formatPrice(order.total)} />
           <Info label={isCashOnDelivery ? "وضعیت پرداخت" : "کد پیگیری پرداخت"} value={isCashOnDelivery ? "پرداخت در محل" : latestTransaction?.refId ?? order.paymentRefId ?? "-"} mono={!isCashOnDelivery} />
-          <Info label="وضعیت سفارش" value={isCashOnDelivery ? "ثبت شد؛ در انتظار ارسال" : "پرداخت شده"} />
+          <Info label="وضعیت سفارش" value={orderStatusDisplay} />
           <Info label="روش ارسال" value={order.shippingServiceLabel ?? order.shippingCarrierLabel ?? "ثبت نشده"} />
           <Info label="هزینه ارسال" value={shippingDisplay} />
           <Info label="تحویل گیرنده" value={order.fullName} />

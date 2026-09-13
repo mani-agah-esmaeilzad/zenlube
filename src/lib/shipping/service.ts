@@ -87,7 +87,9 @@ const LEGACY_SETTINGS_VERSION = "legacy-checkout-v1";
 const LEGACY_QUOTE_TTL_SECONDS = 24 * 60 * 60;
 export const MANUAL_SHIPPING_PROVIDER_KEY = "manual-mahex-cod-v1";
 export const MANUAL_FREE_SHIPPING_THRESHOLD_RIALS = 100_000_000;
-const MANUAL_SETTINGS_VERSION = "manual-mahex-pickup-v2";
+const MANUAL_SETTINGS_VERSION = "manual-mahex-pickup-v3";
+export const MANUAL_MAHEX_FREE_DELIVERY_LABEL = "با ماهکس ۱ روزه می‌رسد؛ ارسال این سفارش رایگان است.";
+export const MANUAL_MAHEX_COD_DELIVERY_LABEL = "با ماهکس ۱ روزه می‌رسد؛ هزینه ارسال هنگام تحویل دریافت می‌شود.";
 
 export const LEGACY_SHIPPING_OPTIONS = [
   {
@@ -441,8 +443,8 @@ async function createManualShippingQuote(
   const isFree = context.subtotalRials >= MANUAL_FREE_SHIPPING_THRESHOLD_RIALS;
   const serviceLabel = isFree ? "ماهکس — ارسال رایگان" : "ماهکس — پرداخت در محل (پس‌کرایه)";
   const estimatedDeliveryLabel = isFree
-    ? "ارسال برای خریدهای بالای ۱۰ میلیون تومان رایگان است."
-    : "هزینه ارسال هنگام تحویل توسط ماهکس دریافت می‌شود.";
+    ? MANUAL_MAHEX_FREE_DELIVERY_LABEL
+    : MANUAL_MAHEX_COD_DELIVERY_LABEL;
   let created: Prisma.ShippingQuoteRequestGetPayload<{ include: { options: true } }>;
   try {
     created = await prisma.shippingQuoteRequest.create({

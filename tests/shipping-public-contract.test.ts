@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  MANUAL_MAHEX_COD_DELIVERY_LABEL,
+  MANUAL_MAHEX_FREE_DELIVERY_LABEL,
   sanitizePublicShippingQuote,
   type ShippingQuotePublicResult,
 } from "@/lib/shipping/service";
@@ -93,4 +95,11 @@ test("store pickup remains a zero-cost customer-visible option", () => {
     isFree: true,
     estimatedDeliveryLabel: "هماهنگی تلفنی برای زمان تحویل حضوری",
   });
+});
+
+test("manual Mahex delivery labels tell customers it arrives in one day", () => {
+  assert.equal(MANUAL_MAHEX_COD_DELIVERY_LABEL.includes("۱ روزه"), true);
+  assert.equal(MANUAL_MAHEX_FREE_DELIVERY_LABEL.includes("۱ روزه"), true);
+  assert.equal(MANUAL_MAHEX_COD_DELIVERY_LABEL.includes("ماهکس"), true);
+  assert.equal(MANUAL_MAHEX_FREE_DELIVERY_LABEL.includes("ماهکس"), true);
 });

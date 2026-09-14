@@ -1,0 +1,18 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="مقایسه 5W-30 و 5W-40">
+  <rect width="1200" height="630" rx="42" fill="#F8FAFC"/>
+  <rect x="108" y="134" width="260" height="374" rx="34" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="6"/>
+  <rect x="156" y="86" width="164" height="80" rx="22" fill="#111827"/>
+  <rect x="164" y="220" width="148" height="202" rx="26" fill="#FF6B35"/>
+  <text x="238" y="311" text-anchor="middle" font-family="Arial, sans-serif" font-size="55" font-weight="900" fill="#FFFFFF">5W</text>
+  <text x="238" y="380" text-anchor="middle" font-family="Arial, sans-serif" font-size="55" font-weight="900" fill="#FFFFFF">30</text>
+  <rect x="426" y="134" width="260" height="374" rx="34" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="6"/>
+  <rect x="474" y="86" width="164" height="80" rx="22" fill="#111827"/>
+  <rect x="482" y="205" width="148" height="217" rx="26" fill="#EA580C"/>
+  <text x="556" y="304" text-anchor="middle" font-family="Arial, sans-serif" font-size="55" font-weight="900" fill="#FFFFFF">5W</text>
+  <text x="556" y="373" text-anchor="middle" font-family="Arial, sans-serif" font-size="55" font-weight="900" fill="#FFFFFF">40</text>
+  <path d="M769 314h265" stroke="#111827" stroke-width="24" stroke-linecap="round"/>
+  <path d="M906 197v235" stroke="#111827" stroke-width="24" stroke-linecap="round"/>
+  <circle cx="906" cy="314" r="52" fill="#FF6B35"/>
+  <text x="1080" y="215" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="54" font-weight="900" fill="#111827">5W-30 یا 5W-40؟</text>
+  <text x="1080" y="282" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#667085">انتخاب براساس دفترچه، کارکرد و دما</text>
+</svg>

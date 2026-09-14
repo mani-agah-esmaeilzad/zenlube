@@ -20,6 +20,7 @@
     "seed:special-offers": "tsx prisma/seed-special-offers.ts",
     "seed:unium": "tsx prisma/seed-unium-octane-booster.ts",
     "seed:persia-sign-packs": "tsx prisma/seed-persia-sign-packs.ts",
+    "seed:magazine": "tsx prisma/seed-magazine-content.ts",
     "vehicles:bama:draft": "tsx scripts/scrape-bama-vehicles.ts",
     "vehicles:bama:details": "tsx scripts/scrape-bama-vehicle-details.ts",
     "vehicles:oil:liqui": "tsx scripts/scrape-liqui-moly-oil-specs.ts",

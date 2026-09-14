@@ -1,0 +1,18 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="راهنمای روغن موتور MG 6">
+  <rect width="1200" height="630" rx="42" fill="#F8FAFC"/>
+  <circle cx="1060" cy="112" r="210" fill="#FF6B35" fill-opacity=".12"/>
+  <circle cx="132" cy="530" r="240" fill="#111827" fill-opacity=".07"/>
+  <path d="M138 418c48-66 107-98 177-98h265c46 0 84 16 115 48l42 44h126c37 0 67 30 67 67v35H110v-35c0-22 10-43 28-61Z" fill="#1F2937"/>
+  <path d="M283 336h258c33 0 64 14 86 39l29 32H214c19-46 42-71 69-71Z" fill="#E5E7EB"/>
+  <circle cx="270" cy="514" r="55" fill="#111827"/>
+  <circle cx="270" cy="514" r="24" fill="#F8FAFC"/>
+  <circle cx="760" cy="514" r="55" fill="#111827"/>
+  <circle cx="760" cy="514" r="24" fill="#F8FAFC"/>
+  <rect x="812" y="168" width="122" height="280" rx="22" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="8"/>
+  <rect x="842" y="126" width="62" height="56" rx="16" fill="#FF6B35"/>
+  <rect x="840" y="210" width="66" height="176" rx="18" fill="#111827"/>
+  <text x="873" y="282" text-anchor="middle" font-family="Arial, sans-serif" font-size="31" font-weight="800" fill="#FFFFFF">5W</text>
+  <text x="873" y="326" text-anchor="middle" font-family="Arial, sans-serif" font-size="31" font-weight="800" fill="#FFFFFF">30/40</text>
+  <text x="1040" y="220" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="58" font-weight="900" fill="#111827">روغن مناسب MG 6</text>
+  <text x="1040" y="292" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="31" font-weight="700" fill="#667085">راهنمای 5W-30 و 5W-40</text>
+</svg>

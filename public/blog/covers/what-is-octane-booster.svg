@@ -1,0 +1,17 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="اکتان بوستر چیست">
+  <rect width="1200" height="630" rx="42" fill="#FFFFFF"/>
+  <circle cx="225" cy="355" r="192" fill="#FF6B35" fill-opacity=".14"/>
+  <path d="M213 152h116c24 0 44 20 44 44v258c0 24-20 44-44 44H213c-24 0-44-20-44-44V196c0-24 20-44 44-44Z" fill="#111827"/>
+  <rect x="229" y="102" width="84" height="64" rx="18" fill="#FF6B35"/>
+  <rect x="198" y="222" width="146" height="168" rx="24" fill="#FFFFFF"/>
+  <text x="271" y="296" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="900" fill="#111827">OCT</text>
+  <text x="271" y="346" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="900" fill="#FF6B35">BOOST</text>
+  <path d="M496 416c54-74 120-110 199-110h211c42 0 78 15 108 45l35 35h56c29 0 53 24 53 53v37H465v-23c0-13 12-29 31-37Z" fill="#1F2937"/>
+  <circle cx="647" cy="476" r="47" fill="#111827"/>
+  <circle cx="647" cy="476" r="18" fill="#FFFFFF"/>
+  <circle cx="995" cy="476" r="47" fill="#111827"/>
+  <circle cx="995" cy="476" r="18" fill="#FFFFFF"/>
+  <path d="M706 214c46-66 105-77 133-77-26 38-24 83 9 134 25 38 16 88-25 119-48 36-125 16-148-41-15-37-4-88 31-135Z" fill="#FF6B35"/>
+  <text x="1090" y="172" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="56" font-weight="900" fill="#111827">اکتان بوستر چیست؟</text>
+  <text x="1090" y="238" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#667085">وقتی بنزین معمولی برای موتور کافی نیست</text>
+</svg>

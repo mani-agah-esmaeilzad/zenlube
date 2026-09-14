@@ -1,0 +1,16 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="راهنمای روغن موتور MG 5">
+  <rect width="1200" height="630" rx="42" fill="#FFFFFF"/>
+  <rect x="72" y="72" width="1056" height="486" rx="36" fill="#F8FAFC" stroke="#E5E7EB" stroke-width="4"/>
+  <path d="M176 409c47-58 104-86 171-86h248c42 0 78 14 108 43l38 37h117c35 0 63 28 63 63v26H148v-27c0-21 10-41 28-56Z" fill="#111827"/>
+  <path d="M318 338h241c32 0 61 12 84 35l25 26H254c18-40 39-61 64-61Z" fill="#E5E7EB"/>
+  <circle cx="307" cy="492" r="48" fill="#0F172A"/>
+  <circle cx="307" cy="492" r="19" fill="#FFFFFF"/>
+  <circle cx="738" cy="492" r="48" fill="#0F172A"/>
+  <circle cx="738" cy="492" r="19" fill="#FFFFFF"/>
+  <path d="M937 145h72c23 0 42 19 42 42v198c0 23-19 42-42 42h-72c-23 0-42-19-42-42V187c0-23 19-42 42-42Z" fill="#FF6B35"/>
+  <path d="M929 197h88v178h-88z" fill="#FFFFFF" fill-opacity=".94"/>
+  <text x="973" y="286" text-anchor="middle" font-family="Arial, sans-serif" font-size="45" font-weight="900" fill="#111827">0W</text>
+  <text x="973" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="45" font-weight="900" fill="#111827">20</text>
+  <text x="844" y="168" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="56" font-weight="900" fill="#111827">MG 5 جدید</text>
+  <text x="844" y="236" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#667085">با گرید 0W-20 اشتباه نکنیم</text>
+</svg>

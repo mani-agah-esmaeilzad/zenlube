@@ -28,8 +28,8 @@ const categoryDefinitions = {
 } as const;
 
 function assertCatalog() {
-  if (catalogProducts.length !== 126) {
-    throw new Error(`Expected exactly 126 catalog products, received ${catalogProducts.length}.`);
+  if (catalogProducts.length !== 127) {
+    throw new Error(`Expected exactly 127 catalog products, received ${catalogProducts.length}.`);
   }
 
   const slugs = new Set(catalogProducts.map((product) => product.slug));

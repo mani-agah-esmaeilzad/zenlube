@@ -3,6 +3,7 @@ import { PrismaClient, type PromotionKind } from "../src/generated/prisma";
 const prisma = new PrismaClient();
 
 const presets: Array<{ slug: string; kind: PromotionKind; label: string; sortOrder: number }> = [
+  { slug: "persia-sign-up-to-3-octane-booster-250ml-original", kind: "OCTANE", label: "اکتان بوستر اصل", sortOrder: 19 },
   { slug: "persia-sign-up-to-5-octane-booster-450ml", kind: "OCTANE", label: "افزایش اکتان", sortOrder: 20 },
   { slug: "xado-octane-booster-f8-250ml", kind: "OCTANE", label: "اکتان حرفه‌ای", sortOrder: 21 },
   { slug: "xado-verylube-octane-booster-250ml", kind: "OCTANE", label: "مکمل سوخت", sortOrder: 22 },

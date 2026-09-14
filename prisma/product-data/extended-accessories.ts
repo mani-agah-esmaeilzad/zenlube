@@ -240,6 +240,27 @@ const aidlubeAccessories = [
 
 const persiaSignAccessories = [
   accessory(brands.persiaSign, {
+    title: "اکتان بوستر پرشیا ساین Up to 3 اصل",
+    latinName: "Persia Sign Up to 3 Octane Booster",
+    slug: "up-to-3-octane-booster-250ml-original",
+    sku: "PRS-OCT-3P-250-ORG",
+    productType: "افزاینده اکتان و مکمل سوخت",
+    volumeLabel: "حجم ۲۵۰ میلی‌لیتر",
+    packagingSizeLit: 0.25,
+    image: "/products/persia-sign/up-to-3-250ml.jpg",
+    summary:
+      "نسخه اصل Up to 3 پرشیا ساین یک مکمل سوخت ۲۵۰ میلی‌لیتری برای کمک به افزایش عدد اکتان، کاهش ناک و بهبود کیفیت احتراق در موتورهای بنزینی است.",
+    source:
+      "https://www.ravanmotor.com/p/297/%D9%85%DA%A9%D9%85%D9%84-%D8%A8%D9%86%D8%B2%DB%8C%D9%86-%D8%A7%DA%A9%D8%AA%D8%A7%D9%86-%D9%BE%D8%B1%D8%B4%DB%8C%D8%A7-%D8%B3%D8%A7%DB%8C%D9%86-%D8%A8%DB%8C-%D8%A7%D9%85-%D9%88",
+    specs: {
+      "حجم درج‌شده روی بسته": "۲۵۰ میلی‌لیتر",
+      "افزایش اکتان اعلام‌شده": "تا ۳ واحد",
+      "روش مصرف": "طبق دستور روی بسته در باک بنزین استفاده شود",
+      "اصالت کالا": "اصل",
+    },
+    tags: ["اکتان بوستر", "مکمل بنزین", "پرشیا ساین", "اصل"],
+  }),
+  accessory(brands.persiaSign, {
     title: "اکتان بوستر پرشیا ساین Up to 5",
     latinName: "Persia Sign Up to 5 Octane Booster",
     slug: "up-to-5-octane-booster-450ml",

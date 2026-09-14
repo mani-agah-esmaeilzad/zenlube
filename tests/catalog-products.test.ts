@@ -22,15 +22,15 @@ function countsBy(field: "categorySlug" | "brandSlug") {
   }, {});
 }
 
-test("complete requested catalog contains 126 unique products", () => {
-  assert.equal(catalogProducts.length, 126);
-  assert.equal(new Set(catalogProducts.map((product) => product.slug)).size, 126);
-  assert.equal(new Set(catalogProducts.map((product) => product.sku)).size, 126);
+test("complete requested catalog contains 127 unique products", () => {
+  assert.equal(catalogProducts.length, 127);
+  assert.equal(new Set(catalogProducts.map((product) => product.slug)).size, 127);
+  assert.equal(new Set(catalogProducts.map((product) => product.sku)).size, 127);
 
   assert.deepEqual(countsBy("categorySlug"), {
     "engine-oil": 34,
     "gear-oil": 41,
-    accessories: 48,
+    accessories: 49,
     "brake-oil": 3,
   });
 });
@@ -59,18 +59,29 @@ test("brand quantities match the supplied inventory list", () => {
     xado: 32,
     caspian: 12,
     woofer: 2,
-    "persia-sign": 4,
+    "persia-sign": 5,
     unium: 1,
   };
   assert.deepEqual(countsBy("brandSlug"), expected);
 });
 
 test("ambiguous labels are normalized without creating duplicate products", () => {
-  assert.equal(catalogProducts.filter((product) => product.brandSlug === "persia-sign").length, 4);
+  assert.equal(catalogProducts.filter((product) => product.brandSlug === "persia-sign").length, 5);
   assert.ok(productsBySlug.has("bareliz-atf-dct-1l"));
   assert.ok(productsBySlug.has("fosser-dexron-d-vi-1l"));
   assert.ok(productsBySlug.has("xado-atomic-atf-3-4-5-1l"));
   assert.equal(catalogProducts.some((product) => /\bdat\b/i.test(product.name)), false);
+});
+
+test("Persia Sign Up to 3 original booster has the requested commerce identity", () => {
+  const product = productsBySlug.get("persia-sign-up-to-3-octane-booster-250ml-original");
+
+  assert.equal(product?.brandSlug, "persia-sign");
+  assert.equal(product?.sku, "PRS-OCT-3P-250-ORG");
+  assert.equal(product?.imageUrl, "/products/persia-sign/up-to-3-250ml.jpg");
+  assert.equal(product?.technicalSpecs["حجم درج‌شده روی بسته"], "۲۵۰ میلی‌لیتر");
+  assert.equal(product?.technicalSpecs["افزایش اکتان اعلام‌شده"], "تا ۳ واحد");
+  assert.equal(product?.technicalSpecs["اصالت کالا"], "اصل");
 });
 
 test("Persia Sign economic packs have independent product identities", () => {

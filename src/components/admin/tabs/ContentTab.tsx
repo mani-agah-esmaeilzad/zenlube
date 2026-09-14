@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Children } from "react";
 import type { ReactNode } from "react";
-import { deleteCouponAction, deleteMarketingBannerAction } from "@/actions/admin";
+import { archiveBlogPostAction, deleteCouponAction, deleteMarketingBannerAction } from "@/actions/admin";
+import { BlogCategoryForm, BlogPostForm } from "@/components/admin/forms/ContentBlogForms";
 import { BannerCreateForm, CouponCreateForm } from "@/components/admin/forms/ContentCampaignForms";
 import { faDateFormatter, faNumberFormatter } from "@/lib/formatters";
 import { formatPrice } from "@/lib/utils";
@@ -9,7 +10,7 @@ import type { ContentTabData } from "@/services/admin/types";
 
 const cmsSections = [
   { title: "بنرها و کمپین‌ها", status: "مدل فعال", detail: "MarketingBanner برای hero، بنر تبلیغاتی، CTA، زمان‌بندی و وضعیت فعال آماده است." },
-  { title: "مقالات و راهنماها", status: "مدل فعال", detail: "BlogPost برای مدیریت مقاله، تگ، کاور، نویسنده، انتشار و زمان مطالعه وجود دارد." },
+  { title: "مجله و راهنماها", status: "آماده تولید محتوا", detail: "دسته مجله، پیش‌نویس/انتشار، SEO، FAQ و محصولات پیشنهادی از ادمین مدیریت می‌شود." },
   { title: "رسانه‌ها", status: "مدل فعال", detail: "GalleryImage برای تصاویر عمومی، ترتیب نمایش و وضعیت فعال/غیرفعال آماده است." },
   { title: "تنظیمات سایت", status: "نیازمند مدل", detail: "نام سایت، لوگو، شبکه‌های اجتماعی، footer و announcement برای ذخیره پایدار به SiteSetting نیاز دارد." },
   { title: "منو و مگامنو", status: "نیازمند مدل", detail: "برای reorder و parent/child منو بهتر است NavigationItem اضافه شود." },
@@ -19,11 +20,15 @@ const cmsSections = [
 ];
 
 export function ContentTab({ data }: { data: ContentTabData }) {
+  const publishedPosts = data.posts.filter((post) => post.status === "PUBLISHED").length;
+  const draftPosts = data.posts.filter((post) => post.status === "DRAFT").length;
+  const activeBlogCategories = data.blogCategories.filter((category) => category.isActive).length;
+
   return (
     <div className="space-y-6">
       <section className="grid gap-4 md:grid-cols-3">
         <MetricCard label="بنرها" value={data.banners.length} helper={`${data.banners.filter((item) => item.isActive).length} فعال`} />
-        <MetricCard label="مقالات" value={data.posts.length} helper="راهنماها و محتوای آموزشی" />
+        <MetricCard label="مجله" value={data.posts.length} helper={`${publishedPosts.toLocaleString("fa-IR")} منتشر · ${draftPosts.toLocaleString("fa-IR")} پیش‌نویس`} />
         <MetricCard label="پیامک‌ها" value={data.smsLogs.length} helper="آخرین لاگ‌های ارسال" />
       </section>
 
@@ -52,6 +57,77 @@ export function ContentTab({ data }: { data: ContentTabData }) {
         </div>
       </section>
 
+      <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-lg font-extrabold text-[#111827]">مجله اویل‌بار و راهنماهای خرید</h2>
+            <p className="mt-1 text-xs leading-6 text-[#6B7280]">
+              اینجا معماری محتوایی سایت است: مقاله‌ها می‌توانند دسته، FAQ، وضعیت انتشار، SEO و محصولات پیشنهادی داشته باشند.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs font-bold text-[#667085]">
+            <span className="admin-chip">{activeBlogCategories.toLocaleString("fa-IR")} دسته فعال</span>
+            <Link href="/blog" target="_blank" className="admin-chip">مشاهده مجله</Link>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-6 2xl:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="space-y-4">
+            <BlogPostForm categories={data.blogCategories} products={data.contentProductOptions} />
+
+            <div className="divide-y divide-[#E5E7EB] rounded-2xl border border-[#E5E7EB]">
+              {data.posts.length ? data.posts.map((post) => (
+                <details key={post.id} className="group p-4">
+                  <summary className="flex cursor-pointer list-none flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="line-clamp-2 text-sm font-black text-[#111827]">{post.title}</p>
+                        <StatusChip status={post.status} />
+                        {post.category ? <span className="admin-chip">{post.category.title}</span> : null}
+                      </div>
+                      <p className="mt-2 text-xs leading-6 text-[#667085]">
+                        {post.authorName} · {post.readMinutes.toLocaleString("fa-IR")} دقیقه · {faDateFormatter.format(post.publishedAt)}
+                      </p>
+                    </div>
+                    <span className="text-xs font-extrabold text-[#B45309] group-open:hidden">ویرایش</span>
+                  </summary>
+                  <div className="mt-4 border-t border-dashed border-[#D0D5DD] pt-4">
+                    <BlogPostForm post={post} categories={data.blogCategories} products={data.contentProductOptions} />
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                      <Link className="text-xs font-bold text-[#B45309]" href={`/blog/${post.slug}`} target="_blank">مشاهده مقاله</Link>
+                      <form action={archiveBlogPostAction}>
+                        <input type="hidden" name="id" value={post.id} />
+                        <button type="submit" className="text-xs font-bold text-[#B42318]">آرشیو مقاله</button>
+                      </form>
+                    </div>
+                  </div>
+                </details>
+              )) : (
+                <p className="p-6 text-center text-sm text-[#6B7280]">هنوز مقاله‌ای ثبت نشده است.</p>
+              )}
+            </div>
+          </div>
+
+          <aside className="space-y-4">
+            <BlogCategoryForm />
+            <div className="space-y-3 rounded-2xl border border-[#E5E7EB] p-4">
+              <p className="text-sm font-bold text-[#111827]">دسته‌های مجله</p>
+              {data.blogCategories.length ? data.blogCategories.map((category) => (
+                <details key={category.id} className="rounded-2xl border border-[#E5E7EB] p-3">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+                    <span className="text-xs font-bold text-[#111827]">{category.title}</span>
+                    <span className="text-[11px] text-[#667085]">{category.postCount.toLocaleString("fa-IR")} مقاله</span>
+                  </summary>
+                  <div className="mt-3">
+                    <BlogCategoryForm category={category} />
+                  </div>
+                </details>
+              )) : <p className="text-xs leading-6 text-[#6B7280]">برای شروع، دسته‌هایی مثل «روغن موتور»، «اکتان بوستر» و «خودروهای MG» بساز.</p>}
+            </div>
+          </aside>
+        </div>
+      </section>
+
       <section className="grid gap-6 2xl:grid-cols-3">
         <Panel title="بنرهای مارکتینگ" empty="بنری ثبت نشده است.">
           <BannerCreateForm />
@@ -75,8 +151,8 @@ export function ContentTab({ data }: { data: ContentTabData }) {
           ))}
         </Panel>
 
-        <Panel title="مقالات و راهنماها" empty="مقاله‌ای ثبت نشده است.">
-          {data.posts.slice(0, 8).map((post) => (
+        <Panel title="آخرین مقاله‌های مجله" empty="مقاله‌ای ثبت نشده است.">
+          {data.posts.filter((post) => post.status === "PUBLISHED").slice(0, 8).map((post) => (
             <Link key={post.id} href={`/blog/${post.slug}`} className="block rounded-2xl border border-[#E5E7EB] p-4 transition hover:border-red-200">
               <p className="line-clamp-2 text-sm font-bold text-[#111827]">{post.title}</p>
               <p className="mt-2 text-xs text-[#6B7280]">
@@ -160,6 +236,20 @@ export function ContentTab({ data }: { data: ContentTabData }) {
       </section>
     </div>
   );
+}
+
+function StatusChip({ status }: { status: "DRAFT" | "PUBLISHED" | "ARCHIVED" }) {
+  const labels = {
+    DRAFT: "پیش‌نویس",
+    PUBLISHED: "منتشر شده",
+    ARCHIVED: "آرشیو",
+  };
+  const classes = {
+    DRAFT: "bg-amber-50 text-[#B54708]",
+    PUBLISHED: "bg-green-50 text-[#16A34A]",
+    ARCHIVED: "bg-slate-100 text-[#6B7280]",
+  };
+  return <span className={`rounded-full px-2 py-1 text-[11px] font-bold ${classes[status]}`}>{labels[status]}</span>;
 }
 
 function MetricCard({ label, value, helper }: { label: string; value: number; helper: string }) {

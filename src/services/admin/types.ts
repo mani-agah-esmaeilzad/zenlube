@@ -375,11 +375,44 @@ export type AdminBlogPost = {
   title: string;
   slug: string;
   excerpt: string;
+  content: string;
   coverImage?: string | null;
   tags: string[];
   authorName: string;
   readMinutes: number;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  faqItems: Array<{ question: string; answer: string }>;
+  relatedProductSlugs: string[];
+  isFeatured: boolean;
+  sortOrder: number;
+  categoryId?: string | null;
+  category?: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
   publishedAt: Date;
+  updatedAt: Date;
+};
+
+export type AdminBlogCategory = {
+  id: string;
+  title: string;
+  slug: string;
+  description?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  postCount: number;
+  updatedAt: Date;
+};
+
+export type AdminContentProductOption = {
+  id: string;
+  name: string;
+  slug: string;
+  brandName: string;
 };
 
 export type AdminGalleryImage = {
@@ -396,6 +429,8 @@ export type AdminGalleryImage = {
 export type ContentTabData = {
   banners: AdminMarketingBanner[];
   posts: AdminBlogPost[];
+  blogCategories: AdminBlogCategory[];
+  contentProductOptions: AdminContentProductOption[];
   galleryImages: AdminGalleryImage[];
   coupons: Array<{
     id: string;

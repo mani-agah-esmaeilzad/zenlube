@@ -323,6 +323,69 @@ export const couponSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+function splitTextList(value: unknown) {
+  if (Array.isArray(value)) {
+    return value
+      .flatMap((item) => (typeof item === "string" ? item.split(/[\n,،]+/) : []))
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  if (typeof value !== "string") return [];
+  return value
+    .split(/[\n,،]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseFaqItems(value: unknown) {
+  if (typeof value !== "string" || !value.trim()) return [];
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [question, ...answerParts] = line.split("|");
+      return {
+        question: question?.trim() ?? "",
+        answer: answerParts.join("|").trim(),
+      };
+    })
+    .filter((item) => item.question && item.answer);
+}
+
+export const blogCategorySchema = z.object({
+  id: z.string().cuid().optional(),
+  title: z.string().trim().min(2, "عنوان دسته‌بندی الزامی است."),
+  slug: slugSchema,
+  description: optionalString,
+  sortOrder: optionalNumber.pipe(z.number().int().min(0).max(999).optional()).transform((value) => value ?? 0),
+  isActive: z.boolean().optional(),
+});
+
+export const blogPostSchema = z.object({
+  id: z.string().cuid().optional(),
+  title: z.string().trim().min(4, "عنوان مقاله باید حداقل ۴ کاراکتر باشد."),
+  slug: slugSchema,
+  excerpt: z.string().trim().min(20, "خلاصه مقاله را کامل‌تر بنویسید.").max(320, "خلاصه مقاله بیش از حد طولانی است."),
+  content: z.string().trim().min(80, "متن مقاله باید حداقل ۸۰ کاراکتر باشد."),
+  coverImage: optionalImageUrl,
+  tags: z.preprocess(splitTextList, z.array(z.string().min(1).max(40)).max(12, "حداکثر ۱۲ تگ وارد کنید.")).transform((items) => Array.from(new Set(items))),
+  authorName: z.preprocess(emptyToUndefined, z.string().trim().min(2).max(80).optional()).transform((value) => value ?? "تیم تحریریه Oilbar"),
+  readMinutes: optionalNumber.pipe(z.number().int().min(1).max(90).optional()).transform((value) => value ?? 5),
+  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
+  seoTitle: optionalString,
+  seoDescription: optionalString,
+  faqItems: z.preprocess(parseFaqItems, z.array(z.object({
+    question: z.string().min(4).max(160),
+    answer: z.string().min(4).max(700),
+  })).max(12, "حداکثر ۱۲ FAQ وارد کنید.")),
+  relatedProductSlugs: z.preprocess(splitTextList, z.array(slugSchema).max(16, "حداکثر ۱۶ محصول مرتبط وارد کنید.")).transform((items) => Array.from(new Set(items))),
+  isFeatured: z.boolean().optional(),
+  sortOrder: optionalNumber.pipe(z.number().int().min(0).max(999).optional()).transform((value) => value ?? 0),
+  categoryId: z.preprocess(emptyToUndefined, z.string().cuid().optional()),
+  publishedAt: z.preprocess(emptyToUndefined, z.coerce.date().optional()).transform((value) => value ?? new Date()),
+});
+
 export const returnRequestSchema = z.object({
   orderId: z.string().cuid(),
   reason: z.string().trim().min(5, "دلیل مرجوعی را دقیق‌تر بنویسید.").max(160, "دلیل مرجوعی بیش از حد طولانی است."),

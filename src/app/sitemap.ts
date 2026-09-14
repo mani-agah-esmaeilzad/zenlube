@@ -38,6 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       orderBy: { slug: "asc" },
     }),
     prisma.blogPost.findMany({
+      where: { status: "PUBLISHED", publishedAt: { lte: new Date() } },
       select: { slug: true, updatedAt: true },
       orderBy: { publishedAt: "desc" },
     }),

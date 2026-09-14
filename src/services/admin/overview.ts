@@ -461,9 +461,26 @@ export async function getReportsTabData(): Promise<ReportsTabData> {
 }
 
 export async function getContentTabData(): Promise<ContentTabData> {
-  const [banners, posts, galleryImages, coupons, smsLogs] = await Promise.all([
+  const [banners, posts, blogCategories, contentProductOptions, galleryImages, coupons, smsLogs] = await Promise.all([
     prisma.marketingBanner.findMany({ orderBy: [{ position: "asc" }, { updatedAt: "desc" }] }),
-    prisma.blogPost.findMany({ orderBy: { publishedAt: "desc" } }),
+    prisma.blogPost.findMany({
+      orderBy: [{ status: "asc" }, { publishedAt: "desc" }],
+      include: { category: true },
+    }),
+    prisma.blogCategory.findMany({
+      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
+      include: { _count: { select: { posts: true } } },
+    }),
+    prisma.product.findMany({
+      where: adminCatalogProductWhere(),
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        brand: { select: { name: true } },
+      },
+      orderBy: [{ brand: { name: "asc" } }, { name: "asc" }],
+    }),
     prisma.galleryImage.findMany({ orderBy: [{ orderIndex: "asc" }, { updatedAt: "desc" }] }),
     prisma.coupon.findMany({ orderBy: [{ isActive: "desc" }, { createdAt: "desc" }] }),
     prisma.smsLog.findMany({ orderBy: { createdAt: "desc" }, take: 12 }),
@@ -486,11 +503,42 @@ export async function getContentTabData(): Promise<ContentTabData> {
       title: post.title,
       slug: post.slug,
       excerpt: post.excerpt,
+      content: post.content,
       coverImage: post.coverImage,
       tags: post.tags,
       authorName: post.authorName,
       readMinutes: post.readMinutes,
+      status: post.status,
+      seoTitle: post.seoTitle,
+      seoDescription: post.seoDescription,
+      faqItems: normalizeBlogFaqItems(post.faqItems),
+      relatedProductSlugs: post.relatedProductSlugs,
+      isFeatured: post.isFeatured,
+      sortOrder: post.sortOrder,
+      categoryId: post.categoryId,
+      category: post.category ? {
+        id: post.category.id,
+        title: post.category.title,
+        slug: post.category.slug,
+      } : null,
       publishedAt: post.publishedAt,
+      updatedAt: post.updatedAt,
+    })),
+    blogCategories: blogCategories.map((category) => ({
+      id: category.id,
+      title: category.title,
+      slug: category.slug,
+      description: category.description,
+      sortOrder: category.sortOrder,
+      isActive: category.isActive,
+      postCount: category._count.posts,
+      updatedAt: category.updatedAt,
+    })),
+    contentProductOptions: contentProductOptions.map((product) => ({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      brandName: product.brand.name,
     })),
     galleryImages: galleryImages.map((image) => ({
       id: image.id,
@@ -525,6 +573,18 @@ export async function getContentTabData(): Promise<ContentTabData> {
       createdAt: log.createdAt,
     })),
   };
+}
+
+function normalizeBlogFaqItems(value: unknown): Array<{ question: string; answer: string }> {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const candidate = item as { question?: unknown; answer?: unknown };
+      if (typeof candidate.question !== "string" || typeof candidate.answer !== "string") return null;
+      return { question: candidate.question, answer: candidate.answer };
+    })
+    .filter((item): item is { question: string; answer: string } => Boolean(item));
 }
 
 export async function getSpecialOffersTabData(): Promise<SpecialOffersTabData> {

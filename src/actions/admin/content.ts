@@ -3,8 +3,16 @@
 import { createAuditLog } from "@/lib/admin-audit";
 import { ensureAdminAction, ensureRoleAccess } from "@/lib/auth";
 import { revalidateAdminSurface, revalidateStorefrontContent, revalidateStorefrontProduct } from "@/lib/storefront-revalidate";
-import { couponSchema, marketingBannerSchema } from "@/lib/validators";
-import { deleteCoupon, deleteMarketingBanner, saveCoupon, saveMarketingBanner } from "@/services/admin/mutations";
+import { blogCategorySchema, blogPostSchema, couponSchema, marketingBannerSchema } from "@/lib/validators";
+import {
+  archiveBlogPost,
+  deleteCoupon,
+  deleteMarketingBanner,
+  saveBlogCategory,
+  saveBlogPost,
+  saveCoupon,
+  saveMarketingBanner,
+} from "@/services/admin/mutations";
 
 import type { ActionResult } from "./types";
 
@@ -62,6 +70,97 @@ export async function deleteMarketingBannerAction(formData: FormData): Promise<v
     targetId: id,
     action: "delete",
     summary: "یک بنر مارکتینگ حذف شد.",
+  });
+  revalidateAdminSurface();
+  revalidateStorefrontContent();
+}
+
+export async function saveBlogCategoryAction(formData: FormData): Promise<ActionResult> {
+  const { userId, session } = await ensureAdminAction();
+  const role = (session as { user?: { role?: string | null } } | null)?.user?.role ?? null;
+  ensureRoleAccess(role, ["ADMIN", "CONTENT_MANAGER"]);
+
+  const raw = Object.fromEntries(formData);
+  const parsed = blogCategorySchema.safeParse({
+    ...raw,
+    sortOrder: raw.sortOrder ? Number(raw.sortOrder) : undefined,
+    isActive: parseCheckbox(formData.get("isActive")),
+  });
+
+  if (!parsed.success) {
+    return { success: false, errors: parsed.error.flatten().fieldErrors };
+  }
+
+  await saveBlogCategory({
+    ...parsed.data,
+    isActive: parsed.data.isActive ?? false,
+  });
+
+  await createAuditLog({
+    actorUserId: userId,
+    targetType: "blog_category",
+    targetId: parsed.data.id ?? parsed.data.slug,
+    action: parsed.data.id ? "update" : "create",
+    summary: `دسته مجله «${parsed.data.title}» ذخیره شد.`,
+  });
+
+  revalidateAdminSurface();
+  revalidateStorefrontContent();
+  return { success: true };
+}
+
+export async function saveBlogPostAction(formData: FormData): Promise<ActionResult> {
+  const { userId, session } = await ensureAdminAction();
+  const role = (session as { user?: { role?: string | null } } | null)?.user?.role ?? null;
+  ensureRoleAccess(role, ["ADMIN", "CONTENT_MANAGER"]);
+
+  const raw = Object.fromEntries(formData);
+  const parsed = blogPostSchema.safeParse({
+    ...raw,
+    readMinutes: raw.readMinutes ? Number(raw.readMinutes) : undefined,
+    sortOrder: raw.sortOrder ? Number(raw.sortOrder) : undefined,
+    isFeatured: parseCheckbox(formData.get("isFeatured")),
+    tags: formData.get("tags"),
+    faqItems: formData.get("faqItems"),
+    relatedProductSlugs: formData.getAll("relatedProductSlugs"),
+  });
+
+  if (!parsed.success) {
+    return { success: false, errors: parsed.error.flatten().fieldErrors };
+  }
+
+  await saveBlogPost(parsed.data);
+
+  await createAuditLog({
+    actorUserId: userId,
+    targetType: "blog_post",
+    targetId: parsed.data.id ?? parsed.data.slug,
+    action: parsed.data.id ? "update" : "create",
+    summary: `مقاله «${parsed.data.title}» ذخیره شد.`,
+  });
+
+  revalidateAdminSurface();
+  revalidateStorefrontContent();
+  return { success: true };
+}
+
+export async function archiveBlogPostAction(formData: FormData): Promise<void> {
+  const { userId, session } = await ensureAdminAction();
+  const role = (session as { user?: { role?: string | null } } | null)?.user?.role ?? null;
+  ensureRoleAccess(role, ["ADMIN", "CONTENT_MANAGER"]);
+
+  const id = formData.get("id");
+  if (!id || typeof id !== "string") {
+    throw new Error("شناسه مقاله نامعتبر است.");
+  }
+
+  await archiveBlogPost(id);
+  await createAuditLog({
+    actorUserId: userId,
+    targetType: "blog_post",
+    targetId: id,
+    action: "archive",
+    summary: "یک مقاله مجله آرشیو شد.",
   });
   revalidateAdminSurface();
   revalidateStorefrontContent();

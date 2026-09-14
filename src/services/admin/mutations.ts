@@ -604,6 +604,75 @@ export async function deleteMarketingBanner(id: string) {
   await prisma.marketingBanner.delete({ where: { id } });
 }
 
+export async function saveBlogCategory(data: {
+  id?: string;
+  title: string;
+  slug: string;
+  description?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+}) {
+  const { id, ...payload } = data;
+  if (id) {
+    await prisma.blogCategory.update({
+      where: { id },
+      data: payload,
+    });
+    return;
+  }
+
+  await prisma.blogCategory.create({ data: payload });
+}
+
+export async function saveBlogPost(data: {
+  id?: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  coverImage?: string | null;
+  tags: string[];
+  authorName: string;
+  readMinutes: number;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  faqItems: Array<{ question: string; answer: string }>;
+  relatedProductSlugs: string[];
+  isFeatured?: boolean;
+  sortOrder: number;
+  categoryId?: string | null;
+  publishedAt: Date;
+}) {
+  const { id, faqItems, ...payload } = data;
+  const sharedData = {
+    ...payload,
+    coverImage: payload.coverImage ?? null,
+    seoTitle: payload.seoTitle ?? null,
+    seoDescription: payload.seoDescription ?? null,
+    isFeatured: payload.isFeatured ?? false,
+    categoryId: payload.categoryId ?? null,
+    faqItems: faqItems.length ? faqItems : Prisma.JsonNull,
+  } satisfies Prisma.BlogPostUncheckedCreateInput;
+
+  if (id) {
+    await prisma.blogPost.update({
+      where: { id },
+      data: sharedData,
+    });
+    return;
+  }
+
+  await prisma.blogPost.create({ data: sharedData });
+}
+
+export async function archiveBlogPost(id: string) {
+  await prisma.blogPost.update({
+    where: { id },
+    data: { status: "ARCHIVED" },
+  });
+}
+
 export async function saveCoupon(data: {
   id?: string;
   code: string;

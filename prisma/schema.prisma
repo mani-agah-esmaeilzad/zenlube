@@ -102,6 +102,12 @@ enum QuestionStatus {
   ARCHIVED
 }
 
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 model User {
   id                     String                  @id @default(cuid())
   name                   String?
@@ -572,18 +578,45 @@ model MarketingBanner {
 }
 
 model BlogPost {
-  id          String   @id @default(cuid())
+  id                  String          @id @default(cuid())
+  title               String
+  slug                String          @unique
+  excerpt             String
+  content             String          @db.Text
+  coverImage          String?
+  tags                String[]        @default([])
+  authorName          String          @default("تیم تحریریه Oilbar")
+  readMinutes         Int             @default(5)
+  status              BlogPostStatus  @default(PUBLISHED)
+  seoTitle            String?
+  seoDescription      String?
+  faqItems            Json?
+  relatedProductSlugs String[]        @default([])
+  isFeatured          Boolean         @default(false)
+  sortOrder           Int             @default(0)
+  categoryId          String?
+  publishedAt         DateTime        @default(now())
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  category            BlogCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([status, publishedAt])
+  @@index([categoryId, status, publishedAt])
+  @@index([isFeatured, status, sortOrder])
+}
+
+model BlogCategory {
+  id          String     @id @default(cuid())
   title       String
-  slug        String   @unique
-  excerpt     String
-  content     String   @db.Text
-  coverImage  String?
-  tags        String[] @default([])
-  authorName  String   @default("تیم تحریریه Oilbar")
-  readMinutes Int      @default(5)
-  publishedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  slug        String     @unique
+  description String?
+  sortOrder   Int        @default(0)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  posts       BlogPost[]
+
+  @@index([isActive, sortOrder])
 }
 
 model GalleryImage {

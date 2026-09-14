@@ -1,8 +1,8 @@
 import Link from "next/link";
-import type { BlogPost } from "@/generated/prisma";
+import type { BlogCategory, BlogPost } from "@/generated/prisma";
 
 type BlogCardProps = {
-  post: BlogPost;
+  post: BlogPost & { category?: BlogCategory | null };
 };
 
 export function BlogCard({ post }: BlogCardProps) {
@@ -29,6 +29,7 @@ export function BlogCard({ post }: BlogCardProps) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-text-muted">
+          {post.category ? <span className="font-extrabold text-primary-accent-strong">{post.category.title}</span> : null}
           <span>{published}</span>
           <span>{post.readMinutes.toLocaleString("fa-IR")} دقیقه مطالعه</span>
         </div>

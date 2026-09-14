@@ -33,6 +33,7 @@ test("product pagination has a unique tie-breaker even for simultaneously import
   Object.assign(prisma, { $transaction: async (operations: Array<Promise<unknown>>) => Promise.all(operations) });
   for (const sort of ["latest", "price-asc", "price-desc", "rating", "bestseller"] as const) {
     await getAllProductsWithFilters({ page: 2, pageSize: 12, sort });
+    assert.deepEqual(query?.orderBy.at(0), { stock: "desc" }, sort);
     assert.deepEqual(query?.orderBy.at(-1), { id: "desc" }, sort);
     assert.equal(query?.skip, 12);
     assert.equal(query?.take, 12);

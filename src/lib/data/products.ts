@@ -234,7 +234,7 @@ export async function getAllProductsWithFilters({
             include: { car: true },
           },
         },
-        orderBy: [...(sortConfig[sort] ?? sortConfig.latest), { createdAt: "desc" }, { id: "desc" }],
+        orderBy: [{ stock: "desc" }, ...(sortConfig[sort] ?? sortConfig.latest), { createdAt: "desc" }, { id: "desc" }],
         skip,
         take: pageSize,
       }),

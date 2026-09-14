@@ -219,27 +219,65 @@ export async function getAllProductsWithFilters({
     });
 
     const skip = (page - 1) * pageSize;
-
-    const [items, total] = await prisma.$transaction([
-      prisma.product.findMany({
-        where,
-        include: {
-          brand: true,
-          category: true,
-          promotion: true,
-          carMappings: {
-            where: {
-              car: storefrontVisibleCarWhere(),
-            },
-            include: { car: true },
-          },
+    const orderBy: Prisma.ProductOrderByWithRelationInput[] = [
+      ...(sortConfig[sort] ?? sortConfig.latest),
+      { createdAt: "desc" },
+      { id: "desc" },
+    ];
+    const productInclude = {
+      brand: true,
+      category: true,
+      promotion: true,
+      carMappings: {
+        where: {
+          car: storefrontVisibleCarWhere(),
         },
-        orderBy: [{ stock: "desc" }, ...(sortConfig[sort] ?? sortConfig.latest), { createdAt: "desc" }, { id: "desc" }],
-        skip,
-        take: pageSize,
-      }),
-      prisma.product.count({ where }),
+        include: { car: true },
+      },
+    } as const satisfies Prisma.ProductInclude;
+    const availableWhere = {
+      AND: [where, { stock: { gt: 0 }, price: { gt: 0 } }],
+    } satisfies Prisma.ProductWhereInput;
+    const unavailableWhere = {
+      AND: [
+        where,
+        {
+          OR: [
+            { stock: { lte: 0 } },
+            { price: { lte: 0 } },
+          ],
+        },
+      ],
+    } satisfies Prisma.ProductWhereInput;
+
+    const [availableTotal, unavailableTotal] = await prisma.$transaction([
+      prisma.product.count({ where: availableWhere }),
+      prisma.product.count({ where: unavailableWhere }),
     ]);
+
+    const findProductPage = (queryWhere: Prisma.ProductWhereInput, querySkip: number, queryTake: number) =>
+      prisma.product.findMany({
+        where: queryWhere,
+        include: productInclude,
+        orderBy,
+        skip: querySkip,
+        take: queryTake,
+      }) as Promise<ProductListItem[]>;
+
+    const availableTake = skip < availableTotal ? Math.min(pageSize, availableTotal - skip) : 0;
+    const unavailableTake = pageSize - availableTake;
+    const unavailableSkip = Math.max(0, skip - availableTotal);
+    const [availableItems, unavailableItems]: [ProductListItem[], ProductListItem[]] = await Promise.all([
+      availableTake > 0
+        ? findProductPage(availableWhere, skip, availableTake)
+        : Promise.resolve([] as ProductListItem[]),
+      unavailableTake > 0
+        ? findProductPage(unavailableWhere, unavailableSkip, unavailableTake)
+        : Promise.resolve([] as ProductListItem[]),
+    ]);
+
+    const items = [...(availableItems ?? []), ...(unavailableItems ?? [])];
+    const total = availableTotal + unavailableTotal;
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
 

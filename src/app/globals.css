@@ -615,17 +615,26 @@ textarea.input-zen {
 }
 
 .admin-app-bg {
+  min-height: 100dvh;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 28%),
     radial-gradient(circle at top left, rgba(17, 24, 39, 0.05), transparent 20%),
     linear-gradient(180deg, #f5f7fb 0%, #eef2f8 100%);
 }
 
+.admin-container {
+  width: min(calc(100% - 1rem), 1680px);
+  margin-inline: auto;
+}
+
 .admin-panel {
+  min-width: 0;
   border: 1px solid #e6eaf2;
   background: rgba(255, 255, 255, 0.96);
   border-radius: 20px;
   box-shadow: 0 18px 44px rgba(15, 23, 42, 0.07);
+  overflow-wrap: anywhere;
 }
 
 @media (min-width: 768px) {
@@ -644,6 +653,7 @@ textarea.input-zen {
 }
 
 .admin-panel-muted {
+  min-width: 0;
   border: 1px solid #e6eaf2;
   background: linear-gradient(180deg, #fbfcfe 0%, #f4f7fb 100%);
   border-radius: 20px;
@@ -668,6 +678,7 @@ textarea.input-zen {
 .admin-tab-chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   min-height: 36px;
   border-radius: 999px;
@@ -675,6 +686,7 @@ textarea.input-zen {
   background: rgba(255, 255, 255, 0.88);
   padding: 0 14px;
   color: #475467;
+  white-space: nowrap;
 }
 
 .admin-chip-active,
@@ -721,6 +733,7 @@ textarea.input-zen {
 }
 
 .admin-kpi {
+  min-width: 0;
   border: 1px solid #e6eaf2;
   background: rgba(255, 255, 255, 0.96);
   border-radius: 18px;
@@ -739,6 +752,7 @@ textarea.input-zen {
   font-size: clamp(1.4rem, 1.2vw + 1rem, 2rem);
   font-weight: 900;
   letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
 }
 
 .admin-kpi-helper {
@@ -749,6 +763,7 @@ textarea.input-zen {
 }
 
 .admin-workspace :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea) {
+  min-width: 0;
   width: 100%;
   border-radius: 12px;
   border: 1px solid #e6eaf2;
@@ -783,6 +798,10 @@ textarea.input-zen {
   border-spacing: 0;
 }
 
+.admin-workspace :where(section, article, form, div, details, summary) {
+  min-width: 0;
+}
+
 .admin-workspace thead th {
   background: #f8fafc;
   color: #98a2b3;
@@ -804,6 +823,27 @@ textarea.input-zen {
 }
 
 @media (max-width: 767px) {
+  .admin-container {
+    width: min(calc(100% - 0.75rem), 100%);
+  }
+
+  .admin-panel,
+  .admin-panel-muted,
+  .admin-sidebar {
+    border-radius: 16px;
+  }
+
+  .admin-kpi {
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .admin-chip,
+  .admin-tab-chip {
+    min-height: 34px;
+    padding-inline: 12px;
+  }
+
   .section-heading {
     align-items: center;
     flex-direction: row;

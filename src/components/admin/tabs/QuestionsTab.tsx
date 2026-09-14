@@ -14,7 +14,7 @@ export function QuestionsTab({ data }: { data: QuestionsTabData }) {
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section className="grid gap-6 2xl:grid-cols-2">
         <div className="rounded-3xl border border-slate-200 bg-white p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-slate-900">پرسش‌های محصولات</h2>

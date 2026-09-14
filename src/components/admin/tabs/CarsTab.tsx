@@ -20,7 +20,7 @@ export function CarsTab({ data }: { data: CarsTabData }) {
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
+      <section className="grid gap-6 2xl:grid-cols-[1.1fr,0.9fr]">
         <div className="rounded-3xl border border-slate-200 bg-white p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
@@ -66,7 +66,7 @@ export function CarsTab({ data }: { data: CarsTabData }) {
           </div>
           <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
             {cars.length ? (
-              <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+              <table className="min-w-[1120px] divide-y divide-slate-200 text-sm text-slate-600">
                 <thead className="bg-slate-100 text-xs uppercase text-slate-400">
                   <tr>
                     <th className="px-4 py-3 text-right">خودرو</th>

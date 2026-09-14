@@ -88,7 +88,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
         {metrics.map((metric) => (
           <div key={metric.label} className="admin-kpi">
             <p className="admin-kpi-label">{metric.label}</p>
@@ -148,7 +148,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_0.9fr_0.9fr]">
+              <div className="mt-5 grid gap-4 2xl:grid-cols-[1fr_0.9fr_0.9fr]">
                 <div className="rounded-[24px] border border-[#E6EAF2] bg-[#FBFCFE] p-4">
                   <p className="text-xs font-bold text-[#667085]">مشخصات مشتری و آدرس</p>
                   <div className="mt-4 space-y-2 text-sm text-[#475467]">
@@ -217,7 +217,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
                     <p className="text-xs leading-6 text-[#667085]">{order.province}، {order.city}، {order.address1}{order.address2 ? `، ${order.address2}` : ""}</p>
                     <p className="text-xs leading-6 text-[#667085]">کد پستی: {order.postalCode}</p>
                   </div>
-                  <div className="grid min-w-0 gap-2 text-xs sm:grid-cols-2 lg:min-w-[420px]">
+                  <div className="grid min-w-0 gap-2 text-xs sm:grid-cols-2 xl:min-w-[420px]">
                     <InfoRow label="هزینه مشتری" value={shippingChargeLabel(order)} strong />
                     <InfoRow label="نرخ پایه" value={order.shippingBaseCost == null ? "-" : formatPrice(order.shippingBaseCost)} />
                     <InfoRow label="وزن مرسوله" value={order.shippingPackageWeightGrams ? `${faNumberFormatter.format(order.shippingPackageWeightGrams)} گرم` : "-"} />
@@ -243,7 +243,7 @@ export function OrdersTab({ data }: OrdersTabProps) {
                   <p className="text-xs font-bold text-[#667085]">اقلام سفارش</p>
                   <span className="admin-chip">{faNumberFormatter.format(order.items.length)} قلم</span>
                 </div>
-                <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                <div className="mt-4 grid gap-2 md:grid-cols-2 2xl:grid-cols-3">
                   {order.items.map((item) => (
                     <div key={item.id} className="rounded-[18px] border border-[#E6EAF2] bg-white px-3 py-3 text-sm text-[#475467]">
                       <span className="font-black text-[#111827]">{faNumberFormatter.format(item.quantity)}×</span>{" "}
@@ -284,9 +284,9 @@ function InfoRow({
   mono?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[18px] border border-[#E6EAF2] bg-white px-3 py-2.5">
+    <div className="flex min-w-0 flex-col gap-1 rounded-[18px] border border-[#E6EAF2] bg-white px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
       <span className="text-[#667085]">{label}</span>
-      <span className={`${strong ? "font-black text-[#111827]" : "font-bold text-[#475467]"} ${mono ? "font-mono text-[11px]" : ""}`}>
+      <span className={`min-w-0 break-words text-left ${strong ? "font-black text-[#111827]" : "font-bold text-[#475467]"} ${mono ? "font-mono text-[11px]" : ""}`}>
         {value}
       </span>
     </div>

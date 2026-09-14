@@ -40,7 +40,7 @@ export function ShippingTab({ data }: { data: ShippingTabData }) {
           </span>
         </div>
 
-        <div className="mt-6 grid gap-x-6 gap-y-4 border-y border-[#E6EAF2] py-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-6 grid gap-x-6 gap-y-4 border-y border-[#E6EAF2] py-5 sm:grid-cols-2 2xl:grid-cols-4">
           <Metric label="حالت تسویه‌حساب" value={dynamicActive ? "نرخ واقعی" : "روش قبلی"} ok={dynamicActive} />
           <Metric label="همگام‌سازی شهرها" value={data.environment.clientCodeConfigured && data.environment.providerIdentityConfigured ? "متصل" : "نیازمند اتصال"} ok={data.environment.ready} />
           <Metric
@@ -102,7 +102,7 @@ export function ShippingTab({ data }: { data: ShippingTabData }) {
         </Section>
 
         <Section title="بسته‌بندی" description="وزن مرسوله از جمع وزن کالاها و این مقادیر ساخته می‌شود.">
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
             <Field name="basePackagingWeightGrams" label="وزن پایه بسته‌بندی (گرم)" defaultValue={data.settings.basePackagingWeightGrams} type="number" min="0" />
             <Field name="extraPackagingWeightPerAdditionalItemGrams" label="وزن اضافه هر واحد (گرم)" defaultValue={data.settings.extraPackagingWeightPerAdditionalItemGrams} type="number" min="0" />
             <Field name="minimumPackageWeightGrams" label="حداقل وزن مرسوله (گرم)" defaultValue={data.settings.minimumPackageWeightGrams} type="number" min="10" />

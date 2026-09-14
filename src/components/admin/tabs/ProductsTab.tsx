@@ -41,7 +41,7 @@ export function ProductsTab({ data }: { data: ProductsTabData }) {
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
         {metrics.map((metric) => (
           <div key={metric.label} className="admin-kpi">
             <p className="admin-kpi-label">{metric.label}</p>
@@ -219,7 +219,7 @@ export function ProductsTab({ data }: { data: ProductsTabData }) {
         </section>
 
         <aside className="space-y-4">
-          <section className="admin-panel p-5 md:sticky md:top-6 md:p-6">
+          <section className="admin-panel p-5 md:p-6 2xl:sticky 2xl:top-5">
             <div>
               <h2 className="text-xl font-black text-[#111827]">افزودن محصول جدید</h2>
               <p className="mt-1 text-sm leading-7 text-[#667085]">
@@ -248,7 +248,7 @@ function ProductsFilterForm({ categories, brands, filters, pagination, lowStockT
   const lowStockLabel = `کمتر از ${faNumberFormatter.format(lowStockThreshold)} عدد`;
 
   return (
-    <form className="grid gap-3 lg:grid-cols-[1.25fr_repeat(3,minmax(0,1fr))] xl:grid-cols-[1.6fr_repeat(4,minmax(0,1fr))]" method="get">
+    <form className="grid gap-3 xl:grid-cols-[1.25fr_repeat(3,minmax(0,1fr))] 2xl:grid-cols-[1.6fr_repeat(4,minmax(0,1fr))]" method="get">
       <input type="hidden" name="tab" value="products" />
       <input type="hidden" name="page" value="1" />
 

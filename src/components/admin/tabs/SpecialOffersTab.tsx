@@ -145,8 +145,8 @@ function PromotionForm({ products, offer }: { products: SpecialOffersTabData["pr
   }, [offer, state]);
 
   return (
-    <form action={action} className="grid gap-3 md:grid-cols-2 xl:grid-cols-4" ref={formRef}>
-      <label className="grid gap-1 text-xs font-bold text-[#475467] xl:col-span-2">
+    <form action={action} className="grid gap-3 md:grid-cols-2 2xl:grid-cols-4" ref={formRef}>
+      <label className="grid gap-1 text-xs font-bold text-[#475467] 2xl:col-span-2">
         محصول
         <select className="input-zen" defaultValue={offer?.productId ?? ""} disabled={pending || Boolean(offer)} name="productId" required>
           <option disabled value="">انتخاب محصول</option>
@@ -171,7 +171,7 @@ function PromotionForm({ products, offer }: { products: SpecialOffersTabData["pr
       <Field defaultValue={formatTehranLocalDateTime(offer?.endsAt)} disabled={pending} label="پایان به وقت تهران" name="endsAt" state={state} type="datetime-local" />
       <Field defaultValue={offer?.sortOrder ?? 0} disabled={pending} label="ترتیب نمایش" min="0" name="sortOrder" state={state} type="number" />
 
-      <div className="flex flex-wrap items-end justify-between gap-3 md:col-span-2 xl:col-span-4">
+      <div className="flex flex-wrap items-end justify-between gap-3 md:col-span-2 2xl:col-span-4">
         <label className="inline-flex min-h-11 items-center gap-2 text-xs font-bold text-[#374151]">
           <input className="size-4 accent-[#D97706]" defaultChecked={offer?.isActive ?? true} disabled={pending} name="isActive" type="checkbox" />
           فعال و قابل نمایش

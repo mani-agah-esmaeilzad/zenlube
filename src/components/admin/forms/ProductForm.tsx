@@ -31,7 +31,7 @@ export function ProductCreateForm(props: Omit<ProductFormBaseProps, "submitLabel
   }, [state]);
 
   return (
-    <form ref={formRef} action={formAction} className="mt-6 grid gap-4 sm:grid-cols-2">
+    <form ref={formRef} action={formAction} className="mt-6 grid gap-4">
       <ProductFormFields
         {...props}
         submitLabel="ذخیره محصول"
@@ -151,7 +151,7 @@ function ProductFormFields({
 
   return (
     <>
-      <div className="sm:col-span-2 grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4">
         <label className="flex flex-col gap-1 text-xs text-slate-500">
           نام محصول
           <input
@@ -229,7 +229,7 @@ function ProductFormFields({
           />
           {renderErrors("oilType")}
         </label>
-        <div className="sm:col-span-2">
+        <div>
           <MediaUploadField
             name="imageUrl"
             label="آدرس تصویر محصول"
@@ -241,7 +241,7 @@ function ProductFormFields({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4">
         <label className="flex flex-col gap-1 text-xs text-slate-500">
           دسته‌بندی
           <select
@@ -274,7 +274,7 @@ function ProductFormFields({
           </select>
           {renderErrors("brandId")}
         </label>
-        <label className="sm:col-span-2 flex flex-col gap-1 text-xs text-slate-500">
+        <label className="flex flex-col gap-1 text-xs text-slate-500">
           خودروهای سازگار
           <select
             name="carIds"
@@ -296,8 +296,8 @@ function ProductFormFields({
         </label>
       </div>
 
-      <div className="sm:col-span-2 grid gap-4 border-t border-slate-200 pt-5 sm:grid-cols-3">
-        <div className="sm:col-span-3">
+      <div className="grid gap-4 border-t border-slate-200 pt-5">
+        <div>
           <h3 className="text-sm font-black text-slate-900">اطلاعات ارسال</h3>
           <p className="mt-1 text-[11px] leading-5 text-slate-500">
             وزن را با بسته‌بندی خود محصول و بر حسب گرم وارد کنید؛ وزن کارتن بیرونی جداگانه از تنظیمات فروشگاه اضافه می‌شود.
@@ -370,7 +370,7 @@ function ProductFormFields({
             {renderErrors(name)}
           </label>
         ))}
-        <fieldset className="sm:col-span-3">
+        <fieldset>
           <legend className="text-xs font-bold text-slate-600">عدم نمایش سرویس برای این محصول</legend>
           <div className="mt-2 flex flex-wrap gap-5 text-xs text-slate-600">
             {[["POST", "پست"], ["TIPAX", "تیپاکس"]].map(([value, label]) => (
@@ -404,7 +404,7 @@ function ProductFormFields({
         نمایش در محصولات ویژه
       </label>
 
-      <label className="sm:col-span-2 flex flex-col gap-1 text-xs text-slate-500">
+      <label className="flex flex-col gap-1 text-xs text-slate-500">
         توضیحات محصول
         <textarea
           name="description"
@@ -417,18 +417,18 @@ function ProductFormFields({
       </label>
 
       {globalError ? (
-        <p className="sm:col-span-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-[11px] text-red-600">
+        <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-[11px] text-red-600">
           {globalError}
         </p>
       ) : null}
 
       {showSuccess ? (
-        <p className="sm:col-span-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-[11px] text-emerald-700">
+        <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-[11px] text-emerald-700">
           تغییرات با موفقیت ثبت شد.
         </p>
       ) : null}
 
-      <div className="sm:col-span-2 flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="submit"
           disabled={disabled}

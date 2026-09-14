@@ -140,13 +140,13 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const content = await renderActiveTab(activeTab, userId, params, role);
 
   return (
-    <div className="admin-app-bg py-6 md:py-8">
-      <div className="container-zen">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_292px]">
-          <main className="order-2 min-w-0 space-y-6 xl:order-1">
+    <div className="admin-app-bg py-3 sm:py-4 lg:py-5">
+      <div className="admin-container">
+        <div className="grid gap-4 lg:gap-5 2xl:grid-cols-[minmax(0,1fr)_276px]">
+          <main className="order-2 min-w-0 space-y-4 lg:space-y-5 2xl:order-1">
             <header className="admin-panel p-5 md:p-6">
               <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                <div className="space-y-3">
+                <div className="min-w-0 space-y-3">
                   <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
                     <span className="admin-chip admin-chip-active">
                       <ActiveTabIcon className="h-4 w-4" />
@@ -165,7 +165,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </div>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[360px]">
+                <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[340px]">
                   <Link href="/" className="btn-secondary">
                     مشاهده فروشگاه
                   </Link>
@@ -175,7 +175,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 </div>
               </div>
 
-              <nav className="scrollbar-none mt-6 flex gap-2 overflow-x-auto xl:hidden">
+              <nav className="scrollbar-none mt-6 flex gap-2 overflow-x-auto 2xl:hidden">
                 {tabs.map((tab) => {
                   const isActive = tab.id === activeTab;
                   const TabIcon = tab.icon;
@@ -196,8 +196,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             <div className="admin-workspace min-w-0">{content}</div>
           </main>
 
-          <aside className="order-1 xl:order-2">
-            <div className="admin-sidebar xl:sticky xl:top-6">
+          <aside className="order-1 hidden 2xl:order-2 2xl:block">
+            <div className="admin-sidebar 2xl:sticky 2xl:top-5">
               <div className="border-b border-white/10 px-5 py-5">
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -213,7 +213,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 </p>
               </div>
 
-              <nav className="hidden px-3 py-3 xl:block">
+              <nav className="hidden px-3 py-3 2xl:block">
                 {tabs.map((tab) => {
                   const isActive = tab.id === activeTab;
                   const TabIcon = tab.icon;

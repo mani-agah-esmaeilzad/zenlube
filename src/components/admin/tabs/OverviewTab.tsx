@@ -193,7 +193,7 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
         ))}
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+      <section className="grid gap-4 2xl:grid-cols-[1.2fr_0.8fr]">
         <div className="admin-panel p-5 md:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -206,7 +206,7 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
           </div>
 
           {recentOrderChart.length ? (
-            <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="mt-6 grid gap-6 2xl:grid-cols-[1.15fr_0.85fr]">
               <div className="rounded-[24px] border border-[#E6EAF2] bg-[#F8FAFC] p-4">
                 <div className="flex h-48 items-end justify-between gap-3">
                   {recentOrderChart.map((order) => (
@@ -309,7 +309,7 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
           </div>
           <span className="admin-chip">{faNumberFormatter.format(operationalAlerts.filter((item) => item.value > 0).length)} مورد فعال</span>
         </div>
-        <div className="mt-5 grid gap-3 lg:grid-cols-3">
+        <div className="mt-5 grid gap-3 2xl:grid-cols-3">
           {operationalAlerts.map((alert) => (
             <Link
               key={alert.title}
@@ -328,7 +328,7 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
         </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+      <section className="grid gap-4 2xl:grid-cols-[1.1fr_0.9fr]">
         <div className="admin-panel p-5 md:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -408,7 +408,7 @@ export function OverviewTab({ data }: { data: OverviewTabData }) {
         </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-2">
+      <section className="grid gap-4 2xl:grid-cols-2">
         <div className="admin-panel p-5 md:p-6">
           <div className="flex items-center justify-between gap-3">
             <div>

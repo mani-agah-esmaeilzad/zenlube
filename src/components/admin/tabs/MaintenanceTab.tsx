@@ -55,7 +55,7 @@ export function MaintenanceTab({ data }: { data: MaintenanceTabData }) {
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
+      <section className="grid gap-6 2xl:grid-cols-[1.1fr,0.9fr]">
         <div className="rounded-3xl border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-slate-900">افزودن برنامه نگهداری</h2>
           <p className="mt-2 text-xs text-slate-500">
@@ -156,7 +156,7 @@ export function MaintenanceTab({ data }: { data: MaintenanceTabData }) {
           </span>
         </div>
         {maintenanceGroups.length ? (
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="grid gap-5 2xl:grid-cols-2">
             {maintenanceGroups.map((group, index) => {
               const { car, tasks } = group;
               const groupKey = car?.id ?? `group-${index}`;

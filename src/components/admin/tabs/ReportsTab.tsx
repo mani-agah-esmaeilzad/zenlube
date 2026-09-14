@@ -120,7 +120,7 @@ export function ReportsTab({ data }: { data: ReportsTabData }) {
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
         {reportsSummaryCards.map((card) => (
           <div key={card.label} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-500/10">
             <p className="text-xs text-slate-400">{card.label}</p>
@@ -130,7 +130,7 @@ export function ReportsTab({ data }: { data: ReportsTabData }) {
         ))}
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section className="grid gap-6 2xl:grid-cols-2">
         <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -236,7 +236,7 @@ export function ReportsTab({ data }: { data: ReportsTabData }) {
         )}
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section className="grid gap-6 2xl:grid-cols-2">
         <div className="rounded-3xl border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-semibold text-slate-900">درخواست‌های مرجوعی اخیر</h3>
           <div className="mt-4 space-y-3">
@@ -283,7 +283,7 @@ export function ReportsTab({ data }: { data: ReportsTabData }) {
 
       <section className="rounded-3xl border border-slate-200 bg-white p-6">
         <h3 className="text-lg font-semibold text-slate-900">جزئیات رویدادهای تعاملی</h3>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
           {Object.entries(engagementByEventType).map(([eventType, value]) => (
             <div key={eventType} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
               <p className="font-semibold text-slate-900">{eventType}</p>

@@ -19,7 +19,7 @@ export function BrandsTab({ data }: { data: BrandsTabData }) {
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
+      <section className="grid gap-6 2xl:grid-cols-[1.1fr,0.9fr]">
         <div className="rounded-3xl border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-slate-900">افزودن برند</h2>
           <p className="mt-2 text-xs text-slate-500">
@@ -56,8 +56,8 @@ export function BrandsTab({ data }: { data: BrandsTabData }) {
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-slate-900">لیست برندها</h2>
-        <div className="overflow-hidden rounded-3xl border border-slate-200">
-          <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+        <div className="overflow-x-auto rounded-3xl border border-slate-200">
+          <table className="min-w-[860px] divide-y divide-slate-200 text-sm text-slate-600">
             <thead className="bg-slate-100 text-xs uppercase text-slate-400">
               <tr>
                 <th className="px-4 py-3 text-right">نام</th>

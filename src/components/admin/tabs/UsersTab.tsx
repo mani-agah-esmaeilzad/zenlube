@@ -46,8 +46,8 @@ export function UsersTab({ data, sessionUserId }: { data: UsersTabData; sessionU
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-3xl border border-slate-200">
-        <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
+      <section className="overflow-x-auto rounded-3xl border border-slate-200">
+        <table className="min-w-[920px] divide-y divide-slate-200 text-sm text-slate-600">
           <thead className="bg-slate-100 text-xs uppercase text-slate-400">
             <tr>
               <th className="px-4 py-3 text-right">نام</th>

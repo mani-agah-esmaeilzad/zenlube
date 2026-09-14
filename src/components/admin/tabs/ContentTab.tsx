@@ -37,7 +37,7 @@ export function ContentTab({ data }: { data: ContentTabData }) {
           </div>
           <Link href="/admin?tab=products" className="btn-primary">افزودن محصول</Link>
         </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-5 grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
           {cmsSections.map((item) => (
             <div key={item.title} className="rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4">
               <div className="flex items-center justify-between gap-3">
@@ -52,7 +52,7 @@ export function ContentTab({ data }: { data: ContentTabData }) {
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
+      <section className="grid gap-6 2xl:grid-cols-3">
         <Panel title="بنرهای مارکتینگ" empty="بنری ثبت نشده است.">
           <BannerCreateForm />
           {data.banners.map((banner) => (
@@ -101,7 +101,7 @@ export function ContentTab({ data }: { data: ContentTabData }) {
 
       <section className="rounded-3xl border border-[#E5E7EB] bg-white p-5">
         <h2 className="text-lg font-extrabold text-[#111827]">کدهای تخفیف و کمپین</h2>
-        <div className="mt-5 grid gap-6 xl:grid-cols-[380px_1fr]">
+        <div className="mt-5 grid gap-6 2xl:grid-cols-[380px_1fr]">
           <CouponCreateForm />
 
           <div className="grid gap-3 md:grid-cols-2">
@@ -140,7 +140,7 @@ export function ContentTab({ data }: { data: ContentTabData }) {
             </p>
           </div>
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-4 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
           {data.smsLogs.length ? data.smsLogs.map((log) => (
             <div key={log.id} className="rounded-2xl border border-[#E5E7EB] bg-[#F7F7F8] p-4 text-xs">
               <div className="flex items-center justify-between gap-2">

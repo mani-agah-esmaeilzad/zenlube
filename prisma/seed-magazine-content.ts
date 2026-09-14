@@ -67,7 +67,7 @@ const posts: PostSeed[] = [
     slug: "mg6-engine-oil-guide",
     excerpt:
       "برای MG 6 قدیم و نیوفیس، انتخاب روغن باید براساس نسل موتور، شرایط کارکرد و استاندارد دفترچه انجام شود؛ این راهنما انتخاب‌های امن‌تر 5W-30 و 5W-40 را توضیح می‌دهد.",
-    coverImage: "/blog/covers/mg6-engine-oil-guide.svg",
+    coverImage: "/blog/covers/mg6-engine-oil-guide.png",
     tags: ["ام جی", "MG 6", "روغن موتور", "5W-30", "5W-40", "توربو"],
     readMinutes: 5,
     categorySlug: "mg-car-guides",
@@ -123,7 +123,7 @@ MG 6 معمولاً با موتور توربو شناخته می‌شود و م�
     slug: "mg5-engine-oil-guide",
     excerpt:
       "MG 5 جدید با موتور 1.5L CVT در دیتای فنی اویل‌بار با روغن 0W-20 ثبت شده و نباید با نسخه‌های قدیمی‌تر MG اشتباه گرفته شود.",
-    coverImage: "/blog/covers/mg5-engine-oil-guide.svg",
+    coverImage: "/blog/covers/mg5-engine-oil-guide.png",
     tags: ["ام جی", "MG 5", "0W-20", "روغن موتور", "CVT"],
     readMinutes: 4,
     categorySlug: "mg-car-guides",
@@ -170,7 +170,7 @@ MG 5 جدید را نباید با MGهای قدیمی‌تر یکی در نظر
     slug: "5w30-vs-5w40-engine-oil",
     excerpt:
       "تفاوت 5W-30 و 5W-40 فقط یک عدد نیست؛ این انتخاب روی روانکاری، مصرف سوخت، عملکرد در گرما و محافظت موتور اثر می‌گذارد.",
-    coverImage: "/blog/covers/5w30-vs-5w40-engine-oil.svg",
+    coverImage: "/blog/covers/5w30-vs-5w40-engine-oil.png",
     tags: ["روغن موتور", "5W-30", "5W-40", "راهنمای خرید"],
     readMinutes: 6,
     categorySlug: "engine-oil-guides",
@@ -229,7 +229,7 @@ MG 5 جدید را نباید با MGهای قدیمی‌تر یکی در نظر
     slug: "what-is-octane-booster",
     excerpt:
       "اکتان بوستر برای هر خودرو معجزه نمی‌کند، اما در موتورهای حساس‌تر، توربو یا خودروهایی که با بنزین معمولی ناک می‌زنند می‌تواند مفید باشد.",
-    coverImage: "/blog/covers/what-is-octane-booster.svg",
+    coverImage: "/blog/covers/what-is-octane-booster.png",
     tags: ["اکتان بوستر", "مکمل سوخت", "بنزین", "ناک موتور"],
     readMinutes: 5,
     categorySlug: "octane-boosters",
@@ -285,7 +285,7 @@ MG 5 جدید را نباید با MGهای قدیمی‌تر یکی در نظر
     slug: "best-octane-booster-for-turbo-cars",
     excerpt:
       "خودروهای توربو به کیفیت بنزین حساس‌ترند. در این راهنما می‌گوییم هنگام انتخاب اکتان بوستر برای موتور توربو به چه چیزهایی توجه کنید.",
-    coverImage: "/blog/covers/best-octane-booster-for-turbo-cars.svg",
+    coverImage: "/blog/covers/best-octane-booster-for-turbo-cars.png",
     tags: ["اکتان بوستر", "توربو", "موتور توربو", "مکمل سوخت"],
     readMinutes: 5,
     categorySlug: "octane-boosters",

@@ -46,6 +46,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     dateStyle: "medium",
   }).format(new Date(post.publishedAt));
   const faqItems = normalizeBlogFaqItems(post.faqItems);
+  const relatedBrands = Array.from(
+    new Map(
+      post.relatedProducts
+        .filter((product) => product.brand)
+        .map((product) => [product.brand.slug, product.brand] as const),
+    ).values(),
+  ).slice(0, 6);
 
   return (
     <div className="container-zen py-5 sm:py-6 md:py-8">
@@ -63,7 +70,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-text-muted">
             {post.category ? (
               <>
-                <span className="font-extrabold text-primary-accent-strong">{post.category.title}</span>
+                <Link
+                  className="font-extrabold text-primary-accent-strong"
+                  href={`/blog?category=${encodeURIComponent(post.category.slug)}`}
+                >
+                  {post.category.title}
+                </Link>
                 <span>•</span>
               </>
             ) : null}
@@ -109,6 +121,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   </summary>
                   <p className="mt-2 text-sm leading-7 text-text-muted">{item.answer}</p>
                 </details>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {relatedBrands.length ? (
+          <section className="border-y border-border py-5">
+            <h2 className="text-base font-black text-text-strong">برندهای مرتبط با این راهنما</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {relatedBrands.map((brand) => (
+                <Link
+                  key={brand.id}
+                  className="inline-flex min-h-10 items-center rounded-full border border-border px-4 text-xs font-extrabold text-text transition hover:border-primary-accent-strong hover:text-primary-accent-strong"
+                  href={`/brands/${encodeURIComponent(brand.slug)}`}
+                >
+                  راهنمای برند {brand.name}
+                </Link>
               ))}
             </div>
           </section>

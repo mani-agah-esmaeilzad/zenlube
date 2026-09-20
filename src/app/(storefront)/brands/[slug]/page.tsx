@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { BlogCard } from "@/components/blog/blog-card";
 import { ProductCard } from "@/components/product/product-card";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -8,6 +9,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { buildBrandPageStructuredData, getBrandSeoContent } from "@/lib/brand-seo";
 import { getAllProductsWithFilters, getBrandLandingBySlug } from "@/lib/data";
+import { getRelatedBrandArticles } from "@/lib/data/brand-articles";
 import { getPaginationParams } from "@/lib/pagination";
 import { buildPageMetadata, serializeStructuredData } from "@/lib/seo";
 
@@ -46,12 +48,16 @@ export async function generateMetadata({ params, searchParams }: BrandPageProps)
 export default async function BrandPage({ params, searchParams }: BrandPageProps) {
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const { page } = getPaginationParams(query, { defaultPageSize: 12, maxPageSize: 12 });
-  const [brandLanding, productsResult] = await Promise.all([
-    getBrandLandingBySlug(slug),
-    getAllProductsWithFilters({ brand: slug, page, pageSize: 12, sort: "latest" }),
-  ]);
+  const brandLandingPromise = getBrandLandingBySlug(slug);
+  const productsPromise = getAllProductsWithFilters({ brand: slug, page, pageSize: 12, sort: "latest" });
+  const brandLanding = await brandLandingPromise;
 
   if (!brandLanding) notFound();
+
+  const [productsResult, relatedArticles] = await Promise.all([
+    productsPromise,
+    getRelatedBrandArticles(brandLanding.brand.slug, brandLanding.brand.name),
+  ]);
 
   const { brand, categorySummaries, availableCount, unavailableCount } = brandLanding;
   const seo = getBrandSeoContent(brand.slug, brand.name);
@@ -158,6 +164,25 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
           ))}
         </div>
       </section>
+
+      {relatedArticles.length ? (
+        <section className="border-t border-border pt-6">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-extrabold text-text-strong">راهنماهای مرتبط با {brand.name}</h2>
+              <p className="mt-1 text-xs leading-6 text-text-muted">مقایسه‌ها و نکات فنی مجله اویل‌بار برای انتخاب آگاهانه‌تر</p>
+            </div>
+            <Link className="inline-flex min-h-10 items-center text-xs font-extrabold text-primary-accent-strong" href="/blog">
+              مشاهده مجله اویل‌بار
+            </Link>
+          </div>
+          <div className="grid gap-x-5 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
+            {relatedArticles.map((article) => (
+              <BlogCard key={article.id} post={article} />
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

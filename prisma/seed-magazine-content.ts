@@ -60,7 +60,7 @@ const categories: CategorySeed[] = [
 ];
 
 const publishedAt = new Date("2026-09-14T09:00:00.000+03:30");
-const todayPublishedAt = new Date("2026-09-21T10:00:00.000+03:30");
+const todayPublishedAt = new Date("2026-09-21T00:30:00.000+03:30");
 
 const posts: PostSeed[] = [
   {

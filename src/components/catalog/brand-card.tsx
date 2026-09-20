@@ -22,7 +22,7 @@ export function BrandCard({ brand }: BrandCardProps) {
           {hasProducts ? (
             <Link
               className="line-clamp-2 min-h-11 min-w-0 text-base font-extrabold leading-7 text-text-strong transition hover:text-primary-accent-strong md:min-h-8"
-              href={`/products?brand=${brand.slug}`}
+              href={`/brands/${brand.slug}`}
             >
               {brand.name}
             </Link>
@@ -42,7 +42,7 @@ export function BrandCard({ brand }: BrandCardProps) {
           {hasProducts ? (
             <Link
               className="inline-flex min-h-11 items-center font-extrabold text-primary-accent-strong transition hover:text-[#B45309] md:min-h-8"
-              href={`/products?brand=${brand.slug}`}
+              href={`/brands/${brand.slug}`}
             >
               مشاهده محصولات
             </Link>

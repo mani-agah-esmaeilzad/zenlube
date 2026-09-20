@@ -59,3 +59,56 @@ export async function getPaginatedBrandsWithProductCount({ page = 1, pageSize = 
     },
   );
 }
+
+export async function getBrandLandingBySlug(slug: string) {
+  return withStorefrontDataFallback("getBrandLandingBySlug", null, async () => {
+    const brand = await prisma.brand.findUnique({
+      where: { slug },
+      include: {
+        _count: {
+          select: {
+            products: { where: storefrontVisibleProductWhere() },
+          },
+        },
+      },
+    });
+    if (!brand) return null;
+
+    const visibleBrandProductsWhere = storefrontVisibleProductWhere({ brandId: brand.id });
+    const [availableCount, unavailableCount, categoryGroups] = await Promise.all([
+      prisma.product.count({ where: storefrontVisibleProductWhere({ brandId: brand.id, stock: { gt: 0 }, price: { gt: 0 } }) }),
+      prisma.product.count({
+        where: storefrontVisibleProductWhere({
+          brandId: brand.id,
+          OR: [
+            { stock: { lte: 0 } },
+            { price: { lte: 0 } },
+          ],
+        }),
+      }),
+      prisma.product.groupBy({
+        by: ["categoryId"],
+        where: visibleBrandProductsWhere,
+        _count: { _all: true },
+      }),
+    ]);
+    const categories = categoryGroups.length
+      ? await prisma.category.findMany({
+          where: { id: { in: categoryGroups.map((item) => item.categoryId) } },
+          select: { id: true, name: true, slug: true },
+          orderBy: { name: "asc" },
+        })
+      : [];
+    const countsByCategoryId = new Map(categoryGroups.map((item) => [item.categoryId, item._count._all]));
+
+    return {
+      brand,
+      availableCount,
+      unavailableCount,
+      categorySummaries: categories.map((category) => ({
+        ...category,
+        count: countsByCategoryId.get(category.id) ?? 0,
+      })),
+    };
+  });
+}

@@ -31,8 +31,10 @@ import { ReportsTab } from "@/components/admin/tabs/ReportsTab";
 import { SpecialOffersTab } from "@/components/admin/tabs/SpecialOffersTab";
 import { UsersTab } from "@/components/admin/tabs/UsersTab";
 import { ShippingTab } from "@/components/admin/tabs/ShippingTab";
+import { FeedbackTab } from "@/components/admin/tabs/FeedbackTab";
 import type { OrdersTabData } from "@/services/admin/types";
 import { getShippingTabData } from "@/services/admin/shipping";
+import { getFeedbackTabData } from "@/services/admin/feedback";
 
 export const revalidate = 0;
 
@@ -60,6 +62,12 @@ const tabs = [
     label: "سفارش‌ها",
     description: "وضعیت سفارش، پرداخت، ارسال و پیامک مشتریان را از یک جریان کاری منظم کنترل کنید.",
     icon: CartIcon,
+  },
+  {
+    id: "feedback",
+    label: "نظرسنجی خرید",
+    description: "برای خریداران لینک نظرسنجی پیامک کنید و میزان رضایت و نظر آن‌ها را یکجا ببینید.",
+    icon: MessageIcon,
   },
   {
     id: "shipping",
@@ -290,6 +298,18 @@ async function renderActiveTab(
           : undefined,
       });
       return <OrdersTab data={data} />;
+    }
+    case "feedback": {
+      const feedbackStatus = typeof searchParams.feedbackStatus === "string" && ["all", "not_sent", "sent", "submitted"].includes(searchParams.feedbackStatus)
+        ? searchParams.feedbackStatus as "all" | "not_sent" | "sent" | "submitted"
+        : undefined;
+      const data = await getFeedbackTabData({
+        page: typeof searchParams.page === "string" ? Number(searchParams.page) : undefined,
+        perPage: typeof searchParams.perPage === "string" ? Number(searchParams.perPage) : undefined,
+        query: typeof searchParams.query === "string" ? searchParams.query : null,
+        status: feedbackStatus,
+      });
+      return <FeedbackTab data={data} />;
     }
     case "shipping": {
       if (!["ADMIN", "OPERATIONS_MANAGER"].includes(role)) notFound();

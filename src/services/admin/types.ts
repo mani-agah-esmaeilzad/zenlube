@@ -294,6 +294,47 @@ export type OrdersTabData = {
   revenueLast30: number;
 };
 
+export type AdminFeedbackOrder = {
+  id: string;
+  fullName: string;
+  phone: string;
+  email?: string | null;
+  status: string;
+  total: number;
+  createdAt: Date;
+  items: Array<{ name: string; quantity: number }>;
+  feedback?: {
+    id: string;
+    status: "PENDING" | "SENT" | "SUBMITTED";
+    overallRating?: number | null;
+    productQualityRating?: number | null;
+    deliveryRating?: number | null;
+    recommend?: boolean | null;
+    comment?: string | null;
+    sendCount: number;
+    sentAt?: Date | null;
+    expiresAt: Date;
+    submittedAt?: Date | null;
+  } | null;
+};
+
+export type FeedbackTabData = {
+  orders: AdminFeedbackOrder[];
+  filters: {
+    query?: string | null;
+    status: "all" | "not_sent" | "sent" | "submitted";
+    page: number;
+    perPage: number;
+  };
+  pagination: Pagination;
+  metrics: {
+    eligible: number;
+    sent: number;
+    submitted: number;
+    averageRating: number | null;
+  };
+};
+
 export type CarsTabData = {
   cars: AdminCar[];
   maintenanceTasks: AdminMaintenanceTask[];

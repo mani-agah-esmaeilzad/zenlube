@@ -89,7 +89,9 @@ type SmsLogDetails = {
 function smsLogData(args: SmsLogDetails) {
   const storedMessage = args.eventType === "otp"
     ? "کد تایید اویل‌بار: [محافظت‌شده]"
-    : args.message;
+    : args.eventType === "purchase_feedback_invite"
+      ? "لینک اختصاصی نظرسنجی خرید اویل‌بار: [محافظت‌شده]"
+      : args.message;
 
   return {
     phone: args.phone,

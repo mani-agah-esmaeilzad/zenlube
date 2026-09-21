@@ -9,6 +9,7 @@ import { sendSms } from "@/lib/sms/service";
 type SmsRow = {
   id: string;
   status: string;
+  message?: string;
   dedupeKey?: string;
   providerResponse?: unknown;
   createdAt?: Date;
@@ -190,4 +191,23 @@ test("missing SMS credentials are retryable without attempting network delivery"
   Object.assign(config, { SMSIR_API_KEY: "corrected-key" });
   assert.equal((await sendSms(notification)).success, true);
   assert.equal(fetchMock.mock.callCount(), 1);
+});
+
+test("feedback invitation logs never persist the private survey token", async (t) => {
+  const rows = setup(t);
+  t.mock.method(globalThis, "fetch", async () => accepted());
+  const secretToken = "a".repeat(43);
+  const dedupeKey = "purchase_feedback:feedback-123:1";
+
+  const result = await sendSms({
+    phone: notification.phone,
+    eventType: "purchase_feedback_invite",
+    templateName: "purchase_feedback_invite",
+    dedupeKey,
+    message: `نظر شما: https://www.oilbar.ir/feedback/${secretToken}`,
+  });
+
+  assert.equal(result.success, true);
+  assert.equal(rows.get(dedupeKey)?.message?.includes(secretToken), false);
+  assert.match(rows.get(dedupeKey)?.message ?? "", /محافظت‌شده/);
 });

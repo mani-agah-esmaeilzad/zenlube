@@ -108,6 +108,12 @@ enum BlogPostStatus {
   ARCHIVED
 }
 
+enum FeedbackRequestStatus {
+  PENDING
+  SENT
+  SUBMITTED
+}
+
 model User {
   id                     String                  @id @default(cuid())
   name                   String?
@@ -440,9 +446,32 @@ model Order {
   returnRequests             ReturnRequest[]
   shippingQuoteOption        ShippingQuoteOption? @relation("OrderShippingQuoteOption", fields: [shippingQuoteOptionId], references: [id], onDelete: SetNull)
   shipment                   Shipment?
+  feedback                   OrderFeedback?
 
   @@unique([userId, checkoutIdempotencyKey])
   @@index([shippingCarrierCode, createdAt])
+}
+
+model OrderFeedback {
+  id                   String                @id @default(cuid())
+  orderId              String                @unique
+  tokenHash            String                @unique
+  status               FeedbackRequestStatus @default(PENDING)
+  overallRating        Int?
+  productQualityRating Int?
+  deliveryRating       Int?
+  recommend            Boolean?
+  comment              String?               @db.Text
+  sendCount            Int                   @default(0)
+  sentAt               DateTime?
+  expiresAt            DateTime
+  submittedAt          DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  order                Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([expiresAt])
 }
 
 model OrderItem {

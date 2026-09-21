@@ -3,6 +3,7 @@ export * from "./cars";
 export * from "./categories";
 export * from "./content";
 export * from "./database";
+export * from "./feedback";
 export * from "./maintenance";
 export * from "./orders";
 export * from "./products";

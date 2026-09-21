@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CarCard } from "@/components/catalog/car-card";
 import { CarSearchSelector } from "@/components/layout/car-search-selector";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -24,6 +25,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
   const manufacturer = typeof params.manufacturer === "string" ? params.manufacturer : undefined;
   const model = typeof params.model === "string" ? params.model : undefined;
   const { page, pageSize } = getPaginationParams(params, { defaultPageSize: 12, maxPageSize: 48 });
+  const showPopularGuides = !search && !manufacturer && !model && page === 1;
 
   const [{ items: cars, pageInfo }, carHierarchy] = await Promise.all([
     getPaginatedCarsWithProducts({ search, manufacturer, model, page, pageSize }),
@@ -63,6 +65,21 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
         </div>
         <CarSearchSelector hierarchy={carHierarchy} />
       </section>
+
+      {showPopularGuides ? (
+        <section aria-labelledby="popular-car-guides-title">
+          <div className="mb-2 flex items-end justify-between gap-3">
+            <h2 className="t-h2" id="popular-car-guides-title">راهنمای مدل‌های پرجستجو</h2>
+          </div>
+          <Link className="group flex items-center justify-between gap-4 border-y border-border py-4" href="/cars/mg-360">
+            <span>
+              <span className="block font-extrabold text-text-strong transition group-hover:text-primary-accent-strong">مشخصات کامل ام جی 360</span>
+              <span className="mt-1 block text-xs leading-6 text-text-muted">مقایسه نسخه‌های دنده‌ای، اتومات و توربو همراه اطلاعات فنی و دفترچه سرویس</span>
+            </span>
+            <span aria-hidden="true" className="shrink-0 text-primary-accent-strong">←</span>
+          </Link>
+        </section>
+      ) : null}
 
       <section>
         <div className="mb-2 flex items-end justify-between gap-3">

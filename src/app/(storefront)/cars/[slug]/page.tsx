@@ -20,6 +20,12 @@ type CarPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+const MG360_VARIANT_SLUGS = new Set([
+  "hyundai-63-mg-360-turbo-1-5t-at",
+  "hyundai-64-mg-360-at",
+  "hyundai-65-mg-360-mt",
+]);
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -42,6 +48,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
     getRelatedBlogPostsForCar(car.manufacturer, car.model, 3),
   ]);
   const title = `${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""}`;
+  const isMg360Variant = MG360_VARIANT_SLUGS.has(car.slug);
   const years = car.yearFrom || car.yearTo ? `${car.yearFrom ?? "نامشخص"} تا ${car.yearTo ?? "نامشخص"}` : "نامشخص";
   const oilCapacity = resolveCarOilCapacityLabel(car);
   const productLookup = new Map(car.productMappings.map(({ product }) => [product.slug, product] as const));
@@ -167,6 +174,11 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
             <Link href={`/products?car=${car.slug}`} className="btn-primary w-fit px-4">مشاهده محصولات سازگار</Link>
+            {isMg360Variant ? (
+              <Link href="/cars/mg-360" className="inline-flex min-h-11 items-center text-sm font-extrabold text-white/75 transition hover:text-white">
+                مشخصات و مقایسه همه نسخه‌های MG 360
+              </Link>
+            ) : null}
             <Link href="/support" className="inline-flex min-h-11 items-center text-sm font-extrabold text-white/75 transition hover:text-white">مشاوره تخصصی</Link>
           </div>
         </div>

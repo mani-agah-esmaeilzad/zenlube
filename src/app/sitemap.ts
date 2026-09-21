@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import prisma from "@/lib/prisma";
+import { mgModelHubPaths } from "@/lib/mg-model-hubs";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "@/lib/storefront-visibility";
 import { SITE_URL } from "@/lib/seo";
 
@@ -65,6 +66,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/support`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${SITE_URL}/terms`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${SITE_URL}/policy`, changeFrequency: "yearly", priority: 0.2 },
+    ...mgModelHubPaths.map((path) => ({
+      url: `${SITE_URL}${path}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    })),
   ];
 
   return [

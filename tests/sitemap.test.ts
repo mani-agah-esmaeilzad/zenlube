@@ -26,6 +26,9 @@ test("sitemap includes the entire visible catalog and canonical category and bra
   assert.ok(entries.some(entry => entry.url === `${SITE_URL}/products?category=engine-oil`));
   assert.ok(entries.some(entry => entry.url === `${SITE_URL}/products?brand=aidlube`));
   assert.ok(entries.some(entry => entry.url === `${SITE_URL}/cars/mg6`));
+  for (const hub of ["mg-360", "mg-5", "mg-6", "mg-gs", "mg-rx5"]) {
+    assert.ok(entries.some(entry => entry.url === `${SITE_URL}/cars/${hub}`), `Missing MG hub: ${hub}`);
+  }
   assert.equal(entries.some(entry => entry.url.includes("/categories/")), false, "Do not submit redirect-only category URLs");
   const queryJson = JSON.stringify(productQuery);
   assert.match(queryJson, /deleted-/);

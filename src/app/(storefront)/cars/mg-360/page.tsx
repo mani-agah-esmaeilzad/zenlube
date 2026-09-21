@@ -279,6 +279,22 @@ export default function Mg360OverviewPage() {
           </div>
         </section>
 
+        <section aria-labelledby="mg360-related-title" className="border-t border-border pt-6">
+          <h2 className="section-title" id="mg360-related-title">راهنمای مدل‌های دیگر MG</h2>
+          <nav aria-label="راهنمای مدل‌های دیگر ام جی" className="mt-4 flex flex-wrap gap-2">
+            {[
+              ["/cars/mg-5", "ام جی 5"],
+              ["/cars/mg-6", "ام جی 6"],
+              ["/cars/mg-gs", "ام جی GS"],
+              ["/cars/mg-rx5", "ام جی RX5"],
+            ].map(([href, label]) => (
+              <Link className="inline-flex min-h-10 items-center rounded-full border border-border px-4 text-xs font-extrabold text-text transition hover:border-primary-accent-strong hover:text-primary-accent-strong" href={href} key={href}>
+                مشخصات {label}
+              </Link>
+            ))}
+          </nav>
+        </section>
+
         <footer className="border-t border-border pt-5 text-xs leading-7 text-text-subtle">
           <p>
             منابع فنی: اطلاعات دفترچه‌های ثبت‌شده هر سه نسخه در اویل‌بار و کاتالوگ MG 360 بازار خاورمیانه. تجهیزات ممکن است با توجه به تیپ و سری مونتاژ متفاوت باشند.

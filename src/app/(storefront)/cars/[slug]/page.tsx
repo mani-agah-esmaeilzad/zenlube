@@ -26,6 +26,15 @@ const MG360_VARIANT_SLUGS = new Set([
   "hyundai-65-mg-360-mt",
 ]);
 
+const MG_MODEL_HUB_BY_VARIANT = new Map([
+  ...Array.from(MG360_VARIANT_SLUGS, (slug) => [slug, { href: "/cars/mg-360", label: "ام جی 360" }] as const),
+  ["hyundai-1109-mg-5-1-5l-cvt", { href: "/cars/mg-5", label: "ام جی 5" }],
+  ["hyundai-66-mg6-1-8t", { href: "/cars/mg-6", label: "ام جی 6" }],
+  ["hyundai-67-mg6-new", { href: "/cars/mg-6", label: "ام جی 6" }],
+  ["hyundai-62-mg-gs", { href: "/cars/mg-gs", label: "ام جی GS" }],
+  ["hyundai-68-mg-rx5", { href: "/cars/mg-rx5", label: "ام جی RX5" }],
+]);
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -48,7 +57,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
     getRelatedBlogPostsForCar(car.manufacturer, car.model, 3),
   ]);
   const title = `${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""}`;
-  const isMg360Variant = MG360_VARIANT_SLUGS.has(car.slug);
+  const modelHub = MG_MODEL_HUB_BY_VARIANT.get(car.slug);
   const years = car.yearFrom || car.yearTo ? `${car.yearFrom ?? "نامشخص"} تا ${car.yearTo ?? "نامشخص"}` : "نامشخص";
   const oilCapacity = resolveCarOilCapacityLabel(car);
   const productLookup = new Map(car.productMappings.map(({ product }) => [product.slug, product] as const));
@@ -174,9 +183,9 @@ export default async function CarDetailPage({ params }: CarPageProps) {
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
             <Link href={`/products?car=${car.slug}`} className="btn-primary w-fit px-4">مشاهده محصولات سازگار</Link>
-            {isMg360Variant ? (
-              <Link href="/cars/mg-360" className="inline-flex min-h-11 items-center text-sm font-extrabold text-white/75 transition hover:text-white">
-                مشخصات و مقایسه همه نسخه‌های MG 360
+            {modelHub ? (
+              <Link href={modelHub.href} className="inline-flex min-h-11 items-center text-sm font-extrabold text-white/75 transition hover:text-white">
+                مشخصات و راهنمای جامع {modelHub.label}
               </Link>
             ) : null}
             <Link href="/support" className="inline-flex min-h-11 items-center text-sm font-extrabold text-white/75 transition hover:text-white">مشاوره تخصصی</Link>

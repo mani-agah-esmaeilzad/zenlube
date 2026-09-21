@@ -6,7 +6,13 @@ import { config } from "@/lib/config";
 import { normalizeIranPhone, validateIranPhone } from "@/lib/phone";
 import { logger } from "@/lib/logger";
 import { MelipayamakSendRejectedError, sendMelipayamakOtp, sendMelipayamakText } from "./melipayamak";
-import { SmsIrSendRejectedError, sendSmsIrOtp, sendSmsIrText } from "./smsir";
+import {
+  SmsIrSendRejectedError,
+  sendSmsIrOtp,
+  sendSmsIrTemplate,
+  sendSmsIrText,
+  type SmsIrTemplateParameter,
+} from "./smsir";
 
 type SmsTokens = Record<string, string | number | null | undefined>;
 type RuntimeSmsProvider = "smsir" | "melipayamak" | "console" | "disabled";
@@ -17,6 +23,10 @@ type SendSmsArgs = {
   eventType?: string;
   templateName?: string;
   dedupeKey?: string;
+  smsIrTemplate?: {
+    templateId: number;
+    parameters: SmsIrTemplateParameter[];
+  };
 };
 
 const templates: Record<string, string> = {
@@ -190,7 +200,7 @@ async function finishSms(claim: Extract<SmsClaim, { state: "claimed" }>, args: S
   }
 }
 
-export async function sendSms({ phone, message, eventType = "manual", templateName, dedupeKey }: SendSmsArgs) {
+export async function sendSms({ phone, message, eventType = "manual", templateName, dedupeKey, smsIrTemplate }: SendSmsArgs) {
   const runtime = resolveSmsRuntime();
   const normalizedPhone = normalizeIranPhone(phone);
 
@@ -227,9 +237,10 @@ export async function sendSms({ phone, message, eventType = "manual", templateNa
   }
 
   try {
-    const result =
-      runtime.provider === "melipayamak"
-        ? await sendMelipayamakText({ phone: normalizedPhone, message })
+    const result = runtime.provider === "melipayamak"
+      ? await sendMelipayamakText({ phone: normalizedPhone, message })
+      : smsIrTemplate
+        ? await sendSmsIrTemplate({ phone: normalizedPhone, ...smsIrTemplate })
         : await sendSmsIrText({ phone: normalizedPhone, message });
 
     await finishSms(claim, {

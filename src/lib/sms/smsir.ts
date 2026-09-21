@@ -15,6 +15,17 @@ type SendTextArgs = {
   message: string;
 };
 
+export type SmsIrTemplateParameter = {
+  name: string;
+  value: string;
+};
+
+type SendTemplateArgs = {
+  phone: string;
+  templateId: number;
+  parameters: SmsIrTemplateParameter[];
+};
+
 type SmsIrResponse = {
   status?: number | string;
   message?: string;
@@ -75,6 +86,29 @@ export async function sendSmsIrOtp({ phone, code, expiresAt, templateId }: SendO
 
   if (isErrorStatus(data.status)) {
     throw new Error(data.message ?? "ارسال پیامک تایید توسط sms.ir پذیرفته نشد.");
+  }
+
+  const messageId = data.data?.verificationCodeId ?? data.data?.messageId ?? null;
+  return { messageId, raw: data } as const;
+}
+
+export async function sendSmsIrTemplate({ phone, templateId, parameters }: SendTemplateArgs) {
+  if (!Number.isInteger(templateId) || templateId <= 0) {
+    throw new SmsIrSendRejectedError("شناسه قالب خدماتی sms.ir معتبر نیست.");
+  }
+  if (
+    parameters.length === 0 ||
+    parameters.some(({ name, value }) => !/^[A-Za-z0-9_]+$/.test(name) || value.length === 0 || value.length > 40)
+  ) {
+    throw new SmsIrSendRejectedError("متغیرهای قالب خدماتی sms.ir معتبر نیستند.");
+  }
+
+  const client = createClient();
+  const response = await client.SendVerifyCode(phone, templateId, parameters);
+  const data = (response?.data ?? {}) as SmsIrResponse;
+
+  if (isErrorStatus(data.status)) {
+    throw new SmsIrSendRejectedError(data.message ?? "ارسال پیامک خدماتی توسط sms.ir پذیرفته نشد.");
   }
 
   const messageId = data.data?.verificationCodeId ?? data.data?.messageId ?? null;

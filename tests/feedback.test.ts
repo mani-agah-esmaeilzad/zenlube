@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   buildFeedbackUrl,
   createFeedbackToken,
+  feedbackCustomerName,
   feedbackExpiryDate,
   feedbackPayloadSchema,
   feedbackTokenSchema,
@@ -14,7 +15,7 @@ import {
 test("feedback tokens are URL-safe and only their hash needs persistence", () => {
   const token = createFeedbackToken();
   assert.equal(feedbackTokenSchema.safeParse(token).success, true);
-  assert.match(token, /^[A-Za-z0-9_-]{43}$/);
+  assert.match(token, /^[A-Za-z0-9_-]{32}$/);
 
   const hash = hashFeedbackToken(token);
   assert.match(hash, /^[a-f0-9]{64}$/);
@@ -22,8 +23,18 @@ test("feedback tokens are URL-safe and only their hash needs persistence", () =>
 });
 
 test("feedback URL uses the configured Oilbar origin without a duplicate slash", () => {
-  const token = "a".repeat(43);
-  assert.equal(buildFeedbackUrl(token, "https://www.oilbar.ir/"), `https://www.oilbar.ir/feedback/${token}`);
+  const token = "a".repeat(32);
+  assert.equal(buildFeedbackUrl(token, "https://www.oilbar.ir/"), `https://www.oilbar.ir/f/${token}`);
+});
+
+test("previously issued 43-character feedback tokens remain valid", () => {
+  assert.equal(feedbackTokenSchema.safeParse("a".repeat(43)).success, true);
+});
+
+test("feedback customer names satisfy the SMS.ir template variable limit", () => {
+  assert.equal(feedbackCustomerName("  مانی   آگاه  "), "مانی آگاه");
+  assert.equal(feedbackCustomerName("   "), "مشتری اویل‌بار");
+  assert.equal(feedbackCustomerName("م".repeat(60)).length, 40);
 });
 
 test("feedback links expire thirty days after creation", () => {

@@ -8,6 +8,7 @@ import { config } from "@/lib/config";
 import {
   buildFeedbackUrl,
   createFeedbackToken,
+  feedbackCustomerName,
   feedbackExpiryDate,
   feedbackOrderNumber,
   hashFeedbackToken,
@@ -22,6 +23,18 @@ const inviteSchema = z.object({
   orderId: z.string().cuid(),
 });
 
+function feedbackSmsTemplate() {
+  const templateId = Number(process.env.SMSIR_FEEDBACK_TEMPLATE_ID);
+  if (!Number.isInteger(templateId) || templateId <= 0) return null;
+
+  return {
+    templateId,
+    nameParameter: process.env.SMSIR_FEEDBACK_NAME_PARAM?.trim() || "NAME",
+    orderParameter: process.env.SMSIR_FEEDBACK_ORDER_PARAM?.trim() || "ORDERID",
+    tokenParameter: process.env.SMSIR_FEEDBACK_TOKEN_PARAM?.trim() || "TOKEN",
+  };
+}
+
 export type FeedbackInviteState = {
   success: boolean;
   message?: string;
@@ -34,6 +47,10 @@ export async function sendFeedbackInviteAction(
   const { userId } = await ensureAdminAction();
   const parsed = inviteSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { success: false, message: "سفارش انتخاب‌شده معتبر نیست." };
+  const smsTemplate = feedbackSmsTemplate();
+  if (!smsTemplate) {
+    return { success: false, message: "قالب خدماتی نظرسنجی SMS.ir هنوز تنظیم نشده است." };
+  }
 
   const token = createFeedbackToken();
   const tokenHash = hashFeedbackToken(token);
@@ -87,6 +104,14 @@ export async function sendFeedbackInviteAction(
     templateName: "purchase_feedback_invite",
     dedupeKey: `purchase_feedback:${invitation.feedback.id}:${invitation.feedback.sendCount}`,
     message: `از خریدتان از اویل‌بار راضی بودید؟ لطفاً نظر کوتاه خود را برای سفارش ${orderNumber} ثبت کنید: ${feedbackUrl}`,
+    smsIrTemplate: {
+      templateId: smsTemplate.templateId,
+      parameters: [
+        { name: smsTemplate.nameParameter, value: feedbackCustomerName(invitation.order.fullName) },
+        { name: smsTemplate.orderParameter, value: orderNumber },
+        { name: smsTemplate.tokenParameter, value: token },
+      ],
+    },
   });
 
   const delivery = smsResult as { success: boolean; sandbox?: boolean; skipped?: boolean; error?: string };

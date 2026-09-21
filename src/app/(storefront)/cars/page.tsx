@@ -12,6 +12,34 @@ type CarsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+const popularCarGuides = [
+  {
+    href: "/cars/mg-360",
+    title: "مشخصات کامل ام جی 360",
+    description: "مقایسه نسخه‌های دنده‌ای، اتومات و توربو همراه اطلاعات فنی و دفترچه سرویس",
+  },
+  {
+    href: "/cars/mg-5",
+    title: "مشخصات کامل ام جی 5",
+    description: "مشخصات موتور 1.5 لیتری، گیربکس CVT و روغن مناسب نسخه واردشده به ایران",
+  },
+  {
+    href: "/cars/mg-6",
+    title: "مشخصات کامل ام جی 6",
+    description: "مقایسه مدل قدیم و نیوفیس، تفاوت گیربکس‌ها و اطلاعات کامل سرویس",
+  },
+  {
+    href: "/cars/mg-gs",
+    title: "مشخصات کامل ام جی GS",
+    description: "راهنمای موتور 2.0 توربو، گیربکس دوکلاچه و روغن‌های مناسب",
+  },
+  {
+    href: "/cars/mg-rx5",
+    title: "مشخصات کامل ام جی RX5",
+    description: "مشخصات فنی نسخه 2.0 توربو و راهنمای روغن موتور و گیربکس",
+  },
+] as const;
+
 export async function generateMetadata({ searchParams }: CarsPageProps) {
   return buildCollectionMetadata({ pathname: "/cars", title: "انتخاب روغن مناسب خودرو و دفترچه‌های فنی | اویل‌بار", description: "روغن موتور مناسب، گرانروی و استاندارد روغن، حجم سرویس، روغن گیربکس و محصولات سازگار را براساس مدل و نسخه خودرو در دفترچه‌های اویل‌بار بررسی کنید.", searchParams: await searchParams });
 }
@@ -71,13 +99,17 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
           <div className="mb-2 flex items-end justify-between gap-3">
             <h2 className="t-h2" id="popular-car-guides-title">راهنمای مدل‌های پرجستجو</h2>
           </div>
-          <Link className="group flex items-center justify-between gap-4 border-y border-border py-4" href="/cars/mg-360">
-            <span>
-              <span className="block font-extrabold text-text-strong transition group-hover:text-primary-accent-strong">مشخصات کامل ام جی 360</span>
-              <span className="mt-1 block text-xs leading-6 text-text-muted">مقایسه نسخه‌های دنده‌ای، اتومات و توربو همراه اطلاعات فنی و دفترچه سرویس</span>
-            </span>
-            <span aria-hidden="true" className="shrink-0 text-primary-accent-strong">←</span>
-          </Link>
+          <div className="grid border-t border-border md:grid-cols-2 md:gap-x-6">
+            {popularCarGuides.map((guide) => (
+              <Link className="group flex min-w-0 items-center justify-between gap-4 border-b border-border py-4" href={guide.href} key={guide.href}>
+                <span className="min-w-0">
+                  <span className="block font-extrabold text-text-strong transition group-hover:text-primary-accent-strong">{guide.title}</span>
+                  <span className="mt-1 block text-xs leading-6 text-text-muted">{guide.description}</span>
+                </span>
+                <span aria-hidden="true" className="shrink-0 text-primary-accent-strong">←</span>
+              </Link>
+            ))}
+          </div>
         </section>
       ) : null}
 

@@ -37,6 +37,13 @@ type SmsIrResponse = {
   [key: string]: unknown;
 };
 
+type SmsIrHttpError = {
+  response?: {
+    status?: number;
+    data?: SmsIrResponse;
+  };
+};
+
 const SMS_REQUEST_TIMEOUT_MS = 8_000;
 
 /** A response proving the provider did not accept a text message. */
@@ -98,14 +105,30 @@ export async function sendSmsIrTemplate({ phone, templateId, parameters }: SendT
   }
   if (
     parameters.length === 0 ||
-    parameters.some(({ name, value }) => !/^[A-Za-z0-9_]+$/.test(name) || value.length === 0 || value.length > 40)
+    parameters.some(({ name, value }) => !/^[A-Za-z0-9_]+$/.test(name) || value.length === 0 || value.length > 25)
   ) {
     throw new SmsIrSendRejectedError("متغیرهای قالب خدماتی sms.ir معتبر نیستند.");
   }
 
   const client = createClient();
-  const response = await client.SendVerifyCode(phone, templateId, parameters);
-  const data = (response?.data ?? {}) as SmsIrResponse;
+  let data: SmsIrResponse;
+  try {
+    const response = await client.SendVerifyCode(phone, templateId, parameters);
+    data = (response?.data ?? {}) as SmsIrResponse;
+  } catch (error) {
+    const httpError = error as SmsIrHttpError;
+    const status = httpError.response?.status;
+    const responseData = httpError.response?.data;
+    logger.warn("sms.ir template send failed", {
+      status,
+      providerStatus: responseData?.status,
+      providerMessage: responseData?.message,
+    });
+    if (status != null && status >= 400 && status < 500 && status !== 408) {
+      throw new SmsIrSendRejectedError(responseData?.message ?? "ارسال پیامک خدماتی توسط sms.ir پذیرفته نشد.");
+    }
+    throw error;
+  }
 
   if (isErrorStatus(data.status)) {
     throw new SmsIrSendRejectedError(data.message ?? "ارسال پیامک خدماتی توسط sms.ir پذیرفته نشد.");

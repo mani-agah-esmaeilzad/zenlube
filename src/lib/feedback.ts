@@ -6,10 +6,10 @@ export const FEEDBACK_TOKEN_TTL_DAYS = 30;
 export const FEEDBACK_MIN_COMPLETION_MS = 3_000;
 export const FEEDBACK_PAYLOAD_MAX_BYTES = 8_000;
 
-// New invitation tokens are 192-bit (32 base64url characters) so they fit in
-// SMS.ir fast-send variables. Keep accepting the previous 256-bit tokens so
-// links that were already sent do not stop working.
-export const feedbackTokenSchema = z.string().regex(/^(?:[A-Za-z0-9_-]{32}|[A-Za-z0-9_-]{43})$/, "لینک نظرسنجی معتبر نیست.");
+// SMS.ir fast-send parameter values are limited to 25 characters. New tokens
+// are 144-bit (24 base64url characters), while previously issued 192/256-bit
+// tokens remain valid so existing links do not stop working.
+export const feedbackTokenSchema = z.string().regex(/^(?:[A-Za-z0-9_-]{24}|[A-Za-z0-9_-]{32}|[A-Za-z0-9_-]{43})$/, "لینک نظرسنجی معتبر نیست.");
 
 export const feedbackPayloadSchema = z.object({
   overallRating: z.coerce.number().int().min(1).max(5),
@@ -22,7 +22,7 @@ export const feedbackPayloadSchema = z.object({
 }).strict();
 
 export function createFeedbackToken() {
-  return randomBytes(24).toString("base64url");
+  return randomBytes(18).toString("base64url");
 }
 
 export function hashFeedbackToken(token: string) {
@@ -39,7 +39,7 @@ export function feedbackOrderNumber(orderId: string) {
 
 export function feedbackCustomerName(fullName: string) {
   const normalized = fullName.replace(/\s+/g, " ").trim();
-  return (normalized || "مشتری اویل‌بار").slice(0, 40);
+  return (normalized || "مشتری اویل‌بار").slice(0, 25);
 }
 
 export function buildFeedbackUrl(token: string, appUrl: string) {

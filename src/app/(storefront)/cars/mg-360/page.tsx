@@ -86,6 +86,24 @@ const faqs = [
   },
 ] as const;
 
+const relatedGuides = [
+  {
+    href: "/blog/5w30-vs-5w40-engine-oil",
+    title: "تفاوت روغن 5W-30 و 5W-40",
+    description: "مقایسه گرانروی‌ها برای انتخاب دقیق‌تر روغن موتور",
+  },
+  {
+    href: "/blog/best-octane-booster-for-turbo-cars",
+    title: "بهترین اکتان برای موتورهای توربو",
+    description: "معیارهای انتخاب مکمل سوخت برای نسخه توربو ام جی 360",
+  },
+  {
+    href: "/blog/engine-oil-change-interval-iran-driving",
+    title: "روغن موتور را هر چند کیلومتر عوض کنیم؟",
+    description: "بازه تعویض در رانندگی شهری و شرایط ایران",
+  },
+] as const;
+
 const carStructuredData = {
   "@context": "https://schema.org",
   "@type": "Car",
@@ -267,6 +285,24 @@ export default function Mg360OverviewPage() {
           </div>
         </section>
 
+        <section aria-labelledby="mg360-guides-title" className="space-y-5 border-t border-border pt-6">
+          <div>
+            <h2 className="section-title" id="mg360-guides-title">راهنماهای مرتبط با ام جی 360</h2>
+            <p className="section-subtitle">مطالب تکمیلی درباره انتخاب روغن، سرویس و نگهداری این خودرو.</p>
+          </div>
+          <div className="grid border-t border-border md:grid-cols-2 md:gap-x-6">
+            {relatedGuides.map((guide) => (
+              <Link className="group flex min-w-0 items-center justify-between gap-4 border-b border-border py-4" href={guide.href} key={guide.href}>
+                <span className="min-w-0">
+                  <span className="block font-extrabold text-text-strong transition group-hover:text-primary-accent-strong">{guide.title}</span>
+                  <span className="mt-1 block text-xs leading-6 text-text-muted">{guide.description}</span>
+                </span>
+                <span aria-hidden="true" className="shrink-0 text-primary-accent-strong">←</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         <section aria-labelledby="mg360-faq-title" className="border-t border-border pt-6">
           <h2 className="section-title" id="mg360-faq-title">سوالات پرتکرار درباره ام جی 360</h2>
           <div className="mt-5 divide-y divide-border border-y border-border">
@@ -287,6 +323,7 @@ export default function Mg360OverviewPage() {
               ["/cars/mg-6", "ام جی 6"],
               ["/cars/mg-gs", "ام جی GS"],
               ["/cars/mg-rx5", "ام جی RX5"],
+              ["/cars/mg-7", "ام جی 7"],
             ].map(([href, label]) => (
               <Link className="inline-flex min-h-10 items-center rounded-full border border-border px-4 text-xs font-extrabold text-text transition hover:border-primary-accent-strong hover:text-primary-accent-strong" href={href} key={href}>
                 مشخصات {label}

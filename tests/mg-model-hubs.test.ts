@@ -6,9 +6,11 @@ import test from "node:test";
 import { mgModelHubs, mgModelHubPaths } from "@/lib/mg-model-hubs";
 
 test("important MG models have complete, uniquely addressable SEO hubs", () => {
-  assert.deepEqual(mgModelHubs.map((hub) => hub.slug), ["mg-5", "mg-6", "mg-gs", "mg-rx5"]);
+  assert.deepEqual(mgModelHubs.map((hub) => hub.slug), ["mg-5", "mg-6", "mg-gs", "mg-rx5", "mg-7"]);
   assert.equal(new Set(mgModelHubs.map((hub) => hub.slug)).size, mgModelHubs.length);
   assert.equal(new Set(mgModelHubPaths).size, mgModelHubPaths.length);
+  assert.deepEqual(mgModelHubPaths, ["/cars/mg-360", "/cars/mg-5", "/cars/mg-6", "/cars/mg-gs", "/cars/mg-rx5"]);
+  assert.equal(mgModelHubPaths.join(",").includes("/cars/mg-7"), false);
 
   for (const hub of mgModelHubs) {
     assert.ok(hub.title.includes("مشخصات"), hub.slug);
@@ -18,7 +20,13 @@ test("important MG models have complete, uniquely addressable SEO hubs", () => {
     assert.ok(hub.ownershipNotes.length >= 3, hub.slug);
     assert.ok(hub.faqs.length >= 4, hub.slug);
     assert.ok(hub.variants.length >= 1, hub.slug);
+    assert.ok(hub.relatedGuides.length >= 3, hub.slug);
     assert.ok(existsSync(path.join(process.cwd(), "public", hub.image)), `${hub.slug} must use a local image`);
+
+    for (const guide of hub.relatedGuides) {
+      assert.match(guide.href, /^\/blog\/[a-z0-9-]+$/);
+      assert.ok(guide.description.length > 20);
+    }
 
     for (const variant of hub.variants) {
       assert.match(variant.href, /^\/cars\/[a-z0-9-]+$/);

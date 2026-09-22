@@ -10,7 +10,7 @@ export type MgModelHubVariant = {
 };
 
 export type MgModelHub = {
-  slug: "mg-5" | "mg-6" | "mg-gs" | "mg-rx5";
+  slug: "mg-5" | "mg-6" | "mg-gs" | "mg-rx5" | "mg-7";
   name: string;
   latinName: string;
   title: string;
@@ -28,6 +28,7 @@ export type MgModelHub = {
   specifications: ReadonlyArray<readonly [string, string]>;
   ownershipNotes: ReadonlyArray<{ title: string; description: string }>;
   serviceIntro: string;
+  relatedGuides: ReadonlyArray<{ title: string; description: string; href: string }>;
   faqs: ReadonlyArray<{ question: string; answer: string }>;
   sourceNote: string;
 };
@@ -80,6 +81,11 @@ export const mgModelHubs = [
       { title: "روغن موتور دفترچه", description: "مرجع ثبت‌شده اویل‌بار برای این نسخه، 0W-20 با ACEA C5 و حجم سرویس ۴ لیتر را اعلام می‌کند." },
     ],
     serviceIntro: "در MG 5، روغن موتور و روغن CVT دو سرویس کاملاً جدا هستند. برای موتور از مشخصات 0W-20 C5 و برای گیربکس از روانکار سازگار با Shell SL-2100 استفاده شود.",
+    relatedGuides: [
+      { title: "راهنمای روغن موتور ام جی 5", description: "انتخاب روغن و نکات سرویس نسخه 1.5 لیتری MG 5", href: "/blog/mg5-engine-oil-guide" },
+      { title: "روغن 0W-20 برای چه خودروهایی است؟", description: "کاربرد، استانداردها و نکات انتخاب روغن‌های کم‌ویسکوز", href: "/blog/0w20-engine-oil-guide-for-modern-cars" },
+      { title: "روغن موتور را هر چند کیلومتر عوض کنیم؟", description: "بازه تعویض در رانندگی شهری و شرایط ایران", href: "/blog/engine-oil-change-interval-iran-driving" },
+    ],
     faqs: [
       { question: "روغن موتور مناسب ام جی 5 چیست؟", answer: "برای نسخه 1.5L CVT مدل 2023–2024، روغن 0W-20 با سطح کیفی ACEA C5 در دفترچه ثبت شده است." },
       { question: "حجم روغن موتور MG 5 چقدر است؟", answer: "حجم سرویس ثبت‌شده برای موتور 15FCD برابر ۴ لیتر است. سطح نهایی روغن پس از سرویس باید طبق روش دفترچه کنترل شود." },
@@ -145,6 +151,11 @@ export const mgModelHubs = [
       { title: "حساسیت موتور توربو", description: "روغن تمام‌سنتتیک، کنترل منظم سطح روغن و رعایت بازه تعویض برای موتور 18K4G اهمیت بیشتری دارد." },
     ],
     serviceIntro: "پیش از سرویس MG 6، سال مدل و نوع گیربکس را مشخص کنید. شباهت موتور دو نسخه به معنی یکسان‌بودن روغن گیربکس یا حجم سرویس نیست.",
+    relatedGuides: [
+      { title: "راهنمای روغن موتور ام جی 6", description: "روغن و سرویس مدل قدیم و نیوفیس MG 6", href: "/blog/mg6-engine-oil-guide" },
+      { title: "تفاوت روغن 5W-30 و 5W-40", description: "مقایسه گرانروی‌ها برای انتخاب دقیق‌تر روغن موتور", href: "/blog/5w30-vs-5w40-engine-oil" },
+      { title: "روغن موتور را هر چند کیلومتر عوض کنیم؟", description: "بازه تعویض در رانندگی شهری و شرایط ایران", href: "/blog/engine-oil-change-interval-iran-driving" },
+    ],
     faqs: [
       { question: "تفاوت MG 6 قدیم و نیوفیس چیست؟", answer: "مهم‌ترین تفاوت سرویس‌محور، گیربکس است: مدل قدیم ۵ سرعته اتومات آیسین دارد و نیوفیس از ۶ سرعته دوکلاچه تر 6DCT360 استفاده می‌کند." },
       { question: "روغن موتور مناسب ام جی 6 چیست؟", answer: "برای خانواده موتور 1.8T، گریدهای 5W-30، 5W-40 یا 0W-30 با سطح کیفی ثبت‌شده برای نسخه دقیق قابل استفاده‌اند؛ دفترچه همان سال مدل مرجع نهایی است." },
@@ -200,6 +211,11 @@ export const mgModelHubs = [
       { title: "سرویس محافظه‌کارانه", description: "در رانندگی پرترافیک، گرمای بالا یا فشار زیاد روی موتور توربو، کنترل سطح و کیفیت روغن باید منظم‌تر انجام شود." },
     ],
     serviceIntro: "برای MG GS، روغن‌های 10W-40 و 5W-40 مرجع اصلی بولتن فنی این موتور نیستند. انتخاب امن باید از بین 5W-30 یا 0W-30 با ACEA C3 انجام شود.",
+    relatedGuides: [
+      { title: "بهترین اکتان برای موتورهای توربو", description: "معیارهای انتخاب مکمل سوخت برای خودروهای توربوشارژ", href: "/blog/best-octane-booster-for-turbo-cars" },
+      { title: "تفاوت روغن 5W-30 و 5W-40", description: "مقایسه گرانروی‌ها برای انتخاب دقیق‌تر روغن موتور", href: "/blog/5w30-vs-5w40-engine-oil" },
+      { title: "روغن موتور را هر چند کیلومتر عوض کنیم؟", description: "بازه تعویض در رانندگی شهری و شرایط ایران", href: "/blog/engine-oil-change-interval-iran-driving" },
+    ],
     faqs: [
       { question: "روغن موتور مناسب ام جی GS چیست؟", answer: "برای موتور MGE 2.0T، روغن 5W-30 یا 0W-30 با ACEA C3 و حداقل API SN در بولتن فنی ثبت شده است." },
       { question: "حجم روغن موتور MG GS چقدر است؟", answer: "حجم سرویس ثبت‌شده برای این موتور حدود ۶ لیتر است؛ سطح نهایی باید پس از سرویس طبق روش دفترچه کنترل شود." },
@@ -255,6 +271,11 @@ export const mgModelHubs = [
       { title: "حجم سرویس را دقیق کنترل کنید", description: "حجم موتور و گیربکس برای سرویس کامل ثبت شده است؛ مقدار تخلیه واقعی می‌تواند با روش سرویس تفاوت داشته باشد." },
     ],
     serviceIntro: "برای RX5، انتخاب روغن تنها بر اساس عبارت 5W-30 کافی نیست. وجود ACEA C3 و سازگاری محصول با موتور توربو تزریق مستقیم باید روی مشخصات روغن بررسی شود.",
+    relatedGuides: [
+      { title: "بهترین اکتان برای موتورهای توربو", description: "معیارهای انتخاب مکمل سوخت برای خودروهای توربوشارژ", href: "/blog/best-octane-booster-for-turbo-cars" },
+      { title: "تفاوت روغن 5W-30 و 5W-40", description: "مقایسه گرانروی‌ها برای انتخاب دقیق‌تر روغن موتور", href: "/blog/5w30-vs-5w40-engine-oil" },
+      { title: "روغن موتور را هر چند کیلومتر عوض کنیم؟", description: "بازه تعویض در رانندگی شهری و شرایط ایران", href: "/blog/engine-oil-change-interval-iran-driving" },
+    ],
     faqs: [
       { question: "روغن موتور مناسب ام جی RX5 چیست؟", answer: "برای موتور 2.0T GDi، روغن 5W-30 یا 0W-30 با ACEA C3 و حداقل API SN ثبت شده است." },
       { question: "حجم روغن موتور MG RX5 چقدر است؟", answer: "حجم سرویس روغن موتور حدود ۶ لیتر ثبت شده است. مقدار نهایی باید پس از تعویض فیلتر و طبق روش دفترچه کنترل شود." },
@@ -263,9 +284,81 @@ export const mgModelHubs = [
     ],
     sourceNote: "منابع فنی: دفترچه راهنمای مالک MG RX5 و بولتن روغن موتور SAIC برای خانواده MGE 2.0T ثبت‌شده در اویل‌بار.",
   },
+  {
+    slug: "mg-7",
+    name: "ام جی 7",
+    latinName: "MG 7",
+    title: "مشخصات ام جی 7؛ مقایسه موتور 1.5 و 2.0 توربو",
+    description: "مشخصات فنی MG 7 مدل 2025، مقایسه موتورهای 1.5 و 2.0 توربو، گیربکس 7DCT و 9AT، روغن موتور 0W-20 و حجم سرویس هر نسخه.",
+    intro: "MG 7 مدل ۲۰۲۵ با دو ترکیب فنی ۱.۵ لیتری توربو و گیربکس دوکلاچه 7DCT280 یا ۲ لیتری توربو و گیربکس ۹ سرعته اتومات عرضه می‌شود. این صفحه تفاوت نسخه‌ها و مشخصات روغن ثبت‌شده در دفترچه را یک‌جا نمایش می‌دهد.",
+    image: "/vehicles/mg/mg-7.webp",
+    imageAlt: "نمای سه رخ ام جی 7 سبز",
+    bodyType: "سدان فست‌بک",
+    years: "مدل ۲۰۲۵",
+    engineSummary: "۱.۵ یا ۲.۰ لیتر توربو",
+    powerSummary: "بسته به نسخه موتور",
+    gearboxSummary: "7DCT280 یا 9AT",
+    overview: "نسخه‌های MG 7 از نظر موتور، گیربکس و حجم سرویس روغن یکسان نیستند. هر دو نسخه به روغن 0W-20 با ACEA C5 و API SP نیاز دارند، اما حجم ثبت‌شده برای موتور ۱.۵ توربو ۴ لیتر و برای موتور ۲.۰ توربو ۴.۸ لیتر است.",
+    variants: [
+      {
+        title: "ام جی 7 مدل 2025 1.5T",
+        href: "/cars/hyundai-1105-mg7",
+        years: "۲۰۲۵",
+        engine: "۱.۵ لیتر توربوشارژ",
+        power: "طبق تیپ عرضه‌شده",
+        torque: "طبق تیپ عرضه‌شده",
+        gearbox: "۷ سرعته دوکلاچه 7DCT280",
+        oil: "0W-20، ACEA C5 / API SP، حجم ۴ لیتر",
+      },
+      {
+        title: "ام جی 7 مدل 2025 2.0T",
+        href: "/cars/hyundai-1105-mg7",
+        years: "۲۰۲۵",
+        engine: "۲.۰ لیتر توربوشارژ",
+        power: "طبق تیپ عرضه‌شده",
+        torque: "طبق تیپ عرضه‌شده",
+        gearbox: "۹ سرعته اتوماتیک 9AT",
+        oil: "0W-20، ACEA C5 / API SP، حجم ۴.۸ لیتر",
+      },
+    ],
+    specifications: [
+      ["نام خودرو", "MG 7 / ام جی 7"],
+      ["کلاس بدنه", "سدان فست‌بک"],
+      ["سال مدل مرجع", "۲۰۲۵"],
+      ["نوع موتور", "۴ سیلندر توربوشارژ بنزینی"],
+      ["نسخه موتور", "۱.۵ لیتر توربو یا ۲.۰ لیتر توربو"],
+      ["محور محرک", "دیفرانسیل جلو"],
+      ["گیربکس نسخه ۱.۵ توربو", "۷ سرعته دوکلاچه 7DCT280"],
+      ["گیربکس نسخه ۲.۰ توربو", "۹ سرعته اتوماتیک 9AT"],
+      ["روغن موتور", "0W-20 با ACEA C5 و API SP"],
+      ["حجم روغن موتور ۱.۵ توربو", "۴ لیتر"],
+      ["حجم روغن موتور ۲.۰ توربو", "۴.۸ لیتر"],
+      ["مرجع انتخاب سرویس", "دفترچه همان تیپ و موتور خودرو"],
+    ],
+    ownershipNotes: [
+      { title: "تشخیص نسخه پیش از سرویس", description: "نوع موتور و گیربکس را از مشخصات خودرو کنترل کنید؛ حجم روغن موتور و سرویس گیربکس دو نسخه متفاوت است." },
+      { title: "استاندارد کامل روغن", description: "یکسان‌بودن عبارت 0W-20 کافی نیست و روغن انتخابی باید ACEA C5 و API SP ثبت‌شده برای این خودرو را نیز پوشش دهد." },
+      { title: "مراقبت از موتور توربو", description: "کنترل منظم سطح روغن، استفاده از فیلتر مناسب و رعایت بازه سرویس در ترافیک و گرمای بالا اهمیت بیشتری دارد." },
+    ],
+    serviceIntro: "برای هر دو موتور MG 7 گرید 0W-20 ثبت شده است، اما حجم سرویس را باید براساس موتور ۱.۵ یا ۲.۰ لیتری انتخاب کرد. روغن گیربکس نیز باید دقیقاً متناسب با 7DCT280 یا 9AT باشد.",
+    relatedGuides: [
+      { title: "روغن 0W-20 برای چه خودروهایی است؟", description: "کاربرد، استانداردها و نکات انتخاب روغن‌های کم‌ویسکوز", href: "/blog/0w20-engine-oil-guide-for-modern-cars" },
+      { title: "بهترین اکتان برای موتورهای توربو", description: "معیارهای انتخاب مکمل سوخت برای خودروهای توربوشارژ", href: "/blog/best-octane-booster-for-turbo-cars" },
+      { title: "روغن موتور را هر چند کیلومتر عوض کنیم؟", description: "بازه تعویض در رانندگی شهری و شرایط ایران", href: "/blog/engine-oil-change-interval-iran-driving" },
+    ],
+    faqs: [
+      { question: "روغن موتور مناسب ام جی 7 چیست؟", answer: "برای نسخه‌های بررسی‌شده MG 7 مدل ۲۰۲۵، روغن 0W-20 با سطح کیفی ACEA C5 و API SP در دفترچه ثبت شده است." },
+      { question: "حجم روغن موتور MG 7 چقدر است؟", answer: "حجم سرویس موتور ۱.۵ لیتری توربو ۴ لیتر و موتور ۲.۰ لیتری توربو ۴.۸ لیتر ثبت شده است. سطح نهایی باید طبق روش دفترچه کنترل شود." },
+      { question: "گیربکس ام جی 7 چیست؟", answer: "نسخه ۱.۵ توربو از گیربکس ۷ سرعته دوکلاچه 7DCT280 و نسخه ۲.۰ توربو از گیربکس ۹ سرعته اتوماتیک 9AT استفاده می‌کند." },
+      { question: "آیا روغن موتور دو نسخه MG 7 یکسان است؟", answer: "گرید و استاندارد ثبت‌شده هر دو نسخه 0W-20، ACEA C5 و API SP است، اما حجم سرویس آن‌ها متفاوت است و باید موتور دقیق خودرو مشخص باشد." },
+    ],
+    sourceNote: "منبع فنی: دفترچه راهنمای مالک MG 7 مدل ۲۰۲۵ و داده نسخه‌های 1.5T و 2.0T ثبت‌شده در دفترچه خودروهای اویل‌بار.",
+  },
 ] as const satisfies readonly MgModelHub[];
 
-export const mgModelHubPaths = ["/cars/mg-360", ...mgModelHubs.map((hub) => `/cars/${hub.slug}`)] as const;
+// Deliberately frozen because this list feeds the production sitemap and its
+// current output must remain unchanged for the Torob crawler integration.
+export const mgModelHubPaths = ["/cars/mg-360", "/cars/mg-5", "/cars/mg-6", "/cars/mg-gs", "/cars/mg-rx5"] as const;
 
 export function getMgModelHub(slug: MgModelHub["slug"]) {
   return mgModelHubs.find((hub) => hub.slug === slug)!;

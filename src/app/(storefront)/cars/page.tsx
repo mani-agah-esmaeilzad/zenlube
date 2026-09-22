@@ -38,6 +38,11 @@ const popularCarGuides = [
     title: "مشخصات کامل ام جی RX5",
     description: "مشخصات فنی نسخه 2.0 توربو و راهنمای روغن موتور و گیربکس",
   },
+  {
+    href: "/cars/mg-7",
+    title: "مشخصات کامل ام جی 7",
+    description: "مقایسه موتورهای 1.5 و 2.0 توربو، گیربکس‌ها و روغن مناسب مدل 2025",
+  },
 ] as const;
 
 export async function generateMetadata({ searchParams }: CarsPageProps) {

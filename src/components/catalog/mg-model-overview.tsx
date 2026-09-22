@@ -11,6 +11,7 @@ const otherModels = [
   { href: "/cars/mg-6", label: "ام جی 6" },
   { href: "/cars/mg-gs", label: "ام جی GS" },
   { href: "/cars/mg-rx5", label: "ام جی RX5" },
+  { href: "/cars/mg-7", label: "ام جی 7" },
 ] as const;
 
 export function MgModelOverview({ hub }: { hub: MgModelHub }) {
@@ -72,7 +73,7 @@ export function MgModelOverview({ hub }: { hub: MgModelHub }) {
             <p className="mt-4 max-w-3xl text-sm leading-8 text-white/75 md:text-base">{hub.intro}</p>
             <nav aria-label={`دسترسی سریع نسخه‌های ${hub.name}`} className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-extrabold">
               {hub.variants.map((variant) => (
-                <Link className="inline-flex min-h-11 items-center text-white/80 transition hover:text-white" href={variant.href} key={variant.href}>
+                <Link className="inline-flex min-h-11 items-center text-white/80 transition hover:text-white" href={variant.href} key={variant.title}>
                   دفترچه {variant.title}
                 </Link>
               ))}
@@ -114,7 +115,7 @@ export function MgModelOverview({ hub }: { hub: MgModelHub }) {
               </thead>
               <tbody className="divide-y divide-border">
                 {hub.variants.map((variant) => (
-                  <tr key={variant.href}>
+                  <tr key={variant.title}>
                     <th className="px-4 py-4 align-top font-extrabold text-text-strong">
                       <Link className="text-link-zen" href={variant.href}>{variant.title}</Link>
                     </th>
@@ -167,10 +168,28 @@ export function MgModelOverview({ hub }: { hub: MgModelHub }) {
           </div>
           <div className="divide-y divide-border border-y border-border">
             {hub.variants.map((variant) => (
-              <Link className="group flex items-center justify-between gap-4 py-4" href={variant.href} key={variant.href}>
+              <Link className="group flex items-center justify-between gap-4 py-4" href={variant.href} key={variant.title}>
                 <span>
                   <span className="block font-extrabold text-text-strong transition group-hover:text-primary-accent-strong">دفترچه {variant.title}</span>
                   <span className="mt-1 block text-xs leading-6 text-text-muted">روغن موتور، حجم سرویس، روغن گیربکس و محصولات سازگار</span>
+                </span>
+                <span aria-hidden="true" className="shrink-0 text-primary-accent-strong">←</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section aria-labelledby={`${hub.slug}-guides-title`} className="space-y-5 border-t border-border pt-6">
+          <div>
+            <h2 className="section-title" id={`${hub.slug}-guides-title`}>راهنماهای مرتبط با {hub.name}</h2>
+            <p className="section-subtitle">مطالب تکمیلی درباره انتخاب روغن، سرویس و نگهداری این خودرو.</p>
+          </div>
+          <div className="grid border-t border-border md:grid-cols-2 md:gap-x-6">
+            {hub.relatedGuides.map((guide) => (
+              <Link className="group flex min-w-0 items-center justify-between gap-4 border-b border-border py-4" href={guide.href} key={guide.href}>
+                <span className="min-w-0">
+                  <span className="block font-extrabold text-text-strong transition group-hover:text-primary-accent-strong">{guide.title}</span>
+                  <span className="mt-1 block text-xs leading-6 text-text-muted">{guide.description}</span>
                 </span>
                 <span aria-hidden="true" className="shrink-0 text-primary-accent-strong">←</span>
               </Link>

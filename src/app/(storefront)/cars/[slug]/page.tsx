@@ -33,6 +33,7 @@ const MG_MODEL_HUB_BY_VARIANT = new Map([
   ["hyundai-67-mg6-new", { href: "/cars/mg-6", label: "ام جی 6" }],
   ["hyundai-62-mg-gs", { href: "/cars/mg-gs", label: "ام جی GS" }],
   ["hyundai-68-mg-rx5", { href: "/cars/mg-rx5", label: "ام جی RX5" }],
+  ["hyundai-1105-mg7", { href: "/cars/mg-7", label: "ام جی 7" }],
 ]);
 
 export const dynamic = "force-dynamic";

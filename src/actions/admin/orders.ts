@@ -14,7 +14,7 @@ import {
   notifyCustomerOfTrackingCode,
 } from "@/lib/sms/order-notifications";
 import { smsOrderNumber } from "@/lib/sms/service";
-import { deleteOrderSafely } from "@/services/admin/mutations";
+import { deleteOrderPermanently } from "@/services/admin/mutations";
 
 const statusSchema = z.object({
   orderId: z.string().cuid(),
@@ -35,7 +35,7 @@ export async function retryMerchantOrderSmsAction(formData: FormData): Promise<v
   const orderId = z.string().cuid().parse(formData.get("orderId"));
   const order = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true } });
   if (!order) throw new Error("سفارش پیدا نشد.");
-  await notifyMerchantOfNewOrder(order.id);
+  await notifyMerchantOfNewOrder(order.id, { forceResend: true });
   revalidatePath("/admin");
 }
 
@@ -196,13 +196,16 @@ export async function updateOrderTrackingAction(formData: FormData): Promise<voi
 }
 
 export async function deleteOrderFormAction(formData: FormData): Promise<void> {
-  await ensureAdminAction();
+  const { userId } = await ensureAdminAction();
   const orderId = formData.get("orderId");
   if (!orderId || typeof orderId !== "string") {
     throw new Error("شناسه سفارش نامعتبر است.");
   }
+  if (formData.get("confirmDelete") !== "DELETE") {
+    throw new Error("تأیید حذف دائمی سفارش انجام نشده است.");
+  }
 
-  await deleteOrderSafely(orderId);
+  await deleteOrderPermanently(orderId, userId);
   revalidatePath("/admin");
   revalidatePath("/account");
 }

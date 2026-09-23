@@ -427,32 +427,35 @@ export async function updateUserRole(
   });
 }
 
-export async function deleteOrderSafely(orderId: string) {
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    include: {
-      paymentEvents: { select: { id: true }, take: 1 },
-    },
-  });
-
-  if (!order) {
-    throw new Error("سفارش پیدا نشد.");
-  }
-
-  const hasPaymentHistory = Boolean(order.paidAt || order.paymentRefId || order.paymentEvents.length);
-  if (hasPaymentHistory) {
-    await prisma.order.update({
+export async function deleteOrderPermanently(orderId: string, actorUserId?: string | null) {
+  return prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
       where: { id: orderId },
+      select: { id: true, status: true, total: true },
+    });
+
+    if (!order) throw new Error("سفارش پیدا نشد.");
+
+    await tx.smsLog.deleteMany({
+      where: { dedupeKey: { contains: orderId } },
+    });
+    await tx.order.delete({ where: { id: orderId } });
+    await tx.adminAuditLog.create({
       data: {
-        status: "CANCELLED",
-        notes: [order.notes, "بایگانی‌شده توسط مدیر"].filter(Boolean).join("\n"),
+        actorUserId: actorUserId ?? null,
+        targetType: "Order",
+        targetId: orderId,
+        action: "DELETE_PERMANENTLY",
+        summary: "سفارش و سوابق وابسته آن به درخواست مدیر برای همیشه حذف شد.",
+        metadata: {
+          previousStatus: order.status,
+          total: order.total.toString(),
+        },
       },
     });
-    return { mode: "archived" as const };
-  }
 
-  await prisma.order.deleteMany({ where: { id: orderId } });
-  return { mode: "deleted" as const };
+    return { mode: "deleted" as const };
+  });
 }
 
 export async function deleteUserSafely(userId: string, sessionUserId?: string | null) {

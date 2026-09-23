@@ -125,6 +125,16 @@ test("an old sending claim is not retried because the provider may have accepted
   assert.equal(fetchMock.mock.callCount(), 0);
 });
 
+test("an explicit manual resend can send a previously completed merchant notification again", async (t) => {
+  const rows = setup(t, "sent");
+  const fetchMock = t.mock.method(globalThis, "fetch", async () => accepted());
+  const result = await sendSms({ ...notification, forceResend: true });
+
+  assert.equal(result.success, true);
+  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(rows.get(notification.dedupeKey)?.status, "sent");
+});
+
 for (const failure of ["timeout", "network", "server-error", "malformed-success"]) {
   test(`ambiguous SMS ${failure} is recorded and cannot be retried`, async (t) => {
     const rows = setup(t);

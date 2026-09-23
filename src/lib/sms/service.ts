@@ -23,6 +23,7 @@ type SendSmsArgs = {
   eventType?: string;
   templateName?: string;
   dedupeKey?: string;
+  forceResend?: boolean;
   smsIrTemplate?: {
     templateId: number;
     parameters: SmsIrTemplateParameter[];
@@ -32,7 +33,7 @@ type SendSmsArgs = {
 const templates: Record<string, string> = {
   otp: "کد تایید اویل‌بار: {code}",
   order_created: "سفارش شما در اویل‌بار ثبت شد. شماره سفارش: {orderNumber}",
-  merchant_order_created: "یک سفارش جدید در اویل‌بار ثبت شد. شماره سفارش: {orderNumber}. برای بررسی وارد پنل مدیریت شوید.",
+  merchant_order_created: "سفارش جدید اویل‌بار {orderNumber}\nاقلام: {items}\nبرای بررسی وارد پنل مدیریت شوید.",
   payment_started: "درخواست پرداخت سفارش {orderNumber} در اویل‌بار ایجاد شد.",
   payment_success: "پرداخت سفارش {orderNumber} با موفقیت تأیید شد. سفارش شما وارد صف آماده‌سازی اویل‌بار شد.",
   payment_failed: "پرداخت سفارش {orderNumber} ناموفق بود. لطفا دوباره تلاش کنید.",
@@ -139,7 +140,7 @@ type SmsClaim =
  * in-flight claim may already have reached the provider, so it never expires.
  * The token also prevents a late completion from overwriting a newer attempt.
  */
-async function claimSms(args: SmsLogDetails): Promise<SmsClaim> {
+async function claimSms(args: SmsLogDetails, forceResend = false): Promise<SmsClaim> {
   if (!args.dedupeKey) return { state: "claimed", id: "", token: "" };
 
   const now = new Date();
@@ -161,16 +162,19 @@ async function claimSms(args: SmsLogDetails): Promise<SmsClaim> {
       select: { id: true, status: true },
     });
     if (!existing) throw new Error("ارسال پیامک قابل رزرو نیست.");
-    if (existing.status === "sent") return { state: "completed" };
+    if (existing.status === "sent" && !forceResend) return { state: "completed" };
     if (existing.status === "uncertain") return { state: "uncertain" };
 
-    const retryable = ["failed", "disabled", "sandbox"].includes(existing.status);
+    const retryableStatuses = forceResend
+      ? ["failed", "disabled", "sandbox", "sent"]
+      : ["failed", "disabled", "sandbox"];
+    const retryable = retryableStatuses.includes(existing.status);
     if (!retryable) return { state: "in-flight" };
 
     const updated = await prisma.smsLog.updateMany({
       where: {
         id: existing.id,
-        status: { in: ["failed", "disabled", "sandbox"] },
+        status: { in: retryableStatuses },
       },
       data: {
         ...claimData,
@@ -200,7 +204,7 @@ async function finishSms(claim: Extract<SmsClaim, { state: "claimed" }>, args: S
   }
 }
 
-export async function sendSms({ phone, message, eventType = "manual", templateName, dedupeKey, smsIrTemplate }: SendSmsArgs) {
+export async function sendSms({ phone, message, eventType = "manual", templateName, dedupeKey, forceResend = false, smsIrTemplate }: SendSmsArgs) {
   const runtime = resolveSmsRuntime();
   const normalizedPhone = normalizeIranPhone(phone);
 
@@ -211,7 +215,7 @@ export async function sendSms({ phone, message, eventType = "manual", templateNa
     message,
     status: "sending",
     dedupeKey,
-  });
+  }, forceResend);
   if (claim.state === "completed" || claim.state === "in-flight") {
     logger.info("Duplicate or in-flight SMS skipped", { eventType, dedupeKey, state: claim.state });
     return { success: true, skipped: true } as const;
@@ -272,12 +276,18 @@ export async function sendSms({ phone, message, eventType = "manual", templateNa
   }
 }
 
-export async function sendTemplateSms(phone: string, templateName: string, tokens: SmsTokens = {}, options?: { eventType?: string; dedupeKey?: string }) {
+export async function sendTemplateSms(
+  phone: string,
+  templateName: string,
+  tokens: SmsTokens = {},
+  options?: { eventType?: string; dedupeKey?: string; forceResend?: boolean },
+) {
   return sendSms({
     phone,
     templateName,
     eventType: options?.eventType ?? templateName,
     dedupeKey: options?.dedupeKey,
+    forceResend: options?.forceResend,
     message: renderSmsTemplate(templateName, tokens),
   });
 }

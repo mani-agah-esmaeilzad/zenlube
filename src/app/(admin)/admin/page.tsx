@@ -32,11 +32,13 @@ import { SpecialOffersTab } from "@/components/admin/tabs/SpecialOffersTab";
 import { UsersTab } from "@/components/admin/tabs/UsersTab";
 import { ShippingTab } from "@/components/admin/tabs/ShippingTab";
 import { FeedbackTab } from "@/components/admin/tabs/FeedbackTab";
+import { AdminLiveRefresh } from "@/components/admin/admin-live-refresh";
 import type { OrdersTabData } from "@/services/admin/types";
 import { getShippingTabData } from "@/services/admin/shipping";
 import { getFeedbackTabData } from "@/services/admin/feedback";
 
 export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 const tabs = [
   {
@@ -177,9 +179,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <Link href="/" className="btn-secondary">
                     مشاهده فروشگاه
                   </Link>
-                  <Link href={createHref(activeTab)} className="btn-outline">
-                    تازه‌سازی این بخش
-                  </Link>
+                  <AdminLiveRefresh />
                 </div>
               </div>
 

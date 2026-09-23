@@ -130,11 +130,11 @@ export function OrdersTab({ data }: OrdersTabProps) {
                   {order.smsNotifications ? (
                     <div className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                       <SmsFeedbackLine label="پیامک سفارش جدید به مدیر" feedback={order.smsNotifications.merchant} />
-                      {["absent", "failed", "disabled", "sandbox"].includes(order.smsNotifications.merchant.status) ? (
+                      {["absent", "failed", "disabled", "sandbox", "sent"].includes(order.smsNotifications.merchant.status) ? (
                         <form action={retryMerchantOrderSmsAction}>
                           <input type="hidden" name="orderId" value={order.id} />
                           <button type="submit" className="text-[11px] font-bold text-[#175CD3] underline underline-offset-4">
-                            ارسال مجدد به مدیر
+                            {order.smsNotifications.merchant.status === "sent" ? "ارسال دوباره به مدیر" : "ارسال به مدیر"}
                           </button>
                         </form>
                       ) : null}
@@ -198,11 +198,15 @@ export function OrdersTab({ data }: OrdersTabProps) {
                   <TrackingForm orderId={order.id} trackingCode={order.shippingTrackingCode} smsFeedback={order.smsNotifications?.tracking} />
                   <form action={deleteOrderFormAction} className="rounded-[22px] border border-[#FECACA] bg-[#FFF1F3] p-3">
                     <input type="hidden" name="orderId" value={order.id} />
+                    <label className="mb-3 flex items-start gap-2 text-[11px] font-bold leading-5 text-[#B42318]">
+                      <input className="mt-1 h-4 w-4" name="confirmDelete" required type="checkbox" value="DELETE" />
+                      <span>تأیید می‌کنم سفارش و سوابق وابسته آن برای همیشه حذف شود. این کار موجودی یا وجه پرداختی را برنمی‌گرداند.</span>
+                    </label>
                     <button
                       type="submit"
                       className="w-full rounded-2xl bg-[#D92D20] px-3 py-2.5 text-xs font-bold text-white transition hover:bg-[#B42318]"
                     >
-                      حذف / بایگانی سفارش
+                      حذف دائمی سفارش
                     </button>
                   </form>
                 </div>

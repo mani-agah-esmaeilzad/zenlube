@@ -440,6 +440,7 @@ export async function createCheckoutOrderAction(
     });
     revalidatePath("/cart");
     revalidatePath("/account");
+    revalidatePath("/admin");
 
     after(() => sendTemplateSms(
       createdOrder.phone,

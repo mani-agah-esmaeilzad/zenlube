@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import {
+  MANUAL_MAHEX_SHIPPING_OPTION_ID,
+  MANUAL_PICKUP_SHIPPING_OPTION_ID,
+  manualServiceCodeForSubmittedShippingOptionId,
+} from "@/lib/shipping/manual-options";
 import { checkoutOrderSchema } from "@/lib/validators";
 
 const validCheckout = {
@@ -35,4 +40,15 @@ test("checkout does not require or accept an OTP field", () => {
   assert.equal(parsed.success, true);
   if (!parsed.success) return;
   assert.equal("otpCode" in parsed.data, false);
+});
+
+test("checkout accepts the display-only Mahex and pickup choices", () => {
+  for (const shippingOptionId of [MANUAL_MAHEX_SHIPPING_OPTION_ID, MANUAL_PICKUP_SHIPPING_OPTION_ID]) {
+    const parsed = checkoutOrderSchema.safeParse({ ...validCheckout, shippingOptionId });
+    assert.equal(parsed.success, true);
+  }
+
+  assert.equal(manualServiceCodeForSubmittedShippingOptionId(MANUAL_MAHEX_SHIPPING_OPTION_ID), "MAHEX_COD");
+  assert.equal(manualServiceCodeForSubmittedShippingOptionId(MANUAL_PICKUP_SHIPPING_OPTION_ID), "PICKUP");
+  assert.equal(manualServiceCodeForSubmittedShippingOptionId("cm12345678901234567890123"), null);
 });

@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+import {
+  MANUAL_MAHEX_SHIPPING_OPTION_ID,
+  MANUAL_PICKUP_SHIPPING_OPTION_ID,
+} from "@/lib/shipping/manual-options";
 import { validateIranPhone } from "@/lib/phone";
 
 function emptyToUndefined(value: unknown) {
@@ -271,7 +275,10 @@ export const checkoutOrderSchema = z.object({
     .string()
     .trim()
     .regex(/^[0-9۰-۹٠-٩\s-]{10,16}$/, "کد پستی باید ۱۰ رقم باشد."),
-  shippingOptionId: z.string().cuid("روش ارسال معتبر نیست."),
+  shippingOptionId: z.union([
+    z.string().cuid("روش ارسال معتبر نیست."),
+    z.enum([MANUAL_MAHEX_SHIPPING_OPTION_ID, MANUAL_PICKUP_SHIPPING_OPTION_ID]),
+  ], { message: "روش ارسال معتبر نیست." }),
   checkoutIdempotencyKey: z.string().uuid("شناسه ثبت سفارش معتبر نیست."),
   couponCode: z.preprocess(emptyToUndefined, z.string().trim().max(32, "کد تخفیف معتبر نیست.").optional()),
   notes: optionalString,

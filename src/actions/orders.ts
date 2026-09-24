@@ -16,6 +16,7 @@ import { resolveProductPricing } from "@/lib/pricing";
 import { getAppSession } from "@/lib/session";
 import { notifyMerchantOfNewOrder } from "@/lib/sms/merchant-order";
 import { normalizeIranPostalCode } from "@/lib/shipping/address";
+import { manualServiceCodeForSubmittedShippingOptionId } from "@/lib/shipping/manual-options";
 import { findReplacementShippingOption, pendingOrderCartMatches } from "@/lib/shipping/quote-validation";
 import { requestShippingQuote, validateShippingSelection, ShippingServiceError } from "@/lib/shipping/service";
 import { sendTemplateSms, smsOrderNumber } from "@/lib/sms/service";
@@ -81,6 +82,29 @@ function paymentUrlFromJson(value: Prisma.JsonValue | null) {
   } catch {
     return null;
   }
+}
+
+async function resolveCheckoutShippingOptionId(input: {
+  userId: string;
+  submittedOptionId: string;
+  destination: {
+    provinceCode: string;
+    cityCode: string;
+    postalCode: string;
+    address1: string;
+    address2?: string | null;
+  };
+  couponCode?: string | null;
+}) {
+  const manualServiceCode = manualServiceCodeForSubmittedShippingOptionId(input.submittedOptionId);
+  if (!manualServiceCode) return input.submittedOptionId;
+
+  const quote = await requestShippingQuote(input.userId, input.destination, input.couponCode);
+  const option = quote.options.find((candidate) => candidate.serviceCode === manualServiceCode);
+  if (!option) {
+    throw new ShippingServiceError("QUOTE_NOT_FOUND", "روش ارسال انتخاب‌شده معتبر نیست.");
+  }
+  return option.id;
 }
 
 async function startPaymentForOrder(order: PaymentOrder) {
@@ -250,13 +274,19 @@ export async function createCheckoutOrderAction(
       address1: input.address1,
       address2: input.address2,
     };
+    const shippingOptionId = await resolveCheckoutShippingOptionId({
+      userId,
+      submittedOptionId: input.shippingOptionId,
+      destination,
+      couponCode: input.couponCode,
+    });
 
     const existingOrder = await prisma.order.findUnique({
       where: { userId_checkoutIdempotencyKey: { userId, checkoutIdempotencyKey: input.checkoutIdempotencyKey } },
       select: { id: true, total: true, email: true, phone: true, status: true, paymentMethod: true, shippingQuoteOptionId: true },
     });
     if (existingOrder) {
-      if (existingOrder.shippingQuoteOptionId !== input.shippingOptionId) {
+      if (existingOrder.shippingQuoteOptionId !== shippingOptionId) {
         return { success: false, message: "اطلاعات این تلاش پرداخت با سفارش ذخیره‌شده یکسان نیست." };
       }
       if (["PAID", "PREPARING", "SHIPPED", "DELIVERED"].includes(existingOrder.status)) {
@@ -268,7 +298,7 @@ export async function createCheckoutOrderAction(
       await validateShippingSelection({
         userId,
         orderId: existingOrder.id,
-        optionId: input.shippingOptionId,
+        optionId: shippingOptionId,
         destination,
         couponCode: input.couponCode,
       });
@@ -281,7 +311,7 @@ export async function createCheckoutOrderAction(
     // address and quote-fingerprint validation before order creation.
     const validated = await validateShippingSelection({
       userId,
-      optionId: input.shippingOptionId,
+      optionId: shippingOptionId,
       destination,
       couponCode: input.couponCode,
     });
@@ -300,7 +330,7 @@ export async function createCheckoutOrderAction(
       }
 
       const freshOption = await tx.shippingQuoteOption.findUnique({
-        where: { id: input.shippingOptionId },
+        where: { id: shippingOptionId },
         include: { request: true },
       });
       if (!freshOption || freshOption.request.userId !== userId || freshOption.request.fingerprint !== validated.context.fingerprint || freshOption.request.expiresAt <= new Date()) {

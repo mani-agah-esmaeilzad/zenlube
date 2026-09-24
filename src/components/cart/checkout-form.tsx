@@ -6,6 +6,11 @@ import { useFormStatus } from "react-dom";
 
 import { createCheckoutOrderAction, type CheckoutState } from "@/actions/orders";
 import { LocationSelectors } from "@/components/shipping/location-selectors";
+import {
+  MANUAL_FREE_SHIPPING_THRESHOLD_RIALS,
+  MANUAL_MAHEX_SHIPPING_OPTION_ID,
+  MANUAL_PICKUP_SHIPPING_OPTION_ID,
+} from "@/lib/shipping/manual-options";
 import type { ShippingRolloutMode } from "@/lib/shipping/rollout";
 import { formatPrice } from "@/lib/utils";
 
@@ -64,13 +69,52 @@ type CheckoutFormProps = {
   addresses: SavedAddress[];
   checkoutIdempotencyKey: string;
   shippingMode: ShippingRolloutMode;
+  shippingFulfillmentMode: "manual" | "amadast";
 };
 
 function normalizedDigitCount(value: string) {
   return value.replace(/[۰-۹٠-٩]/g, "0").replace(/\D/g, "").length;
 }
 
-export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKey, shippingMode }: CheckoutFormProps) {
+function buildManualShippingQuote(subtotalRials: number): ShippingQuote {
+  const isFree = subtotalRials >= MANUAL_FREE_SHIPPING_THRESHOLD_RIALS;
+  return {
+    quoteId: "manual-display-only",
+    mode: "legacy",
+    expiresAt: "2099-12-31T20:29:59.000Z",
+    subtotalRials,
+    discountRials: 0,
+    unavailableCarriers: [],
+    options: [
+      {
+        id: MANUAL_MAHEX_SHIPPING_OPTION_ID,
+        carrierCode: "MANUAL",
+        carrierLabel: "ماهکس",
+        serviceCode: "MAHEX_COD",
+        serviceLabel: isFree ? "ماهکس — ارسال رایگان" : "ماهکس — پرداخت در محل (پس‌کرایه)",
+        customerPriceRials: 0,
+        currency: "IRR",
+        isFree,
+        estimatedDeliveryLabel: isFree
+          ? "با ماهکس ۱ روزه می‌رسد؛ ارسال این سفارش رایگان است."
+          : "با ماهکس ۱ روزه می‌رسد؛ هزینه ارسال هنگام تحویل دریافت می‌شود.",
+      },
+      {
+        id: MANUAL_PICKUP_SHIPPING_OPTION_ID,
+        carrierCode: "PICKUP",
+        carrierLabel: "مراجعه حضوری",
+        serviceCode: "PICKUP",
+        serviceLabel: "مراجعه حضوری",
+        customerPriceRials: 0,
+        currency: "IRR",
+        isFree: true,
+        estimatedDeliveryLabel: "هماهنگی تلفنی برای زمان تحویل حضوری",
+      },
+    ],
+  };
+}
+
+export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKey, shippingMode, shippingFulfillmentMode }: CheckoutFormProps) {
   const [state, formAction] = useActionState(createCheckoutOrderAction, initialState);
   const [selectedAddressId, setSelectedAddressId] = useState<string>(addresses.find((address) => address.isDefault)?.id ?? "");
   const [formValues, setFormValues] = useState({
@@ -132,6 +176,14 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
       return;
     }
 
+    if (shippingFulfillmentMode === "manual") {
+      const manualQuote = buildManualShippingQuote(subtotal);
+      setQuote(manualQuote);
+      setSelectedOptionId(MANUAL_MAHEX_SHIPPING_OPTION_ID);
+      setQuoteLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setQuoteLoading(true);
@@ -182,7 +234,7 @@ export function CheckoutForm({ items, defaults, addresses, checkoutIdempotencyKe
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [destinationReady, formValues.address1, formValues.address2, formValues.cityCode, formValues.couponCode, formValues.postalCode, formValues.provinceCode, retryToken, shippingMode]);
+  }, [destinationReady, formValues.address1, formValues.address2, formValues.cityCode, formValues.couponCode, formValues.postalCode, formValues.provinceCode, retryToken, shippingFulfillmentMode, shippingMode, subtotal]);
 
   const handleAddressSelect = (addressId: string) => {
     setSelectedAddressId(addressId);

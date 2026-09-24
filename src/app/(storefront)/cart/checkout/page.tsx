@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 
 import { CheckoutForm } from "@/components/cart/checkout-form";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
+import { config } from "@/lib/config";
 import prisma from "@/lib/prisma";
 import { resolveProductPricing } from "@/lib/pricing";
 import { getShippingRolloutState } from "@/lib/shipping/rollout";
@@ -79,6 +80,7 @@ export default async function CheckoutPage() {
         defaults={defaults}
         checkoutIdempotencyKey={randomUUID()}
         shippingMode={shippingRollout.mode}
+        shippingFulfillmentMode={config.SHIPPING_FULFILLMENT_MODE}
         addresses={addresses.map((address) => ({
           id: address.id,
           label: address.label,

@@ -52,6 +52,7 @@ test("KMC seed activates the exact five production records and keeps verified oi
   assert.match(seed, /oilCapacityLit: 4\.7,/);
   assert.match(seed, /isActive: true/);
   assert.match(seed, /notebookSections: buildNotebookSections\(car\)/);
-  assert.match(seed, /minimumApi: null,/);
+  assert.match(seed, /slug: "hyundai-766-kmc-jac-j7-1-5t-6dct"[\s\S]*?minimumApi: "SN",/);
+  assert.match(seed, /slug: "hyundai-44-kmc-k7-1-5t-6dct"[\s\S]*?minimumApi: null,/);
   assert.equal(seed.includes("prisma.productCar"), false, "KMC SEO/guide seeding must not alter product-page compatibility relations");
 });

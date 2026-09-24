@@ -64,7 +64,7 @@ const KMC_CARS: readonly KmcCarDefinition[] = [
     coolantDescription: "مایع خنک‌کننده اتیلن‌گلیکول ۵۰٪ با ظرفیت ۷٫۷±۰٫۵ لیتر؛ اختلاط مواد ناسازگار یا افزودن آب دارای املاح می‌تواند به مدار خنک‌کاری آسیب بزند.",
     hydraulicDescription: "فرمان J7 برقی است و مدار سرویس روغن هیدرولیک فرمان ندارد.",
     compatibleViscosities: ["5W-30"],
-    minimumApi: null,
+    minimumApi: "SN",
   },
   {
     slug: "hyundai-44-kmc-k7-1-5t-6dct",
@@ -90,7 +90,7 @@ const KMC_CARS: readonly KmcCarDefinition[] = [
     coolantDescription: "مایع خنک‌کننده با ضدیخ ۵۰٪ و ظرفیت ۱۰ لیتر؛ از خنک‌کننده اصلی و هم‌نوع استفاده شود و ترکیب ناشناخته به مدار افزوده نشود.",
     hydraulicDescription: "فرمان K7 برقی است و روغن هیدرولیک فرمان در برنامه سرویس این نسخه وجود ندارد.",
     compatibleViscosities: ["5W-30", "0W-30"],
-    minimumApi: "SN",
+    minimumApi: null,
   },
   {
     slug: "hyundai-1033-kmc-x5-1-5t-6dct",

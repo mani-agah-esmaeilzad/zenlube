@@ -43,6 +43,31 @@ const popularCarGuides = [
     title: "مشخصات کامل ام جی 7",
     description: "مقایسه موتورهای 1.5 و 2.0 توربو، گیربکس‌ها و روغن مناسب مدل 2025",
   },
+  {
+    href: "/cars/kmc-j7",
+    title: "مشخصات کامل KMC J7",
+    description: "راهنمای روغن 5W-30، حجم سرویس و گیربکس دوکلاچه بر اساس دفترچه فارسی",
+  },
+  {
+    href: "/cars/kmc-k7",
+    title: "مشخصات کامل KMC K7",
+    description: "گرید وابسته به دما، حجم دقیق روغن و اطلاعات گیربکس DCT",
+  },
+  {
+    href: "/cars/kmc-x5",
+    title: "مشخصات کامل KMC X5",
+    description: "اصلاح حجم روغن موتور، استاندارد API SN و روغن گیربکس دوکلاچه",
+  },
+  {
+    href: "/cars/kmc-t8",
+    title: "مشخصات کامل KMC T8",
+    description: "روغن موتور مناسب آب‌وهوا، گیربکس دستی و روانکارهای سیستم چهارچرخ محرک",
+  },
+  {
+    href: "/cars/kmc-t9",
+    title: "مشخصات کامل KMC T9",
+    description: "راهنمای موتور N20TG، روغن 5W-30 و گیربکس 8 سرعته اتوماتیک",
+  },
 ] as const;
 
 export async function generateMetadata({ searchParams }: CarsPageProps) {

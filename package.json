@@ -30,6 +30,7 @@
     "vehicles:pipeline": "tsx scripts/run-vehicle-pipeline.ts",
     "vehicles:table:draft": "tsx scripts/import-vehicle-table.ts",
     "seed:vehicles": "tsx prisma/seed-verified-cars.ts",
+    "seed:kmc-guides": "tsx prisma/seed-kmc-car-guides.ts",
     "vehicles:mycarlubs:hyundai": "tsx scripts/import-mycarlubs-brand.ts --brand-id=10068 --manufacturer=هیوندای",
     "vehicles:mycarlubs:mg": "tsx scripts/import-mycarlubs-brand.ts --brand-id=31 --manufacturer='ام جی' --title-includes='ام جی' --title-excludes='رووی'",
     "vehicles:mycarlubs:mvm": "tsx scripts/import-mycarlubs-brand.ts --brand-id=49 --manufacturer='ام وی ام' --title-includes='ام وی ام' --title-excludes='اکستریم'",

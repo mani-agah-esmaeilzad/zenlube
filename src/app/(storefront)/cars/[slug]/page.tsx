@@ -26,7 +26,7 @@ const MG360_VARIANT_SLUGS = new Set([
   "hyundai-65-mg-360-mt",
 ]);
 
-const MG_MODEL_HUB_BY_VARIANT = new Map([
+const MODEL_HUB_BY_VARIANT = new Map([
   ...Array.from(MG360_VARIANT_SLUGS, (slug) => [slug, { href: "/cars/mg-360", label: "ام جی 360" }] as const),
   ["hyundai-1109-mg-5-1-5l-cvt", { href: "/cars/mg-5", label: "ام جی 5" }],
   ["hyundai-66-mg6-1-8t", { href: "/cars/mg-6", label: "ام جی 6" }],
@@ -34,6 +34,11 @@ const MG_MODEL_HUB_BY_VARIANT = new Map([
   ["hyundai-62-mg-gs", { href: "/cars/mg-gs", label: "ام جی GS" }],
   ["hyundai-68-mg-rx5", { href: "/cars/mg-rx5", label: "ام جی RX5" }],
   ["hyundai-1105-mg7", { href: "/cars/mg-7", label: "ام جی 7" }],
+  ["hyundai-766-kmc-jac-j7-1-5t-6dct", { href: "/cars/kmc-j7", label: "کی ام سی J7" }],
+  ["hyundai-44-kmc-k7-1-5t-6dct", { href: "/cars/kmc-k7", label: "کی ام سی K7" }],
+  ["hyundai-1033-kmc-x5-1-5t-6dct", { href: "/cars/kmc-x5", label: "کی ام سی X5" }],
+  ["hyundai-29-jac-kmc-t8-2-0t-6mt", { href: "/cars/kmc-t8", label: "کی ام سی T8" }],
+  ["hyundai-999-kmc-t9-2-0t-gdi-8-at", { href: "/cars/kmc-t9", label: "کی ام سی T9" }],
 ]);
 
 export const dynamic = "force-dynamic";
@@ -58,7 +63,7 @@ export default async function CarDetailPage({ params }: CarPageProps) {
     getRelatedBlogPostsForCar(car.manufacturer, car.model, 3),
   ]);
   const title = `${car.manufacturer} ${car.model}${car.generation ? ` ${car.generation}` : ""}`;
-  const modelHub = MG_MODEL_HUB_BY_VARIANT.get(car.slug);
+  const modelHub = MODEL_HUB_BY_VARIANT.get(car.slug);
   const years = car.yearFrom || car.yearTo ? `${car.yearFrom ?? "نامشخص"} تا ${car.yearTo ?? "نامشخص"}` : "نامشخص";
   const oilCapacity = resolveCarOilCapacityLabel(car);
   const productLookup = new Map(car.productMappings.map(({ product }) => [product.slug, product] as const));

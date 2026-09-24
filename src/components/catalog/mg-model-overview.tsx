@@ -5,7 +5,10 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import type { MgModelHub } from "@/lib/mg-model-hubs";
 import { buildBreadcrumbStructuredData, SITE_URL } from "@/lib/seo";
 
-const otherModels = [
+export type CarModelHub = Omit<MgModelHub, "slug"> & { slug: string };
+export type CarModelLink = { href: string; label: string };
+
+const mgModels = [
   { href: "/cars/mg-360", label: "ام جی 360" },
   { href: "/cars/mg-5", label: "ام جی 5" },
   { href: "/cars/mg-6", label: "ام جی 6" },
@@ -14,7 +17,17 @@ const otherModels = [
   { href: "/cars/mg-7", label: "ام جی 7" },
 ] as const;
 
-export function MgModelOverview({ hub }: { hub: MgModelHub }) {
+export function CarModelOverview({
+  hub,
+  brandName,
+  brandLabel,
+  models,
+}: {
+  hub: CarModelHub;
+  brandName: string;
+  brandLabel: string;
+  models: readonly CarModelLink[];
+}) {
   const pagePath = `/cars/${hub.slug}`;
   const pageUrl = `${SITE_URL}${pagePath}`;
   const carStructuredData = {
@@ -26,8 +39,8 @@ export function MgModelOverview({ hub }: { hub: MgModelHub }) {
     alternateName: [hub.latinName, hub.name.replaceAll(" ", "")],
     image: `${SITE_URL}${hub.image}`,
     description: hub.description,
-    brand: { "@type": "Brand", name: "MG" },
-    model: hub.latinName.replace(/^MG\s*/i, ""),
+    brand: { "@type": "Brand", name: brandName },
+    model: hub.latinName.replace(new RegExp(`^${brandName}\\s*`, "i"), ""),
     bodyType: hub.bodyType,
     fuelType: "بنزین",
     vehicleTransmission: hub.variants.map((variant) => variant.gearbox),
@@ -210,9 +223,9 @@ export function MgModelOverview({ hub }: { hub: MgModelHub }) {
         </section>
 
         <section aria-labelledby={`${hub.slug}-related-title`} className="border-t border-border pt-6">
-          <h2 className="section-title" id={`${hub.slug}-related-title`}>راهنمای مدل‌های دیگر MG</h2>
-          <nav aria-label="راهنمای مدل‌های دیگر ام جی" className="mt-4 flex flex-wrap gap-2">
-            {otherModels.filter((model) => model.href !== pagePath).map((model) => (
+          <h2 className="section-title" id={`${hub.slug}-related-title`}>راهنمای مدل‌های دیگر {brandLabel}</h2>
+          <nav aria-label={`راهنمای مدل‌های دیگر ${brandLabel}`} className="mt-4 flex flex-wrap gap-2">
+            {models.filter((model) => model.href !== pagePath).map((model) => (
               <Link className="inline-flex min-h-10 items-center rounded-full border border-border px-4 text-xs font-extrabold text-text transition hover:border-primary-accent-strong hover:text-primary-accent-strong" href={model.href} key={model.href}>
                 مشخصات {model.label}
               </Link>
@@ -227,6 +240,10 @@ export function MgModelOverview({ hub }: { hub: MgModelHub }) {
       </article>
     </div>
   );
+}
+
+export function MgModelOverview({ hub }: { hub: MgModelHub }) {
+  return <CarModelOverview brandLabel="ام جی" brandName="MG" hub={hub} models={mgModels} />;
 }
 
 function QuickFact({ label, value }: { label: string; value: string }) {

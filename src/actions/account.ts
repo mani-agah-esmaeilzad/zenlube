@@ -303,13 +303,22 @@ export async function reorderOrderAction(formData: FormData): Promise<void> {
 
     const cart = await tx.cart.upsert({
       where: { userId },
-      update: {},
-      create: { userId },
+      update: {
+        lastCartSeenAt: new Date(),
+        checkoutStartedAt: null,
+        checkoutLastSeenAt: null,
+      },
+      create: { userId, lastCartSeenAt: new Date() },
     });
 
     await tx.cart.update({
       where: { id: cart.id },
-      data: { version: { increment: 1 } },
+      data: {
+        version: { increment: 1 },
+        lastCartSeenAt: new Date(),
+        checkoutStartedAt: null,
+        checkoutLastSeenAt: null,
+      },
     });
 
     for (const item of order.items) {

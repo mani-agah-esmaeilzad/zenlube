@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CartItemControls, ClearCartButton } from "@/components/cart/cart-item-controls";
+import { CartActivityTracker } from "@/components/cart/cart-activity-tracker";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PriceBlock } from "@/components/ui/price-block";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
@@ -55,7 +56,9 @@ export default async function CartPage() {
       />
 
       {cart?.items?.length ? (
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">
+        <>
+          <CartActivityTracker stage="cart" />
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">
           <div className="divide-y divide-border border-t border-border bg-white">
             {cart.items.map((item) => {
               const pricing = resolveProductPricing(item.product);
@@ -110,7 +113,8 @@ export default async function CartPage() {
             </Link>
             <p className="mt-4 text-xs leading-6 text-text-muted">تایید نهایی سفارش بعد از ورود اطلاعات ارسال و پرداخت انجام می‌شود.</p>
           </aside>
-        </div>
+          </div>
+        </>
       ) : (
         <EmptyState
           actionHref="/products"

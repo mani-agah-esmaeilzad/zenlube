@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { randomUUID } from "node:crypto";
 
 import { CheckoutForm } from "@/components/cart/checkout-form";
+import { CartActivityTracker } from "@/components/cart/cart-activity-tracker";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { config } from "@/lib/config";
 import prisma from "@/lib/prisma";
@@ -67,6 +68,7 @@ export default async function CheckoutPage() {
 
   return (
     <div className="container-zen space-y-5 py-5 sm:space-y-6 sm:py-6 md:py-8">
+      <CartActivityTracker stage="checkout" />
       <StorefrontPageIntro
         compact
         description="اطلاعات ارسال را تکمیل و خلاصهٔ سفارش را بررسی کنید؛ سپس به درگاه پرداخت منتقل می‌شوید."

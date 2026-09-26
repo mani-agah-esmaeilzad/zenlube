@@ -35,6 +35,40 @@ async function requireSession(): Promise<SessionWithUserId> {
   } as SessionWithUserId;
 }
 
+export async function markCartActivityAction(stage: "cart" | "checkout") {
+  try {
+    const session = await requireSession();
+    if (stage !== "cart" && stage !== "checkout") return { success: false };
+
+    const now = new Date();
+    if (stage === "checkout") {
+      await prisma.$transaction([
+        prisma.cart.updateMany({
+          where: { userId: session.user.id, checkoutStartedAt: null, items: { some: {} } },
+          data: { checkoutStartedAt: now },
+        }),
+        prisma.cart.updateMany({
+          where: { userId: session.user.id, items: { some: {} } },
+          data: { lastCartSeenAt: now, checkoutLastSeenAt: now },
+        }),
+      ]);
+    } else {
+      await prisma.cart.updateMany({
+        where: { userId: session.user.id, items: { some: {} } },
+        data: {
+          lastCartSeenAt: now,
+          checkoutStartedAt: null,
+          checkoutLastSeenAt: null,
+        },
+      });
+    }
+
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
 export async function addToCartAction(input: { productId: string; quantity?: number }) {
   try {
     const session = await requireSession();
@@ -70,8 +104,12 @@ export async function addToCartAction(input: { productId: string; quantity?: num
     const added = await prisma.$transaction(async (tx) => {
       const cart = await tx.cart.upsert({
         where: { userId: session.user.id },
-        update: {},
-        create: { userId: session.user.id },
+        update: {
+          lastCartSeenAt: new Date(),
+          checkoutStartedAt: null,
+          checkoutLastSeenAt: null,
+        },
+        create: { userId: session.user.id, lastCartSeenAt: new Date() },
       });
 
       const existingItem = await tx.cartItem.findUnique({
@@ -84,7 +122,12 @@ export async function addToCartAction(input: { productId: string; quantity?: num
 
       await tx.cart.update({
         where: { id: cart.id },
-        data: { version: { increment: 1 } },
+        data: {
+          version: { increment: 1 },
+          lastCartSeenAt: new Date(),
+          checkoutStartedAt: null,
+          checkoutLastSeenAt: null,
+        },
       });
 
       await tx.cartItem.upsert({
@@ -154,7 +197,12 @@ export async function updateCartItemAction(input: { productId: string; quantity:
     await prisma.$transaction(async (tx) => {
       await tx.cart.update({
         where: { id: cart.id },
-        data: { version: { increment: 1 } },
+        data: {
+          version: { increment: 1 },
+          lastCartSeenAt: new Date(),
+          checkoutStartedAt: null,
+          checkoutLastSeenAt: null,
+        },
       });
       await tx.cartItem.update({
         where: {
@@ -194,7 +242,12 @@ export async function removeCartItemAction(productId: string) {
     await prisma.$transaction(async (tx) => {
       await tx.cart.update({
         where: { id: cart.id },
-        data: { version: { increment: 1 } },
+        data: {
+          version: { increment: 1 },
+          lastCartSeenAt: new Date(),
+          checkoutStartedAt: null,
+          checkoutLastSeenAt: null,
+        },
       });
       await tx.cartItem.delete({
         where: {
@@ -231,7 +284,12 @@ export async function clearCartAction() {
     await prisma.$transaction(async (tx) => {
       await tx.cart.update({
         where: { id: cart.id },
-        data: { version: { increment: 1 } },
+        data: {
+          version: { increment: 1 },
+          lastCartSeenAt: new Date(),
+          checkoutStartedAt: null,
+          checkoutLastSeenAt: null,
+        },
       });
       await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
     });

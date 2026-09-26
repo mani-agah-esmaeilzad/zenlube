@@ -114,7 +114,17 @@ async function consumeOnlyOrderedCartQuantities(
     }
   }
 
-  if (changed) await tx.cart.update({ where: { id: cart.id }, data: { version: { increment: 1 } } });
+  if (changed) {
+    await tx.cart.update({
+      where: { id: cart.id },
+      data: {
+        version: { increment: 1 },
+        lastCartSeenAt: null,
+        checkoutStartedAt: null,
+        checkoutLastSeenAt: null,
+      },
+    });
+  }
 }
 
 export async function GET(request: NextRequest) {

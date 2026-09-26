@@ -294,6 +294,68 @@ export type OrdersTabData = {
   revenueLast30: number;
 };
 
+export type CartActivityFilter =
+  | "all"
+  | "checkout_active"
+  | "checkout_abandoned"
+  | "cart_active"
+  | "cart_abandoned";
+
+export type AdminCartItem = {
+  id: string;
+  productId: string;
+  name: string;
+  slug: string;
+  imageUrl?: string | null;
+  brandName: string;
+  quantity: number;
+  stock: number;
+  unitPrice: number;
+  lineTotal: number;
+  updatedAt: Date;
+};
+
+export type AdminCartSnapshot = {
+  id: string;
+  user: {
+    id: string;
+    name?: string | null;
+    email: string;
+    phone?: string | null;
+  };
+  status: "CHECKOUT_ACTIVE" | "CHECKOUT_ABANDONED" | "CART_ACTIVE" | "CART_ABANDONED";
+  itemCount: number;
+  quantity: number;
+  total: number;
+  createdAt: Date;
+  lastActivityAt: Date;
+  checkoutStartedAt?: Date | null;
+  items: AdminCartItem[];
+  latestOrder?: {
+    id: string;
+    status: string;
+    createdAt: Date;
+  } | null;
+};
+
+export type CartsTabData = {
+  carts: AdminCartSnapshot[];
+  filters: {
+    query?: string | null;
+    status: CartActivityFilter;
+    page: number;
+    perPage: number;
+  };
+  pagination: Pagination;
+  metrics: {
+    total: number;
+    checkoutActive: number;
+    checkoutAbandoned: number;
+    cartActive: number;
+    cartAbandoned: number;
+  };
+};
+
 export type AdminFeedbackOrder = {
   id: string;
   fullName: string;

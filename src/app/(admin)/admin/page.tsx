@@ -25,6 +25,7 @@ import { ContentTab } from "@/components/admin/tabs/ContentTab";
 import { MaintenanceTab } from "@/components/admin/tabs/MaintenanceTab";
 import { OverviewTab } from "@/components/admin/tabs/OverviewTab";
 import { OrdersTab } from "@/components/admin/tabs/OrdersTab";
+import { CartsTab } from "@/components/admin/tabs/CartsTab";
 import { ProductsTab } from "@/components/admin/tabs/ProductsTab";
 import { QuestionsTab } from "@/components/admin/tabs/QuestionsTab";
 import { ReportsTab } from "@/components/admin/tabs/ReportsTab";
@@ -33,9 +34,10 @@ import { UsersTab } from "@/components/admin/tabs/UsersTab";
 import { ShippingTab } from "@/components/admin/tabs/ShippingTab";
 import { FeedbackTab } from "@/components/admin/tabs/FeedbackTab";
 import { AdminLiveRefresh } from "@/components/admin/admin-live-refresh";
-import type { OrdersTabData } from "@/services/admin/types";
+import type { CartActivityFilter, OrdersTabData } from "@/services/admin/types";
 import { getShippingTabData } from "@/services/admin/shipping";
 import { getFeedbackTabData } from "@/services/admin/feedback";
+import { getCartsTabData } from "@/services/admin/carts";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
@@ -64,6 +66,12 @@ const tabs = [
     label: "سفارش‌ها",
     description: "وضعیت سفارش، پرداخت، ارسال و پیامک مشتریان را از یک جریان کاری منظم کنترل کنید.",
     icon: CartIcon,
+  },
+  {
+    id: "carts",
+    label: "سبدهای خرید",
+    description: "سبدهای فعال، خریدهای در حال تکمیل و سبدهای رهاشده کاربران را زنده مشاهده کنید.",
+    icon: BasketIcon,
   },
   {
     id: "feedback",
@@ -299,6 +307,19 @@ async function renderActiveTab(
       });
       return <OrdersTab data={data} />;
     }
+    case "carts": {
+      const cartStatus = typeof searchParams.cartStatus === "string"
+        && ["all", "checkout_active", "checkout_abandoned", "cart_active", "cart_abandoned"].includes(searchParams.cartStatus)
+        ? searchParams.cartStatus as CartActivityFilter
+        : undefined;
+      const data = await getCartsTabData({
+        page: typeof searchParams.page === "string" ? Number(searchParams.page) : undefined,
+        perPage: typeof searchParams.perPage === "string" ? Number(searchParams.perPage) : undefined,
+        query: typeof searchParams.query === "string" ? searchParams.query : null,
+        status: cartStatus,
+      });
+      return <CartsTab data={data} />;
+    }
     case "feedback": {
       const feedbackStatus = typeof searchParams.feedbackStatus === "string" && ["all", "not_sent", "sent", "submitted"].includes(searchParams.feedbackStatus)
         ? searchParams.feedbackStatus as "all" | "not_sent" | "sent" | "submitted"
@@ -393,6 +414,16 @@ function CartIcon(props: SVGProps<SVGSVGElement>) {
       <circle cx={9} cy={20} r={1} />
       <circle cx={17} cy={20} r={1} />
       <path d="M3 4h2l2.4 12.2a1 1 0 0 0 1 .8h9.5a1 1 0 0 0 1-.8L21 8H7" />
+    </svg>
+  );
+}
+
+function BasketIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} viewBox="0 0 24 24" {...props}>
+      <path d="m8 10 4-6 4 6" />
+      <path d="M4 10h16l-1.4 9H5.4L4 10Z" />
+      <path d="M9 14v2M15 14v2" />
     </svg>
   );
 }

@@ -365,10 +365,16 @@ model Cart {
   userId                String                 @unique
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
+  lastCartSeenAt        DateTime?
+  checkoutStartedAt     DateTime?
+  checkoutLastSeenAt    DateTime?
   version               Int                    @default(0)
   user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   items                 CartItem[]
   shippingQuoteRequests ShippingQuoteRequest[]
+
+  @@index([lastCartSeenAt])
+  @@index([checkoutLastSeenAt])
 }
 
 model CartItem {
@@ -383,6 +389,7 @@ model CartItem {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId])
+  @@index([updatedAt, cartId])
 }
 
 model Order {

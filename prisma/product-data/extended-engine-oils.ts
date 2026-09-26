@@ -305,7 +305,7 @@ const fosserEngineOils = [
     viscosity: "0W-20",
     oilType: "تمام‌سنتتیک",
     approvals: "API SQ/SP Resource Conserving؛ ILSAC GF-7A/GF-6A/GF-5؛ GM dexos1 Gen 3",
-    image: "/products/fosser/premium-gm-0w20.jpg",
+    image: "/products/fosser/premium-gm-0w20.webp",
     summary:
       "Premium GM 0W-20 نسل جدید روغن کم‌گرانروی برای موتورهای بنزینی و هیبریدی است و محافظت در برابر LSPI و رسوب را هدف می‌گیرد.",
     source: "https://fosser.de/en/product/fosser-premium-gm-0w-20/",

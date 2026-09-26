@@ -4,6 +4,7 @@ import { BlogArticle } from "@/components/blog/blog-article";
 import { ProductCard } from "@/components/product/product-card";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { getBlogPostBySlug } from "@/lib/data";
+import { getFallbackBlogPost } from "@/lib/fallback-blog-posts";
 import { StructuredData } from "@/components/seo/structured-data";
 import { buildArticleStructuredData, buildBreadcrumbStructuredData, buildPageMetadata, SITE_URL } from "@/lib/seo";
 import { getEditorialGuideLinks } from "@/lib/blog-topic-clusters";
@@ -17,7 +18,7 @@ export const revalidate = 0;
 
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug);
+  const post = (await getBlogPostBySlug(slug)) ?? getFallbackBlogPost(slug);
 
   if (!post) {
     return {
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug);
+  const post = (await getBlogPostBySlug(slug)) ?? getFallbackBlogPost(slug);
 
   if (!post) {
     notFound();

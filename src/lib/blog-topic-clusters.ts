@@ -38,6 +38,12 @@ const fuelSystemGuides: Array<EditorialGuideLink & { slug?: string }> = [
     description: "مسیر مرحله‌به‌مرحله از تشخیص اولیه تا سرویس اصولی",
   },
   {
+    slug: "what-is-octane-booster",
+    href: "/blog/what-is-octane-booster",
+    title: "اکتان بوستر چیست؟",
+    description: "زمان استفاده، روش مصرف و تفاوت مکمل اکتان با شوینده سوخت",
+  },
+  {
     slug: "best-octane-booster-for-turbo-cars",
     href: "/blog/best-octane-booster-for-turbo-cars",
     title: "اکتان مناسب خودروهای توربو",

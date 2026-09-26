@@ -248,7 +248,7 @@ model ProductPromotion {
   productId    String        @unique
   kind         PromotionKind @default(SALE)
   label        String?
-  specialPrice Decimal?      @db.Decimal(10, 2)
+  specialPrice Decimal?      @db.Decimal(14, 2)
   startsAt     DateTime?
   endsAt       DateTime?
   sortOrder    Int           @default(0)
@@ -396,7 +396,7 @@ model Order {
   id                         String               @id @default(cuid())
   userId                     String
   status                     OrderStatus          @default(PENDING)
-  total                      Decimal              @db.Decimal(10, 2)
+  total                      Decimal              @db.Decimal(14, 2)
   fullName                   String
   email                      String
   phone                      String
@@ -409,7 +409,7 @@ model Order {
   paymentMethod              PaymentMethod        @default(COD)
   paymentGateway             PaymentGateway       @default(ZARINPAL)
   shippingMethod             ShippingMethod?
-  shippingCost               Decimal              @default(0) @db.Decimal(10, 2)
+  shippingCost               Decimal              @default(0) @db.Decimal(14, 2)
   provinceCode               String?
   cityCode                   String?
   checkoutIdempotencyKey     String?
@@ -432,7 +432,7 @@ model Order {
   shippingQuoteExpiresAt     DateTime?
   shippingTrackingUrl        String?
   shippingExternalStatus     String?
-  discountAmount             Decimal              @default(0) @db.Decimal(10, 2)
+  discountAmount             Decimal              @default(0) @db.Decimal(14, 2)
   estimatedDeliveryLabel     String?
   couponId                   String?
   couponCode                 String?
@@ -486,7 +486,7 @@ model OrderItem {
   orderId   String
   productId String
   quantity  Int
-  price     Decimal @db.Decimal(10, 2)
+  price     Decimal @db.Decimal(14, 2)
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 }
@@ -540,9 +540,9 @@ model Coupon {
   title             String
   description       String?
   discountType      DiscountType
-  amount            Decimal      @db.Decimal(10, 2)
-  minOrderAmount    Decimal?     @db.Decimal(10, 2)
-  maxDiscountAmount Decimal?     @db.Decimal(10, 2)
+  amount            Decimal      @db.Decimal(14, 2)
+  minOrderAmount    Decimal?     @db.Decimal(14, 2)
+  maxDiscountAmount Decimal?     @db.Decimal(14, 2)
   startsAt          DateTime?
   endsAt            DateTime?
   usageLimit        Int?
@@ -572,7 +572,7 @@ model ReturnRequest {
   status       ReturnRequestStatus @default(REQUESTED)
   reason       String
   details      String?
-  refundAmount Decimal?            @db.Decimal(10, 2)
+  refundAmount Decimal?            @db.Decimal(14, 2)
   adminNotes   String?
   requestedAt  DateTime            @default(now())
   reviewedAt   DateTime?
@@ -899,7 +899,7 @@ model PaymentTransaction {
   id              String    @id @default(cuid())
   orderId         String
   gateway         String    @default("zarinpal")
-  amount          Decimal   @db.Decimal(10, 2)
+  amount          Decimal   @db.Decimal(14, 2)
   currency        String    @default("IRT")
   authority       String?   @unique
   refId           String?

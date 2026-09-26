@@ -1,0 +1,16 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="مقایسه اکتان بوستر و انژکتورشوی">
+  <rect width="1200" height="630" rx="42" fill="#FFFFFF"/>
+  <rect x="90" y="96" width="440" height="438" rx="42" fill="#F4F6F8"/>
+  <rect x="670" y="96" width="440" height="438" rx="42" fill="#FFF3EE"/>
+  <path d="M224 159h108c22 0 40 18 40 40v253c0 22-18 40-40 40H224c-22 0-40-18-40-40V199c0-22 18-40 40-40Z" fill="#151B26"/>
+  <rect x="244" y="121" width="68" height="51" rx="13" fill="#FF6B35"/>
+  <text x="278" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="33" font-weight="900" fill="#FFFFFF">OCTANE</text>
+  <text x="278" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="27" font-weight="900" fill="#FF6B35">BOOSTER</text>
+  <path d="M824 159h108c22 0 40 18 40 40v253c0 22-18 40-40 40H824c-22 0-40-18-40-40V199c0-22 18-40 40-40Z" fill="#FF6B35"/>
+  <rect x="844" y="121" width="68" height="51" rx="13" fill="#151B26"/>
+  <path d="M878 244c-50 62-65 92-65 123 0 36 29 65 65 65s65-29 65-65c0-31-15-61-65-123Z" fill="#FFFFFF" fill-opacity=".9"/>
+  <circle cx="600" cy="315" r="60" fill="#151B26"/>
+  <text x="600" y="332" text-anchor="middle" font-family="Arial, sans-serif" font-size="47" font-weight="900" fill="#FFFFFF">VS</text>
+  <text x="1100" y="585" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="43" font-weight="900" fill="#151B26">اکتان بوستر یا انژکتورشوی؟</text>
+  <text x="100" y="585" text-anchor="start" direction="rtl" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#667085">انتخاب براساس نیاز واقعی خودرو</text>
+</svg>

@@ -1,0 +1,18 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="راهنمای مکمل سوخت زادو Energy Drive">
+  <rect width="1200" height="630" rx="42" fill="#FFFFFF"/>
+  <circle cx="260" cy="325" r="196" fill="#FF6B35" fill-opacity=".11"/>
+  <path d="M186 116h144c25 0 45 20 45 45v326c0 25-20 45-45 45H186c-25 0-45-20-45-45V161c0-25 20-45 45-45Z" fill="#151B26"/>
+  <rect x="204" y="76" width="108" height="55" rx="14" fill="#FF6B35"/>
+  <rect x="169" y="204" width="178" height="210" rx="27" fill="#FFFFFF"/>
+  <path d="m258 225-50 92h42l-12 75 71-111h-48l27-56h-30Z" fill="#FF6B35"/>
+  <text x="258" y="448" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="900" fill="#FFFFFF">ENERGY DRIVE</text>
+  <path d="M425 411c43-59 97-88 163-88h166c38 0 72 14 101 43l31 31h70c31 0 56 25 56 56v31H401v-30c0-17 8-31 24-43Z" fill="#242B36"/>
+  <circle cx="566" cy="484" r="44" fill="#0F172A"/>
+  <circle cx="566" cy="484" r="17" fill="#FFFFFF"/>
+  <circle cx="886" cy="484" r="44" fill="#0F172A"/>
+  <circle cx="886" cy="484" r="17" fill="#FFFFFF"/>
+  <text x="1100" y="174" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="51" font-weight="900" fill="#151B26">زادو Energy Drive</text>
+  <text x="1100" y="240" text-anchor="end" direction="rtl" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#667085">کاربرد، تفاوت‌ها و روش مصرف</text>
+  <rect x="830" y="278" width="270" height="46" rx="23" fill="#FF6B35"/>
+  <text x="965" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="900" fill="#FFFFFF">ATOMEX • 250 ML</text>
+</svg>

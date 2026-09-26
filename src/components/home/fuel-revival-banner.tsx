@@ -27,13 +27,21 @@ export function FuelRevivalBanner() {
               ارسال رایگان
             </span>
           </div>
-          <Link
-            className="fuel-revival-cta group mt-4 inline-flex min-h-11 items-center gap-2 text-xs font-extrabold transition-colors sm:text-[13px]"
-            href="/products?inStock=1"
-          >
-            انتخاب محصولات
-            <span aria-hidden="true" className="transition-transform duration-200 group-hover:-translate-x-1 motion-reduce:transform-none">←</span>
-          </Link>
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1">
+            <Link
+              className="fuel-revival-cta group inline-flex min-h-11 items-center gap-2 text-xs font-extrabold transition-colors sm:text-[13px]"
+              href="/products?inStock=1"
+            >
+              انتخاب محصولات
+              <span aria-hidden="true" className="transition-transform duration-200 group-hover:-translate-x-1 motion-reduce:transform-none">←</span>
+            </Link>
+            <Link
+              className="inline-flex min-h-11 items-center text-xs font-extrabold text-white/80 underline decoration-white/30 underline-offset-4 transition hover:text-primary-accent"
+              href="/fuel-system-revival"
+            >
+              راهنمای اکتان، شوینده و Energy Drive
+            </Link>
+          </div>
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute bottom-16 -left-2 w-[42%] max-w-[200px] md:relative md:bottom-auto md:left-auto md:flex md:w-full md:max-w-none md:items-center md:justify-center md:bg-white/[0.025] md:px-3">
           <Image alt="" className="h-auto w-full md:max-w-[400px]" height={310} sizes="(max-width: 767px) 42vw, 35vw" src="/illustrations/fuel-revival-gift.svg" width={420} />

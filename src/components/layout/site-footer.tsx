@@ -14,6 +14,7 @@ const trustItems = ["ضمانت اصالت کالا", "ارسال سریع", "پ
 const mobileFooterLinks = [
   ["تماس و پشتیبانی", "/support"],
   ["حساب کاربری", "/account"],
+  ["احیای سیستم سوخت", "/fuel-system-revival"],
   ["انتخاب براساس خودرو", "/cars"],
   ["برندها", "/brands"],
   ["قوانین خرید", "/terms"],
@@ -42,6 +43,8 @@ const baseFooterGroups = [
   {
     title: "راهنمای خرید",
     links: [
+      ["احیای سیستم سوخت", "/fuel-system-revival"],
+      ["راهنمای Energy Drive", "/blog/xado-atomex-energy-drive-guide"],
       ["انتخاب روغن مناسب", "/cars"],
       ["مقایسه محصولات", "/products/compare"],
       ["سوالات متداول", "/support"],

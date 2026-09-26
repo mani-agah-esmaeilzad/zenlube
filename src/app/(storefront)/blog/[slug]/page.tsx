@@ -6,6 +6,7 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { getBlogPostBySlug } from "@/lib/data";
 import { StructuredData } from "@/components/seo/structured-data";
 import { buildArticleStructuredData, buildBreadcrumbStructuredData, buildPageMetadata, SITE_URL } from "@/lib/seo";
+import { getEditorialGuideLinks } from "@/lib/blog-topic-clusters";
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
@@ -46,6 +47,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     dateStyle: "medium",
   }).format(new Date(post.publishedAt));
   const faqItems = normalizeBlogFaqItems(post.faqItems);
+  const editorialGuideLinks = getEditorialGuideLinks(post.slug);
   const relatedBrands = Array.from(
     new Map(
       post.relatedProducts
@@ -109,6 +111,29 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <div className="border-t border-border pt-6 sm:pt-8">
           <BlogArticle content={post.content} />
         </div>
+
+        {editorialGuideLinks.length ? (
+          <section aria-labelledby="related-editorial-guides" className="border-y border-border py-5">
+            <h2 className="text-lg font-black text-text-strong" id="related-editorial-guides">
+              ادامه مسیر احیای سیستم سوخت
+            </h2>
+            <div className="mt-3 grid gap-x-6 md:grid-cols-2">
+              {editorialGuideLinks.map((guide) => (
+                <Link
+                  className="group flex items-center justify-between gap-4 border-b border-border py-4 last:border-b-0 md:[&:nth-last-child(-n+2)]:border-b-0"
+                  href={guide.href}
+                  key={guide.href}
+                >
+                  <span>
+                    <span className="block text-sm font-extrabold transition group-hover:text-primary-accent-strong">{guide.title}</span>
+                    <span className="mt-1 block text-xs leading-6 text-text-muted">{guide.description}</span>
+                  </span>
+                  <span aria-hidden="true" className="shrink-0 text-primary-accent-strong">←</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {faqItems.length ? (
           <section className="rounded-[28px] border border-border bg-surface p-5">

@@ -13,6 +13,21 @@ type BlogPageProps = {
 
 const highDemandGuides = [
   {
+    href: "/fuel-system-revival",
+    title: "مرکز راهنمای احیای سیستم سوخت",
+    description: "تشخیص ناک، افت شتاب و انتخاب اکتان، شوینده یا مکمل مناسب",
+  },
+  {
+    href: "/blog/xado-atomex-energy-drive-guide",
+    title: "Energy Drive زادو چیست؟",
+    description: "کاربرد و روش مصرف مکمل بنزینی AtomEX Energy Drive",
+  },
+  {
+    href: "/blog/octane-booster-vs-fuel-system-cleaner",
+    title: "اکتان بوستر یا انژکتورشوی؟",
+    description: "انتخاب درست مکمل سوخت براساس نشانه‌های واقعی خودرو",
+  },
+  {
     href: "/blog/oil-filter-buying-and-replacement-guide",
     title: "راهنمای خرید و تعویض فیلتر روغن",
     description: "زمان تعویض، نشانه‌های فیلتر نامناسب و نکات انتخاب برای خودرو",
@@ -36,11 +51,6 @@ const highDemandGuides = [
     href: "/blog/5w30-vs-5w40-engine-oil",
     title: "تفاوت روغن 5W-30 و 5W-40",
     description: "مقایسه گرانروی و انتخاب روغن مناسب براساس دفترچه خودرو",
-  },
-  {
-    href: "/blog/best-octane-booster-for-turbo-cars",
-    title: "بهترین اکتان برای موتورهای توربو",
-    description: "ویژگی‌های مکمل سوخت مناسب خودروهای توربوشارژ",
   },
 ] as const;
 

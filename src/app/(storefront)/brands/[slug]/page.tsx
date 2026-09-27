@@ -165,6 +165,19 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
         </div>
       </section>
 
+      {seo.editorialLinks?.length ? (
+        <section aria-labelledby="brand-editorial-guides" className="border-t border-border pt-6">
+          <h2 className="text-lg font-extrabold text-text-strong" id="brand-editorial-guides">راهنماهای تخصصی مرتبط</h2>
+          <div className="mt-2 grid gap-x-6 md:grid-cols-2">
+            {seo.editorialLinks.map((guide) => (
+              <Link key={guide.href} className="border-b border-border py-3 text-sm font-bold text-primary-accent-strong hover:underline" href={guide.href}>
+                {guide.label}
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       {relatedArticles.length ? (
         <section className="border-t border-border pt-6">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">

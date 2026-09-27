@@ -28,6 +28,16 @@ const highDemandGuides = [
     description: "انتخاب درست مکمل سوخت براساس نشانه‌های واقعی خودرو",
   },
   {
+    href: "/blog/how-to-use-octane-booster",
+    title: "روش صحیح مصرف اکتان بوستر",
+    description: "دوز و زمان افزودن را از دستور همان محصول یاد بگیرید",
+  },
+  {
+    href: "/blog/octane-rating-ron-mon-guide",
+    title: "RON و MON چیست؟",
+    description: "عدد اکتان چه چیزی را می‌گوید و چگونه مقایسه‌اش کنیم؟",
+  },
+  {
     href: "/blog/oil-filter-buying-and-replacement-guide",
     title: "راهنمای خرید و تعویض فیلتر روغن",
     description: "زمان تعویض، نشانه‌های فیلتر نامناسب و نکات انتخاب برای خودرو",

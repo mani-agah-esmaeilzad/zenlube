@@ -32,6 +32,16 @@ const guideLinks = [
     title: "اکتان بوستر چیست و چه زمانی لازم است؟",
     description: "کاربرد واقعی، روش مصرف و انتظاری که باید از مکمل اکتان داشته باشید",
   },
+  {
+    href: "/blog/how-to-use-octane-booster",
+    title: "روش مصرف اکتان بوستر",
+    description: "دوز و زمان افزودن را از دستور همان محصول بخوانید",
+  },
+  {
+    href: "/blog/octane-rating-ron-mon-guide",
+    title: "RON و MON چیست؟",
+    description: "تفاوت روش‌های سنجش عدد اکتان و مقایسه درست سوخت‌ها",
+  },
 ] as const;
 
 const faqItems = [

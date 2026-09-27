@@ -10,6 +10,8 @@ const fuelSystemGuideSlugs = new Set([
   "octane-booster-vs-fuel-system-cleaner",
   "what-is-octane-booster",
   "best-octane-booster-for-turbo-cars",
+  "how-to-use-octane-booster",
+  "octane-rating-ron-mon-guide",
   "persia-sign-octane-booster-pack-buying-guide",
 ]);
 
@@ -48,6 +50,18 @@ const fuelSystemGuides: Array<EditorialGuideLink & { slug?: string }> = [
     href: "/blog/best-octane-booster-for-turbo-cars",
     title: "اکتان مناسب خودروهای توربو",
     description: "نکات انتخاب برای موتورهای حساس به کیفیت بنزین",
+  },
+  {
+    slug: "how-to-use-octane-booster",
+    href: "/blog/how-to-use-octane-booster",
+    title: "روش مصرف اکتان بوستر",
+    description: "دوز، زمان افزودن و خطاهای رایج مصرف مکمل سوخت",
+  },
+  {
+    slug: "octane-rating-ron-mon-guide",
+    href: "/blog/octane-rating-ron-mon-guide",
+    title: "RON و MON چیست؟",
+    description: "معنی عدد اکتان و تفاوت روش‌های اندازه‌گیری آن",
   },
 ];
 

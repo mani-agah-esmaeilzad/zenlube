@@ -1,4 +1,5 @@
 import type { ProductWithRelations } from "@/types/catalog";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc } from "./local-assets";
 import { resolveProductPricing } from "./pricing";
 import {
   REQUESTED_CAR_NOTEBOOK_SECTION_BY_PAGE_ID,
@@ -536,7 +537,7 @@ function serializeNotebookProduct(product: ProductWithRelations): NotebookCompat
     brandName: product.brand.name,
     categoryName: product.category.name,
     categorySlug: product.category.slug,
-    imageUrl: product.imageUrl,
+    imageUrl: safeImageSrc(product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
     price: resolveProductPricing(product).effectivePrice,
     stock: product.stock,
     averageRating: product.averageRating != null ? Number(product.averageRating) : null,

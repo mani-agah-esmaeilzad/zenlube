@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
+import { cookies } from "next/headers";
 
 import { Prisma } from "@/generated/prisma";
 import { appendOrderStatusEvent, calculateCouponDiscount } from "@/lib/commerce";
@@ -16,6 +17,7 @@ import { resolveProductPricing } from "@/lib/pricing";
 import { getAppSession } from "@/lib/session";
 import { notifyMerchantOfNewOrder } from "@/lib/sms/merchant-order";
 import { normalizeIranPostalCode } from "@/lib/shipping/address";
+import { readTorobAttributionCookie, TOROB_ATTRIBUTION_COOKIE } from "@/lib/torob-attribution";
 import { manualServiceCodeForSubmittedShippingOptionId } from "@/lib/shipping/manual-options";
 import { findReplacementShippingOption, pendingOrderCartMatches } from "@/lib/shipping/quote-validation";
 import { requestShippingQuote, validateShippingSelection, ShippingServiceError } from "@/lib/shipping/service";
@@ -320,6 +322,10 @@ export async function createCheckoutOrderAction(
     if (!/^\+989\d{9}$/.test(normalizedPhone)) {
       return { success: false, message: "شماره موبایل معتبر نیست.", errors: { phone: ["شماره موبایل معتبر نیست."] } };
     }
+    const torobAttribution = await readTorobAttributionCookie(
+      (await cookies()).get(TOROB_ATTRIBUTION_COOKIE)?.value,
+      config.NEXTAUTH_SECRET,
+    );
 
     const createdOrder = await prisma.$transaction(async (tx) => {
       const lockedCarts = await tx.$queryRaw<Array<{ id: string; version: number }>>(
@@ -380,6 +386,7 @@ export async function createCheckoutOrderAction(
         data: {
           userId,
           status: "PENDING",
+          torobClid: torobAttribution?.clickId ?? null,
           total,
           fullName: input.fullName,
           email: input.email,

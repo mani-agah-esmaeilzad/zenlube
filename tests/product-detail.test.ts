@@ -18,10 +18,11 @@ function createProduct(overrides: Partial<ProductArg> = {}): ProductArg {
     sku: "AID-530-4L",
     description: "روغن موتور تمام سنتتیک برای موتورهای بنزینی.",
     price: "60000000" as unknown as ProductArg["price"],
+    purchaseCost: null,
     stock: 3,
     viscosity: "5W-30",
     oilType: "تمام سنتتیک",
-    imageUrl: "https://example.com/main.webp",
+    imageUrl: "/products/aidlube/main.webp",
     isFeatured: false,
     isBestseller: true,
     categoryId: "cat_1",
@@ -34,13 +35,13 @@ function createProduct(overrides: Partial<ProductArg> = {}): ProductArg {
     technicalSpecs: {
       partNumber: "MT-530-4L",
       engineType: "بنزینی و دیزلی",
-      gallery: ["https://example.com/detail-1.webp"],
+      gallery: ["/products/aidlube/detail-1.webp"],
     },
     tags: [],
     averageRating: "4.7" as unknown as ProductArg["averageRating"],
     reviewCount: 28,
     reorderThreshold: 10,
-    videos: ["https://example.com/detail-2.webp", "https://example.com/video.mp4"],
+    videos: ["/products/aidlube/detail-2.webp", "https://example.com/video.mp4"],
     requiresShipping: true,
     shippingWeightGrams: 4200,
     shippingDimensionsMode: "DEFAULT",
@@ -136,9 +137,9 @@ test("buildProductGalleryItems collects unique image urls only", () => {
   assert.deepEqual(
     items.map((item) => item.src),
     [
-      "https://example.com/main.webp",
-      "https://example.com/detail-2.webp",
-      "https://example.com/detail-1.webp",
+      "/products/aidlube/main.webp",
+      "/products/aidlube/detail-2.webp",
+      "/products/aidlube/detail-1.webp",
     ],
   );
 });

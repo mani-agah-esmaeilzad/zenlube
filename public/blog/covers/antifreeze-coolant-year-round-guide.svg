@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="راهنمای ضدیخ و کولانت">
+  <defs>
+    <linearGradient id="coolant" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#14B8A6"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="56" fill="#F8FAFC"/>
+  <circle cx="1010" cy="500" r="260" fill="#2563EB" opacity=".1"/>
+  <rect x="96" y="96" width="1008" height="438" rx="44" fill="#fff" stroke="#E3E8EF" stroke-width="8"/>
+  <path d="M850 146c-96 126-146 198-146 280 0 90 66 146 146 146s146-56 146-146c0-82-50-154-146-280Z" fill="url(#coolant)" opacity=".92"/>
+  <path d="M780 430c36 28 92 34 142 4" stroke="#fff" stroke-width="20" stroke-linecap="round" opacity=".72"/>
+  <path d="M218 190h390" stroke="#1F2A44" stroke-width="34" stroke-linecap="round"/>
+  <path d="M218 270h450" stroke="#14B8A6" stroke-width="26" stroke-linecap="round"/>
+  <path d="M218 342h338" stroke="#1F2A44" stroke-width="20" stroke-linecap="round" opacity=".18"/>
+  <path d="M218 392h400" stroke="#1F2A44" stroke-width="20" stroke-linecap="round" opacity=".12"/>
+  <text x="218" y="472" font-family="Arial, sans-serif" font-size="34" font-weight="800" fill="#1F2A44">G11 • G12 • Coolant</text>
+</svg>

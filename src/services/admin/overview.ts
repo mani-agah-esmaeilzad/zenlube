@@ -1,4 +1,5 @@
 import { Prisma } from "@/generated/prisma";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc } from "@/lib/local-assets";
 import prisma from "@/lib/prisma";
 import { adminCatalogProductWhere } from "@/lib/storefront-visibility";
 import {
@@ -493,7 +494,7 @@ export async function getContentTabData(): Promise<ContentTabData> {
       subtitle: banner.subtitle,
       ctaLabel: banner.ctaLabel,
       ctaLink: banner.ctaLink,
-      imageUrl: banner.imageUrl,
+      imageUrl: safeImageSrc(banner.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.banner),
       position: banner.position,
       isActive: banner.isActive,
       updatedAt: banner.updatedAt,
@@ -544,7 +545,7 @@ export async function getContentTabData(): Promise<ContentTabData> {
       id: image.id,
       title: image.title,
       description: image.description,
-      imageUrl: image.imageUrl,
+      imageUrl: safeImageSrc(image.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.gallery) ?? LOCAL_IMAGE_PLACEHOLDERS.gallery,
       link: image.link,
       orderIndex: image.orderIndex,
       isActive: image.isActive,
@@ -631,7 +632,7 @@ export async function getSpecialOffersTabData(): Promise<SpecialOffersTabData> {
       slug: product.slug,
       price,
       stock: product.stock,
-      imageUrl: product.imageUrl,
+      imageUrl: safeImageSrc(product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
       brandName: product.brand.name,
       categoryName: product.category.name,
       hasPromotion: Boolean(product.promotion),
@@ -658,7 +659,7 @@ export async function getSpecialOffersTabData(): Promise<SpecialOffersTabData> {
         slug: offer.product.slug,
         price: Number(offer.product.price),
         stock: offer.product.stock,
-        imageUrl: offer.product.imageUrl,
+        imageUrl: safeImageSrc(offer.product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
         brandName: offer.product.brand.name,
       },
     })),

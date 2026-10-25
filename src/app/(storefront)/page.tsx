@@ -4,6 +4,7 @@ import type { ReactNode, SVGProps } from "react";
 
 import { BlogCard } from "@/components/blog/blog-card";
 import { FuelRevivalBanner } from "@/components/home/fuel-revival-banner";
+import { OctaneBrandBanners } from "@/components/home/octane-brand-banners";
 import { OilSelectionGuide } from "@/components/home/oil-selection-guide";
 import { HeroVehicleFinder } from "@/components/layout/hero-vehicle-finder";
 import { ProductCard } from "@/components/product/product-card";
@@ -90,6 +91,7 @@ export default async function Home() {
         </div>
       </section>
 
+      <OctaneBrandBanners />
       <FuelRevivalBanner />
 
       {cars.length ? (

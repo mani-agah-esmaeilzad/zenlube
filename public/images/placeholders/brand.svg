@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300" role="img" aria-label="Oilbar brand placeholder">
+  <rect width="480" height="300" rx="42" fill="#F7F9FC"/>
+  <circle cx="240" cy="150" r="76" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="10"/>
+  <path d="M208 174c0-44 20-78 32-78s32 34 32 78c0 22-14 34-32 34s-32-12-32-34Z" fill="#14B8A6"/>
+  <path d="M220 152h40" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+</svg>

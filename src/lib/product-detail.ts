@@ -1,4 +1,5 @@
 import type { Brand, Car, Category, Product, ProductCar } from "@/generated/prisma";
+import { isAllowedOilbarImageSource } from "@/lib/local-assets";
 
 type ProductDetailRecord = Product & {
   brand: Brand;
@@ -238,7 +239,8 @@ export function extractEnglishProductLabel(name: string) {
 
 export function buildProductGalleryItems(product: Pick<ProductDetailRecord, "imageUrl" | "name" | "videos" | "technicalSpecs">) {
   const technicalImages = findImageUrlsInUnknown(product.technicalSpecs);
-  const urls = uniqueStrings([product.imageUrl, ...product.videos.filter(isImageUrl), ...technicalImages]);
+  const urls = uniqueStrings([product.imageUrl, ...product.videos.filter(isImageUrl), ...technicalImages])
+    .filter((src) => isAllowedOilbarImageSource(src));
 
   return urls.map((src) => ({
     src,

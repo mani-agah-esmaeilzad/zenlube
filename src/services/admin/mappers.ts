@@ -12,6 +12,7 @@ import type {
   AdminUser,
   EngagementGroup,
 } from "./types";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc, safeVehicleImageSrc } from "@/lib/local-assets";
 import { toNumber } from "./transformers";
 
 export function mapCategory(category: Prisma.CategoryGetPayload<{
@@ -22,7 +23,7 @@ export function mapCategory(category: Prisma.CategoryGetPayload<{
     name: category.name,
     slug: category.slug,
     description: category.description,
-    imageUrl: category.imageUrl,
+    imageUrl: safeImageSrc(category.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.category),
     productCount: category._count.products,
     createdAt: category.createdAt,
   };
@@ -36,7 +37,7 @@ export function mapBrand(brand: Prisma.BrandGetPayload<{
     name: brand.name,
     slug: brand.slug,
     description: brand.description,
-    imageUrl: brand.imageUrl,
+    imageUrl: safeImageSrc(brand.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.brand),
     website: brand.website,
     productCount: brand._count.products,
     createdAt: brand.createdAt,
@@ -53,7 +54,7 @@ export function mapCar(car: Prisma.CarGetPayload<{
     model: car.model,
     isActive: car.isActive,
     generation: car.generation,
-    imageUrl: car.imageUrl,
+    imageUrl: safeVehicleImageSrc(car.imageUrl, car.slug),
     yearFrom: car.yearFrom,
     yearTo: car.yearTo,
     engineCode: car.engineCode,
@@ -88,7 +89,7 @@ export function mapProduct(product: Prisma.ProductGetPayload<{
     stock: product.stock,
     viscosity: product.viscosity,
     oilType: product.oilType,
-    imageUrl: product.imageUrl,
+    imageUrl: safeImageSrc(product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
     isFeatured: product.isFeatured,
     requiresShipping: product.requiresShipping,
     shippingWeightGrams: product.shippingWeightGrams,

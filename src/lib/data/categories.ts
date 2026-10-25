@@ -1,6 +1,7 @@
 import { Prisma } from "@/generated/prisma";
 import { cache } from "react";
 import prisma from "../prisma";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc } from "../local-assets";
 import { createPageInfo } from "../pagination";
 import { storefrontVisibleProductWhere } from "../storefront-visibility";
 import { createEmptyPageResult, withStorefrontDataFallback } from "./storefront-fallback";
@@ -29,9 +30,16 @@ type HeaderCategory = Prisma.CategoryGetPayload<{
   };
 }>;
 
+function withSafeCategoryImage<T extends { imageUrl?: string | null }>(category: T): T {
+  return {
+    ...category,
+    imageUrl: safeImageSrc(category.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.category),
+  };
+}
+
 export const getHighlightedCategories = cache(async function getHighlightedCategories() {
-  return withStorefrontDataFallback("getHighlightedCategories", [], () =>
-    prisma.category.findMany({
+  return withStorefrontDataFallback("getHighlightedCategories", [], async () => {
+    const categories = await prisma.category.findMany({
       include: {
         _count: {
           select: {
@@ -40,8 +48,10 @@ export const getHighlightedCategories = cache(async function getHighlightedCateg
         },
       },
       orderBy: { name: "asc" },
-    }),
-  );
+    });
+
+    return categories.map(withSafeCategoryImage);
+  });
 });
 
 export async function getPaginatedCategoriesWithProductCount({ page = 1, pageSize = 12 }: { page?: number; pageSize?: number }) {
@@ -67,7 +77,7 @@ export async function getPaginatedCategoriesWithProductCount({ page = 1, pageSiz
       ]);
 
       return {
-        items,
+        items: items.map(withSafeCategoryImage),
         pageInfo: createPageInfo(page, pageSize, total),
       };
     },
@@ -104,6 +114,6 @@ export async function getHeaderCategories() {
       orderBy: { name: "asc" },
     });
 
-    return categories.filter((category) => category._count.products > 0);
+    return categories.filter((category) => category._count.products > 0).map(withSafeCategoryImage);
   });
 }

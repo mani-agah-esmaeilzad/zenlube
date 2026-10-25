@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="Oilbar image placeholder">
+  <rect width="640" height="480" rx="48" fill="#F7F9FC"/>
+  <path d="M104 358 242 220l86 86 58-58 150 150H104Z" fill="#14B8A6" opacity=".22"/>
+  <circle cx="458" cy="150" r="54" fill="#14B8A6" opacity=".5"/>
+  <rect x="80" y="70" width="480" height="340" rx="36" fill="none" stroke="#E3E8EF" stroke-width="12"/>
+</svg>

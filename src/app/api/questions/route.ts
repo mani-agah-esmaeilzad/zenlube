@@ -7,38 +7,15 @@ import { config } from "@/lib/config";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 
-async function verifyCaptcha(token: string | undefined, remoteIp: string | undefined) {
-  if (!config.HCAPTCHA_SECRET) {
-    return true;
-  }
-  if (!token) {
-    return false;
-  }
+const QUESTION_PAYLOAD_MAX_BYTES = 12_000;
+const QUESTION_MIN_COMPLETION_MS = 3_000;
+const QUESTION_CLIENT_CLOCK_SKEW_MS = 60 * 60 * 1_000;
+const QUESTION_COOLDOWN_SECONDS = 60;
 
-  try {
-    const response = await fetch("https://hcaptcha.com/siteverify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        secret: config.HCAPTCHA_SECRET,
-        response: token,
-        remoteip: remoteIp ?? "",
-      }),
-    });
-
-    if (!response.ok) {
-      logger.warn("Captcha verification failed", { status: response.status });
-      return false;
-    }
-
-    const payload = (await response.json()) as { success?: boolean };
-    return Boolean(payload.success);
-  } catch (error) {
-    logger.error("Captcha verification threw", { error: error instanceof Error ? error.message : error });
-    return false;
-  }
+function isTooFastSubmission(formStartedAt: number | undefined, now: number) {
+  if (!formStartedAt) return true;
+  if (formStartedAt > now + QUESTION_CLIENT_CLOCK_SKEW_MS) return true;
+  return now - formStartedAt < QUESTION_MIN_COMPLETION_MS;
 }
 
 export async function POST(request: Request) {
@@ -61,7 +38,32 @@ export async function POST(request: Request) {
       );
     }
 
-    const payload = await request.json();
+    const contentLength = Number(request.headers.get("content-length") ?? 0);
+    if (Number.isFinite(contentLength) && contentLength > QUESTION_PAYLOAD_MAX_BYTES) {
+      return NextResponse.json(
+        { ok: false, message: "حجم درخواست بیش از حد مجاز است." },
+        { status: 413 },
+      );
+    }
+
+    const rawPayload = await request.text();
+    if (new TextEncoder().encode(rawPayload).byteLength > QUESTION_PAYLOAD_MAX_BYTES) {
+      return NextResponse.json(
+        { ok: false, message: "حجم درخواست بیش از حد مجاز است." },
+        { status: 413 },
+      );
+    }
+
+    let payload: unknown;
+    try {
+      payload = JSON.parse(rawPayload);
+    } catch {
+      return NextResponse.json(
+        { ok: false, message: "ساختار درخواست معتبر نیست." },
+        { status: 400 },
+      );
+    }
+
     const parsed = publicQuestionPayloadSchema.safeParse(payload);
 
     if (!parsed.success) {
@@ -74,14 +76,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const { type, slug, authorName, question, captchaToken } = parsed.data;
+    const { type, slug, authorName, question, website, formStartedAt } = parsed.data;
 
-    const captchaValid = await verifyCaptcha(captchaToken ?? undefined, clientIp);
-
-    if (!captchaValid) {
+    if (website || isTooFastSubmission(formStartedAt, Date.now())) {
       return NextResponse.json(
-        { ok: false, message: "اعتبارسنجی کپچا ناموفق بود." },
+        { ok: false, message: "امکان ارسال سوال وجود ندارد. لطفاً چند لحظه دیگر تلاش کنید." },
         { status: 400 },
+      );
+    }
+
+    const cooldownResult = await consumeRateLimit(`question-cooldown:${clientIp}`, QUESTION_COOLDOWN_SECONDS, 1);
+    if (!cooldownResult.success) {
+      return NextResponse.json(
+        { ok: false, message: "برای ارسال سوال بعدی لطفاً کمی صبر کنید." },
+        { status: 429 },
       );
     }
 

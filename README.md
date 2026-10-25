@@ -51,7 +51,6 @@ Oilbar یک فروشگاه کامل برای فروش آنلاین روغن مو
    AWS_SECRET_ACCESS_KEY="کلید محرمانه در صورت استفاده از S3"
    AWS_REGION="منطقه AWS"
    CRON_SECRET="رمز تأیید برای Webhookهای زمان‌بندی"
-   HCAPTCHA_SECRET="توکن سرور کپچا (اختیاری)"
    ```
 
 4. دیتابیس را مهاجرت دهید و داده‌های اولیه را اعمال کنید:
@@ -93,7 +92,6 @@ Oilbar یک فروشگاه کامل برای فروش آنلاین روغن مو
    - `STORAGE_DRIVER`
    - `STORAGE_BUCKET` + کلیدهای AWS (در صورت انتخاب `s3`)
    - `CRON_SECRET`
-   - `HCAPTCHA_SECRET` (در صورت فعال‌سازی کپچا)
 3. قبل از اولین استقرار، روی محیط production دستور زیر را اجرا کنید (از طریق Vercel CLI یا pipeline):
 
    ```bash

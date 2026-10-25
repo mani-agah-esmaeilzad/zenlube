@@ -1,11 +1,32 @@
 import prisma from "../prisma";
 import { cache } from "react";
 import { applyCarManualOverrides } from "../car-manual-overrides";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc, safeVehicleImageSrc } from "../local-assets";
 import { createPageInfo } from "../pagination";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "../storefront-visibility";
 import { createEmptyPageResult, withStorefrontDataFallback } from "./storefront-fallback";
 
 type StorefrontCarItem = Awaited<ReturnType<typeof getCarsWithProducts>>[number];
+
+function withSafeCarImages<T extends { slug: string; imageUrl?: string | null }>(car: T): T {
+  const prepared = applyCarManualOverrides(car) as T & {
+    productMappings?: Array<{ product?: { imageUrl?: string | null } }>;
+  };
+
+  return {
+    ...prepared,
+    imageUrl: safeVehicleImageSrc(prepared.imageUrl, prepared.slug),
+    productMappings: prepared.productMappings?.map((mapping) => ({
+      ...mapping,
+      product: mapping.product
+        ? {
+            ...mapping.product,
+            imageUrl: safeImageSrc(mapping.product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
+          }
+        : mapping.product,
+    })),
+  } as T;
+}
 
 export async function getPopularCars(limit = 6) {
   return withStorefrontDataFallback("getPopularCars", [], async () => {
@@ -31,7 +52,7 @@ export async function getPopularCars(limit = 6) {
       take: limit,
     });
 
-    return cars.map(applyCarManualOverrides);
+    return cars.map(withSafeCarImages);
   });
 }
 
@@ -65,7 +86,7 @@ export async function getCarsWithProducts() {
       ],
     });
 
-    return cars.map(applyCarManualOverrides);
+    return cars.map(withSafeCarImages);
   });
 }
 
@@ -137,7 +158,7 @@ export async function getPaginatedCarsWithProducts({
     ]);
 
     return {
-      items: items.map(applyCarManualOverrides),
+      items: items.map(withSafeCarImages),
       pageInfo: createPageInfo(page, pageSize, total),
     };
     },
@@ -256,7 +277,7 @@ export const getCarBySlug = cache(async function getCarBySlug(slug: string) {
       },
     });
 
-    return car ? applyCarManualOverrides(car) : null;
+    return car ? withSafeCarImages(car) : null;
   });
 });
 
@@ -271,6 +292,6 @@ export async function getSiblingCars(manufacturer: string, currentSlug: string, 
       take: limit,
     });
 
-    return cars.map(applyCarManualOverrides);
+    return cars.map(withSafeCarImages);
   });
 }

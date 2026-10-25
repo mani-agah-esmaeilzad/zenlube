@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PriceBlock } from "@/components/ui/price-block";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import prisma from "@/lib/prisma";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc } from "@/lib/local-assets";
 import { resolveProductPricing } from "@/lib/pricing";
 import { formatPrice } from "@/lib/utils";
 import { getAppSession } from "@/lib/session";
@@ -62,13 +63,14 @@ export default async function CartPage() {
           <div className="divide-y divide-border border-t border-border bg-white">
             {cart.items.map((item) => {
               const pricing = resolveProductPricing(item.product);
+              const imageUrl = safeImageSrc(item.product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product);
               return (
               <article key={item.id} className="py-4 sm:py-5">
-                <div className={item.product.imageUrl ? "grid grid-cols-[72px_minmax(0,1fr)] gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4" : "grid grid-cols-1"}>
-                  {item.product.imageUrl ? (
+                <div className={imageUrl ? "grid grid-cols-[72px_minmax(0,1fr)] gap-3 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4" : "grid grid-cols-1"}>
+                  {imageUrl ? (
                     <Link className="relative aspect-square overflow-hidden rounded-lg bg-surface-secondary" href={`/products/${item.product.slug}`}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img alt={item.product.name} className="h-full w-full object-contain p-2" src={item.product.imageUrl} />
+                      <img alt={item.product.name} className="h-full w-full object-contain p-2" src={imageUrl} />
                     </Link>
                   ) : null}
                   <div className="min-w-0">

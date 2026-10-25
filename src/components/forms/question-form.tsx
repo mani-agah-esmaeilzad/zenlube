@@ -16,12 +16,16 @@ type SubmissionState = {
 export function QuestionForm({ type, slug, title }: QuestionFormProps) {
   const [authorName, setAuthorName] = useState("");
   const [question, setQuestion] = useState("");
+  const [website, setWebsite] = useState("");
+  const [formStartedAt, setFormStartedAt] = useState(() => Date.now());
   const [state, setState] = useState<SubmissionState>({ status: "idle" });
   const [isPending, startTransition] = useTransition();
 
   const reset = () => {
     setAuthorName("");
     setQuestion("");
+    setWebsite("");
+    setFormStartedAt(Date.now());
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -33,6 +37,8 @@ export function QuestionForm({ type, slug, title }: QuestionFormProps) {
       slug,
       authorName: authorName.trim(),
       question: question.trim(),
+      website,
+      formStartedAt,
     };
 
     if (!payload.authorName || payload.authorName.length < 2) {
@@ -107,6 +113,16 @@ export function QuestionForm({ type, slug, title }: QuestionFormProps) {
           rows={4}
           placeholder="سوال خود را با جزئیات بیان کنید..."
           className="input-zen mt-2 min-h-32 resize-y py-3"
+        />
+      </label>
+      <label className="hidden" aria-hidden="true">
+        وب‌سایت
+        <input
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(event) => setWebsite(event.target.value)}
+          name="website"
         />
       </label>
       {state.status === "error" && state.message ? (

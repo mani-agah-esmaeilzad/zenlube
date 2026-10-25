@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="راهنمای روغن موتور 0W-20">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#EAF8F6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="56" fill="url(#bg)"/>
+  <circle cx="1010" cy="120" r="220" fill="#14B8A6" opacity=".14"/>
+  <circle cx="190" cy="540" r="210" fill="#1F2A44" opacity=".08"/>
+  <rect x="92" y="94" width="1016" height="442" rx="44" fill="#fff" stroke="#E3E8EF" stroke-width="8"/>
+  <rect x="740" y="156" width="182" height="310" rx="38" fill="#1F2A44"/>
+  <rect x="778" y="126" width="106" height="52" rx="20" fill="#14B8A6"/>
+  <text x="831" y="288" text-anchor="middle" font-family="Arial, sans-serif" font-size="58" font-weight="800" fill="#fff">0W-20</text>
+  <path d="M834 338c40-54 64-78 64-116 0-37-29-68-64-68s-64 31-64 68c0 38 24 62 64 116Z" fill="#14B8A6" opacity=".24"/>
+  <path d="M224 204h372" stroke="#1F2A44" stroke-width="34" stroke-linecap="round" opacity=".9"/>
+  <path d="M224 280h462" stroke="#14B8A6" stroke-width="26" stroke-linecap="round"/>
+  <path d="M224 344h334" stroke="#1F2A44" stroke-width="20" stroke-linecap="round" opacity=".22"/>
+  <path d="M224 394h410" stroke="#1F2A44" stroke-width="20" stroke-linecap="round" opacity=".14"/>
+  <text x="224" y="470" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#1F2A44">Oilbar Magazine</text>
+</svg>

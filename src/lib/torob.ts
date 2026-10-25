@@ -1,5 +1,6 @@
 import { createPublicKey, verify as verifySignature, type KeyObject } from "node:crypto";
 
+import { safeImageSrc } from "@/lib/local-assets";
 import { resolveProductPricing, type ProductPromotionLike } from "@/lib/pricing";
 
 export const TOROB_API_VERSION = "torob_api_v3";
@@ -85,7 +86,7 @@ export function verifyTorobJwt(
   const header = decodeJsonPart(encodedHeader);
   const payload = decodeJsonPart(encodedPayload);
 
-  if (header.alg !== "EdDSA" || header.v !== 1) {
+  if (header.alg !== "EdDSA" || (header.v !== 1 && header.v !== "1")) {
     throw new Error("نسخه یا الگوریتم توکن ترب معتبر نیست.");
   }
 
@@ -191,7 +192,8 @@ export function buildTorobProduct(product: TorobSourceProduct, baseUrl: string, 
   const currentPrice = rialToTorobToman(pricing.effectivePrice);
   const availability = product.stock > 0 && currentPrice > 0;
   const pageUrl = absoluteStorefrontUrl(`/products/${encodeURIComponent(product.slug)}`, baseUrl);
-  const imageLinks = product.imageUrl ? [absoluteStorefrontUrl(product.imageUrl, baseUrl)] : [];
+  const productImage = safeImageSrc(product.imageUrl, null);
+  const imageLinks = productImage ? [absoluteStorefrontUrl(productImage, baseUrl)] : [];
 
   return {
     page_unique: product.id,

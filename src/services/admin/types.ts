@@ -330,6 +330,7 @@ export type AdminCartSnapshot = {
   createdAt: Date;
   lastActivityAt: Date;
   checkoutStartedAt?: Date | null;
+  smsReminderEligible: boolean;
   items: AdminCartItem[];
   latestOrder?: {
     id: string;

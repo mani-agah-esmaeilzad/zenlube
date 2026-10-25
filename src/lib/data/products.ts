@@ -1,5 +1,6 @@
 import { Prisma } from "@/generated/prisma";
 import prisma from "../prisma";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc, safeVehicleImageSrc } from "../local-assets";
 import { isPromotionActive, resolveProductPricing } from "../pricing";
 import { storefrontVisibleCarWhere, storefrontVisibleProductWhere } from "../storefront-visibility";
 import { createEmptyPageResult, withStorefrontDataFallback } from "./storefront-fallback";
@@ -17,9 +18,45 @@ type ProductListItem = Prisma.ProductGetPayload<{
   };
 }>;
 
+function sanitizeEntityImage<T>(entity: T, fallback: string): T {
+  if (!entity || typeof entity !== "object" || !("imageUrl" in entity)) return entity;
+  return {
+    ...entity,
+    imageUrl: safeImageSrc((entity as { imageUrl?: string | null }).imageUrl, fallback),
+  } as T;
+}
+
+function withSafeProductImages<T extends { imageUrl?: string | null }>(product: T): T {
+  const productWithSafeRelations = product as T & {
+    brand?: unknown;
+    category?: unknown;
+    carMappings?: Array<{ car?: { slug?: string; imageUrl?: string | null } }>;
+  };
+
+  return {
+    ...productWithSafeRelations,
+    imageUrl: safeImageSrc(product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
+    brand: productWithSafeRelations.brand
+      ? sanitizeEntityImage(productWithSafeRelations.brand, LOCAL_IMAGE_PLACEHOLDERS.brand)
+      : productWithSafeRelations.brand,
+    category: productWithSafeRelations.category
+      ? sanitizeEntityImage(productWithSafeRelations.category, LOCAL_IMAGE_PLACEHOLDERS.category)
+      : productWithSafeRelations.category,
+    carMappings: productWithSafeRelations.carMappings?.map((mapping) => ({
+      ...mapping,
+      car: mapping.car
+        ? {
+            ...mapping.car,
+            imageUrl: safeVehicleImageSrc(mapping.car.imageUrl, mapping.car.slug),
+          }
+        : mapping.car,
+    })),
+  } as T;
+}
+
 export async function getFeaturedProducts(limit = 6) {
-  return withStorefrontDataFallback("getFeaturedProducts", [], () =>
-    prisma.product.findMany({
+  return withStorefrontDataFallback("getFeaturedProducts", [], async () => {
+    const products = await prisma.product.findMany({
       where: storefrontVisibleProductWhere({ isFeatured: true }),
       orderBy: [{ isBestseller: "desc" }, { updatedAt: "desc" }],
       include: {
@@ -34,13 +71,15 @@ export async function getFeaturedProducts(limit = 6) {
         },
       },
       take: limit,
-    }),
-  );
+    });
+
+    return products.map(withSafeProductImages);
+  });
 }
 
 export async function getBestsellerProducts(limit = 8) {
-  return withStorefrontDataFallback("getBestsellerProducts", [], () =>
-    prisma.product.findMany({
+  return withStorefrontDataFallback("getBestsellerProducts", [], async () => {
+    const products = await prisma.product.findMany({
       where: storefrontVisibleProductWhere({
         OR: [
           { isBestseller: true },
@@ -64,8 +103,10 @@ export async function getBestsellerProducts(limit = 8) {
           include: { car: true },
         },
       },
-    }),
-  );
+    });
+
+    return products.map(withSafeProductImages);
+  });
 }
 
 export type ProductSort =
@@ -276,7 +317,7 @@ export async function getAllProductsWithFilters({
         : Promise.resolve([] as ProductListItem[]),
     ]);
 
-    const items = [...(availableItems ?? []), ...(unavailableItems ?? [])];
+    const items = [...(availableItems ?? []), ...(unavailableItems ?? [])].map(withSafeProductImages);
     const total = availableTotal + unavailableTotal;
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -297,8 +338,8 @@ export async function getAllProductsWithFilters({
 }
 
 export async function getProductBySlug(slug: string) {
-  return withStorefrontDataFallback("getProductBySlug", null, () =>
-    prisma.product.findFirst({
+  return withStorefrontDataFallback("getProductBySlug", null, async () => {
+    const product = await prisma.product.findFirst({
       where: storefrontVisibleProductWhere({ slug }),
       include: {
         brand: true,
@@ -324,8 +365,10 @@ export async function getProductBySlug(slug: string) {
           orderBy: { createdAt: "desc" },
         },
       },
-    }),
-  );
+    });
+
+    return product ? withSafeProductImages(product) : null;
+  });
 }
 
 export async function getSpecialOfferProducts(limit = 8) {
@@ -349,6 +392,7 @@ export async function getSpecialOfferProducts(limit = 8) {
     });
 
     return products
+      .map(withSafeProductImages)
       .filter((product) => isPromotionActive(product.promotion))
       .sort((left, right) => (left.promotion?.sortOrder ?? 0) - (right.promotion?.sortOrder ?? 0))
       .slice(0, limit);
@@ -366,8 +410,8 @@ export async function getProductReviews(productId: string, limit = 8) {
 }
 
 export async function getLatestReviews(limit = 6) {
-  return withStorefrontDataFallback("getLatestReviews", [], () =>
-    prisma.productReview.findMany({
+  return withStorefrontDataFallback("getLatestReviews", [], async () => {
+    const reviews = await prisma.productReview.findMany({
       orderBy: { createdAt: "desc" },
       include: {
         product: {
@@ -381,8 +425,13 @@ export async function getLatestReviews(limit = 6) {
         },
       },
       take: limit,
-    }),
-  );
+    });
+
+    return reviews.map((review) => ({
+      ...review,
+      product: withSafeProductImages(review.product),
+    }));
+  });
 }
 
 export async function getAllProductsLite() {
@@ -511,7 +560,7 @@ export async function getSearchSuggestions(query: string) {
             name: item.name,
             slug: item.slug,
             brandName: item.brand.name,
-            imageUrl: item.imageUrl,
+            imageUrl: safeImageSrc(item.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
             price: pricing.effectivePrice,
             stock: item.stock,
             viscosity: item.viscosity,

@@ -15,6 +15,7 @@ import { PriceBlock } from "@/components/ui/price-block";
 import { StatusPill } from "@/components/ui/status-pill";
 import { StorefrontPageIntro } from "@/components/ui/storefront-page-intro";
 import { getCarHierarchy } from "@/lib/data/cars";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc } from "@/lib/local-assets";
 import { createPageInfo, getPaginationParams } from "@/lib/pagination";
 import { resolveProductPricing } from "@/lib/pricing";
 import { getAppSession } from "@/lib/session";
@@ -282,7 +283,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 brandName: item.product.brand.name,
                 price: resolveProductPricing(item.product).effectivePrice,
                 stock: item.product.stock,
-                imageUrl: item.product.imageUrl,
+                imageUrl: safeImageSrc(item.product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
               }))}
             />
           </section>
@@ -298,7 +299,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 brandName: item.product.brand.name,
                 price: resolveProductPricing(item.product).effectivePrice,
                 stock: item.product.stock,
-                imageUrl: item.product.imageUrl,
+                imageUrl: safeImageSrc(item.product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
               }))}
             />
             <div className="py-1">

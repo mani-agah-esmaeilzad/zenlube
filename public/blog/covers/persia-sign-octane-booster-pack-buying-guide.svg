@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="راهنمای خرید پک اکتان بوستر پرشیا ساین">
+  <rect width="1200" height="630" rx="56" fill="#F8FAFC"/>
+  <circle cx="190" cy="130" r="210" fill="#14B8A6" opacity=".12"/>
+  <circle cx="1020" cy="520" r="230" fill="#1F2A44" opacity=".08"/>
+  <rect x="92" y="92" width="1016" height="446" rx="44" fill="#fff" stroke="#E3E8EF" stroke-width="8"/>
+  <g transform="translate(692 142)">
+    <rect x="0" y="72" width="110" height="270" rx="30" fill="#1F2A44"/>
+    <rect x="32" y="38" width="46" height="58" rx="16" fill="#14B8A6"/>
+    <rect x="26" y="160" width="58" height="88" rx="16" fill="#fff" opacity=".9"/>
+    <rect x="128" y="44" width="110" height="298" rx="30" fill="#1F2A44"/>
+    <rect x="160" y="10" width="46" height="58" rx="16" fill="#14B8A6"/>
+    <rect x="154" y="150" width="58" height="88" rx="16" fill="#fff" opacity=".9"/>
+    <rect x="256" y="72" width="110" height="270" rx="30" fill="#1F2A44"/>
+    <rect x="288" y="38" width="46" height="58" rx="16" fill="#14B8A6"/>
+    <rect x="282" y="160" width="58" height="88" rx="16" fill="#fff" opacity=".9"/>
+  </g>
+  <path d="M214 190h398" stroke="#1F2A44" stroke-width="34" stroke-linecap="round"/>
+  <path d="M214 270h442" stroke="#14B8A6" stroke-width="26" stroke-linecap="round"/>
+  <path d="M214 342h330" stroke="#1F2A44" stroke-width="20" stroke-linecap="round" opacity=".18"/>
+  <path d="M214 392h388" stroke="#1F2A44" stroke-width="20" stroke-linecap="round" opacity=".12"/>
+  <rect x="214" y="438" width="220" height="58" rx="29" fill="#14B8A6"/>
+  <text x="324" y="477" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="800" fill="#fff">پک اقتصادی</text>
+</svg>

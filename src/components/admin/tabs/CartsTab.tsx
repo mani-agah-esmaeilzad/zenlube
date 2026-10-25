@@ -1,5 +1,10 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+
+import { sendAbandonedCartRemindersAction } from "@/actions/admin/carts";
 import { faDateTimeFormatter, faNumberFormatter } from "@/lib/formatters";
 import { formatPrice } from "@/lib/utils";
 import type { AdminCartSnapshot, CartActivityFilter, CartsTabData } from "@/services/admin/types";
@@ -45,6 +50,46 @@ const orderStatusLabels: Record<string, string> = {
 };
 
 export function CartsTab({ data }: { data: CartsTabData }) {
+  const router = useRouter();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const eligibleCarts = data.carts.filter((cart) => cart.smsReminderEligible);
+  const eligibleCartsForBulk = eligibleCarts.slice(0, 50);
+  const allEligibleSelected = eligibleCartsForBulk.length > 0 && eligibleCartsForBulk.every((cart) => selectedIds.includes(cart.id));
+
+  function toggleCart(cartId: string) {
+    if (!selectedIds.includes(cartId) && selectedIds.length >= 50) {
+      setNotice("در هر نوبت حداکثر ۵۰ سبد را می‌توان انتخاب کرد.");
+      return;
+    }
+    setSelectedIds((current) => current.includes(cartId)
+      ? current.filter((id) => id !== cartId)
+      : [...current, cartId]);
+    setNotice(null);
+  }
+
+  function toggleAllEligible() {
+    setSelectedIds((current) => allEligibleSelected
+      ? current.filter((id) => !eligibleCartsForBulk.some((cart) => cart.id === id))
+      : [...new Set([...current, ...eligibleCartsForBulk.map((cart) => cart.id)])].slice(0, 20));
+    setNotice(null);
+  }
+
+  function sendReminders() {
+    if (selectedIds.length === 0 || isPending) return;
+    if (!window.confirm(`برای ${selectedIds.length} سبد پیامک یادآوری ارسال شود؟`)) return;
+
+    startTransition(async () => {
+      const result = await sendAbandonedCartRemindersAction(selectedIds);
+      setNotice(result.message);
+      if (result.success) {
+        setSelectedIds([]);
+        router.refresh();
+      }
+    });
+  }
+
   return (
     <div className="space-y-6">
       <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-5">
@@ -72,7 +117,49 @@ export function CartsTab({ data }: { data: CartsTabData }) {
       </section>
 
       <section className="space-y-4">
-        {data.carts.length ? data.carts.map((cart) => <CartCard key={cart.id} cart={cart} />) : (
+        {eligibleCarts.length > 0 ? (
+          <section className="admin-panel space-y-4 border border-[#F2D7A1] bg-[#FFFCF5] p-4 md:p-5" aria-label="یادآوری سبد خرید">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <label className="flex items-center gap-3 text-sm font-black text-[#344054]">
+                <input
+                  type="checkbox"
+                  checked={allEligibleSelected}
+                  onChange={toggleAllEligible}
+                  className="h-4 w-4 accent-[#B54708]"
+                  aria-label="انتخاب همه سبدهای واجد شرایط در این صفحه"
+                />
+                انتخاب سبدهای واجد شرایط این صفحه
+                <span className="text-xs font-semibold text-[#667085]">({faNumberFormatter.format(eligibleCarts.length)} مورد)</span>
+              </label>
+              <button
+                type="button"
+                onClick={sendReminders}
+                disabled={selectedIds.length === 0 || selectedIds.length > 50 || isPending}
+                className="btn-primary min-h-11 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isPending ? "در حال ارسال…" : `ارسال یادآوری برای ${faNumberFormatter.format(selectedIds.length)} سبد`}
+              </button>
+            </div>
+            <p className="text-xs leading-6 text-[#667085]">
+              زمان انتظار شرط نیست؛ سبدهای فعال و رهاشده با شماره معتبر و کالای موجود انتخاب‌پذیرند. اگر مشتری بعد از فعالیت سبد سفارش داده باشد، پیامک نمی‌گیرد. در هر نوبت تا ۵۰ موردِ همین صفحه را می‌توان انتخاب کرد.
+            </p>
+            <div className="rounded-2xl border border-[#F2D7A1] bg-white/80 p-3 text-xs leading-6 text-[#475467]">
+              <span className="font-black">پیش‌نمایش:</span> نام عزیز، سبد خریدت در اویل‌بار هنوز منتظرته. اگر هنوز قصد خرید داری، از اینجا ادامه بده: oilbar.ir/cart
+            </div>
+            {notice ? <p role="status" className="rounded-xl bg-white px-3 py-2 text-sm font-bold text-[#344054]">{notice}</p> : null}
+          </section>
+        ) : null}
+
+        {notice && eligibleCarts.length === 0 ? <p role="status" className="admin-panel p-4 text-sm font-bold text-[#344054]">{notice}</p> : null}
+
+        {data.carts.length ? data.carts.map((cart) => (
+          <CartCard
+            key={cart.id}
+            cart={cart}
+            selected={selectedIds.includes(cart.id)}
+            onToggle={() => toggleCart(cart.id)}
+          />
+        )) : (
           <div className="admin-panel p-10 text-center">
             <p className="text-base font-black text-[#111827]">سبدی مطابق این فیلتر پیدا نشد</p>
             <p className="mt-2 text-sm text-[#667085]">فیلتر را تغییر دهید یا عبارت جستجو را پاک کنید.</p>
@@ -93,7 +180,7 @@ export function CartsTab({ data }: { data: CartsTabData }) {
   );
 }
 
-function CartCard({ cart }: { cart: AdminCartSnapshot }) {
+function CartCard({ cart, selected, onToggle }: { cart: AdminCartSnapshot; selected: boolean; onToggle: () => void }) {
   const meta = statusMeta[cart.status];
   const lastActivity = formatRelativeTime(cart.lastActivityAt);
 
@@ -102,6 +189,12 @@ function CartCard({ cart }: { cart: AdminCartSnapshot }) {
       <div className="flex flex-col gap-5 p-5 md:p-6 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
+            {cart.smsReminderEligible ? (
+              <label className="inline-flex min-h-8 items-center gap-2 rounded-full border border-[#E6EAF2] bg-white px-3 text-[11px] font-bold text-[#344054]">
+                <input type="checkbox" checked={selected} onChange={onToggle} className="h-4 w-4 accent-[#B54708]" />
+                انتخاب برای پیامک
+              </label>
+            ) : null}
             <span className={`rounded-full px-3 py-1 text-[11px] font-black ${meta.className}`}>{meta.label}</span>
             <span className="rounded-full bg-[#F2F4F7] px-3 py-1 text-[11px] font-bold text-[#475467]">
               {faNumberFormatter.format(cart.quantity)} کالا در {faNumberFormatter.format(cart.itemCount)} ردیف

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" role="img" aria-label="Oilbar product placeholder">
+  <rect width="480" height="480" rx="48" fill="#F7F9FC"/>
+  <rect x="120" y="96" width="240" height="288" rx="34" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="10"/>
+  <path d="M192 148h96M192 190h96M192 232h96" stroke="#1F2A44" stroke-width="16" stroke-linecap="round"/>
+  <path d="M240 298c34-46 54-64 54-94 0-31-24-56-54-56s-54 25-54 56c0 30 20 48 54 94Z" fill="#14B8A6" opacity=".18"/>
+  <circle cx="240" cy="318" r="38" fill="#14B8A6"/>
+  <path d="M222 318h36" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round"/>
+</svg>

@@ -5,6 +5,8 @@ import {
   classifyCartActivity,
   getLatestCartActivity,
 } from "@/lib/cart-activity";
+import { isAbandonedCartReminderEligible } from "@/lib/abandoned-cart-reminder";
+import { validateIranPhone } from "@/lib/phone";
 import prisma from "@/lib/prisma";
 import { resolveProductPricing } from "@/lib/pricing";
 
@@ -152,6 +154,12 @@ export async function getCartsTabData(
   return {
     carts: carts.map((cart) => {
       const latestItemUpdatedAt = cart.items[0]?.updatedAt ?? null;
+      const activity = {
+        lastCartSeenAt: cart.lastCartSeenAt,
+        checkoutStartedAt: cart.checkoutStartedAt,
+        checkoutLastSeenAt: cart.checkoutLastSeenAt,
+        latestItemUpdatedAt,
+      };
       const items = cart.items.map((item) => {
         const unitPrice = resolveProductPricing(item.product, now).effectivePrice;
         return {
@@ -168,6 +176,9 @@ export async function getCartsTabData(
           updatedAt: item.updatedAt,
         };
       });
+      const status = classifyCartActivity(activity, now);
+      const lastActivityAt = getLatestCartActivity(activity) ?? cart.createdAt;
+      const latestOrder = cart.user.orders[0] ?? null;
 
       return {
         id: cart.id,
@@ -177,25 +188,23 @@ export async function getCartsTabData(
           email: cart.user.email,
           phone: cart.user.phone,
         },
-        status: classifyCartActivity({
-          lastCartSeenAt: cart.lastCartSeenAt,
-          checkoutStartedAt: cart.checkoutStartedAt,
-          checkoutLastSeenAt: cart.checkoutLastSeenAt,
-          latestItemUpdatedAt,
-        }, now),
+        status,
         itemCount: items.length,
         quantity: items.reduce((sum, item) => sum + item.quantity, 0),
         total: items.reduce((sum, item) => sum + item.lineTotal, 0),
         createdAt: cart.createdAt,
-        lastActivityAt: getLatestCartActivity({
-          lastCartSeenAt: cart.lastCartSeenAt,
-          checkoutStartedAt: cart.checkoutStartedAt,
-          checkoutLastSeenAt: cart.checkoutLastSeenAt,
-          latestItemUpdatedAt,
-        }) ?? cart.createdAt,
+        lastActivityAt,
         checkoutStartedAt: cart.checkoutStartedAt,
+        smsReminderEligible: isAbandonedCartReminderEligible({
+          status,
+          lastActivityAt,
+          hasPhone: validateIranPhone(cart.user.phone ?? ""),
+          hasAvailableItems: items.some((item) => item.stock > 0),
+          latestOrderAt: latestOrder?.createdAt,
+          now,
+        }),
         items,
-        latestOrder: cart.user.orders[0] ?? null,
+        latestOrder,
       };
     }),
     filters,

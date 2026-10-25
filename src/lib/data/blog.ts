@@ -1,6 +1,7 @@
 import { Prisma } from "@/generated/prisma";
 import { cache } from "react";
 import prisma from "../prisma";
+import { LOCAL_IMAGE_PLACEHOLDERS, safeImageSrc } from "../local-assets";
 import { createPageInfo } from "../pagination";
 import { createEmptyPageResult, withStorefrontDataFallback } from "./storefront-fallback";
 import { storefrontVisibleProductWhere } from "../storefront-visibility";
@@ -27,15 +28,24 @@ const relatedProductInclude = {
 
 type BlogPostItem = Prisma.BlogPostGetPayload<{ include: typeof blogPostInclude }>;
 
+function withSafeBlogCover<T extends { coverImage?: string | null }>(post: T): T {
+  return {
+    ...post,
+    coverImage: safeImageSrc(post.coverImage, LOCAL_IMAGE_PLACEHOLDERS.blog),
+  };
+}
+
 export async function getLatestBlogPosts(limit = 6) {
-  return withStorefrontDataFallback("getLatestBlogPosts", [], () =>
-    prisma.blogPost.findMany({
+  return withStorefrontDataFallback("getLatestBlogPosts", [], async () => {
+    const posts = await prisma.blogPost.findMany({
       where: publishedBlogWhere,
       include: blogPostInclude,
       orderBy: [{ isFeatured: "desc" }, { sortOrder: "asc" }, { publishedAt: "desc" }],
       take: limit,
-    }),
-  );
+    });
+
+    return posts.map(withSafeBlogCover);
+  });
 }
 
 export async function getRelatedBlogPostsForCar(
@@ -62,24 +72,28 @@ export async function getRelatedBlogPostsForCar(
       }
     : publishedBlogWhere;
 
-  return withStorefrontDataFallback("getRelatedBlogPostsForCar", [], () =>
-    prisma.blogPost.findMany({
+  return withStorefrontDataFallback("getRelatedBlogPostsForCar", [], async () => {
+    const posts = await prisma.blogPost.findMany({
       where,
       include: blogPostInclude,
       orderBy: { publishedAt: "desc" },
       take: limit,
-    }),
-  );
+    });
+
+    return posts.map(withSafeBlogCover);
+  });
 }
 
 export async function getAllBlogPosts() {
-  return withStorefrontDataFallback("getAllBlogPosts", [], () =>
-    prisma.blogPost.findMany({
+  return withStorefrontDataFallback("getAllBlogPosts", [], async () => {
+    const posts = await prisma.blogPost.findMany({
       where: publishedBlogWhere,
       include: blogPostInclude,
       orderBy: { publishedAt: "desc" },
-    }),
-  );
+    });
+
+    return posts.map(withSafeBlogCover);
+  });
 }
 
 export async function getBlogCategories() {
@@ -114,7 +128,7 @@ export async function getPaginatedBlogPosts({ page = 1, pageSize = 10, category 
     ]);
 
     return {
-      items,
+      items: items.map(withSafeBlogCover),
       pageInfo: createPageInfo(page, pageSize, total),
     };
     },
@@ -143,6 +157,12 @@ export const getBlogPostBySlug = cache(async function getBlogPostBySlug(slug: st
     const order = new Map(post.relatedProductSlugs.map((productSlug, index) => [productSlug, index]));
     relatedProducts.sort((a, b) => (order.get(a.slug) ?? 999) - (order.get(b.slug) ?? 999));
 
-    return { ...post, relatedProducts };
+    return {
+      ...withSafeBlogCover(post),
+      relatedProducts: relatedProducts.map((product) => ({
+        ...product,
+        imageUrl: safeImageSrc(product.imageUrl, LOCAL_IMAGE_PLACEHOLDERS.product),
+      })),
+    };
   });
 });

@@ -238,6 +238,8 @@ export const publicQuestionPayloadSchema = z.object({
     .min(5, "سوال باید حداقل ۵ کاراکتر باشد.")
     .max(800, "سوال نمی‌تواند بیش از ۸۰۰ کاراکتر باشد."),
   captchaToken: optionalString,
+  website: optionalString,
+  formStartedAt: z.coerce.number().int().positive().optional(),
 });
 
 export const engagementEventSchema = z.object({

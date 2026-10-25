@@ -10,8 +10,8 @@ import {
   verifyTorobJwt,
 } from "@/lib/torob";
 
-function createToken(privateKey: ReturnType<typeof generateKeyPairSync>["privateKey"], payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: "EdDSA", typ: "JWT", v: 1 })).toString("base64url");
+function createToken(privateKey: ReturnType<typeof generateKeyPairSync>["privateKey"], payload: Record<string, unknown>, version: number | string = 1) {
+  const header = Buffer.from(JSON.stringify({ alg: "EdDSA", typ: "JWT", v: version })).toString("base64url");
   const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
   const content = `${header}.${body}`;
   return `${content}.${sign(null, Buffer.from(content), privateKey).toString("base64url")}`;
@@ -40,6 +40,8 @@ test("Torob JWT verification validates Ed25519 signature, time, and exact audien
   const token = createToken(privateKey, { aud: "www.oilbar.ir", nbf: nowSeconds - 5, exp: nowSeconds + 60 });
 
   assert.equal(verifyTorobJwt(token, "www.oilbar.ir", { now, publicKey }).aud, "www.oilbar.ir");
+  const stringVersionToken = createToken(privateKey, { aud: "www.oilbar.ir", nbf: nowSeconds - 5, exp: nowSeconds + 60 }, "1");
+  assert.equal(verifyTorobJwt(stringVersionToken, "www.oilbar.ir", { now, publicKey }).aud, "www.oilbar.ir");
   assert.throws(() => verifyTorobJwt(token, "oilbar.ir", { now, publicKey }), /دامنه/);
   assert.throws(() => verifyTorobJwt(token, "www.oilbar.ir", { now: new Date(now.getTime() + 120_000), publicKey }), /منقضی/);
 });

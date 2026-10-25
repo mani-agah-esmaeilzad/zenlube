@@ -61,7 +61,6 @@ export const config = {
   AWS_REGION: process.env.AWS_REGION,
 
   CRON_SECRET: process.env.CRON_SECRET,
-  HCAPTCHA_SECRET: process.env.HCAPTCHA_SECRET,
   OTP_RATE_LIMIT_WINDOW: parseNumber(process.env.OTP_RATE_LIMIT_WINDOW, 300),
   OTP_RATE_LIMIT_MAX: parseNumber(process.env.OTP_RATE_LIMIT_MAX, 5),
   OTP_RESEND_WINDOW_SECONDS: parseNumber(process.env.OTP_RESEND_WINDOW_SECONDS, 20),

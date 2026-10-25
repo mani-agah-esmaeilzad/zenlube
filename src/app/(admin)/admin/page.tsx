@@ -38,6 +38,10 @@ import type { CartActivityFilter, OrdersTabData } from "@/services/admin/types";
 import { getShippingTabData } from "@/services/admin/shipping";
 import { getFeedbackTabData } from "@/services/admin/feedback";
 import { getCartsTabData } from "@/services/admin/carts";
+import { getTorobOrdersTabData } from "@/services/admin/torob-orders";
+import { TorobOrdersTab } from "@/components/admin/tabs/TorobOrdersTab";
+import { ProfitTab } from "@/components/admin/tabs/ProfitTab";
+import { getProfitTabData } from "@/services/admin/profit";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
@@ -56,10 +60,22 @@ const tabs = [
     icon: BoxIcon,
   },
   {
+    id: "profit",
+    label: "سود و بهای خرید",
+    description: "بهای خرید محصولات موجود را ثبت کنید و سود ناخالص برآوردی فروش‌های موفق را ببینید.",
+    icon: ChartIcon,
+  },
+  {
     id: "offers",
     label: "فروش و ترب",
     description: "قیمت، موجودی، آمادگی خروجی ترب و پیشنهادهای ویژه صفحه اصلی را مدیریت کنید.",
     icon: SparklesIcon,
+  },
+  {
+    id: "torob-orders",
+    label: "سفارش‌های ترب",
+    description: "دسترسی امن ترب به سفارش‌هایی که از کلیک‌های این پلتفرم آمده‌اند را کنترل کنید.",
+    icon: TagIcon,
   },
   {
     id: "orders",
@@ -145,10 +161,11 @@ type AdminPageProps = {
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const { userId, role } = await requireAdminUser();
   const params = await searchParams;
+  const visibleTabs = role === "ADMIN" ? tabs : tabs.filter((tab) => tab.id !== "torob-orders" && tab.id !== "profit");
 
   const requestedTabParam = params.tab;
   const requestedTab = Array.isArray(requestedTabParam) ? requestedTabParam[0] : requestedTabParam;
-  const activeTab: TabKey = tabs.some((tab) => tab.id === requestedTab)
+  const activeTab: TabKey = visibleTabs.some((tab) => tab.id === requestedTab)
     ? (requestedTab as TabKey)
     : "overview";
 
@@ -171,7 +188,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       {activeTabMeta.label}
                     </span>
                     <span className="admin-chip">{todayLabel}</span>
-                    <span className="admin-chip">{tabs.length.toLocaleString("fa-IR")} بخش مدیریتی</span>
+                    <span className="admin-chip">{visibleTabs.length.toLocaleString("fa-IR")} بخش مدیریتی</span>
                   </div>
                   <div>
                     <h1 className="text-2xl font-black tracking-[-0.03em] text-[#111827] md:text-[2rem]">
@@ -192,7 +209,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               </div>
 
               <nav className="scrollbar-none mt-6 flex gap-2 overflow-x-auto 2xl:hidden">
-                {tabs.map((tab) => {
+                {visibleTabs.map((tab) => {
                   const isActive = tab.id === activeTab;
                   const TabIcon = tab.icon;
                   return (
@@ -230,7 +247,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               </div>
 
               <nav className="hidden px-3 py-3 2xl:block">
-                {tabs.map((tab) => {
+                {visibleTabs.map((tab) => {
                   const isActive = tab.id === activeTab;
                   const TabIcon = tab.icon;
                   return (
@@ -289,6 +306,16 @@ async function renderActiveTab(
     case "offers": {
       const data = await getSpecialOffersTabData();
       return <SpecialOffersTab data={data} />;
+    }
+    case "profit": {
+      if (role !== "ADMIN") notFound();
+      const data = await getProfitTabData();
+      return <ProfitTab data={data} />;
+    }
+    case "torob-orders": {
+      if (role !== "ADMIN") notFound();
+      const data = await getTorobOrdersTabData();
+      return <TorobOrdersTab data={data} />;
     }
     case "orders": {
       const statusParam = typeof searchParams?.status === "string" ? searchParams.status : undefined;

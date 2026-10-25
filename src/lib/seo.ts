@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeAbsoluteImageUrl } from "./local-assets";
 import { getPaginationParams } from "./pagination";
 import { cleanProductDescription } from "./product-description";
 
@@ -68,7 +69,8 @@ export function buildPageMetadata(input: {
 }): Metadata {
   const url = new URL(input.pathname, `${SITE_URL}/`).toString();
   const description = summarizeSeoDescription(input.description);
-  const images = input.imageUrl ? [{ url: new URL(input.imageUrl, `${SITE_URL}/`).toString(), alt: input.title }] : undefined;
+  const imageUrl = safeAbsoluteImageUrl(input.imageUrl, SITE_URL);
+  const images = imageUrl ? [{ url: imageUrl, alt: input.title }] : undefined;
   return {
     title: input.title,
     description,
@@ -155,6 +157,7 @@ export function buildArticleStructuredData(input: {
   publishedAt: Date; updatedAt: Date; coverImage?: string | null;
 }) {
   const url = `${SITE_URL}/blog/${encodeURIComponent(input.slug)}`;
+  const imageUrl = safeAbsoluteImageUrl(input.coverImage, SITE_URL);
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -167,7 +170,7 @@ export function buildArticleStructuredData(input: {
     dateModified: input.updatedAt.toISOString(),
     author: { "@type": input.authorName === "تیم تحریریه Oilbar" ? "Organization" : "Person", name: input.authorName },
     publisher: { "@id": `${SITE_URL}/#organization` },
-    ...(input.coverImage ? { image: [new URL(input.coverImage, `${SITE_URL}/`).toString()] } : {}),
+    ...(imageUrl ? { image: [imageUrl] } : {}),
   };
 }
 
@@ -199,9 +202,7 @@ export function buildProductPageMetadata(input: ProductPageMetadataInput): Metad
   const productUrl = `${baseUrl}/products/${encodeURIComponent(input.slug)}`;
   const title = `${input.name} | Oilbar`;
   const description = summarizeSeoDescription(input.description || `مشخصات، کاربرد و موجودی ${input.name} در فروشگاه اویل‌بار.`);
-  const imageUrl = input.imageUrl
-    ? new URL(input.imageUrl, `${baseUrl}/`).toString()
-    : undefined;
+  const imageUrl = safeAbsoluteImageUrl(input.imageUrl, baseUrl);
   const images = imageUrl ? [{ url: imageUrl, alt: input.name }] : undefined;
 
   return {
@@ -282,7 +283,8 @@ export function buildProductStructuredData(input: ProductStructuredDataInput) {
   }
 
   if (input.imageUrl) {
-    structuredData.image = [new URL(input.imageUrl, `${baseUrl}/`).toString()];
+    const imageUrl = safeAbsoluteImageUrl(input.imageUrl, baseUrl);
+    if (imageUrl) structuredData.image = [imageUrl];
   }
 
   if (input.sku) {

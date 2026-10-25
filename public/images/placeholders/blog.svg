@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Oilbar blog placeholder">
+  <rect width="960" height="540" rx="56" fill="#F7F9FC"/>
+  <rect x="110" y="96" width="740" height="348" rx="36" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="10"/>
+  <rect x="164" y="154" width="388" height="34" rx="17" fill="#1F2A44" opacity=".16"/>
+  <rect x="164" y="228" width="632" height="22" rx="11" fill="#1F2A44" opacity=".1"/>
+  <rect x="164" y="278" width="570" height="22" rx="11" fill="#1F2A44" opacity=".1"/>
+  <rect x="164" y="328" width="468" height="22" rx="11" fill="#1F2A44" opacity=".1"/>
+  <circle cx="738" cy="174" r="42" fill="#14B8A6"/>
+</svg>
